@@ -14,7 +14,8 @@ Describe the project's **current implemented state**. Deliver one offline HTML f
 3. Establish purpose, consumers, inputs/outputs, components, processing, rules, data grain and operation. Resolve contradictions using the implementing path. Historical plans do not prove implementation. Do not execute collection jobs or alter production to populate documentation.
 4. Write `<work>/document.json` and `<work>/content.md`. Follow the [runnable example](examples/minimal/content.md) and [manifest](examples/minimal/document.json). Markdown H2 headings match manifest titles in order. Select sections by applicability, retaining functional and technical depth; source IDs associate sections with actual files.
 5. Install once: `npm ci --ignore-scripts --prefix <skill>`. Generate: `node <skill>/scripts/build.mjs <work>/document.json --out <work>/documentacao-v2.html`. Node 22+ is needed only for authoring. Readers need a browser, not a server. The builder refuses overwriting; `--force` is for a deliberate update of the requested output.
-6. Read the validation receipt, inspect desktop/narrow layouts, and exercise search, expansion, copy, diagram enlargement and print. Fix inputs and rebuild. Structural validation does not prove semantic correctness or visual quality. Deliver the HTML and disclose concrete unverified behavior.
+6. Verify the document against its sources: `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json` compares source hashes and the Git revision with the receipt. Use `--strict` in CI. The builder refuses overwriting; `--force` is for a deliberate update of the requested output.
+7. Read the validation receipt, inspect desktop/narrow layouts, and exercise search, expansion, copy, diagram enlargement and print. Fix inputs and rebuild. Structural validation does not prove semantic correctness or visual quality. Deliver the HTML and disclose concrete unverified behavior.
 
 ## Decisions
 
@@ -25,6 +26,7 @@ Describe the project's **current implemented state**. Deliver one offline HTML f
 - Preserve grain, identities, branching and edge meaning when simplifying diagrams. Split dense maps into overview/detail rather than deleting meaningful relationships.
 - Describe limitations affecting correct interpretation. Do not add a defect backlog, maturity score, severity matrix or modernization plan unless requested. Sources support documentation, not an audit report.
 - When the repository cannot establish business purpose, ownership, deployment status or rationale, consult product context or ask for that specific missing fact. Code proves implementation, not a successful production run.
+- Never reproduce secret values found in code or configuration. Describe where they live, their role and the need to rotate them; do not turn this into a security audit.
 
 ## Portability and maintenance
 
