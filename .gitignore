@@ -1,0 +1,4 @@
+node_modules/
+examples/minimal/documentacao.html
+examples/minimal/documentacao.validation.json
+tests/.output/

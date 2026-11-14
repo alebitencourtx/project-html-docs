@@ -1,0 +1,4 @@
+interface:
+  display_name: "Documentação HTML de Projetos"
+  short_description: "Documentação funcional e técnica em HTML autocontido"
+  default_prompt: "Use $project-html-docs para documentar o estado atual deste projeto em um HTML autocontido."

@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Como os oito reportes Admin do Santander se tornam um panorama operacional: o que a solução entrega, como interpretar os resultados e como os dados são processados, publicados e recuperados."><meta name="generator" content="project-html-docs 1.0.0"><title>Admin Metrics · Documentação v2 · aplicação 1.2.0</title><style>:root{--ink:#172b3c;--muted:#526778;--paper:#f4f6f8;--surface:#fff;--line:#dce4ea;--accent:#087f8c;--nav:#102b3d;--soft:#e9f5f5;--code:#122b3b;--radius:14px;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);font-size:16px;line-height:1.65;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--paper)}a{color:#086a83;text-underline-offset:3px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #f1ad35;outline-offset:3px}button{border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--ink);background:var(--surface)}button:hover{border-color:var(--accent);background:var(--soft)}.skip{position:absolute;left:-9999px}.skip:focus{left:20px;top:15px;z-index:20;background:white;padding:12px}
+.sidebar{position:fixed;inset:0 auto 0 0;width:252px;background:var(--nav);color:#e7f0f5;padding:28px 18px;overflow-y:auto;z-index:5}.brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8ed5d8;margin:0 10px 8px}.sidebar strong{display:block;font-size:22px;margin:0 10px 22px;line-height:1.3}.sidebar label{font-size:12px;color:#bed0da;display:block;margin:0 8px 5px}.sidebar input{width:100%;padding:10px;border:1px solid #496373;background:#1c394b;color:white;border-radius:8px}.sidebar nav{margin-top:20px}.sidebar nav a{display:flex;gap:12px;color:#d4e1e8;text-decoration:none;padding:9px 10px;border-radius:7px;font-size:13px;line-height:1.4}.sidebar nav a span{color:#8cadbd;min-width:18px;font-variant-numeric:tabular-nums}.sidebar nav a:hover,.sidebar nav a[aria-current]{background:#254858;color:white}.sidebar small{display:block;margin:24px 10px;color:#abc2ce;font-size:12px}.sidebar .search-count{min-height:20px;margin:6px 4px;font-size:12px;color:#b3d5de}
+main{margin-left:252px}.hero{background:linear-gradient(120deg,#102f43,#155368);color:white;padding:56px clamp(28px,5vw,80px) 44px;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;right:-60px;top:-120px;width:370px;height:370px;border:55px solid #ffffff06;border-radius:50%;pointer-events:none}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:700;color:#a6e0df;margin:0 0 16px}.hero h1{font-size:clamp(32px,3.4vw,48px);letter-spacing:-.035em;line-height:1.12;margin:0 0 20px;max-width:950px}.hero .subtitle{max-width:880px;font-size:18px;color:#dcecf3;margin:0 0 24px}.badges{display:flex;flex-wrap:wrap;gap:9px}.badges span{font-size:12px;padding:5px 10px;border:1px solid #ffffff30;border-radius:30px;background:#ffffff08}.content{max-width:1350px;padding:30px clamp(24px,4vw,64px) 70px;margin:auto}.hero-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:0 0 26px}.metric{border:1px solid var(--line);border-top:3px solid var(--accent);background:white;padding:20px;border-radius:10px}.metric .label{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.07em}.metric strong{display:block;font-size:25px;line-height:1.25;margin:8px 0}.metric p{font-size:13px;color:var(--muted);margin:0}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end;margin-bottom:22px;font-size:12px}.toolbar .hint{margin-right:auto;color:var(--muted)}
+.doc-section{background:white;border:1px solid var(--line);border-radius:var(--radius);margin:0 0 22px;scroll-margin-top:20px;overflow:clip}.section-heading{list-style:none;display:flex;gap:14px;align-items:center;padding:24px 28px;cursor:pointer}.section-heading::-webkit-details-marker{display:none}.section-heading:after{content:"+";font-size:22px;margin-left:auto;color:var(--muted)}details[open]>.section-heading:after{content:"−"}.section-heading .number{font-size:13px;color:var(--accent);font-weight:700}.section-heading h2{font-size:23px;line-height:1.3;letter-spacing:-.02em;margin:0}.audience{font-size:10px;white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;background:var(--soft);color:#126d72;padding:4px 8px;border-radius:20px}.audience.technical{background:#f0edfa;color:#69509a}.audience.operations{background:#fff3df;color:#805c20}.section-body{padding:0 28px 28px}.section-body>p:first-child{font-size:17px;color:#3c5466;margin-top:0}h3{font-size:19px;line-height:1.35;margin:30px 0 14px}h4{font-size:16px;margin:24px 0 8px}p{margin:12px 0}li{margin:6px 0}blockquote{margin:20px 0;padding:12px 18px;background:var(--soft);border-left:3px solid var(--accent);border-radius:0 8px 8px 0}blockquote p{margin:4px 0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:20px 0}.card{border:1px solid var(--line);border-radius:10px;padding:18px;background:#fafcfd}.card h3{margin:0 0 10px;font-size:16px}.card p{font-size:14px;margin:8px 0}.table-wrap{overflow:auto;margin:18px 0;border:1px solid var(--line);border-radius:10px}table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.55}th,td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:#edf3f6;font-weight:600;color:#314c5e}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#fafcfd}td code{overflow-wrap:anywhere}code{font-family:Consolas,Cascadia Code,monospace;font-size:.88em;background:#edf2f6;padding:2px 4px;border-radius:4px}pre{position:relative;background:var(--code);color:#e3edf4;border-radius:10px;padding:40px 18px 18px;overflow:auto;line-height:1.65;font-size:13px}pre code{background:none;padding:0;color:inherit;font-size:inherit}.copy{position:absolute;right:9px;top:8px;font-size:11px;padding:3px 9px;background:#284657;color:white;border-color:#496373}.section-body details{border:1px solid var(--line);border-radius:9px;padding:12px 16px;margin:16px 0}.section-body details summary{font-weight:600;cursor:pointer}.section-sources{font-size:11px;color:var(--muted);margin-top:24px;border-top:1px solid var(--line);padding-top:12px}.section-sources a{margin-right:10px}
+figure{margin:22px 0;border:1px solid var(--line);border-radius:12px;background:#f8fbfc;padding:16px}.diagram-scroll{overflow:auto;text-align:center;padding:10px 0}.diagram-scroll svg{display:block;max-width:none;height:auto;margin:auto}.figure-tools{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--muted);margin-bottom:8px}.figure-tools button{margin-left:auto;font-size:11px}figcaption{font-size:12px;color:var(--muted);line-height:1.55;margin-top:10px}.chart svg{width:100%;height:auto;display:block}.chart .table-wrap{margin-bottom:0}.source-path{font-family:Consolas,monospace;font-size:12px;overflow-wrap:anywhere}footer{font-size:12px;color:var(--muted);padding:15px 0}dialog{width:96vw;max-width:1600px;max-height:94vh;border:1px solid var(--line);border-radius:12px;padding:20px}dialog::backdrop{background:#102b3dbb}.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:15px}.dialog-canvas{overflow:auto;max-height:75vh}.dialog-canvas svg{max-width:none;display:block;margin:auto}#no-results{padding:20px;border:1px solid var(--line);background:white;border-radius:10px}.hidden,[hidden]{display:none!important}.revision{overflow-wrap:anywhere}
+@media(min-width:1700px){.content{max-width:1450px}.hero h1{font-size:50px}}@media(max-width:1000px){.sidebar{width:220px;padding:22px 12px}main{margin-left:220px}.content{padding:24px}.section-heading{padding:20px}.section-body{padding:0 20px 20px}.hero{padding:36px 24px}.audience{font-size:9px}}@media(max-width:760px){.sidebar{position:relative;width:auto;padding:20px}.sidebar strong{margin-bottom:12px}.sidebar nav{display:flex;overflow:auto;gap:5px;margin-top:12px}.sidebar nav a{min-width:max-content}.sidebar small{display:none}main{margin:0}.content{padding:18px 12px}.hero{padding:30px 22px}.hero .subtitle{font-size:16px}.section-heading{padding:18px 15px;gap:8px;flex-wrap:wrap}.section-heading h2{font-size:20px}.section-body{padding:0 15px 20px}.audience{margin-left:26px}.hero-cards{grid-template-columns:1fr 1fr;gap:9px}.metric{padding:14px}.metric strong{font-size:21px}th,td{padding:10px}.toolbar .hint{width:100%}.chart{padding:8px}figure{padding:10px}}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}@media print{@page{size:A4;margin:14mm}.sidebar,.toolbar,.figure-tools,.copy,.skip,dialog{display:none!important}main{margin:0}.hero{background:white;color:#172b3c;padding:0 0 20px;border-bottom:2px solid #087f8c}.hero .subtitle,.eyebrow{color:#314c5e}.hero:after{display:none}.badges span{border-color:#dce4ea}.content{padding:20px 0}.doc-section{overflow:visible;break-inside:auto;border:0;border-top:1px solid #dce4ea;border-radius:0}.section-heading{padding:20px 0 12px}.section-heading:after{display:none}.section-body{padding:0}.section-body>p:first-child{font-size:12px}body{background:white;font-size:11px}h3{font-size:15px}table{font-size:9px}.table-wrap,.diagram-scroll{overflow:visible}.diagram-scroll svg{width:100%!important;min-width:0!important;max-width:100%!important}figure{break-inside:avoid}.cards,.hero-cards{break-inside:avoid}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f1f4f6;color:#172b3c;font-size:9px;padding:12px}.doc-section[hidden]{display:block!important}details::details-content{display:block!important;content-visibility:visible!important}.section-heading h2{font-size:19px}.hero h1{font-size:30px}}
+</style></head><body><a class="skip" href="#main">Ir para o conteúdo</a><aside class="sidebar"><p class="brand">Documentação de projeto</p><strong>Admin Metrics</strong><label for="search">Pesquisar documentação</label><input id="search" type="search" autocomplete="off" placeholder="Regras, tabelas, execução…"><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="Conteúdo"><a href="#resumo"><span>01</span>Resumo executivo</a><a href="#funcional"><span>02</span>Visão funcional e escopo</a><a href="#estado"><span>03</span>Estado atual da solução</a><a href="#uso"><span>04</span>Como usar o dashboard</a><a href="#solucao"><span>05</span>Desenho da solução</a><a href="#fluxo"><span>06</span>Fluxo dos dados e publicação</a><a href="#regras"><span>07</span>Regras funcionais e cálculos</a><a href="#situacoes"><span>08</span>Situações, incidentes e continuidade</a><a href="#modelo"><span>09</span>Modelo e relacionamento dos dados</a><a href="#consultas"><span>10</span>Como consultar os dados</a><a href="#execucao"><span>11</span>Como executar</a><a href="#operacao"><span>12</span>Retenção, reaproveitamento e recuperação</a><a href="#decisoes"><span>13</span>Escolhas e limites de interpretação</a><a href="#glossario"><span>14</span>Glossário</a><a href="#dicionario"><span>15</span>Dicionário de dados</a><a href="#document-references">Referências</a></nav><small>HTML único · leitura offline<br>Documentação v2 · aplicação 1.2.0 · 2026-11-14</small></aside><main id="main"><header class="hero"><p class="eyebrow">Santander Observatory · guia funcional e técnico</p><h1>Admin Metrics</h1><p class="subtitle">Como os oito reportes Admin do Santander se tornam um panorama operacional: o que a solução entrega, como interpretar os resultados e como os dados são processados, publicados e recuperados.</p><div class="badges"><span>Documentação v2 · aplicação 1.2.0</span><span>Atualizado: 2026-11-14</span><span>HTML único · leitura offline</span></div></header><div class="content"><div class="hero-cards"><article class="metric"><span class="label">Escopo</span><strong>8 reportes Admin</strong><p>Catálogo explícito de fontes; sem chamadas aos serviços de clientes.</p></article><article class="metric"><span class="label">Entrega</span><strong>Panorama + histórico</strong><p>Métricas, incidentes, contexto de coleta e dados para análise.</p></article><article class="metric"><span class="label">Agenda configurada</span><strong>A cada hora</strong><p>GitHub Actions, minuto 17 UTC. Disparos podem atrasar.</p></article><article class="metric"><span class="label">Leitura</span><strong>Funcional e técnica</strong><p>Uso, regras, arquitetura, fluxo, dados e operação no mesmo documento.</p></article></div><div class="toolbar"><span class="hint">Navegue por assunto ou leia na sequência.</span><button id="expand" type="button">Expandir tudo</button><button id="collapse" type="button">Recolher tudo</button><button id="print" type="button">Imprimir / PDF</button></div><p id="no-results" hidden>Nenhuma seção encontrada.</p><details class="doc-section" id="resumo" open><summary class="section-heading"><span class="number">01</span><h2>Resumo executivo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O Admin Metrics reúne os reportes operacionais de oito fontes Santander em um panorama para acompanhar erros, rejeições, médias de resposta e condições de coleta. Ajuda PO, gestão, analistas e engenharia a identificar onde aprofundar uma investigação, com o volume e o momento de cada observação.</p>
+<div class="cards">
+<div class="card"><h3>Qual pergunta responde?</h3><p>Quais fontes e serviços reportados concentram sinais de atenção, e os dados disponíveis permitem interpretar esses sinais?</p></div>
+<div class="card"><h3>O que entrega?</h3><p>Dashboard estático, incidentes explicáveis, histórico de observações, exportação CSV, cinco conjuntos Parquet e documentação.</p></div>
+<div class="card"><h3>Como apoiar uma decisão?</h3><p>Conferir a idade dos dados, comparar taxa e volume, abrir o detalhe e separar um problema reportado de uma falha de coleta.</p></div>
+</div><p>O banco declara as métricas dos serviços no endpoint Admin. O monitor mede independentemente a duração e o resultado de sua própria consulta a esse endpoint. Essas duas observações têm significados diferentes: uma média declarada do serviço não é a duração da coleta.</p>
+<blockquote>
+<p>Quando a fonte falha, o sistema pode preservar um panorama anterior. A data dos últimos dados válidos e a saúde da tentativa atual permitem entender essa continuidade sem confundir valores antigos com uma observação nova.</p>
+</blockquote>
+<p>Para consumir o resultado, comece por <a href="#uso">Como usar o dashboard</a>. Para entender os cálculos, consulte <a href="#regras">Regras funcionais</a>. A <a href="#solucao">arquitetura</a>, o <a href="#fluxo">fluxo</a> e o <a href="#modelo">modelo de dados</a> descrevem a implementação.</p>
+<div class="section-sources">Referências: <a href="#ref-readme">README.md</a> <a href="#ref-panorama">src/admin_metrics/panorama.py</a></div></div></details>
+<details class="doc-section" id="funcional" open><summary class="section-heading"><span class="number">02</span><h2>Visão funcional e escopo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O processo transforma reportes públicos agregados em informação operacional comparável. A unidade monitorada é a combinação de uma fonte do catálogo com um endpoint descrito no seu reporte.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Etapa funcional</th>
+<th>O que acontece</th>
+<th>Resultado para o leitor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Observar</td>
+<td>Consulta os oito Admins configurados</td>
+<td>Horário, resposta HTTP e métricas recebidas</td>
+</tr>
+<tr>
+<td>Organizar</td>
+<td>Normaliza campos, identidades e referências de tempo</td>
+<td>Linhas comparáveis e valores inválidos sinalizados</td>
+</tr>
+<tr>
+<td>Interpretar</td>
+<td>Calcula taxas, deltas elegíveis e sinais</td>
+<td>Incidentes e contexto de volume</td>
+</tr>
+<tr>
+<td>Apresentar</td>
+<td>Publica panorama, detalhes e histórico</td>
+<td>Leitura do conjunto e investigação por fonte/endpoint</td>
+</tr>
+<tr>
+<td>Preservar</td>
+<td>Mantém estado e pacotes aprovados</td>
+<td>Continuidade entre runners e recuperação operacional</td>
+</tr>
+</tbody></table></div>
+<h3>Fontes acompanhadas</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Reporte</th>
+<th>Host Admin</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Santander</td>
+<td><code>openbanking.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>Santander CCVM</td>
+<td><code>ccvm.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>Aymoré</td>
+<td><code>financiamentos.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>Getnet</td>
+<td><code>getnet.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>Hyundai Capital</td>
+<td><code>hyundai.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>RCI · Nissan</td>
+<td><code>nissan.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>RCI · Renault</td>
+<td><code>renault.api.santander.com.br</code></td>
+</tr>
+<tr>
+<td>Toro</td>
+<td><code>toro.api.santander.com.br</code></td>
+</tr>
+</tbody></table></div>
+<p>Em todos os hosts, a coleta usa <code>GET /open-banking/admin/v2/metrics</code>. A associação das fontes é operacional pelo catálogo/Diretório; não constitui uma conclusão sobre controle societário. Nissan e Renault permanecem reportes distintos mesmo compartilhando CNPJ.</p>
+<h3>O que entra e o que sai</h3>
+<p>Entram métricas declaradas de chamadas, erros, rejeições, médias de resposta, TPS e disponibilidade, incluindo valores atuais e posições de dias anteriores. Saem dados normalizados, agregados, ocorrências de incidentes e os artefatos para consulta.</p>
+<p>O monitor não chama os serviços de clientes descritos no reporte e não executa pagamentos. O navegador lê arquivos publicados; não consulta as APIs bancárias. Para o negócio, os sinais orientam investigação. Os limiares configurados não representam um atestado regulatório ou uma medição contínua de disponibilidade.</p>
+<div class="section-sources">Referências: <a href="#ref-reporters">config/reporters.json</a> <a href="#ref-collect">src/admin_metrics/collect.py</a> <a href="#ref-dashboard">docs/dashboard.md</a></div></div></details>
+<details class="doc-section" id="estado" open><summary class="section-heading"><span class="number">03</span><h2>Estado atual da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>Esta v2 descreve o checkout <code>a24588f</code> da aplicação 1.2.0, consultado em 14/11/2026. O modelo de captura é 3 e o envelope persistido é 1. São identificadores com funções distintas; não representam três versões concorrentes da aplicação.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Capacidade implementada</th>
+<th>Comportamento</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Coleta agendada e manual</td>
+<td>GitHub Actions; cron <code>17 * * * *</code> UTC</td>
+</tr>
+<tr>
+<td>Oito fontes independentes</td>
+<td>Uma falha observável de fonte não elimina o diagnóstico das outras</td>
+</tr>
+<tr>
+<td>Panorama coerente</td>
+<td>Um ciclo completo e um dia de referência por recorte</td>
+</tr>
+<tr>
+<td>Continuidade</td>
+<td>Último panorama válido preservado e rotulado quando necessário</td>
+</tr>
+<tr>
+<td>Histórico</td>
+<td>30 dias de estado normalizado; séries públicas de 72 horas</td>
+</tr>
+<tr>
+<td>Incidentes</td>
+<td>Abertura, confirmação por persistência, recuperação e resolução</td>
+</tr>
+<tr>
+<td>Consumo técnico</td>
+<td>DuckDB e cinco arquivos Parquet reconstruídos no build</td>
+</tr>
+<tr>
+<td>Publicação</td>
+<td>Dashboard e manual estáticos; estado remoto em Releases aprovadas</td>
+</tr>
+</tbody></table></div>
+<p>Esta documentação registra capacidades e configurações. Nenhuma nova coleta foi executada para sua geração, e não se apresenta um status de saúde em tempo real. A situação operacional deve ser lida no dashboard, com seus horários e identificação da execução.</p>
+<h3>Duas janelas com propósitos diferentes</h3>
+<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 129" role="img" aria-label="Janelas configuradas de histórico" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px"><text x="206" y="31" text-anchor="end" fill="#314c5e">Estado normalizado</text><rect x="220" y="16" width="540" height="23" rx="4" fill="#e8eff3"/><rect x="220" y="16" width="540" height="23" rx="4" fill="#087f8c"/><text x="774" y="32" fill="#172b3c" font-weight="600">30</text><text x="206" y="73" text-anchor="end" fill="#314c5e">Séries públicas</text><rect x="220" y="58" width="540" height="23" rx="4" fill="#e8eff3"/><rect x="220" y="58" width="54" height="23" rx="4" fill="#087f8c"/><text x="774" y="74" fill="#172b3c" font-weight="600">3</text><text x="220" y="126" fill="#526778" font-size="12">0 · dias · escala linear</text></svg><figcaption><strong>Janelas configuradas de histórico</strong> · config/rules.json · retention_days e dashboard_history_days</figcaption><details><summary>Dados do gráfico</summary><div class="table-wrap"><table><thead><tr><th>Categoria</th><th>dias</th></tr></thead><tbody><tr><td>Estado normalizado</td><td>30</td></tr><tr><td>Séries públicas</td><td>3</td></tr></tbody></table></div></details></figure><p>A janela de três dias se aplica às séries e ao monitor no payload público. Panoramas preservados, contexto anterior e incidentes ativos podem carregar informação mais antiga, enquanto estiver retida. Bronze e pacotes remotos usam quantidades de ciclos/pacotes, descritas em <a href="#operacao">Retenção</a>.</p>
+<div class="section-sources">Referências: <a href="#ref-version">src/admin_metrics/__init__.py</a> <a href="#ref-rules">config/rules.json</a> <a href="#ref-workflow">.github/workflows/pages.yml</a> <a href="#ref-build">src/admin_metrics/build.py</a></div></div></details>
+<details class="doc-section" id="uso" open><summary class="section-heading"><span class="number">04</span><h2>Como usar o dashboard</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>Abra o <a href="https://alebitencourtx.github.io/admin-metrics/">dashboard do Admin Metrics</a>. Comece pela atualidade e pela cobertura dos dados antes de comparar indicadores.</p>
+<div class="cards">
+<div class="card"><h3>1 · Confira o contexto</h3><p>Leia a última tentativa, os últimos dados válidos e a cobertura. Uma tentativa recente vazia não renova a idade dos dados.</p></div>
+<div class="card"><h3>2 · Compare taxa e volume</h3><p>A mesma taxa pode representar poucos eventos ou muitos erros. O ranking prioriza quantidade de erros.</p></div>
+<div class="card"><h3>3 · Abra o detalhe</h3><p>Confronte histórico, deltas e flags. Um incidente em recuperação ainda não está resolvido.</p></div>
+</div><h3>Roteiro de consulta</h3>
+<ol>
+<li><strong>Panorama:</strong> confira o recorte e a data. O aviso <strong>DADOS ANTERIORES</strong> indica preservação de um ciclo válido anterior.</li>
+<li><strong>Fonte:</strong> selecione um reporte ou clique no ranking. O filtro muda o recorte global; “Todos” recompõe a visão de conjunto.</li>
+<li><strong>Incidentes:</strong> compare severidade, estado, evidência e confirmação. Use a opção de incluir resolvidos quando necessário.</li>
+<li><strong>Tendências:</strong> escolha taxa de erro, média ou chamadas do dia. Observe horário/valor dos pontos e as lacunas; não some os acumulados de vários horários.</li>
+<li><strong>Endpoints:</strong> use busca, família e ordenação. Clique no endpoint para consultar médias anteriores, deltas, flags e origem.</li>
+<li><strong>Coleta e monitor:</strong> confira HTTP, quantidade de registros e tentativas. O monitor apresenta uma matriz execução × API, em páginas de 12 execuções.</li>
+<li><strong>Exportação:</strong> “Exportar endpoints” gera o CSV de todas as linhas do filtro, com campos de contexto e evidência.</li>
+</ol>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>O leitor vê</th>
+<th>Como interpretar</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Tentativa nova + panorama antigo</td>
+<td>A publicação incorporou um diagnóstico atual; as métricas válidas continuam anteriores</td>
+</tr>
+<tr>
+<td><code>fresh=false</code> em uma exportação</td>
+<td>A linha é de uma execução anterior, não uma medição nova</td>
+</tr>
+<tr>
+<td>Ausência de ponto</td>
+<td>O horário pode não ter sido observado ou não ser comparável</td>
+</tr>
+<tr>
+<td>HTTP 403 no Admin</td>
+<td>A consulta foi recusada; não determina a causa nem a disponibilidade de todos os serviços</td>
+</tr>
+<tr>
+<td>Média alta</td>
+<td>A média declarada é elevada; não informa percentis como p95</td>
+</tr>
+</tbody></table></div>
+<p>O detalhe mantém separados os dias anteriores declarados pelo banco e as observações próprias do monitor. A interface mostra D−1 a D−3; a avaliação de recorrência pode usar até sete posições do contrato.</p>
+<p>O CSV usa UTF-8 com BOM e separador ponto-e-vírgula. Busca, família e ordenação afetam tabela e exportação. Valores preservados continuam identificados, e campos com prefixos de fórmula recebem proteção no CSV.</p>
+<div class="section-sources">Referências: <a href="#ref-dashboard">docs/dashboard.md</a> <a href="#ref-app">src/admin_metrics/web/app.js</a> <a href="#ref-panorama">src/admin_metrics/panorama.py</a></div></div></details>
+<details class="doc-section" id="solucao" open><summary class="section-heading"><span class="number">05</span><h2>Desenho da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A solução é um ETL em lote executado em um único runner temporário do GitHub Actions. O estado persistido permite continuar o histórico entre execuções; DuckDB é embutido no processo, sem serviço de banco permanente.</p>
+<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 709.739 252.6" width="709.739" height="252.6" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:816.19985px;min-width:735px;max-width:100%" role="img" aria-label="Componentes da solu&#xe7;&#xe3;o e destinos de publica&#xe7;&#xe3;o" data-natural-width="816.19985">
+<style>
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="diagram-1-arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+  <marker id="diagram-1-arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<polyline class="edge" data-from="API" data-to="ETL" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="JSON" points="146.942,98.00833333333334 261.10400000000004,98.00833333333334" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-1-arrowhead)"/>
+<polyline class="edge" data-from="REL" data-to="ETL" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Estado aprovado" points="501.6980000000001,41.16666666666667 514.4770000000001,41.16666666666667 514.4770000000001,33 385.4490000000001,33 385.4490000000001,86.93833333333333 373.449,86.93833333333333" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-1-arrowhead)"/>
+<polyline class="edge" data-from="ETL" data-to="REL" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Candidata" points="373.449,94.31833333333334 419.30700000000013,94.31833333333334 419.30700000000013,66.30000000000001 514.4770000000001,66.30000000000001 514.4770000000001,58.13333333333334 501.6980000000001,58.13333333333334" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-1-arrowhead)"/>
+<polyline class="edge" data-from="ETL" data-to="PAGE" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Site" points="373.449,101.69833333333334 399.449,101.69833333333334 399.449,121.55000000000001 501.6980000000001,121.55000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-1-arrowhead)"/>
+<polyline class="edge" data-from="ETL" data-to="PARQ" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="5 conjuntos" points="373.449,109.07833333333333 385.44900000000007,109.07833333333333 385.44900000000007,193.45 501.6980000000001,193.45" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-1-arrowhead)"/>
+<polyline class="edge" data-from="PAGE" data-to="USER" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="582.1800000000001,121.55000000000001 595.4010000000001,121.55000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-1-arrowhead)"/>
+<g class="edge-label" data-from="API" data-to="ETL" data-label="JSON">
+  <rect x="180.942" y="82.00833333333334" width="46.162" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="204.023" y="97.15833333333335" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">JSON</text>
+</g>
+<g class="edge-label" data-from="REL" data-to="ETL" data-label="Estado aprovado">
+  <rect x="393.4490000000001" y="17" width="99.028" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="442.96300000000014" y="32.15" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Estado aprovado</text>
+</g>
+<g class="edge-label" data-from="ETL" data-to="REL" data-label="Candidata">
+  <rect x="427.30700000000013" y="50.300000000000004" width="65.17" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="459.8920000000001" y="65.45" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Candidata</text>
+</g>
+<g class="edge-label" data-from="ETL" data-to="PAGE" data-label="Site">
+  <rect x="407.449" y="105.55000000000001" width="35.47" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="425.184" y="120.70000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Site</text>
+</g>
+<g class="edge-label" data-from="ETL" data-to="PARQ" data-label="5 conjuntos">
+  <rect x="393.44900000000007" y="177.45" width="71.70400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="429.3010000000001" y="192.6" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">5 conjuntos</text>
+</g>
+<g class="node" data-id="API" data-label="8 fontes Admin" data-shape="rectangle">
+  <rect x="22" y="79.55833333333334" width="124.94200000000001" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="84.471" y="98.00833333333334" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">8 fontes Admin</text>
+</g>
+<g class="node" data-id="REL" data-label="Releases" data-shape="cylinder">
+  <rect x="501.6980000000001" y="31.200000000000003" width="98.26599999999999" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="501.6980000000001" y1="31.200000000000003" x2="501.6980000000001" y2="68.10000000000001" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="599.964" y1="31.200000000000003" x2="599.964" y2="68.10000000000001" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="550.8310000000001" cy="68.10000000000001" rx="49.132999999999996" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="550.8310000000001" cy="31.200000000000003" rx="49.132999999999996" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="550.8310000000001" y="49.650000000000006" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Releases</text>
+</g>
+<g class="node" data-id="ETL" data-label="ETL Python" data-shape="rectangle">
+  <rect x="261.10400000000004" y="79.55833333333334" width="112.345" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="317.27650000000006" y="98.00833333333334" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">ETL Python</text>
+</g>
+<g class="node" data-id="PAGE" data-label="Pages" data-shape="rectangle">
+  <rect x="501.6980000000001" y="103.10000000000001" width="80.482" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="541.9390000000001" y="121.55000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Pages</text>
+</g>
+<g class="node" data-id="PARQ" data-label="Parquets" data-shape="cylinder">
+  <rect x="501.6980000000001" y="175" width="96.78399999999999" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="501.6980000000001" y1="175" x2="501.6980000000001" y2="211.9" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="598.4820000000001" y1="175" x2="598.4820000000001" y2="211.9" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="550.0900000000001" cy="211.9" rx="48.391999999999996" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="550.0900000000001" cy="175" rx="48.391999999999996" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="550.0900000000001" y="193.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Parquets</text>
+</g>
+<g class="node" data-id="USER" data-label="Leitores" data-shape="rectangle">
+  <rect x="595.4010000000001" y="103.10000000000001" width="92.338" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="641.57" y="121.55000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Leitores</text>
+</g>
+</svg></div><figcaption>Componentes da solução e destinos de publicação</figcaption></figure><p>O ETL Python reúne coleta, normalização e construção no runner temporário do GitHub Actions. O desenho mostra componentes e intercâmbios. A confirmação de uma candidata em Release depende do deploy aprovado, detalhado no <a href="#fluxo">fluxo</a>. Os Parquets são produzidos no diretório de dados do build; não há promessa de disponibilizá-los no Pages.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Responsabilidade</th>
+<th>Implementação</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Catálogo e regras</td>
+<td>Define fontes, limiares e janelas</td>
+<td><code>config/reporters.json</code>, <code>config/rules.json</code></td>
+</tr>
+<tr>
+<td>Coletor</td>
+<td>HTTP, concorrência, paginação e retry</td>
+<td><code>collect.py</code></td>
+</tr>
+<tr>
+<td>Normalização e análise</td>
+<td>Identidades, métricas, deltas e incidentes</td>
+<td><code>analysis.py</code></td>
+</tr>
+<tr>
+<td>Saúde e panorama</td>
+<td>Distingue tentativa atual de último conjunto válido</td>
+<td><code>health.py</code>, <code>panorama.py</code></td>
+</tr>
+<tr>
+<td>Persistência</td>
+<td>Bronze, estado, escrita e exclusão mútua</td>
+<td><code>storage.py</code>, <code>archive.py</code></td>
+</tr>
+<tr>
+<td>Construção</td>
+<td>Arrow, SQL, Parquet, payload e HTML</td>
+<td><code>build.py</code>, <code>marts.sql</code></td>
+</tr>
+<tr>
+<td>Publicação remota</td>
+<td>Restore, candidata, confirmação e retenção</td>
+<td><code>cloud_pipeline.py</code>, <code>pages.yml</code></td>
+</tr>
+</tbody></table></div>
+<p>O dashboard precisa dos arquivos da publicação. Este manual v2 é um HTML independente, com estilos, scripts, tabelas e diagramas incorporados.</p>
+<div class="section-sources">Referências: <a href="#ref-architecture">docs/arquitetura.md</a> <a href="#ref-pipeline">src/admin_metrics/pipeline.py</a> <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-workflow">.github/workflows/pages.yml</a></div></div></details>
+<details class="doc-section" id="fluxo" open><summary class="section-heading"><span class="number">06</span><h2>Fluxo dos dados e publicação</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>Uma nova coleta restaura o estado aprovado, observa as fontes e produz um candidato. A publicação do site e a confirmação desse estado são etapas distintas.</p>
+<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 607.91 753.3319999999999" width="607.91" height="753.3319999999999" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:699.0964999999999px;min-width:629px;max-width:100%" role="img" aria-label="Ciclo remoto de coleta e publica&#xe7;&#xe3;o" data-natural-width="699.0964999999999">
+<style>
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="diagram-2-arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+  <marker id="diagram-2-arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<polyline class="edge" data-from="A" data-to="B" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="314.32899999999995,58.900000000000006 314.329,96.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<polyline class="edge" data-from="B" data-to="C" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="314.329,133.8 314.329,171.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<polyline class="edge" data-from="C" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="314.329,208.70000000000002 314.329,246.70000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<polyline class="edge" data-from="D" data-to="E" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="314.329,283.6 314.32899999999995,321.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<polyline class="edge" data-from="E" data-to="F" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="314.32899999999995,358.5 314.32899999999995,396.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<polyline class="edge" data-from="F" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sim" points="278.3903333333333,576.1933333333333 278.3903333333333,624.132 166.3515,624.132 166.3515,694.4319999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<polyline class="edge" data-from="F" data-to="H" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="N&#xe3;o" points="350.2676666666666,576.1933333333333 350.2676666666666,624.132 462.30649999999997,624.132 462.30649999999997,694.4319999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-2-arrowhead)"/>
+<g class="edge-label" data-from="F" data-to="G" data-label="Sim">
+  <rect x="148.8515" y="631.132" width="34.282" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="165.99249999999998" y="646.2819999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sim</text>
+</g>
+<g class="edge-label" data-from="F" data-to="H" data-label="N&#xe3;o">
+  <rect x="443.80649999999997" y="631.132" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="462.1355" y="646.2819999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">N&#xe3;o</text>
+</g>
+<g class="node" data-id="A" data-label="Agenda ou execu&#xe7;&#xe3;o manual" data-shape="rectangle">
+  <rect x="209.2505" y="22" width="210.15699999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="314.32899999999995" y="40.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Agenda ou execu&#xe7;&#xe3;o manual</text>
+</g>
+<g class="node" data-id="B" data-label="Restaurar estado aprovado" data-shape="rectangle">
+  <rect x="211.844" y="96.9" width="204.97" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="314.329" y="115.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Restaurar estado aprovado</text>
+</g>
+<g class="node" data-id="C" data-label="Coletar e preservar respostas" data-shape="rectangle">
+  <rect x="203.3225" y="171.8" width="222.013" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="314.329" y="190.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Coletar e preservar respostas</text>
+</g>
+<g class="node" data-id="D" data-label="Normalizar e avaliar regras" data-shape="rectangle">
+  <rect x="212.2145" y="246.70000000000002" width="204.229" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="314.329" y="265.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Normalizar e avaliar regras</text>
+</g>
+<g class="node" data-id="E" data-label="Gerar artefato e candidata draft" data-shape="rectangle">
+  <rect x="202.952" y="321.6" width="222.75399999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="314.32899999999995" y="340.05" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Gerar artefato e candidata draft</text>
+</g>
+<g class="node" data-id="F" data-label="Deploy Pages aprovado?" data-shape="diamond">
+  <polygon points="314.32899999999995,396.5 422.1449999999999,504.316 314.32899999999995,612.132 206.51299999999998,504.316" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="314.32899999999995" y="504.316" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Deploy Pages aprovado?</text>
+</g>
+<g class="node" data-id="G" data-label="Confirmar candidata e manter 2 aprovadas" data-shape="rectangle">
+  <rect x="22" y="694.4319999999999" width="288.703" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="166.3515" y="712.882" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Confirmar candidata e manter 2 aprovadas</text>
+</g>
+<g class="node" data-id="H" data-label="Descartar candidata n&#xe3;o publicada" data-shape="rectangle">
+  <rect x="338.703" y="694.4319999999999" width="247.207" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="462.30649999999997" y="712.882" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Descartar candidata n&#xe3;o publicada</text>
+</g>
+</svg></div><figcaption>Ciclo remoto de coleta e publicação</figcaption></figure><p>Falhas estruturais de configuração, integridade ou construção interrompem o avanço. Falhas observáveis da origem são registradas como dados de diagnóstico e podem resultar em publicação bem-sucedida. Se o deploy terminar e a confirmação falhar, o site pode referenciar uma candidata ainda draft; a reconciliação está em <a href="#operacao">Recuperação</a>.</p>
+<h3>Dentro da coleta</h3>
+<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 647.924 706.5899999999999" width="647.924" height="706.5899999999999" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:745.1125999999999px;min-width:671px;max-width:100%" role="img" aria-label="Caminho de uma fonte desde a resposta at&#xe9; a avalia&#xe7;&#xe3;o" data-natural-width="745.1125999999999">
+<style>
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="diagram-3-arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+  <marker id="diagram-3-arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<polyline class="edge" data-from="A" data-to="B" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="316.9224999999999,58.900000000000006 316.92249999999996,96.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<polyline class="edge" data-from="B" data-to="C" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="316.92249999999996,133.8 316.9224999999999,171.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<polyline class="edge" data-from="C" data-to="D" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="316.9224999999999,208.70000000000002 316.9224999999999,246.70000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<polyline class="edge" data-from="D" data-to="E" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sim" points="276.29083333333324,449.85833333333335 276.29083333333324,502.49 158.94149999999996,502.49 158.94149999999996,572.79" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<polyline class="edge" data-from="D" data-to="F" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="N&#xe3;o" points="357.55416666666656,449.85833333333335 357.55416666666656,502.49 474.9034999999999,502.49 474.9034999999999,572.79" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<polyline class="edge" data-from="E" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="158.94149999999996,609.6899999999999 158.94149999999996,628.6899999999999 316.92249999999996,628.6899999999999 316.92249999999996,647.6899999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<polyline class="edge" data-from="F" data-to="G" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="474.9034999999999,609.6899999999999 474.9034999999999,628.6899999999999 316.92249999999996,628.6899999999999 316.92249999999996,647.6899999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-3-arrowhead)"/>
+<g class="edge-label" data-from="D" data-to="E" data-label="Sim">
+  <rect x="141.44149999999996" y="509.49" width="34.282" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="158.58249999999995" y="524.64" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sim</text>
+</g>
+<g class="edge-label" data-from="D" data-to="F" data-label="N&#xe3;o">
+  <rect x="456.4034999999999" y="509.49" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="474.7324999999999" y="524.64" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">N&#xe3;o</text>
+</g>
+<g class="node" data-id="A" data-label="Consultar p&#xe1;gina Admin" data-shape="rectangle">
+  <rect x="227.03449999999995" y="22" width="179.77599999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="316.9224999999999" y="40.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Consultar p&#xe1;gina Admin</text>
+</g>
+<g class="node" data-id="B" data-label="Preservar corpo e tentativa" data-shape="rectangle">
+  <rect x="214.80799999999996" y="96.9" width="204.22899999999996" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="316.92249999999996" y="115.35000000000001" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Preservar corpo e tentativa</text>
+</g>
+<g class="node" data-id="C" data-label="Conciliar p&#xe1;ginas e identidades" data-shape="rectangle">
+  <rect x="204.43399999999994" y="171.8" width="224.97699999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="316.9224999999999" y="190.25" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Conciliar p&#xe1;ginas e identidades</text>
+</g>
+<g class="node" data-id="D" data-label="Captura completa e n&#xe3;o vazia?" data-shape="diamond">
+  <polygon points="316.9224999999999,246.70000000000005 438.8174999999999,368.595 316.9224999999999,490.49 195.02749999999992,368.595" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="316.9224999999999" y="368.595" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Captura completa e n&#xe3;o vazia?</text>
+</g>
+<g class="node" data-id="E" data-label="Normalizar e substituir contexto da fonte" data-shape="rectangle">
+  <rect x="22" y="572.79" width="273.8829999999999" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="158.94149999999996" y="591.24" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Normalizar e substituir contexto da fonte</text>
+</g>
+<g class="node" data-id="F" data-label="Registrar diagn&#xf3;stico e preservar &#xfa;ltima boa" data-shape="rectangle">
+  <rect x="323.8829999999999" y="572.79" width="302.041" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="474.9034999999999" y="591.24" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Registrar diagn&#xf3;stico e preservar &#xfa;ltima boa</text>
+</g>
+<g class="node" data-id="G" data-label="Avaliar deltas, regras e panorama" data-shape="rectangle">
+  <rect x="196.65349999999995" y="647.6899999999999" width="240.53799999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="316.92249999999996" y="666.14" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Avaliar deltas, regras e panorama</text>
+</g>
+</svg></div><figcaption>Caminho de uma fonte desde a resposta até a avaliação</figcaption></figure><p>São permitidas quatro fontes simultâneas e uma página por vez por fonte. Cada operação HTTP tem timeout de 20 segundos; o limite é de 20 páginas, 16 MiB por resposta e 10.000 identidades por fonte. O timeout HTTP não é um prazo absoluto para o ciclo inteiro.</p>
+<p>O retry HTTP tem até três tentativas e se limita a transporte ou status 408/429/500/502/503/504/529, com <code>Retry-After</code> limitado a 15 segundos. Quando uma fonte anteriormente preenchida retorna vazio, existem até duas recapturas adicionais, após 10 e 30 segundos por padrão; o bootstrap não repete vazio por essa regra. Recaptura e retry HTTP são mecanismos distintos.</p>
+<p>Identidades repetidas não aumentam o volume. Duplicatas divergentes tornam a fonte incompleta; a primeira identidade é preservada como evidência. Ao cobrir <code>totalRecords</code>, a coleta pode terminar mesmo quando <code>totalPages</code> anuncia páginas excedentes, registrando a inconsistência. O esquema de entrada usa <code>period=ALL&amp;page-size=1000&amp;page=N</code>.</p>
+<p>Push na <code>main</code> e execução manual sem atualização de dados republicam o estado aprovado. No bootstrap sem estado, o processo pode realizar a coleta inicial. O grupo de concorrência remoto impede sobreposição entre estado e publicação.</p>
+<div class="section-sources">Referências: <a href="#ref-collect">src/admin_metrics/collect.py</a> <a href="#ref-analysis">src/admin_metrics/analysis.py</a> <a href="#ref-pipeline">src/admin_metrics/pipeline.py</a> <a href="#ref-cloud">scripts/cloud_pipeline.py</a> <a href="#ref-workflow">.github/workflows/pages.yml</a></div></div></details>
+<details class="doc-section" id="regras" open><summary class="section-heading"><span class="number">07</span><h2>Regras funcionais e cálculos</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>As regras transformam métricas declaradas em sinais de triagem. A interpretação depende do volume, da validade dos campos e da comparabilidade temporal.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Cálculo e elegibilidade</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Taxa de erro</td>
+<td><code>100 × errors / calls</code>, com chamadas positivas e erro válido ≤ chamadas</td>
+<td>100 erros / 1.000 chamadas = 10%</td>
+</tr>
+<tr>
+<td>Taxa de rejeição</td>
+<td>Mesma lógica, usando rejeições e seu próprio denominador elegível</td>
+<td>Rejeição ausente não vira zero</td>
+</tr>
+<tr>
+<td>Taxa agregada</td>
+<td>Soma dos numeradores elegíveis / soma dos denominadores correspondentes</td>
+<td>Não fazer média simples das taxas por endpoint</td>
+</tr>
+<tr>
+<td>Média ponderada</td>
+<td><code>Σ(mean_ms × calls) / Σ(calls)</code>; ambas positivas</td>
+<td>Preserva peso do volume, sem produzir p95</td>
+</tr>
+<tr>
+<td>Delta</td>
+<td>Diferença entre contadores comparáveis de duas observações</td>
+<td>1.100 − 1.000 = 100 chamadas no intervalo aceito</td>
+</tr>
+</tbody></table></div>
+<h3>Limiares configurados</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sinal</th>
+<th>Atenção</th>
+<th>Crítico / observação</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Erro</td>
+<td>≥5%, com ≥100 chamadas</td>
+<td>≥20%, com ≥1.000 chamadas</td>
+</tr>
+<tr>
+<td>Rejeição</td>
+<td>≥5%, com ≥100 chamadas</td>
+<td>Não há limiar crítico próprio de rejeição</td>
+</tr>
+<tr>
+<td>Média de resposta</td>
+<td>≥2.000 ms, com ≥100 chamadas</td>
+<td>≥4.000 ms, com ≥100 chamadas</td>
+</tr>
+<tr>
+<td>Regressão de média</td>
+<td>≥2× a mediana de pelo menos 3 médias diárias anteriores positivas</td>
+<td>Pode ocorrer abaixo de 2.000 ms</td>
+</tr>
+<tr>
+<td>Recorrência contextual</td>
+<td>Pelo menos 3 dias anteriores com erro ≥5% e ≥100 chamadas/dia</td>
+<td>Contexto declarado, não novas coletas retroativas</td>
+</tr>
+<tr>
+<td>Falha da coleta Admin</td>
+<td>Primeira falha observada</td>
+<td>Segunda falha consecutiva</td>
+</tr>
+</tbody></table></div>
+<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 129" role="img" aria-label="Limiares da média de resposta declarada" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px"><text x="206" y="31" text-anchor="end" fill="#314c5e">Atenção</text><rect x="220" y="16" width="540" height="23" rx="4" fill="#e8eff3"/><rect x="220" y="16" width="270" height="23" rx="4" fill="#087f8c"/><text x="774" y="32" fill="#172b3c" font-weight="600">2.000</text><text x="206" y="73" text-anchor="end" fill="#314c5e">Crítico</text><rect x="220" y="58" width="540" height="23" rx="4" fill="#e8eff3"/><rect x="220" y="58" width="540" height="23" rx="4" fill="#087f8c"/><text x="774" y="74" fill="#172b3c" font-weight="600">4.000</text><text x="220" y="126" fill="#526778" font-size="12">0 · milissegundos · escala linear</text></svg><figcaption><strong>Limiares da média de resposta declarada</strong> · config/rules.json · requer ao menos 100 chamadas</figcaption><details><summary>Dados do gráfico</summary><div class="table-wrap"><table><thead><tr><th>Categoria</th><th>milissegundos</th></tr></thead><tbody><tr><td>Atenção</td><td>2.000</td></tr><tr><td>Crítico</td><td>4.000</td></tr></tbody></table></div></details></figure><h3>Exemplos de interpretação</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Situação</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>100 chamadas e 30 erros</td>
+<td>30%; atenção, pois não atinge as 1.000 chamadas exigidas para crítico</td>
+</tr>
+<tr>
+<td>1.000 chamadas e 250 erros</td>
+<td>25%; crítico, inicialmente provisório</td>
+</tr>
+<tr>
+<td>10 chamadas e 5 erros</td>
+<td>A taxa é 50%, mas o mínimo de 100 chamadas impede o sinal de incidente</td>
+</tr>
+<tr>
+<td>Antes 1.000/100; depois 1.100/101</td>
+<td>Delta elegível: 100 chamadas e 1 erro, taxa de 1%</td>
+</tr>
+<tr>
+<td>Métricas iguais, só <code>requestTime</code> mudou</td>
+<td>Não inferir tráfego novo no intervalo</td>
+</tr>
+<tr>
+<td>Origem falha depois de sinal elevado</td>
+<td>A ausência de dados não comprova recuperação</td>
+</tr>
+</tbody></table></div>
+<h3>Tempo, validade e panorama</h3>
+<p>O instante UTC de aquisição identifica nossa observação. O dia analítico vem do cabeçalho HTTP <code>Date</code>, convertido para <code>America/Sao_Paulo</code>, ou da aquisição quando o cabeçalho não pode ser interpretado. Isso não comprova o fuso de consolidação do banco. Capturas cujas páginas cruzam o dia ficam incompletas.</p>
+<p>Os deltas exigem mesma entidade, mesmo dia, tempo crescente, fontes completas e contadores válidos e não decrescentes. Reset/revisão e deltas incoerentes suspendem a comparação pertinente. Não existe média de latência intervalar inferida.</p>
+<p>Os marts atuais filtram <code>fresh AND source_complete</code>. O panorama usa um único ciclo completo e dia comum por recorte. Assim, pode preservar um ciclo anterior enquanto a saúde continua descrevendo a tentativa atual. Não soma silenciosamente fontes de dias ou ciclos diferentes.</p>
+<details>
+<summary>Campos inválidos e ausências</summary><p>Inteiros fora do contrato, negativos, booleanos ou incompatíveis tornam-se nulos e são sinalizados. Erros/rejeições acima das chamadas não participam das taxas correspondentes. Uptime é uma razão entre 0 e 1; a interface exibe percentual. Flags registram também inconsistências de horário, arrays anteriores, TPS e disponibilidade. O JSON de saída não admite NaN/Infinity.</p>
+</details><div class="section-sources">Referências: <a href="#ref-rules">config/rules.json</a> <a href="#ref-analysis">src/admin_metrics/analysis.py</a> <a href="#ref-marts">src/admin_metrics/marts.sql</a> <a href="#ref-panorama">src/admin_metrics/panorama.py</a></div></div></details>
+<details class="doc-section" id="situacoes" open><summary class="section-heading"><span class="number">08</span><h2>Situações, incidentes e continuidade</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>Há três dimensões de leitura: saúde da coleta, atualidade das métricas e situação de cada incidente. Um workflow concluído não significa que todas as fontes retornaram dados válidos.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Dimensão</th>
+<th>Estados / leitura</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Saúde da coleta</td>
+<td><code>healthy</code>, <code>partial</code>, <code>unavailable</code></td>
+</tr>
+<tr>
+<td>Resultado por fonte</td>
+<td>Válido, vazio, falha HTTP, transporte ou reporte inválido</td>
+</tr>
+<tr>
+<td>Métricas do panorama</td>
+<td>Ciclo atual ou último ciclo completo preservado</td>
+</tr>
+<tr>
+<td>Incidente</td>
+<td>Aberto, em recuperação, resolvido; confirmação é uma dimensão adicional</td>
+</tr>
+</tbody></table></div>
+<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 648.8580000000002 266.1" width="648.8580000000002" height="266.1" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:746.1867000000001px;min-width:672px;max-width:100%" role="img" aria-label="Ciclo de uma ocorr&#xea;ncia de incidente" data-natural-width="746.1867000000001">
+<style>
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="diagram-4-arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+  <marker id="diagram-4-arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<polyline class="edge" data-from="_start" data-to="Aberto" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sinal detectado" points="549.096,54.45 549.0960000000001,143.2 487.823,143.2 487.823,148.20000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-4-arrowhead)"/>
+<polyline class="edge" data-from="Aberto" data-to="Aberto" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sinal permanece" points="426.35,160.50000000000003 416.35,160.50000000000003 416.35,172.80000000000004 426.35,172.80000000000004" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-4-arrowhead)"/>
+<polyline class="edge" data-from="Aberto" data-to="Recuperando" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Amostra avali&#xe1;vel abaixo do limiar" points="446.841,148.20000000000002 446.841,155.5 342.6780000000001,155.5 342.6780000000001,63.35000000000001" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-4-arrowhead)"/>
+<polyline class="edge" data-from="Recuperando" data-to="Resolvido" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Duas amostras consecutivas de recupera&#xe7;&#xe3;o" points="311.8130000000001,63.35000000000001 311.8130000000001,70.90000000000003 134.5,70.90000000000003 134.5,148.20000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-4-arrowhead)"/>
+<polyline class="edge" data-from="Recuperando" data-to="Aberto" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sinal volta" points="373.5430000000001,63.35000000000001 373.5430000000001,84.9 467.3320000000001,84.9 467.332,148.20000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-4-arrowhead)"/>
+<polyline class="edge" data-from="Resolvido" data-to="_end" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="134.5,185.1 134.5,216.10000000000002" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-4-arrowhead)"/>
+<g class="edge-label" data-from="_start" data-to="Aberto" data-label="Sinal detectado">
+  <rect x="504.0960000000002" y="91.9" width="89.524" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="548.8580000000002" y="107.05000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sinal detectado</text>
+</g>
+<g class="edge-label" data-from="Aberto" data-to="Aberto" data-label="Sinal permanece">
+  <rect x="321.698" y="158.5" width="96.652" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="370.024" y="173.65" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sinal permanece</text>
+</g>
+<g class="edge-label" data-from="Aberto" data-to="Recuperando" data-label="Amostra avali&#xe1;vel abaixo do limiar">
+  <rect x="254.67800000000005" y="91.9" width="175.654" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="342.50500000000005" y="107.05000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Amostra avali&#xe1;vel abaixo do limiar</text>
+</g>
+<g class="edge-label" data-from="Recuperando" data-to="Resolvido" data-label="Duas amostras consecutivas de recupera&#xe7;&#xe3;o">
+  <rect x="18" y="77.90000000000003" width="232.67800000000005" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="134.33900000000003" y="93.05000000000004" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Duas amostras consecutivas de recupera&#xe7;&#xe3;o</text>
+</g>
+<g class="edge-label" data-from="Recuperando" data-to="Aberto" data-label="Sinal volta">
+  <rect x="434.3320000000001" y="91.9" width="65.76400000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="467.2140000000001" y="107.05000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sinal volta</text>
+</g>
+<g class="node" data-id="_start" data-label="" data-shape="state-start">
+  <circle cx="549.096" cy="40.45" r="12" fill="var(--_text)" stroke="none"/>
+</g>
+<g class="node" data-id="Aberto" data-label="Aberto" data-shape="rounded">
+  <rect x="426.35" y="148.20000000000002" width="81.964" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="467.332" y="166.65000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Aberto</text>
+</g>
+<g class="node" data-id="Recuperando" data-label="Recuperando" data-shape="rounded">
+  <rect x="280.9480000000001" y="26.450000000000003" width="123.46" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="342.6780000000001" y="44.900000000000006" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Recuperando</text>
+</g>
+<g class="node" data-id="Resolvido" data-label="Resolvido" data-shape="rounded">
+  <rect x="83.88499999999999" y="148.20000000000002" width="101.22999999999999" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="134.5" y="166.65000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Resolvido</text>
+</g>
+<g class="node" data-id="_end" data-label="" data-shape="state-end">
+  <circle cx="134.5" cy="230.10000000000002" r="12" fill="none" stroke="var(--_text)" stroke-width="1.5"/>
+  <circle cx="134.5" cy="230.10000000000002" r="8" fill="var(--_text)" stroke="none"/>
+</g>
+</svg></div><figcaption>Ciclo de uma ocorrência de incidente</figcaption></figure><p>A segunda detecção consecutiva confirma persistência. Isso pode ocorrer sobre um acumulado que não mudou; não comprova erros novos entre os ciclos. Após resolução, uma nova detecção abre outra ocorrência, com identidade própria.</p>
+<p>Amostras desconhecidas, inválidas ou insuficientes não resolvem a regra afetada e interrompem a sequência de recuperação. A falta de um endpoint em um reporte completo também não o declara saudável. Reset de contadores suspende regras dependentes desses contadores; latência pode continuar avaliável quando seus próprios campos e volume são válidos.</p>
+<h3>Por que manter valores anteriores?</h3>
+<p>Sem continuidade, uma falha de consulta poderia apagar o contexto necessário à análise. O sistema conserva a última captura boa por fonte e um panorama coerente por recorte, identificando o que é anterior. Valores preservados não são inseridos como novos pontos no histórico. Sem um panorama elegível na retenção, as métricas ficam indisponíveis.</p>
+<details>
+<summary>Estados da comparação entre observações</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th><code>interval_state</code></th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>first_observation</code></td>
+<td>Sem observação anterior retida</td>
+</tr>
+<tr>
+<td><code>observation_time_not_increasing</code></td>
+<td>Instantes sem progressão temporal</td>
+</tr>
+<tr>
+<td><code>day_changed</code></td>
+<td>Mudou o dia analítico</td>
+</tr>
+<tr>
+<td><code>incomplete_source</code></td>
+<td>Uma fonte da comparação está incompleta</td>
+</tr>
+<tr>
+<td><code>unchanged_report</code></td>
+<td>O fingerprint analítico não mudou</td>
+</tr>
+<tr>
+<td><code>invalid_counter</code></td>
+<td>Contador inválido ou numerador acima de chamadas</td>
+</tr>
+<tr>
+<td><code>counter_reset_or_revision</code></td>
+<td>Um contador diminuiu</td>
+</tr>
+<tr>
+<td><code>inconsistent_delta</code></td>
+<td>Diferenças incompatíveis, como erro delta acima de chamadas delta</td>
+</tr>
+<tr>
+<td><code>valid</code></td>
+<td>Diferenças aceitas; uma taxa ainda exige denominador positivo</td>
+</tr>
+</tbody></table></div>
+<p>Os estados específicos de erro e rejeição preservam a elegibilidade de cada numerador. Uma falha num campo não deve ser interpretada como invalidade automática de todas as métricas.</p>
+</details><div class="section-sources">Referências: <a href="#ref-analysis">src/admin_metrics/analysis.py</a> <a href="#ref-health">src/admin_metrics/health.py</a> <a href="#ref-panorama">src/admin_metrics/panorama.py</a></div></div></details>
+<details class="doc-section" id="modelo" open><summary class="section-heading"><span class="number">09</span><h2>Modelo e relacionamento dos dados</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>O projeto mantém um estado JSON e produz uma projeção tabular para análise. O diagrama abaixo mostra identidades e relações lógicas entre estruturas; os rótulos PK indicam identidade no modelo, sem afirmar a existência de restrições SQL no JSON.</p>
+<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 670.8299999999999 262" width="670.8299999999999" height="262" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:905.6205px;min-width:815px;max-width:100%" role="img" aria-label="Identidade l&#xf3;gica da execu&#xe7;&#xe3;o e dos reportes" data-natural-width="905.6205">
+<style>
+  
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  .mono { font-family: &apos;JetBrains Mono&apos;, &apos;SF Mono&apos;, &apos;Fira Code&apos;, ui-monospace, monospace; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+</defs>
+<polyline class="er-relationship" data-entity1="CATALOGO" data-entity2="REPORTE_EXECUCAO" data-cardinality1="one" data-cardinality2="zero-many" data-identifying="true" data-label="identifica" points="219.79999999999998,194 371.03,194 371.03,94 451.03,94" fill="none" stroke="var(--_line)" stroke-width="1"/>
+<polyline class="er-relationship" data-entity1="EXECUCAO" data-entity2="REPORTE_EXECUCAO" data-cardinality1="one" data-cardinality2="zero-many" data-identifying="true" data-label="contem" points="219.79999999999998,68 451.03,68" fill="none" stroke="var(--_line)" stroke-width="1"/>
+<g class="entity" data-id="CATALOGO" data-label="CATALOGO">
+  <rect x="40" y="166" width="179.79999999999998" height="56" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <rect x="40" y="166" width="179.79999999999998" height="34" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <text x="129.89999999999998" y="183" text-anchor="middle" font-size="13" font-weight="700" fill="var(--_text)" dy="4.55">CATALOGO</text>
+  <line x1="40" y1="200" x2="219.79999999999998" y2="200" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <rect x="46" y="204" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="57.155" y="211" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="76.31" y="211" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="211.79999999999998" y="211" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">reporter_id</tspan></text>
+</g>
+<g class="entity" data-id="REPORTE_EXECUCAO" data-label="REPORTE_EXECUCAO">
+  <rect x="451.03" y="42" width="179.79999999999998" height="78" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <rect x="451.03" y="42" width="179.79999999999998" height="34" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <text x="540.93" y="59" text-anchor="middle" font-size="13" font-weight="700" fill="var(--_text)" dy="4.55">REPORTE_EXECUCAO</text>
+  <line x1="451.03" y1="76" x2="630.8299999999999" y2="76" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <rect x="457.03" y="80" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="468.18499999999995" y="87" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="487.34" y="87" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="622.8299999999999" y="87" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">run_id</tspan></text>
+  <rect x="457.03" y="102" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="468.18499999999995" y="109" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="487.34" y="109" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="622.8299999999999" y="109" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">reporter_id</tspan></text>
+</g>
+<g class="entity" data-id="EXECUCAO" data-label="EXECUCAO">
+  <rect x="72.99999999999997" y="40" width="146.8" height="56" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <rect x="72.99999999999997" y="40" width="146.8" height="34" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <text x="146.39999999999998" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="var(--_text)" dy="4.55">EXECUCAO</text>
+  <line x1="72.99999999999997" y1="74" x2="219.79999999999998" y2="74" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <rect x="78.99999999999997" y="78" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="90.15499999999997" y="85" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="109.30999999999997" y="85" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="211.79999999999998" y="85" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">run_id</tspan></text>
+</g>
+<line x1="223.79999999999998" y1="188" x2="223.79999999999998" y2="200" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="227.79999999999998" y1="188" x2="227.79999999999998" y2="200" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="447.03" y1="101" x2="435.03" y2="94" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="447.03" y1="94" x2="435.03" y2="94" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="447.03" y1="87" x2="435.03" y2="94" stroke="var(--_line)" stroke-width="1.25"/>
+<circle cx="431.03" cy="94" r="4" fill="var(--bg)" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="223.79999999999998" y1="62" x2="223.79999999999998" y2="74" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="227.79999999999998" y1="62" x2="227.79999999999998" y2="74" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="447.03" y1="75" x2="435.03" y2="68" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="447.03" y1="68" x2="435.03" y2="68" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="447.03" y1="61" x2="435.03" y2="68" stroke="var(--_line)" stroke-width="1.25"/>
+<circle cx="431.03" cy="68" r="4" fill="var(--bg)" stroke="var(--_line)" stroke-width="1.25"/>
+<rect x="345.41499999999996" y="169.46499999999997" width="51.23000000000001" height="20.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5"/>
+<text x="371.03" y="179.61499999999998" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">identifica</text>
+<rect x="313.95799999999997" y="57.85" width="42.91400000000001" height="20.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5"/>
+<text x="335.41499999999996" y="68" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">contem</text>
+</svg></div><figcaption>Identidade lógica da execução e dos reportes</figcaption></figure><figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650.502 180" width="650.502" height="180" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:878.1777px;min-width:790px;max-width:100%" role="img" aria-label="Cada reporte da execu&#xe7;&#xe3;o pode produzir v&#xe1;rias observa&#xe7;&#xf5;es" data-natural-width="878.1777">
+<style>
+  
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  .mono { font-family: &apos;JetBrains Mono&apos;, &apos;SF Mono&apos;, &apos;Fira Code&apos;, ui-monospace, monospace; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+</defs>
+<polyline class="er-relationship" data-entity1="REPORTE_EXECUCAO" data-entity2="OBSERVACAO" data-cardinality1="one" data-cardinality2="zero-many" data-identifying="true" data-label="produz" points="219.79999999999998,90 443.90199999999993,90" fill="none" stroke="var(--_line)" stroke-width="1"/>
+<g class="entity" data-id="REPORTE_EXECUCAO" data-label="REPORTE_EXECUCAO">
+  <rect x="40" y="51" width="179.79999999999998" height="78" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <rect x="40" y="51" width="179.79999999999998" height="34" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <text x="129.89999999999998" y="68" text-anchor="middle" font-size="13" font-weight="700" fill="var(--_text)" dy="4.55">REPORTE_EXECUCAO</text>
+  <line x1="40" y1="85" x2="219.79999999999998" y2="85" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <rect x="46" y="89" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="57.155" y="96" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="76.31" y="96" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="211.79999999999998" y="96" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">run_id</tspan></text>
+  <rect x="46" y="111" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="57.155" y="118" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="76.31" y="118" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="211.79999999999998" y="118" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">reporter_id</tspan></text>
+</g>
+<g class="entity" data-id="OBSERVACAO" data-label="OBSERVACAO">
+  <rect x="443.90199999999993" y="40" width="166.6" height="100" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <rect x="443.90199999999993" y="40" width="166.6" height="34" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1"/>
+  <text x="527.2019999999999" y="57" text-anchor="middle" font-size="13" font-weight="700" fill="var(--_text)" dy="4.55">OBSERVACAO</text>
+  <line x1="443.90199999999993" y1="74" x2="610.502" y2="74" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <rect x="449.90199999999993" y="78" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="461.0569999999999" y="85" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="480.21199999999993" y="85" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="602.502" y="85" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">run_id</tspan></text>
+  <rect x="449.90199999999993" y="100" width="22.31" height="14" rx="2" ry="2" fill="var(--_key-badge)"/>
+  <text x="461.0569999999999" y="107" text-anchor="middle" dy="0.35em" font-size="9" font-weight="600" fill="var(--_text-sec)">PK</text>
+  <text x="480.21199999999993" y="107" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="602.502" y="107" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">entity_id</tspan></text>
+  <text x="451.90199999999993" y="129" class="mono" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-muted)">string</tspan></text>
+  <text x="602.502" y="129" class="mono" text-anchor="end" dy="0.35em" font-size="11" font-weight="400"><tspan fill="var(--_text-sec)">reporter_id</tspan></text>
+</g>
+<line x1="223.79999999999998" y1="84" x2="223.79999999999998" y2="96" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="227.79999999999998" y1="84" x2="227.79999999999998" y2="96" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="439.90199999999993" y1="97" x2="427.90199999999993" y2="90" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="439.90199999999993" y1="90" x2="427.90199999999993" y2="90" stroke="var(--_line)" stroke-width="1.25"/>
+<line x1="439.90199999999993" y1="83" x2="427.90199999999993" y2="90" stroke="var(--_line)" stroke-width="1.25"/>
+<circle cx="423.90199999999993" cy="90" r="4" fill="var(--bg)" stroke="var(--_line)" stroke-width="1.25"/>
+<rect x="309.79999999999995" y="79.85" width="44.102" height="20.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5"/>
+<text x="331.85099999999994" y="90" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">produz</text>
+</svg></div><figcaption>Cada reporte da execução pode produzir várias observações</figcaption></figure><p>Uma execução pode ter reportes sem observações quando a coleta não produz linhas. <code>entity_id</code> deriva de <code>reporter_id + endpoint</code>, via SHA-256 truncado a 24 caracteres. <code>REPORTE_EXECUCAO</code> no desenho corresponde conceitualmente a <code>runs[].reports[]</code>, não a uma tabela física separada.</p>
+<h3>Objetos persistidos e derivados</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Objeto</th>
+<th>Uma linha / objeto representa</th>
+<th>Escrita e uso</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>state.json → runs[]</code></td>
+<td>Uma execução, com reportes e tentativas</td>
+<td>Estado persistido, inclusive falhas; retenção por execução</td>
+</tr>
+<tr>
+<td><code>state.json → observations[]</code></td>
+<td>Execução × entidade reportada</td>
+<td>Histórico normalizado de até 30 dias</td>
+</tr>
+<tr>
+<td><code>state.json → latest_rows[]</code></td>
+<td>Último contexto por entidade de cada fonte</td>
+<td>Captura completa nova substitui o conjunto da fonte</td>
+</tr>
+<tr>
+<td><code>state.json → incidents[]</code></td>
+<td>Ocorrência de uma regra para uma entidade</td>
+<td>Abertura, detecção, recuperação e resolução</td>
+</tr>
+<tr>
+<td><code>bronze/&lt;sha&gt;.json</code></td>
+<td>Corpo exato de uma resposta HTTP</td>
+<td>Endereçado pelo hash; retenção em ciclos</td>
+</tr>
+<tr>
+<td><code>current_rows</code></td>
+<td>Projeção tipada do último contexto por entidade</td>
+<td>Tabela DuckDB e Parquet reconstruídos no build</td>
+</tr>
+<tr>
+<td><code>observations</code></td>
+<td>Projeção tipada de execução × entidade</td>
+<td>Tabela DuckDB e Parquet reconstruídos no build</td>
+</tr>
+<tr>
+<td><code>report_summary</code></td>
+<td>Reporte com linhas atuais completas</td>
+<td>Agregação SQL e Parquet</td>
+</tr>
+<tr>
+<td><code>family_summary</code></td>
+<td>Família com linhas atuais completas</td>
+<td>Agregação SQL e Parquet</td>
+</tr>
+<tr>
+<td><code>observation_trends</code></td>
+<td>Execução × instante da fonte × reporte</td>
+<td>Agregação SQL e Parquet; acumulados não aditivos entre runs</td>
+</tr>
+</tbody></table></div>
+<p><code>reported_history</code> e <code>intervals</code> não são tabelas físicas independentes. O primeiro deriva dos arrays anteriores; os intervalos aparecem em campos da observação/payload. O bronze é relacionado por <code>source_sha</code>; as ocorrências têm identidade própria, incluindo o run de abertura, para preservar reaberturas.</p>
+<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 582.248 389.3" width="582.248" height="389.3" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:669.5852px;min-width:603px;max-width:100%" role="img" aria-label="Linhagem das proje&#xe7;&#xf5;es e agrega&#xe7;&#xf5;es tabulares" data-natural-width="669.5852">
+<style>
+  
+  text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="diagram-7-arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+  <marker id="diagram-7-arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<polyline class="edge" data-from="S" data-to="C" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="latest_rows" points="285.9901666666667,72.9 285.9901666666667,98.9 206.22,98.9 206.22,162.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-7-arrowhead)"/>
+<polyline class="edge" data-from="S" data-to="O" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="observations" points="326.40250000000003,72.9 326.40250000000003,84.9 480.31600000000003,84.9 480.31600000000003,162.2" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-7-arrowhead)"/>
+<polyline class="edge" data-from="C" data-to="R" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Atual e completa, agrupa por reporte" points="185.64333333333335,213.10000000000002 185.64333333333335,246.10000000000002 111.5,246.10000000000002 111.50000000000001,309.40000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-7-arrowhead)"/>
+<polyline class="edge" data-from="C" data-to="F" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Atual e completa, agrupa por fam&#xed;lia" points="226.79666666666668,213.10000000000002 226.79666666666668,246.10000000000002 300.94000000000005,246.10000000000002 300.94000000000005,309.40000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-7-arrowhead)"/>
+<polyline class="edge" data-from="O" data-to="T" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Completa, agrupa por run e fonte" points="480.31600000000003,213.10000000000002 480.31600000000003,309.40000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#diagram-7-arrowhead)"/>
+<g class="edge-label" data-from="S" data-to="C" data-label="latest_rows">
+  <rect x="169.72" y="105.9" width="72.298" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="205.869" y="121.05000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">latest_rows</text>
+</g>
+<g class="edge-label" data-from="S" data-to="O" data-label="observations">
+  <rect x="439.81600000000003" y="91.9" width="80.61400000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="480.12300000000005" y="107.05000000000001" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">observations</text>
+</g>
+<g class="edge-label" data-from="C" data-to="R" data-label="Atual e completa, agrupa por reporte">
+  <rect x="18" y="253.1" width="186.94000000000005" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="111.47000000000003" y="268.25" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Atual e completa, agrupa por reporte</text>
+</g>
+<g class="edge-label" data-from="C" data-to="F" data-label="Atual e completa, agrupa por fam&#xed;lia">
+  <rect x="208.94000000000005" y="253.1" width="183.376" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="300.62800000000004" y="268.25" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Atual e completa, agrupa por fam&#xed;lia</text>
+</g>
+<g class="edge-label" data-from="O" data-to="T" data-label="Completa, agrupa por run e fonte">
+  <rect x="396.31600000000003" y="239.10000000000002" width="167.93200000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1"/>
+  <text x="480.28200000000004" y="254.25000000000003" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Completa, agrupa por run e fonte</text>
+</g>
+<g class="node" data-id="S" data-label="Estado JSON" data-shape="cylinder">
+  <rect x="245.57783333333336" y="29" width="121.23699999999998" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="245.57783333333336" y1="29" x2="245.57783333333336" y2="65.9" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="366.81483333333335" y1="29" x2="366.81483333333335" y2="65.9" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="306.19633333333337" cy="65.9" rx="60.61849999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="306.19633333333337" cy="29" rx="60.61849999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="306.19633333333337" y="47.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Estado JSON</text>
+</g>
+<g class="node" data-id="C" data-label="current_rows" data-shape="cylinder">
+  <rect x="144.49" y="169.2" width="123.46" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="144.49" y1="169.2" x2="144.49" y2="206.1" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="267.95" y1="169.2" x2="267.95" y2="206.1" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="206.22" cy="206.1" rx="61.73" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="206.22" cy="169.2" rx="61.73" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="206.22" y="187.64999999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">current_rows</text>
+</g>
+<g class="node" data-id="O" data-label="observations" data-shape="cylinder">
+  <rect x="420.06800000000004" y="169.2" width="120.49600000000001" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="420.06800000000004" y1="169.2" x2="420.06800000000004" y2="206.1" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="540.5640000000001" y1="169.2" x2="540.5640000000001" y2="206.1" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="480.31600000000003" cy="206.1" rx="60.248000000000005" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="480.31600000000003" cy="169.2" rx="60.248000000000005" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="480.31600000000003" y="187.64999999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">observations</text>
+</g>
+<g class="node" data-id="R" data-label="report_summary" data-shape="cylinder">
+  <rect x="41.619000000000014" y="316.40000000000003" width="139.762" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="41.619000000000014" y1="316.40000000000003" x2="41.619000000000014" y2="353.30000000000007" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="181.38100000000003" y1="316.40000000000003" x2="181.38100000000003" y2="353.30000000000007" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="111.50000000000001" cy="353.30000000000007" rx="69.881" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="111.50000000000001" cy="316.40000000000003" rx="69.881" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="111.50000000000001" y="334.85" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">report_summary</text>
+</g>
+<g class="node" data-id="F" data-label="family_summary" data-shape="cylinder">
+  <rect x="233.28200000000004" y="316.40000000000003" width="135.31599999999997" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="233.28200000000004" y1="316.40000000000003" x2="233.28200000000004" y2="353.30000000000007" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="368.598" y1="316.40000000000003" x2="368.598" y2="353.30000000000007" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="300.94000000000005" cy="353.30000000000007" rx="67.65799999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="300.94000000000005" cy="316.40000000000003" rx="67.65799999999999" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="300.94000000000005" y="334.85" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">family_summary</text>
+</g>
+<g class="node" data-id="T" data-label="observation_trends" data-shape="cylinder">
+  <rect x="400.802" y="316.40000000000003" width="159.02800000000002" height="36.900000000000006" fill="var(--_node-fill)" stroke="none"/>
+  <line x1="400.802" y1="316.40000000000003" x2="400.802" y2="353.30000000000007" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <line x1="559.83" y1="316.40000000000003" x2="559.83" y2="353.30000000000007" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="480.31600000000003" cy="353.30000000000007" rx="79.51400000000001" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <ellipse cx="480.31600000000003" cy="316.40000000000003" rx="79.51400000000001" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75"/>
+  <text x="480.31600000000003" y="334.85" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">observation_trends</text>
+</g>
+</svg></div><figcaption>Linhagem das projeções e agregações tabulares</figcaption></figure><p>As setas deste segundo desenho indicam derivação, não FK. <code>current_rows</code> e <code>observations</code> compartilham o schema Arrow de 18 campos. Na tabela histórica, <code>fresh</code> fica nulo; seu significado útil é no contexto atual. O build recria o warehouse e os cinco arquivos Parquet, sem particionamento em diretórios definido nesse caminho.</p>
+<p>Os tipos e significados dos campos estão no <a href="#dicionario">dicionário</a>. As chaves de consulta e agregação devem respeitar o grão descrito acima.</p>
+<div class="section-sources">Referências: <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-marts">src/admin_metrics/marts.sql</a> <a href="#ref-documentation">src/admin_metrics/documentation.py</a> <a href="#ref-storage">src/admin_metrics/storage.py</a></div></div></details>
+<details class="doc-section" id="consultas" open><summary class="section-heading"><span class="number">10</span><h2>Como consultar os dados</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>Para análises locais, use <code>data/warehouse.duckdb</code> ou os Parquets do diretório definido por <code>--root</code>. Eles são gerados pelo build. Os exemplos usam SQL DuckDB e os nomes reais dos objetos do projeto.</p>
+<div class="cards">
+<div class="card"><h3>Filtre a atualidade</h3><p>Em current_rows, fresh e source_complete delimitam as linhas elegíveis do ciclo atual.</p></div>
+<div class="card"><h3>Respeite os acumulados</h3><p>Chamadas e erros do dia se repetem entre observações. Não some snapshots de horários diferentes.</p></div>
+<div class="card"><h3>Preserve denominadores</h3><p>Agregue erros válidos junto às chamadas correspondentes. Não calcule média simples dos percentuais.</p></div>
+</div><h3>1 · Reportes com mais erros no ciclo atual</h3>
+<p><code>report_summary</code> já aplica o filtro de atualidade e completude e calcula as taxas com linhas elegíveis.</p>
+<pre><code class="language-sql">SELECT reporter, endpoints, calls, errors, error_pct, mean_ms
+FROM report_summary
+ORDER BY errors DESC NULLS LAST;</code></pre><p>Os totais brutos e o denominador elegível da taxa têm semânticas distintas quando existem campos inválidos. Não recalcule <code>error_pct</code> dividindo indiscriminadamente os totais apresentados.</p>
+<h3>2 · Taxa ponderada por família</h3>
+<p>Este exemplo aplica a mesma elegibilidade do cálculo de erro. A soma de denominadores acompanha exatamente as linhas com numerador válido.</p>
+<pre><code class="language-sql">SELECT family,
+       SUM(errors) FILTER (WHERE calls &gt; 0 AND errors &lt;= calls)
+         AS erros_elegiveis,
+       SUM(calls) FILTER (WHERE calls &gt; 0 AND errors &lt;= calls)
+         AS chamadas_elegiveis,
+       100.0 * SUM(errors) FILTER (WHERE calls &gt; 0 AND errors &lt;= calls)
+         / NULLIF(SUM(calls) FILTER (WHERE calls &gt; 0 AND errors &lt;= calls), 0)
+         AS taxa_erro_pct
+FROM current_rows
+WHERE fresh AND source_complete
+GROUP BY family
+ORDER BY erros_elegiveis DESC NULLS LAST;</code></pre><h3>3 · Histórico observado de uma entidade</h3>
+<p>Substitua os parâmetros por uma fonte e um endpoint existentes. Mantenha cada observação separada para comparar instantes.</p>
+<pre><code class="language-sql">SELECT run_id, observed_at, day, calls, errors, error_pct, mean_ms,
+       source_complete
+FROM observations
+WHERE reporter_id = '&lt;reporter_id&gt;'
+  AND endpoint = '&lt;endpoint&gt;'
+ORDER BY observed_at;</code></pre><h3>4 · Consultar diretamente um Parquet</h3>
+<p>Execute a partir da raiz do projeto ou ajuste o caminho para seu diretório de dados. <code>report_summary.parquet</code> contém a mesma projeção exportada no build.</p>
+<pre><code class="language-sql">SELECT reporter, calls, error_pct, mean_ms
+FROM read_parquet('data/report_summary.parquet')
+ORDER BY calls DESC NULLS LAST;</code></pre><p>Para interpretar incidentes, tentativas ou deltas completos, consulte o estado/payload: esses campos não fazem parte dos cinco Parquets em sua totalidade. A projeção tabular e o JSON têm contratos diferentes.</p>
+<div class="section-sources">Referências: <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-marts">src/admin_metrics/marts.sql</a> <a href="#ref-documentation">src/admin_metrics/documentation.py</a></div></div></details>
+<details class="doc-section" id="execucao" open><summary class="section-heading"><span class="number">11</span><h2>Como executar</h2><span class="audience operations">Operação</span></summary><div class="section-body"><p>Os comandos abaixo são procedimentos documentados. Execute-os a partir da pasta <code>admin-metrics</code>, em um ambiente com Python 3.11 ou 3.12 de 64 bits. <code>collect</code> consulta as fontes; <code>build</code> reconstrói os artefatos sem acrescentar observação.</p>
+<h3>Preparar o ambiente no Windows</h3>
+<pre><code class="language-powershell">python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.lock
+.\.venv\Scripts\python.exe -m pip install --no-deps -e .</code></pre><h3>Coletar ou reconstruir</h3>
+<pre><code class="language-powershell"># Nova coleta: consulta somente os Admins do catálogo.
+.\.venv\Scripts\python.exe -m admin_metrics.cli collect --root data --output site --config config
+
+# Reconstruir a partir de um estado existente.
+.\.venv\Scripts\python.exe -m admin_metrics.cli build --root data --output site --config config
+
+# Visualizar o dashboard gerado.
+.\.venv\Scripts\python.exe -m http.server 8766 --bind 127.0.0.1 --directory site</code></pre><p>Abra <code>http://127.0.0.1:8766/</code>. Em Linux/macOS use <code>.venv/bin/python</code> no lugar do executável Windows. Não execute dois escritores no mesmo diretório de estado.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Parâmetro</th>
+<th>Padrão</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--root</code></td>
+<td><code>data</code></td>
+<td>Estado, bronze, warehouse e Parquets</td>
+</tr>
+<tr>
+<td><code>--output</code></td>
+<td><code>site</code></td>
+<td>Dashboard, assets, payload e manual original</td>
+</tr>
+<tr>
+<td><code>--config</code></td>
+<td><code>config</code></td>
+<td>Catálogo e regras</td>
+</tr>
+</tbody></table></div>
+<h3>Executar remotamente</h3>
+<p>No GitHub, abra <strong>Actions → Monitorar Admin e publicar Pages → Run workflow</strong>. <code>refresh_data=true</code> faz nova coleta; desmarcado, republica o estado aprovado. O cron configura o minuto 17 de cada hora UTC, também minuto 17 em Brasília, sem garantir pontualidade do disparo.</p>
+<p>O resultado esperado é uma publicação identificável por <code>run_id</code>, acompanhada da saúde da coleta. Quando há candidata, o job de confirmação verifica o deploy antes de aprovar o estado. A v2 deste documento é um artefato separado; o pipeline existente continua gerando seu manual original.</p>
+<div class="section-sources">Referências: <a href="#ref-cli">src/admin_metrics/cli.py</a> <a href="#ref-workflow">.github/workflows/pages.yml</a> <a href="#ref-operations">docs/operacao.md</a></div></div></details>
+<details class="doc-section" id="operacao" open><summary class="section-heading"><span class="number">12</span><h2>Retenção, reaproveitamento e recuperação</h2><span class="audience operations">Operação</span></summary><div class="section-body"><p>O estado persistido sustenta o histórico e a continuidade. Arquivos analíticos e site são derivados reconstruíveis; respostas brutas têm retenção menor.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Informação</th>
+<th>Retenção / política</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Observações e tentativas</td>
+<td>Até 30 dias de estado normalizado</td>
+</tr>
+<tr>
+<td>Séries e monitor públicos</td>
+<td>Até 72 horas no payload</td>
+</tr>
+<tr>
+<td>Bronze em cada pacote atual</td>
+<td>Dois ciclos recentes</td>
+</tr>
+<tr>
+<td>Releases aprovadas</td>
+<td>Dois pacotes: atual e anterior</td>
+</tr>
+<tr>
+<td>Incidentes abertos</td>
+<td>Mantidos até avaliação conclusiva</td>
+</tr>
+<tr>
+<td>Incidentes resolvidos</td>
+<td>Retidos por 30 dias no estado</td>
+</tr>
+</tbody></table></div>
+<p>A poda temporal ocorre após nova coleta, por execução, não pelo relógio durante um simples rebuild. Cada backup tem sua própria janela; a união de atual/anterior pode conter bronze de três ciclos. Hashes históricos podem permanecer depois que os bytes brutos expiraram.</p>
+<h3>O que é reaproveitado</h3>
+<p>Uma republicação usa o estado aprovado sem criar amostra. Uma falha da fonte preserva a última captura boa como contexto; a nova captura completa substitui o conjunto anterior da fonte. O panorama preservado é escolhido por recorte e não alimenta novos pontos de série.</p>
+<p>O warehouse e os Parquets são reconstruídos a partir do estado durante o build; não há cache incremental de agregados por partição nesse caminho.</p>
+<h3>Recuperação operacional</h3>
+<ol>
+<li>Identifique a execução no dashboard/payload e no Actions. Determine se houve falha de coleta, construção, deploy ou confirmação.</li>
+<li>Para falha de coleta, confira tentativas e recapturas; uma execução nova pode atualizar a observação. Não converta vazio em tráfego zero.</li>
+<li>Para recuperação de estado, escolha uma Release <strong>aprovada e ainda existente</strong> e restaure em um diretório vazio.</li>
+<li>Reconstrua o site com <code>build</code>, revise o resultado e confronte o <code>run_id</code> antes de qualquer mudança remota.</li>
+<li>Se o deploy foi aprovado mas a candidata continua draft, compare o ID público, manifesto e job remoto antes de promover ou descartar.</li>
+</ol>
+<details>
+<summary>Restaurar em diretório separado</summary><p>Requer GitHub CLI autenticado e uma tag aprovada. Substitua o identificador da tag. O procedimento baixa arquivos e cria um ambiente local recuperado; não muda automaticamente o estado atual remoto.</p>
+<pre><code class="language-powershell">$tag = 'state-&lt;workflow_run_id&gt;-&lt;attempt&gt;'
+gh release download $tag --repo alebitencourtx/admin-metrics --pattern state.zip --pattern SHA256SUMS --dir .runtime/recovery-download
+.\.venv\Scripts\python.exe -c "from pathlib import Path; from admin_metrics.archive import restore; p=Path('.runtime/recovery-download'); restore(p/'state.zip',p/'SHA256SUMS',Path('.runtime/recovered-data'))"
+.\.venv\Scripts\python.exe -m admin_metrics.cli build --root .runtime/recovered-data --output .runtime/recovered-site
+.\.venv\Scripts\python.exe -m http.server 8766 --bind 127.0.0.1 --directory .runtime/recovered-site</code></pre><p>Restore verifica checksums, manifesto, referências, nomes e limites de expansão. O helper <code>cloud_pipeline.py restore --tag ...</code> usa <code>data/</code> fixo e <code>GH_REPO</code>; para outro destino use a API de restore acima. Um lock abandonado exige conferir o processo antes de removê-lo.</p>
+</details><p>Pages e Releases não constituem uma transação distribuída. A promoção exige comprovação do job remoto; uma falha de download não deve reiniciar silenciosamente o histórico vazio.</p>
+<div class="section-sources">Referências: <a href="#ref-archive">src/admin_metrics/archive.py</a> <a href="#ref-cloud">scripts/cloud_pipeline.py</a> <a href="#ref-operations">docs/operacao.md</a> <a href="#ref-analysis">src/admin_metrics/analysis.py</a></div></div></details>
+<details class="doc-section" id="decisoes" open><summary class="section-heading"><span class="number">13</span><h2>Escolhas e limites de interpretação</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>As escolhas atuais mantêm coleta, processamento e publicação em um fluxo de lote com artefatos estáticos. O projeto documenta essa composição como proporcional à escala observada.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Escolha implementada</th>
+<th>Papel na solução</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Python e HTTPX</td>
+<td>Coleta assíncrona limitada e processamento no runner</td>
+</tr>
+<tr>
+<td>Arrow, DuckDB e Parquet</td>
+<td>Tipagem e agregações SQL no mesmo processo</td>
+</tr>
+<tr>
+<td>Estado em Releases</td>
+<td>Persistência entre runners sem adicionar dados ao Git por ciclo</td>
+</tr>
+<tr>
+<td>Assets estáticos</td>
+<td>Consumo no navegador sem backend de consulta bancária</td>
+</tr>
+<tr>
+<td>Reportes separados</td>
+<td>Identidade operacional por fonte, mesmo com CNPJ compartilhado</td>
+</tr>
+<tr>
+<td>Panorama coerente</td>
+<td>Evita misturar métricas de ciclos/dias diferentes no agregado</td>
+</tr>
+</tbody></table></div>
+<h3>Limites que mudam a leitura</h3>
+<ul>
+<li>Médias declaradas não equivalem a p95, e a duração HTTP do Admin não mede todos os serviços.</li>
+<li>Erros não vêm discriminados por status; rejeições não provam HTTP 429 ou causa específica.</li>
+<li>A coleta horária não comprova disponibilidade contínua. Ausência de endpoint não prova ausência de oferta.</li>
+<li>Dias podem estar parciais. A convenção de dia usada pelo monitor não estabelece o fuso de agregação da origem.</li>
+<li>Somar reportes não garante transações únicas entre instituições ou serviços compartilhados.</li>
+<li>Bronze expirado limita o reprocessamento integral antigo, mesmo quando o hash permanece no histórico.</li>
+<li>O desenho é single node, com um escritor por estado e publicação pública; não inclui autenticação corporativa.</li>
+</ul>
+<p>Essas condições descrevem como consumir o produto corretamente. Não são uma lista de melhorias propostas ou pendências de auditoria.</p>
+<div class="section-sources">Referências: <a href="#ref-architecture">docs/arquitetura.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-build">src/admin_metrics/build.py</a></div></div></details>
+<details class="doc-section" id="glossario" open><summary class="section-heading"><span class="number">14</span><h2>Glossário</h2><span class="audience all">Para todos</span></summary><div class="section-body"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Significado neste projeto</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Admin</td>
+<td>Endpoint que publica métricas agregadas dos serviços</td>
+</tr>
+<tr>
+<td>Reporte / fonte</td>
+<td>Uma entrada do catálogo, identificada pelo host e ID operacional</td>
+</tr>
+<tr>
+<td>Endpoint</td>
+<td>Serviço descrito dentro do reporte; não é chamado pelo monitor</td>
+</tr>
+<tr>
+<td>Run / execução</td>
+<td>Ciclo do monitor com identidade e horário próprios</td>
+</tr>
+<tr>
+<td>Panorama</td>
+<td>Conjunto coerente de indicadores de um ciclo/dia por recorte</td>
+</tr>
+<tr>
+<td>Bronze</td>
+<td>Corpo original de resposta, preservado pelo hash</td>
+</tr>
+<tr>
+<td>Grain / grão</td>
+<td>O que exatamente uma linha ou objeto representa</td>
+</tr>
+<tr>
+<td>Delta</td>
+<td>Diferença elegível entre contadores de observações comparáveis</td>
+</tr>
+<tr>
+<td>Fresh</td>
+<td>Linha do mesmo run atual; não é uma medida de idade em horas</td>
+</tr>
+<tr>
+<td>Fonte completa</td>
+<td>Captura não vazia com cobertura conciliada; não garante validade de cada métrica</td>
+</tr>
+<tr>
+<td>Incidente</td>
+<td>Ocorrência de um sinal, com ciclo próprio de detecção e recuperação</td>
+</tr>
+<tr>
+<td>Confirmação</td>
+<td>Persistência observada em amostras consecutivas</td>
+</tr>
+<tr>
+<td>Parquet</td>
+<td>Formato colunar dos conjuntos de dados exportados</td>
+</tr>
+<tr>
+<td>D−n</td>
+<td>Posição de dia anterior declarada pela origem</td>
+</tr>
+<tr>
+<td>Candidata</td>
+<td>Pacote de estado ainda não confirmado após publicação</td>
+</tr>
+</tbody></table></div>
+<div class="section-sources">Referências: <a href="#ref-documentation">src/admin_metrics/documentation.py</a> <a href="#ref-readme">README.md</a></div></div></details>
+<details class="doc-section" id="dicionario" open><summary class="section-heading"><span class="number">15</span><h2>Dicionário de dados</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>O dicionário abaixo descreve os contratos usados pela aplicação. A projeção Arrow/Parquet tem 18 campos; o JSON mantém informação adicional de tentativas, contexto, deltas e incidentes. Tipos e descrições foram extraídos das definições locais, sem executar a coleta.</p>
+<details>
+<summary>Projeção Arrow — current_rows e observations</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>run_id</td>
+<td>string</td>
+<td>Identidade de execução UTC + sufixo aleatório; não é a data de referência do banco.</td>
+</tr>
+<tr>
+<td>entity_id</td>
+<td>string</td>
+<td>SHA-256 truncado a 24 caracteres de reporter_id + endpoint. Chave técnica da entidade reportada.</td>
+</tr>
+<tr>
+<td>observed_at</td>
+<td>string</td>
+<td>Instante UTC de início da observação da fonte; cada tentativa também guarda seu próprio instante.</td>
+</tr>
+<tr>
+<td>day</td>
+<td>string</td>
+<td>Dia analítico pelo HTTP Date da página que produziu a linha, em America/Sao_Paulo, com fallback para a coleta; páginas que cruzam o dia marcam a captura incompleta e não comprovam o fuso de consolidação da origem.</td>
+</tr>
+<tr>
+<td>reporter_id</td>
+<td>string</td>
+<td>Identidade do host no catálogo; Nissan e Renault permanecem distintos mesmo com CNPJ igual.</td>
+</tr>
+<tr>
+<td>reporter</td>
+<td>string</td>
+<td>Rótulo operacional da fonte, e não prova de controle societário.</td>
+</tr>
+<tr>
+<td>endpoint</td>
+<td>string</td>
+<td>URL/URI descrita pelo banco. Nunca é chamada pelo monitor.</td>
+</tr>
+<tr>
+<td>path</td>
+<td>string</td>
+<td>Caminho extraído de endpoint; preserva parâmetros de rota declarados.</td>
+</tr>
+<tr>
+<td>family</td>
+<td>string</td>
+<td>Primeiro segmento depois de /open-banking/; usado como classificação analítica.</td>
+</tr>
+<tr>
+<td>calls</td>
+<td>int64</td>
+<td>invocations.currentDay; contador cumulativo declarado do dia, int64 não negativo ou nulo.</td>
+</tr>
+<tr>
+<td>errors</td>
+<td>int64</td>
+<td>errors.currentDay; sem discriminação dos status HTTP de origem.</td>
+</tr>
+<tr>
+<td>rejections</td>
+<td>int64</td>
+<td>rejections.currentDay; não permite inferir sozinho a causa ou código de rejeição.</td>
+</tr>
+<tr>
+<td>mean_ms</td>
+<td>int64</td>
+<td>averageResponse.currentDay, em milissegundos. Média declarada, não p95.</td>
+</tr>
+<tr>
+<td>error_pct</td>
+<td>float64</td>
+<td>100 × errors/calls, apenas com chamadas positivas e numerador válido ≤ chamadas; caso contrário nulo.</td>
+</tr>
+<tr>
+<td>rejection_pct</td>
+<td>float64</td>
+<td>100 × rejections/calls sob os mesmos critérios, com denominador válido próprio.</td>
+</tr>
+<tr>
+<td>uptime</td>
+<td>float64</td>
+<td>availability.uptime.uptimeRate convertido para razão finita em [0,1]; interface multiplica por 100.</td>
+</tr>
+<tr>
+<td>source_complete</td>
+<td>bool</td>
+<td>Cobertura reconciliada da captura Admin que produziu a linha; não atesta qualidade de todos os campos.</td>
+</tr>
+<tr>
+<td>fresh</td>
+<td>bool</td>
+<td>Linha da mesma execução que o último ciclo. Só tem valor útil em current_rows; na projeção histórica observations fica nulo. Não mede idade do relógio.</td>
+</tr>
+</tbody></table></div>
+</details><details>
+<summary>Campos adicionais da observação JSON</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo lógico</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>day_basis</td>
+<td>string</td>
+<td>Explica qual relógio fundamentou day; não modifica requestTime.</td>
+</tr>
+<tr>
+<td>source_sha</td>
+<td>SHA-256</td>
+<td>Hash do corpo bronze de origem; os bytes podem expirar da retenção.</td>
+</tr>
+<tr>
+<td>json_path</td>
+<td>string</td>
+<td>Posição $.data[n] no corpo identificado pelo hash.</td>
+</tr>
+<tr>
+<td>request_time</td>
+<td>string/nulo</td>
+<td>requestTime original, sem correção automática de fuso.</td>
+</tr>
+<tr>
+<td>clock_offset_seconds</td>
+<td>número/nulo</td>
+<td>observed_at − requestTime; limiar clock_skew_seconds configurável.</td>
+</tr>
+<tr>
+<td>average_tps / peak_tps</td>
+<td>int64/nulo</td>
+<td>averageTps / peakTps atuais declarados; não são calculados a partir de chamadas.</td>
+</tr>
+<tr>
+<td>general_uptime</td>
+<td>razão/nulo</td>
+<td>generalUptimeRate declarado, independente do uptime do endpoint.</td>
+</tr>
+<tr>
+<td>downtime_seconds / general_downtime / scheduled_outage</td>
+<td>int64/nulo</td>
+<td>Segundos declarados em partialDowntime / generalDowntime / scheduledOutage.</td>
+</tr>
+<tr>
+<td>previous</td>
+<td>objeto de arrays</td>
+<td>Até sete posições por calls, errors, rejections, mean_ms, average_tps e peak_tps; D−1 primeiro.</td>
+</tr>
+<tr>
+<td>baseline_mean_ms</td>
+<td>número/nulo</td>
+<td>Mediana das médias diárias anteriores positivas; mínimo baseline_minimum_days configurável.</td>
+</tr>
+<tr>
+<td>recurrent_days</td>
+<td>inteiro</td>
+<td>Dias anteriores com chamadas ≥minimum_calls e erro ≥error_attention_pct; limiares compartilhados com as regras.</td>
+</tr>
+<tr>
+<td>quality</td>
+<td>array de strings</td>
+<td>Ocorrências de contrato/consistência; não reescreve o valor informado.</td>
+</tr>
+<tr>
+<td>fingerprint</td>
+<td>SHA-256</td>
+<td>Seis métricas atuais, uptime, downtime_seconds e previous; exclui requestTime. Não é checksum do JSON completo.</td>
+</tr>
+<tr>
+<td>interval_from / interval_to</td>
+<td>UTC/nulo</td>
+<td>Instantes das duas observações comparadas, e não janela oficial de agregação da instituição.</td>
+</tr>
+<tr>
+<td>interval_seconds</td>
+<td>número/nulo</td>
+<td>Diferença entre os instantes; tempo não crescente invalida o intervalo.</td>
+</tr>
+<tr>
+<td>interval_calls / interval_errors / interval_rejections</td>
+<td>int64/nulo</td>
+<td>Diferenças aceitas dos cumulativos; indisponíveis quando a classificação não é valid.</td>
+</tr>
+<tr>
+<td>interval_error_pct / interval_rejection_pct</td>
+<td>percentual/nulo</td>
+<td>Taxas dos deltas aceitos; sem denominador positivo ficam nulas.</td>
+</tr>
+<tr>
+<td>interval_state</td>
+<td>enum</td>
+<td>Motivo preciso de comparação aceita ou suspensa; ver a tabela de estados.</td>
+</tr>
+<tr>
+<td>interval_error_state / interval_rejection_state</td>
+<td>enum</td>
+<td>Comparabilidade de cada numerador com chamadas; impede que reset de rejeições esconda uma taxa de erro válida. Latência tem elegibilidade independente.</td>
+</tr>
+</tbody></table></div>
+</details><details>
+<summary>Tentativas HTTP — probes</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo lógico</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>capture_attempt / data_status</td>
+<td>inteiro / enum</td>
+<td>Captura a partir de 1 e resultado da resposta; identifica repetições após vazio separadas do retry HTTP. Campos ausentes em runs legados.</td>
+</tr>
+<tr>
+<td>page / attempt</td>
+<td>inteiro</td>
+<td>Página solicitada e tentativa a partir de 1.</td>
+</tr>
+<tr>
+<td>observed_at</td>
+<td>UTC</td>
+<td>Início da tentativa HTTP, distinto do início do ciclo e da fonte.</td>
+</tr>
+<tr>
+<td>url</td>
+<td>URL</td>
+<td>Admin e parâmetros solicitados. Redirecionamentos não são seguidos.</td>
+</tr>
+<tr>
+<td>status</td>
+<td>inteiro</td>
+<td>HTTP recebido; 0 quando não houve resposta HTTP.</td>
+</tr>
+<tr>
+<td>duration_ms</td>
+<td>número</td>
+<td>Tempo da tentativa até leitura do corpo ou erro; não é média do serviço nem duração total do ETL.</td>
+</tr>
+<tr>
+<td>http_date</td>
+<td>string/nulo</td>
+<td>Cabeçalho Date recebido, sem substituí-lo por requestTime.</td>
+</tr>
+<tr>
+<td>source_sha / bytes</td>
+<td>hash/inteiro</td>
+<td>Corpo completo preservado e seu tamanho. Podem estar ausentes em transporte/limite de tamanho.</td>
+</tr>
+<tr>
+<td>error</td>
+<td>string/nulo</td>
+<td>Condição final da tentativa; tentativas transitórias permanecem no histórico mesmo se a última tiver sucesso.</td>
+</tr>
+</tbody></table></div>
+</details><details>
+<summary>Ocorrências de incidentes</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo lógico</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>hash truncado</td>
+<td>Ocorrência identificada por entidade + regra + run de abertura; reabertura após resolução cria outro ID.</td>
+</tr>
+<tr>
+<td>entity_id / rule</td>
+<td>strings</td>
+<td>Entidade do serviço ou source:&lt;reporter_id&gt;, mais nome da regra detectada.</td>
+</tr>
+<tr>
+<td>reporter_id / reporter / endpoint</td>
+<td>string/nulo</td>
+<td>ID estável usado no filtro, rótulo atual e endpoint; rótulos antigos são reconciliados pelo ID. Coleta não tem endpoint de serviço.</td>
+</tr>
+<tr>
+<td>opened_at / opened_run</td>
+<td>UTC / ID</td>
+<td>Primeira detecção observada; não é necessariamente o início real da falha.</td>
+</tr>
+<tr>
+<td>last_seen</td>
+<td>UTC</td>
+<td>Última detecção acima do limiar; não é a última coleta bem-sucedida.</td>
+</tr>
+<tr>
+<td>evaluated_at</td>
+<td>UTC</td>
+<td>Última avaliação conclusiva de detecção/recuperação; pode ficar antiga durante ausência de dados.</td>
+</tr>
+<tr>
+<td>samples</td>
+<td>inteiro</td>
+<td>Total de detecções desta ocorrência, inclusive sequências separadas por recuperação parcial.</td>
+</tr>
+<tr>
+<td>consecutive_samples</td>
+<td>inteiro</td>
+<td>Tamanho da sequência atual de detecções; uma amostra sem sinal interrompe a sequência.</td>
+</tr>
+<tr>
+<td>confirmed</td>
+<td>booleano</td>
+<td>Última sequência detectada atingiu confirmation_samples; não prova erros novos entre os ciclos.</td>
+</tr>
+<tr>
+<td>recovery_samples</td>
+<td>inteiro</td>
+<td>Amostras avaliáveis consecutivas abaixo do limiar; amostra desconhecida zera a sequência.</td>
+</tr>
+<tr>
+<td>status / severity</td>
+<td>enum</td>
+<td>open / recovering / resolved e attention / critical; severidade pode variar na mesma ocorrência.</td>
+</tr>
+<tr>
+<td>evidence</td>
+<td>string</td>
+<td>Numerador, denominador ou contexto que justificou a última detecção.</td>
+</tr>
+<tr>
+<td>resolved_at</td>
+<td>UTC opcional</td>
+<td>Registrado apenas depois de completar recovery_samples configurado.</td>
+</tr>
+</tbody></table></div>
+</details><details>
+<summary>Parâmetros de configuração desta revisão</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Parâmetro</th>
+<th>Valor configurado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>retention_days</td>
+<td>30</td>
+</tr>
+<tr>
+<td>dashboard_history_days</td>
+<td>3</td>
+</tr>
+<tr>
+<td>schedule_interval_hours</td>
+<td>1</td>
+</tr>
+<tr>
+<td>schedule_minute</td>
+<td>17</td>
+</tr>
+<tr>
+<td>error_attention_pct</td>
+<td>5</td>
+</tr>
+<tr>
+<td>error_critical_pct</td>
+<td>20</td>
+</tr>
+<tr>
+<td>minimum_calls</td>
+<td>100</td>
+</tr>
+<tr>
+<td>critical_minimum_calls</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>rejection_attention_pct</td>
+<td>5</td>
+</tr>
+<tr>
+<td>latency_attention_ms</td>
+<td>2000</td>
+</tr>
+<tr>
+<td>latency_critical_ms</td>
+<td>4000</td>
+</tr>
+<tr>
+<td>regression_multiplier</td>
+<td>2</td>
+</tr>
+<tr>
+<td>recovery_samples</td>
+<td>2</td>
+</tr>
+<tr>
+<td>confirmation_samples</td>
+<td>2</td>
+</tr>
+<tr>
+<td>baseline_minimum_days</td>
+<td>3</td>
+</tr>
+<tr>
+<td>recurrent_minimum_days</td>
+<td>3</td>
+</tr>
+<tr>
+<td>reported_history_days</td>
+<td>7</td>
+</tr>
+<tr>
+<td>clock_skew_seconds</td>
+<td>900</td>
+</tr>
+<tr>
+<td>stale_after_hours</td>
+<td>2</td>
+</tr>
+<tr>
+<td>chart_gap_hours</td>
+<td>1.5</td>
+</tr>
+<tr>
+<td>empty_retry_delays_seconds</td>
+<td>[10, 30]</td>
+</tr>
+</tbody></table></div>
+</details>
+<div class="section-sources">Referências: <a href="#ref-documentation">src/admin_metrics/documentation.py</a> <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-marts">src/admin_metrics/marts.sql</a></div></div></details><details class="doc-section" id="document-references"><summary class="section-heading"><h2>Referências do documento</h2></summary><div class="section-body"><p>Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.</p><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead><tbody><tr id="ref-readme"><td class="source-path">README.md</td><td>Escopo, entrega, procedimentos e comportamento atual.</td></tr><tr id="ref-version"><td class="source-path">src/admin_metrics/__init__.py</td><td>Versão do pacote.</td></tr><tr id="ref-reporters"><td class="source-path">config/reporters.json</td><td>Catálogo das oito fontes Admin.</td></tr><tr id="ref-rules"><td class="source-path">config/rules.json</td><td>Limiares, retenção, agenda e janelas configuradas.</td></tr><tr id="ref-collect"><td class="source-path">src/admin_metrics/collect.py</td><td>Coleta HTTP, paginação, retry e preservação de respostas.</td></tr><tr id="ref-analysis"><td class="source-path">src/admin_metrics/analysis.py</td><td>Normalização, deltas, avaliação e ciclo de incidentes.</td></tr><tr id="ref-health"><td class="source-path">src/admin_metrics/health.py</td><td>Resultado da coleta e usabilidade das fontes.</td></tr><tr id="ref-panorama"><td class="source-path">src/admin_metrics/panorama.py</td><td>Panorama coerente por ciclo e por recorte.</td></tr><tr id="ref-pipeline"><td class="source-path">src/admin_metrics/pipeline.py</td><td>Execução, build e commit do estado local.</td></tr><tr id="ref-storage"><td class="source-path">src/admin_metrics/storage.py</td><td>Hash, escrita atômica e exclusão mútua.</td></tr><tr id="ref-build"><td class="source-path">src/admin_metrics/build.py</td><td>Schema Arrow, tabelas DuckDB, Parquet e publicação estática.</td></tr><tr id="ref-marts"><td class="source-path">src/admin_metrics/marts.sql</td><td>Agregados por reporte, família e instante.</td></tr><tr id="ref-documentation"><td class="source-path">src/admin_metrics/documentation.py</td><td>Dicionários de campos e geração do manual original.</td></tr><tr id="ref-cli"><td class="source-path">src/admin_metrics/cli.py</td><td>Comandos collect/build e parâmetros.</td></tr><tr id="ref-archive"><td class="source-path">src/admin_metrics/archive.py</td><td>Empacotamento e restauração do estado.</td></tr><tr id="ref-cloud"><td class="source-path">scripts/cloud_pipeline.py</td><td>Candidata, confirmação, retenção e restore remoto.</td></tr><tr id="ref-workflow"><td class="source-path">.github/workflows/pages.yml</td><td>Gatilhos, jobs de publicação e confirmação.</td></tr><tr id="ref-app"><td class="source-path">src/admin_metrics/web/app.js</td><td>Filtros, detalhes, gráficos e exportação do dashboard.</td></tr><tr id="ref-architecture"><td class="source-path">docs/arquitetura.md</td><td>Arquitetura documentada e responsabilidades.</td></tr><tr id="ref-dashboard"><td class="source-path">docs/dashboard.md</td><td>Uso do dashboard e interpretação dos estados.</td></tr><tr id="ref-operations"><td class="source-path">docs/operacao.md</td><td>Execução, retenção e recuperação.</td></tr></tbody></table></div><p class="revision">Código: a24588f93a715b92f4ef19939876bfa6ddd1c603</p></div></details><footer>Admin Metrics · Documentação v2 · aplicação 1.2.0 · HTML único · leitura offline</footer></div></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><button id="dialog-close" type="button">Fechar</button></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>(() => {
+  const lang = document.documentElement.lang.startsWith('pt');
+  const words = lang ? {copy:'Copiar',copied:'Copiado',failed:'Selecione e copie o código',found:'seções encontradas',zoom:'Ampliar diagrama',close:'Fechar'} : {copy:'Copy',copied:'Copied',failed:'Select and copy the code',found:'sections found',zoom:'Expand diagram',close:'Close'};
+  const sections = [...document.querySelectorAll('.doc-section')];
+  const search = document.querySelector('#search');
+  const normalize = x => x.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const index = new Map(sections.map(s=>[s,normalize(s.textContent)]));
+  const openAncestors = el => {for(let n=el;n;n=n.parentElement) if(n.tagName==='DETAILS') n.open=true;};
+  function filter(){const terms=normalize(search.value).trim().split(/\s+/).filter(Boolean); let found=0; for(const s of sections){s.hidden=!terms.every(t=>index.get(s).includes(t)); if(!s.hidden){found++;if(terms.length){s.open=true;s.querySelectorAll('details').forEach(d=>d.open=true);}} const a=document.querySelector(`nav a[href="#${s.id}"]`);if(a)a.hidden=s.hidden;}document.querySelector('#search-count').textContent=terms.length?`${found} ${words.found}`:'';document.querySelector('#no-results').hidden=found>0;}
+  search.addEventListener('input',filter);
+  document.querySelector('#expand').addEventListener('click',()=>document.querySelectorAll('main details').forEach(d=>d.open=true));
+  document.querySelector('#collapse').addEventListener('click',()=>document.querySelectorAll('main details').forEach(d=>d.open=false));
+  const printState=new Map();function beforePrint(){document.querySelectorAll('main details').forEach(d=>{printState.set(d,d.open);d.open=true;});}function afterPrint(){for(const [d,v] of printState)d.open=v;printState.clear();}
+  window.addEventListener('beforeprint',beforePrint);window.addEventListener('afterprint',afterPrint);document.querySelector('#print').addEventListener('click',()=>window.print());
+  function revealHash(){const id=decodeURIComponent(location.hash.slice(1));if(!id)return;const el=document.getElementById(id);if(el){search.value='';filter();openAncestors(el);el.scrollIntoView();}}
+  window.addEventListener('hashchange',revealHash);if(location.hash)requestAnimationFrame(revealHash);
+  document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',()=>{const el=document.getElementById(a.hash.slice(1));if(el){search.value='';filter();openAncestors(el);}}));
+  document.querySelectorAll('pre').forEach(pre=>{const button=document.createElement('button');button.className='copy';button.textContent=words.copy;button.type='button';button.addEventListener('click',async()=>{const text=pre.querySelector('code').textContent;try{if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(text);else throw Error();button.textContent=words.copied;}catch{const range=document.createRange();range.selectNodeContents(pre.querySelector('code'));const selection=getSelection();selection.removeAllRanges();selection.addRange(range);button.textContent=words.failed;}setTimeout(()=>button.textContent=words.copy,2500);});pre.append(button);});
+  const dialog=document.querySelector('#diagram-dialog');let trigger;
+  document.querySelectorAll('[data-expand-diagram]').forEach(b=>b.addEventListener('click',()=>{trigger=b;const figure=b.closest('figure');const svg=figure.querySelector('svg').cloneNode(true);svg.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));svg.style.width=svg.getAttribute('data-natural-width')+'px';document.querySelector('#dialog-canvas').replaceChildren(svg);document.querySelector('#dialog-title').textContent=figure.querySelector('figcaption').textContent;dialog.showModal();}));
+  document.querySelector('#dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('close',()=>trigger?.focus());
+  if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting){document.querySelectorAll('nav a[aria-current]').forEach(a=>a.removeAttribute('aria-current'));document.querySelector(`nav a[href="#${e.target.id}"]`)?.setAttribute('aria-current','location');}},{rootMargin:'-5% 0px -65% 0px'});sections.forEach(s=>observer.observe(s));}
+})();
+</script></body></html>
