@@ -20,9 +20,12 @@ Describe the project's **current implemented state**. Deliver one offline HTML f
 ## Decisions
 
 - Explain business rules in plain language, then give conditions/calculation and a useful example. Separate using the product from running its pipeline.
-- Use architecture, processing and data relationships as distinct views when applicable. `mermaid` fences produce embedded SVG with the bundled Beautiful Mermaid renderer. See authoring for syntax and layout guidance.
+- Use architecture, processing and data relationships as distinct views when applicable. `mermaid` fences produce embedded SVG with the bundled Beautiful Mermaid renderer.
+  - **Solution Design & Architecture (v1.2.0 Standard)**: Never draw single-line horizontal architectures (`flowchart LR` continuous with more than 3 nodes). Structure solutions in **stacked functional 2D stages** using thematic `subgraph`s, numbered steps (①..⑤), descriptive `<small>` subtitles in nodes, and standardized semantic legends via `.figure-legend`. See [authoring](references/authoring.md) and [data engineering](references/data-engineering.md).
 - Charts need a real question, unit and source. Numerical snapshots need their date; fictional examples must be labeled. Never invent telemetry or turn absence into zero.
+  - **Bar Chart Reengineering (v1.2.0)**: Values are rendered with Gestalt proximity (inside long bars >= 64px or connected by dotted guide lines), discrete scale gridlines (25%, 50%, 75%, 100% ticks), explicit semantic zero handling (`0 (zero)` badge/text instead of crude lines), optional semantic color variants (`variant`: warning, danger, success, neutral, accent), and offline accessible `<title>` tooltips in `<g class="chart-row">`. Embedded `<details>` tables adapt fluidly without forced width penalties.
 - Keep core explanations visible. Put long dictionaries, schemas and secondary recipes in native `details` blocks. Use recognizable navigation categories.
+- **Reading Ergonomics & Design System (v1.2.0)**: Paragraphs and lists are constrained to 76ch measure for optimal readability. Tables feature contained scrolling with truly sticky headers (`th { position: sticky }`). Wide diagrams feature native CSS scroll shadows in `.diagram-scroll`. Accordions use smooth rotating vector chevrons, and active sidebar items automatically sync into view on scroll.
 - Preserve grain, identities, branching and edge meaning when simplifying diagrams. Split dense maps into overview/detail rather than deleting meaningful relationships.
 - Describe limitations affecting correct interpretation. Do not add a defect backlog, maturity score, severity matrix or modernization plan unless requested. Sources support documentation, not an audit report.
 - When the repository cannot establish business purpose, ownership, deployment status or rationale, consult product context or ask for that specific missing fact. Code proves implementation, not a successful production run.
@@ -32,6 +35,6 @@ Describe the project's **current implemented state**. Deliver one offline HTML f
 
 Agents without skill discovery can read this file as the entrypoint. Dependencies are pinned in `package-lock.json`; manifest paths are relative to the manifest. Do not copy Admin Metrics facts into another project. `outputs/` contains a pilot, not universal architecture or section-count requirements.
 
-The maintained visual components are `assets/document.css` and `assets/document.js`. Prefer them to per-project CSS. Change the renderer only for a demonstrated missing capability. Validate generator changes with `npm test --prefix <skill>` and regenerate the minimal example plus the affected document.
+The maintained visual components are `assets/document.css` and `assets/document.js`. Prefer them to per-project CSS. Version 1.2.0 establishes enhanced typography, table stickiness, diagram scroll indicators, rotating chevrons, and reengineered bar charts. Change the renderer only for a demonstrated missing capability. Validate generator changes with `npm test --prefix <skill>` and regenerate the minimal example plus the affected document.
 
 Diagram dependency: [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid), MIT, pinned at build time. See [tools and scope](references/tools.md).

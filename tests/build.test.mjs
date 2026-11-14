@@ -64,6 +64,51 @@ test('chart keeps a 45-character label inside the SVG and marks zero',()=>{
   assert.ok(Number(wide('text[text-anchor="end"]').first().attr('x'))>=600);
 });
 
+test('chart features: semantic variants, accessible row titles, value proximity, dignified zero, and grid scale',()=>{
+  const spec={
+    type:'bar',
+    title:'Performance metrics',
+    unit:'ms',
+    source:'Bench',
+    data:[
+      {label:'Fast',value:100,variant:'success'},
+      {label:'Warning',value:75,variant:'warning'},
+      {label:'Critical',value:50,variant:'danger'},
+      {label:'Background',value:25,variant:'neutral'},
+      {label:'Normal',value:10,variant:'accent'},
+      {label:'Empty',value:0}
+    ]
+  };
+  const $=load(barChart(spec));
+
+  assert.equal($('g.chart-row:has(text.chart-label:contains("Fast")) rect.chart-bar').attr('fill'),'#16a34a');
+  assert.equal($('g.chart-row:has(text.chart-label:contains("Warning")) rect.chart-bar').attr('fill'),'#d97706');
+  assert.equal($('g.chart-row:has(text.chart-label:contains("Critical")) rect.chart-bar').attr('fill'),'#dc2626');
+  assert.equal($('g.chart-row:has(text.chart-label:contains("Background")) rect.chart-bar').attr('fill'),'#64748b');
+  assert.equal($('g.chart-row:has(text.chart-label:contains("Normal")) rect.chart-bar').attr('fill'),'#087f8c');
+  assert.throws(()=>barChart({...spec,data:[{label:'X',value:1,variant:'unknown'}]}),/variant/);
+
+  assert.equal($('g.chart-row').length,6);
+  assert.equal($('g.chart-row title').first().text(),'Fast: 100 ms');
+  assert.equal($('g.chart-row title').last().text(),'Empty: 0 ms');
+
+  const zeroBadge=$('[data-zero="true"]');
+  assert.equal(zeroBadge.length,1);
+  assert.match(zeroBadge.text(),/0\s*\(zero\)/);
+
+  const fastVal=$('g.chart-row:has(text.chart-label:contains("Fast")) text.chart-value-inside');
+  assert.equal(fastVal.length,1);
+  assert.equal(fastVal.attr('fill'),'#ffffff');
+
+  const normalRow=$('g.chart-row:has(text.chart-label:contains("Normal"))');
+  assert.equal(normalRow.find('text.chart-value-outside').length,1);
+  assert.equal(normalRow.find('line.chart-guide').length,1);
+
+  assert.equal($('line.chart-gridline').length,4);
+  const axisVals=$('text.chart-axis-val').map((_,e)=>$(e).text()).get();
+  assert.deepEqual(axisVals,['0','25','50','75','100']);
+});
+
 test('validator rejects runtime/asset dependencies and broken navigation',()=>{
   const result=validateHtml('<!DOCTYPE html><html lang="en"><head><title>Test</title><style>@import url(https://example.com/font);</style></head><body><h1>Title</h1><a href="#absent">Link</a><img src="https://example.com/a.png"><script>fetch("https://example.com")</script></body></html>');
   assert.equal(result.passed,false);assert.ok(result.errors.some(e=>e.includes('Broken anchor')));assert.ok(result.errors.some(e=>e.includes('CSS')));assert.ok(result.errors.some(e=>e.includes('network')));assert.ok(result.errors.some(e=>e.includes('Non-embedded')));

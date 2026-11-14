@@ -161,7 +161,11 @@
     const observer = new IntersectionObserver(entries => {
       for (const e of entries) if (e.isIntersecting) {
         document.querySelectorAll('nav a[aria-current]').forEach(a => a.removeAttribute('aria-current'));
-        document.querySelector(`nav a[href="#${e.target.id}"]`)?.setAttribute('aria-current', 'location');
+        const activeLink = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (activeLink) {
+          activeLink.setAttribute('aria-current', 'location');
+          activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
       }
     }, {rootMargin: '-5% 0px -65% 0px'});
     sections.forEach(s => observer.observe(s));

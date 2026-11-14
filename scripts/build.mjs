@@ -16,17 +16,43 @@ const hash=v=>createHash('sha256').update(v).digest('hex');
 const textTags=[...sanitizeHtml.defaults.allowedTags,'details','summary','div','span','figure','figcaption'];
 const clean=v=>sanitizeHtml(v,{allowedTags:textTags,allowedAttributes:{...sanitizeHtml.defaults.allowedAttributes,'*':['class'],a:['href','title'],details:['open']},allowedSchemes:['https','http','mailto'],allowProtocolRelative:false});
 
+const VARIANTS={accent:'#087f8c',success:'#16a34a',warning:'#d97706',danger:'#dc2626',neutral:'#64748b'};
+
 export function barChart(spec,locale='pt-BR'){
   if(spec.type!=='bar'||!spec.title||!spec.unit||!spec.source||!Array.isArray(spec.data)||!spec.data.length||spec.data.length>40)throw Error('chart requires type=bar, title, unit, source, and 1–40 data items');
-  const seen=new Set();for(const d of spec.data){if(typeof d.label!=='string'||!d.label.trim()||d.label.length>45||!Number.isFinite(d.value)||d.value<0||seen.has(d.label))throw Error('chart labels must be unique (max 45 chars); values must be finite and nonnegative');seen.add(d.label);}
+  const seen=new Set();for(const d of spec.data){if(typeof d.label!=='string'||!d.label.trim()||d.label.length>45||!Number.isFinite(d.value)||d.value<0||seen.has(d.label))throw Error('chart labels must be unique (max 45 chars); values must be finite and nonnegative');if(d.variant!==undefined&&!VARIANTS[d.variant])throw Error('chart variant must be warning, danger, success, neutral, or accent');seen.add(d.label);}
   const max=Math.max(1,...spec.data.map(d=>d.value)),row=42;
   const widthOf=c=>c===' '?4.2:'MW@%'.includes(c)?14:/[A-Z]/.test(c)?10.5:/[0-9]/.test(c)?8.4:/[il.,:;!|'`]/.test(c)?3.5:7.6;
   const labelWidth=Math.max(...spec.data.map(d=>[...d.label].reduce((sum,c)=>sum+widthOf(c),0)));
-  const left=Math.max(220,Math.round(labelWidth+24)),plot=540,w=left+plot+120,h=spec.data.length*row+45;
+  const left=Math.max(220,Math.round(labelWidth+24)),plot=540,w=left+plot+80;
+  const plotTop=10,plotBottom=spec.data.length*row+10,h=plotBottom+52;
   const fmt=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
-  const bars=spec.data.map((d,i)=>{const y=i*row+16;const zero=d.value===0?`<line data-zero="true" x1="${left}" y1="${y+3}" x2="${left}" y2="${y+20}" stroke="#087f8c" stroke-width="3"/>`:'';return `<text x="${left-14}" y="${y+15}" text-anchor="end" fill="#314c5e">${esc(d.label)}</text><rect x="${left}" y="${y}" width="${plot}" height="23" rx="4" fill="#e8eff3"/>${zero}<rect x="${left}" y="${y}" width="${d.value/max*plot}" height="23" rx="4" fill="#087f8c"/><text x="${left+plot+14}" y="${y+16}" fill="#172b3c" font-weight="600">${esc(fmt.format(d.value))}</text>`;}).join('');
+  const gridlines=[0.25,0.5,0.75,1].map(pct=>{const gx=left+Math.round(pct*plot);return `<line class="chart-gridline" x1="${gx}" y1="${plotTop}" x2="${gx}" y2="${plotBottom}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>`;}).join('');
+  const rows=spec.data.map((d,i)=>{
+    const y=i*row+16;
+    const color=(d.variant&&VARIANTS[d.variant])?VARIANTS[d.variant]:VARIANTS.accent;
+    const bw=d.value===0?0:Math.max(2,Math.round((d.value/max)*plot));
+    const title=`${d.label}: ${fmt.format(d.value)} ${spec.unit}`;
+    let valEl;
+    if(d.value===0){
+      valEl=`<g data-zero="true" class="chart-zero-badge"><rect x="${left+4}" y="${y+3}" width="54" height="17" rx="3" fill="#edf2f7"/><text x="${left+31}" y="${y+15}" text-anchor="middle" fill="#526778" font-size="11" font-weight="600">0 (zero)</text></g>`;
+    }else if(bw>=64){
+      valEl=`<text class="chart-value chart-value-inside" x="${left+bw-10}" y="${y+16}" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">${esc(fmt.format(d.value))}</text>`;
+    }else{
+      valEl=`<line class="chart-guide" x1="${left+bw+3}" y1="${y+11.5}" x2="${left+bw+11}" y2="${y+11.5}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/><text class="chart-value chart-value-outside" x="${left+bw+15}" y="${y+16}" text-anchor="start" fill="#172b3c" font-weight="600" font-size="12">${esc(fmt.format(d.value))}</text>`;
+    }
+    const barEl=bw>0?`<rect class="chart-bar" x="${left}" y="${y}" width="${bw}" height="23" rx="4" fill="${color}"/>`:'';
+    return `<g class="chart-row" tabindex="0"><title>${esc(title)}</title><text class="chart-label" x="${left-14}" y="${y+16}" text-anchor="end" fill="#314c5e">${esc(d.label)}</text><rect class="chart-track" x="${left}" y="${y}" width="${plot}" height="23" rx="4" fill="#e8eff3"/>${barEl}${valEl}</g>`;
+  }).join('');
+  const axisTicks=[0,0.25,0.5,0.75,1].map(pct=>{
+    const gx=left+Math.round(pct*plot);
+    const tickVal=pct*max;
+    const anchor=pct===0?'start':pct===1?'end':'middle';
+    return `<line class="chart-axis-tick" x1="${gx}" y1="${plotBottom}" x2="${gx}" y2="${plotBottom+4}" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="${gx}" y="${plotBottom+16}" text-anchor="${anchor}" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">${esc(fmt.format(tickVal))}</text>`;
+  }).join('');
+  const axis=`<g class="chart-axis" aria-hidden="true"><line class="chart-axis-line" x1="${left}" y1="${plotBottom}" x2="${left+plot}" y2="${plotBottom}" stroke="#cbd5e1" stroke-width="1"/>${axisTicks}</g>`;
   const table=`<table><thead><tr><th>${locale==='pt-BR'?'Categoria':'Category'}</th><th>${esc(spec.unit)}</th></tr></thead><tbody>${spec.data.map(d=>`<tr><td>${esc(d.label)}</td><td>${esc(fmt.format(d.value))}</td></tr>`).join('')}</tbody></table>`;
-  return `<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(spec.title)}" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:${w}px">${bars}<text x="${left}" y="${h-3}" fill="#526778" font-size="12">0 · ${esc(spec.unit)} · ${locale==='pt-BR'?'escala linear':'linear scale'}</text></svg><figcaption><strong>${esc(spec.title)}</strong> · ${esc(spec.source)}${spec.asOf?' · '+esc(spec.asOf):''}</figcaption><details><summary>${locale==='pt-BR'?'Dados do gráfico':'Chart data'}</summary><div class="table-wrap">${table}</div></details></figure>`;
+  return `<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(spec.title)}" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:${w}px"><g class="chart-gridlines" aria-hidden="true">${gridlines}</g>${rows}${axis}<text x="${left}" y="${h-6}" fill="#526778" font-size="12">0 · ${esc(spec.unit)} · ${locale==='pt-BR'?'escala linear':'linear scale'}</text></svg><figcaption><strong>${esc(spec.title)}</strong> · ${esc(spec.source)}${spec.asOf?' · '+esc(spec.asOf):''}</figcaption><details><summary>${locale==='pt-BR'?'Dados do gráfico':'Chart data'}</summary><div class="table-wrap">${table}</div></details></figure>`;
 }
 
 export async function build(manifestFile,output,{force=false}={}){
