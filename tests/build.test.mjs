@@ -173,7 +173,7 @@ test('runtime script enables local table filters inside nested <details> diction
   assert.match(js,/wrap\.closest\(['"]\.chart['"]\)/);
 });
 
-test('generated HTML defaults to the red theme, exposes Verde/Azul/Vermelho and maps legacy theme aliases',()=>fixture(async dir=>{
+test('generated HTML defaults to the red theme, exposes Vermelho/Azul in order and maps legacy theme aliases',()=>fixture(async dir=>{
   await fs.writeFile(path.join(dir,'content.md'),'## S\n\nTexto.\n');
   const writeManifest=(name,theme)=>fs.writeFile(path.join(dir,`${name}.json`),JSON.stringify({
     title:`${name} Doc`,subtitle:'Tema',version:'1.0',updated:'2026-11-14',theme,content:'content.md',
@@ -190,14 +190,16 @@ test('generated HTML defaults to the red theme, exposes Verde/Azul/Vermelho and 
   await writeManifest('default-theme',undefined);
   const def=await render('default-theme');
   assert.equal(def.$('html').attr('data-theme'),'vermelho');
-  assert.equal(def.$('[data-theme-select="verde"]').length,1);
-  assert.equal(def.$('[data-theme-select="azul"]').length,1);
+  assert.equal(def.$('[data-theme-select="verde"]').length,0);
   assert.equal(def.$('[data-theme-select="vermelho"]').length,1);
+  assert.equal(def.$('[data-theme-select="azul"]').length,1);
+  assert.deepEqual(def.$('[data-theme-select]').map((_,e)=>def.$(e).attr('data-theme-select')).get(),['vermelho','azul']);
   assert.equal(def.$('[data-theme-select="vermelho"].is-active').length,1);
-  assert.match(def.html,/:root\[data-theme="verde"\]/);
   assert.match(def.html,/:root\[data-theme="vermelho"\]/);
+  assert.doesNotMatch(def.html,/:root\[data-theme="verde"\]/);
+  assert.doesNotMatch(def.html,/theme-swatch-verde/);
   assert.match(def.html,/--accent:\s*#990000/);
-  assert.match(def.html,/--accent:\s*#0f7a52/);
+  assert.doesNotMatch(def.html,/--accent:\s*#0f7a52/);
   assert.match(def.html,/\.sol-zone-warm \.sol-zone-bg/);
   assert.match(def.html,/\.sol-edge-lineage path/);
 
@@ -207,9 +209,7 @@ test('generated HTML defaults to the red theme, exposes Verde/Azul/Vermelho and 
   assert.equal(azul.$('[data-theme-select="azul"].is-active').length,1);
 
   await writeManifest('verde-theme','verde');
-  const verde=await render('verde-theme');
-  assert.equal(verde.$('html').attr('data-theme'),'verde');
-  assert.equal(verde.$('[data-theme-select="verde"].is-active').length,1);
+  await assert.rejects(()=>build(path.join(dir,'verde-theme.json'),path.join(dir,'verde-theme.html')));
 
   await writeManifest('legacy-santander','santander');
   assert.equal((await render('legacy-santander')).$('html').attr('data-theme'),'vermelho');

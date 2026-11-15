@@ -4,7 +4,7 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-30%20passing-success.svg)](#testes-automatizados)
+[![Tests](https://img.shields.io/badge/tests-33%20passing-success.svg)](#testes-automatizados)
 [![Version](https://img.shields.io/badge/version-1.7.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -24,7 +24,7 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 - **Dois modos de apresentação (Manual Completo vs Guia Rápido)**:
   - **Manual Completo (`mode: "full"`)**: Cobre toda a jornada com todas as seções, diagramas detalhados e dicionários completos.
   - **Guia Rápido / Visão Resumida (`mode: "summary"`)**: Versão panorâmica e objetiva para leitura em ~5 minutos, com 4 a 7 capítulos de alto sinal, badges de tempo de leitura e link cruzado (`companionDoc`) para o manual completo.
-- **Temas integrados**: Alternância entre os temas **Verde**, **Azul** e **Vermelho** (padrão) diretamente pela barra de ferramentas, salvando a preferência no navegador e harmonizando tanto o visual da página quanto as cores dos diagramas SVG 2D.
+- **Temas integrados (Vermelho e Azul)**: Alternância entre os temas **Vermelho** (padrão) e **Azul** diretamente pela barra de ferramentas, salvando a preferência no navegador e harmonizando tanto o visual da página quanto as cores dos diagramas SVG 2D.
 - **Motor próprio de diagramas 2D em SVG**: Suporte nativo a diagramas de arquitetura (`solution`) e modelagem de tabelas com linhagem (`schema`), com desvio inteligente de sobreposição de rótulos (*pill collision avoidance*) e sem depender de bibliotecas externas no navegador.
 - **Navegação focada na leitura em desktop**:
   - Barra lateral flexível com rolagem independente que nunca sobrepõe o rodapé de leitura offline.
@@ -32,7 +32,7 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
   - Botão flutuante para voltar ao topo da página com rolagem suave.
   - Filtro por perfil de leitor (*Todas*, *Visão de negócio*, *Visão técnica*, *Operação*), permitindo que áreas de negócio e times técnicos foquem no que interessa sem perder seções do documento.
   - Busca instantânea com realce de termos encontrados e atalhos rápidos (`/` ou `Ctrl+K`).
-  - Campo de filtro automático em tabelas com 8 ou mais linhas (dicionários de dados), inclusive dentro de seções expansíveis.
+  - Campo de filtro automático em tabelas com 8 ou mais linhas (dicionários de dados), inclusive dentro de seções expansíveis e sem travar a rolagem vertical da página.
   - Formatação visual automática para regras de negócio, exemplos práticos e avisos em citações Markdown.
 - **Mapeador estático de código sem consumo de tokens**: Script Python que inspeciona o repositório via AST e extrai estruturas completas:
   - Pipelines PySpark (incluindo chamadas encadeadas de leitura/escrita, opções e particionamento).
@@ -43,6 +43,7 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
   - Suporte a arquivo `.docignore` na raiz do projeto para ignorar pastas temporárias ou artefatos gerados.
   - Montagem de um plano de leitura organizado em 4 etapas ordenadas (`reading-plan.md`).
 - **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 no código-fonte, apontando no `update-plan.md` (com resumo `git diff --stat`) exatamente quais seções da documentação precisam ser atualizadas quando o código mudar.
+- **Landing Page e Showcase Oficial**: Apresentação interativa em `docs/index.html` pronta para publicação no GitHub Pages (pasta `/docs`), com vídeo demonstrativo, alternador de idiomas e navegação direta para o Manual Completo e Guia Rápido.
 
 ---
 
@@ -51,8 +52,17 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 ```text
 project-html-docs/
 ├── assets/
-│   ├── document.css            # Estilos visuais, layout flexível e temas (Verde, Azul e Vermelho)
+│   ├── document.css            # Estilos visuais, layout flexível e temas (Vermelho e Azul)
 │   └── document.js             # Lógica de busca, temas, subnavegação H3 e controles
+├── docs/                       # Landing page e documentação oficial (GitHub Pages)
+│   ├── index.html              # Landing page interativa bilíngue (PT/EN)
+│   ├── landing.css             # Estilos da landing page
+│   ├── landing.js              # Interatividade da landing page
+│   ├── landing-i18n.mjs        # Dicionários de tradução e capítulos do vídeo
+│   ├── demo.mp4                # Vídeo demonstrativo da skill
+│   ├── demo-poster.png         # Pôster do vídeo demonstrativo
+│   ├── documentacao.html       # Manual completo do próprio gerador
+│   └── documentacao-resumida.html # Guia rápido do próprio gerador
 ├── examples/
 │   ├── minimal/                # Exemplo simples de documentação funcional
 │   └── showcase/               # Exemplo completo com as 11 seções e diagramas avançados
@@ -71,7 +81,8 @@ project-html-docs/
 ├── tests/
 │   ├── build.test.mjs          # Testes do compilador, modo summary e validador HTML
 │   ├── diagrams.test.mjs       # Testes unitários do motor de diagramas e temas
-│   └── dossier.test.mjs        # Testes de mapeamento estático, AST e análise de impacto
+│   ├── dossier.test.mjs        # Testes de mapeamento estático, AST e análise de impacto
+│   └── landing.test.mjs        # Testes da landing page, i18n e integridade
 ├── CHANGELOG.md                # Registro de novidades de cada versão
 ├── package.json                # Dependências fixadas e scripts de execução
 ├── README.md                   # Guia introdutório do projeto
@@ -268,10 +279,10 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 
 ## Testes automatizados
 
-A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios e análise de impacto:
+A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios, análise de impacto e integridade da landing page:
 
 ```bash
-# Rodar todos os testes unitários (30 testes)
+# Rodar todos os testes unitários (33 testes)
 npm test
 
 # Compilar os exemplos disponíveis
@@ -283,9 +294,9 @@ npm run build:showcase
 
 ## Histórico de releases
 
-- **[v1.7.0](CHANGELOG.md#170--2026-11-15)**: Temas nomeados **Verde**, **Azul** e **Vermelho**, com vermelho como padrão; harmonização cromática dos diagramas 2D no tema verde; remoção da contenção de roda que travava a página ao passar sobre tabelas curtas.
+- **[v1.7.0](CHANGELOG.md#170--2026-11-15)**: Temas por cor (Vermelho padrão e Azul), remoção de retenção de rolagem sobre tabelas, nova landing page oficial em `docs/index.html` com vídeo demonstrativo, internacionalização e manual completo do gerador em `docs/`.
 - **[v1.6.0](CHANGELOG.md#160--2026-11-14)**: Modo Guia Rápido / Visão Resumida (`mode: "summary"`, `--mode summary`), badges de tempo de leitura (`~N min de leitura`), link seguro `companionDoc`, contagem de palavras e avisos de concisão no recibo de validação.
-- **[v1.5.0](CHANGELOG.md#150--2026-11-14)**: Sidebar flex com scroll independente, subnavegação H3, botão voltar ao topo, harmonização cromática do tema Santander nos diagramas SVG, prevenção de colisão de rótulos, validação geométrica de SVGs, extração de cadeias PySpark, pipelines ADF, Scala e suporte a `.docignore`.
+- **[v1.5.0](CHANGELOG.md#150--2026-11-14)**: Sidebar flex com scroll independente, subnavegação H3, botão voltar ao topo, harmonização cromática do tema nos diagramas SVG, prevenção de colisão de rótulos, validação geométrica de SVGs, extração de cadeias PySpark, pipelines ADF, Scala e suporte a `.docignore`.
 - **[v1.4.0](CHANGELOG.md#140--2026-11-14)**: Mapeamento estático profundo (AST Python, Databricks notebooks, PySpark, Event Hubs, Cosmos DB, ADLS Gen2, APIs), reading waves e análise incremental de impacto (`verify.mjs --impact`).
 - **[v1.3.0](CHANGELOG.md#130--2026-11-14)**: Motor SVG 2D determinístico (`diagrams.mjs`), filtro de perfil de leitor, busca com highlight, tema Santander, controles de zoom e filtro local dinâmico em tabelas.
 - **[v1.2.0](CHANGELOG.md#120--2026-11-14)**: Reengenharia de gráficos de barra SVG, ergonomia de leitura (76ch) e cabeçalhos fixos em tabelas.

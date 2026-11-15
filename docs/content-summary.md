@@ -10,7 +10,7 @@ O mesmo documento atende dois públicos. Leitores de negócio encontram propósi
 <div class="card"><h3>Operação</h3><p>Pré-requisitos, comandos, verificação de integridade e recuperação de falhas previsíveis.</p></div>
 </div>
 
-A versão atual é a **1.7.0**, com **30 testes** passando em 15/11/2026. Os temas são **Verde**, **Azul** e **Vermelho**; o vermelho é o padrão, a escolha fica no `localStorage` e valores antigos são migrados (`default` → azul, `santander` → vermelho). O tema verde harmoniza shell, sidebar, hero e diagramas 2D sem apagar as cores semânticas de sucesso, atenção e erro.
+A versão atual é a **1.7.0**, com **30 testes** passando em 15/11/2026. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). O tema vermelho harmoniza shell, sidebar, hero e diagramas 2D sem apagar as cores semânticas de sucesso, atenção e erro.
 
 > Regra de negócio: documentar é descrever o comportamento atual e comprovável. Planos históricos e intenções não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.
 
@@ -88,7 +88,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
 npm test
 ```
 
-O manifesto exige `title`, `subtitle`, `version`, `updated`, `content` e `sections`. Aceita `language`, `theme` (`verde`, `azul` ou `vermelho`), `mode` (`full` ou `summary`), `cards`, `companionDoc`, `repoRoot`, `revision`, `dataAsOf` e `sources`. Cada seção tem `id`, `title`, `audience` e, idealmente, `sources`.
+O manifesto exige `title`, `subtitle`, `version`, `updated`, `content` e `sections`. Aceita `language`, `theme` (`vermelho` ou `azul`), `mode` (`full` ou `summary`), `cards`, `companionDoc`, `repoRoot`, `revision`, `dataAsOf` e `sources`. Cada seção tem `id`, `title`, `audience` e, idealmente, `sources`.
 
 | Comando | Resultado |
 |---|---|

@@ -178,11 +178,11 @@
     });
   });
 
-  // Seletor de paleta de cores (Verde, Azul e Vermelho) sem alterar layout.
+  // Seletor de paleta de cores (Vermelho e Azul) sem alterar layout.
   // O vermelho é o padrão; valores antigos do localStorage são migrados.
   const themeBtns = [...document.querySelectorAll('[data-theme-select]')];
   if (themeBtns.length) {
-    const themeAliases = { verde: 'verde', azul: 'azul', vermelho: 'vermelho', default: 'azul', santander: 'vermelho' };
+    const themeAliases = { vermelho: 'vermelho', azul: 'azul', santander: 'vermelho', default: 'azul' };
     const normalizeTheme = theme => themeAliases[theme] || 'vermelho';
     const applyTheme = (theme, persist = false) => {
       const target = normalizeTheme(theme);

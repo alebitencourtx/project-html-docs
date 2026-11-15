@@ -102,53 +102,6 @@
   --dialog-backdrop: #0e0e0ecc;
 }
 
-:root[data-theme="verde"] {
-  --ink: #122c22;
-  --muted: #4c6b5b;
-  --paper: #f3f7f5;
-  --surface: #ffffff;
-  --line: #d5e5dc;
-  --accent: #0f7a52;
-  --accent-hover: #0a5f3f;
-  --nav: #0b2a20;
-  --nav-text: #e8f5ee;
-  --nav-brand: #8fe3b8;
-  --nav-label: #bcd9cb;
-  --nav-input-bg: #143e2f;
-  --nav-input-border: #3c6654;
-  --nav-link: #d5e9df;
-  --nav-num: #86b9a0;
-  --nav-active: #1c5a43;
-  --nav-meta: #a6c9b9;
-  --nav-count: #b7e6cd;
-  --nav-clear-hover: #225c47;
-  --nav-divider: rgba(255, 255, 255, 0.12);
-  --hero-bg: linear-gradient(120deg, #0b2f24, #0f6046);
-  --hero-eyebrow: #a7f3d0;
-  --hero-subtitle: #dcefe5;
-  --soft: #e8f6ee;
-  --code: #0e2b20;
-  --code-inline-bg: #edf5f1;
-  --code-btn: #24513e;
-  --code-btn-border: #3c6654;
-  --card-bg: #f8fcfa;
-  --th-bg: #e9f4ee;
-  --th-fg: #2a5340;
-  --figure-bg: #f7fcf9;
-  --figure-note: #365a49;
-  --toolbar-bg: #e7f0ea;
-  --toolbar-fg: #3d5c4c;
-  --aud-business-bg: #e8f6ee;
-  --aud-business-fg: #0d6b46;
-  --aud-tech-bg: #eef0fa;
-  --aud-tech-fg: #5f4f96;
-  --aud-ops-bg: #fff3df;
-  --aud-ops-fg: #805c20;
-  --aud-all-bg: #eef1f4;
-  --aud-all-fg: #4a6373;
-  --focus-ring: #f1ad35;
-  --dialog-backdrop: #0b2a20bb;
-}
 
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); }
@@ -212,9 +165,8 @@ html[data-mode="summary"] .content { padding: 24px clamp(24px, 4vw, 64px) 56px; 
 .audience-filter button.is-active,
 .theme-filter button.is-active { background: #ffffff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(16, 43, 61, 0.08); }
 .theme-swatch { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-.theme-swatch-verde { background: #0f7a52; }
-.theme-swatch-azul { background: #087f8c; }
 .theme-swatch-vermelho { background: #990000; }
+.theme-swatch-azul { background: #087f8c; }
 .toolbar-actions { display: inline-flex; gap: 8px; flex-wrap: wrap; }
 
 .doc-section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin: 0 0 22px; scroll-margin-top: 20px; overflow: clip; transition: opacity 0.18s ease; }
@@ -486,77 +438,6 @@ figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top
 :root[data-theme="vermelho"] .schema-sub-bg-json { fill: #f5f5f5; }
 :root[data-theme="vermelho"] .schema-sub-fg-json { fill: #262626; }
 
-/* Green theme SVG & badge palette harmonization (colors only) */
-:root[data-theme="verde"] .chart .chart-bar[fill="#087f8c"] { fill: #0f7a52; }
-:root[data-theme="verde"] .chart .chart-track { fill: #e7f0ea; }
-:root[data-theme="verde"] .chart .chart-label { fill: #1b3a2c; }
-:root[data-theme="verde"] .chart .chart-value-outside { fill: #122c22; }
-:root[data-theme="verde"] .schema-svg path[fill="#102b3d"],
-:root[data-theme="verde"] g.entity rect.er-card-header { fill: #0b2a20 !important; stroke: #0b2a20 !important; }
-:root[data-theme="verde"] .schema-svg rect[fill="#1d4b68"] { fill: #0f7a52; }
-:root[data-theme="verde"] .schema-svg rect[stroke="#9fb6c5"] { stroke: #a9c9b7; }
-:root[data-theme="verde"] .schema-svg rect[fill="#edf3f6"] { fill: #edf6f1; }
-:root[data-theme="verde"] .schema-svg path[fill="#0f5f68"] { fill: #0f7a52; }
-:root[data-theme="verde"] .schema-svg rect[fill="#187d88"] { fill: #0a5f3f; }
-:root[data-theme="verde"] .schema-svg rect[stroke="#8ec7cd"] { stroke: #8fc9ae; }
-:root[data-theme="verde"] .schema-svg rect[fill="#eef8f8"] { fill: #e8f6ee; }
-:root[data-theme="verde"] td code.col-badge-partition { background: #e8f6ee; color: #0f7a52; border-color: #86d3ae; }
-:root[data-theme="verde"] .sol-zone-warm .sol-zone-bg { fill: #eaf7f0; stroke: #b9ddc9; }
-:root[data-theme="verde"] .sol-zone-warm .sol-zone-title { fill: #0f6b46; }
-:root[data-theme="verde"] .sol-zone-warm .sol-zone-subtitle { fill: #0a5f3f; }
-:root[data-theme="verde"] .sol-zone-cool .sol-zone-bg { fill: #f1f5f2; stroke: #d5e5dc; }
-:root[data-theme="verde"] .sol-zone-cool .sol-zone-title { fill: #1b3a2c; }
-:root[data-theme="verde"] .sol-zone-cool .sol-zone-subtitle { fill: #4c6b5b; }
-:root[data-theme="verde"] .sol-zone-teal .sol-zone-bg { fill: #e8f6ee; stroke: #b9ddc9; }
-:root[data-theme="verde"] .sol-zone-teal .sol-zone-title { fill: #0a5f3f; }
-:root[data-theme="verde"] .sol-zone-teal .sol-zone-subtitle { fill: #4c6b5b; }
-:root[data-theme="verde"] .sol-node-role-step .sol-node-frame { stroke: #2f5b47; }
-:root[data-theme="verde"] .sol-node-role-step .sol-node-accent,
-:root[data-theme="verde"] .sol-node-role-step .sol-node-step-circle { fill: #0b2a20; }
-:root[data-theme="verde"] .sol-node-role-step .sol-node-title { fill: #122c22; }
-:root[data-theme="verde"] .sol-node-role-step .sol-node-meta-bg { fill: #e9f4ee; }
-:root[data-theme="verde"] .sol-node-role-step .sol-node-meta-fg { fill: #2a5340; }
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-frame { stroke: #0f7a52; }
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-header { fill: #e8f6ee; stroke: #0f7a52; }
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-accent,
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-step-circle { fill: #0f7a52; }
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-title { fill: #0a5f3f; }
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-meta-bg { fill: #e8f6ee; }
-:root[data-theme="verde"] .sol-node-role-analytical .sol-node-meta-fg { fill: #0a5f3f; }
-:root[data-theme="verde"] .sol-node-role-output .sol-node-frame { stroke: #0a5f3f; }
-:root[data-theme="verde"] .sol-node-role-output .sol-node-header { fill: #e8f6ee; stroke: #0a5f3f; }
-:root[data-theme="verde"] .sol-node-role-output .sol-node-accent,
-:root[data-theme="verde"] .sol-node-role-output .sol-node-step-circle { fill: #0a5f3f; }
-:root[data-theme="verde"] .sol-node-role-output .sol-node-title { fill: #0a4a33; }
-:root[data-theme="verde"] .sol-node-role-output .sol-node-meta-bg { fill: #dff2e7; }
-:root[data-theme="verde"] .sol-node-role-output .sol-node-meta-fg { fill: #0a5f3f; }
-:root[data-theme="verde"] .sol-node-role-info .sol-node-frame { stroke: #5b7a6a; }
-:root[data-theme="verde"] .sol-node-role-info .sol-node-header { fill: #f1f5f2; stroke: #5b7a6a; }
-:root[data-theme="verde"] .sol-node-role-info .sol-node-accent,
-:root[data-theme="verde"] .sol-node-role-info .sol-node-step-circle { fill: #3d5c4c; }
-:root[data-theme="verde"] .sol-node-role-info .sol-node-title { fill: #1b3a2c; }
-:root[data-theme="verde"] .sol-node-role-info .sol-node-meta-bg { fill: #e9f4ee; }
-:root[data-theme="verde"] .sol-node-role-info .sol-node-meta-fg { fill: #2a5340; }
-:root[data-theme="verde"] .sol-edge-role-analytical { stroke: #3f6b58; }
-:root[data-theme="verde"] .sol-arrow-head-analytical { fill: #3f6b58; }
-:root[data-theme="verde"] .sol-edge-label-analytical rect { fill: #f1f5f2; stroke: #a9c9b7; }
-:root[data-theme="verde"] .sol-edge-label-analytical text { fill: #1b3a2c; }
-:root[data-theme="verde"] .sol-edge-role-output,
-:root[data-theme="verde"] .sol-edge-lineage path { stroke: #0f7a52; }
-:root[data-theme="verde"] .sol-arrow-head-output,
-:root[data-theme="verde"] .lineage-arrow-head { fill: #0f7a52; }
-:root[data-theme="verde"] .sol-edge-label-output rect,
-:root[data-theme="verde"] .sol-edge-label-lineage rect { fill: #e8f6ee; stroke: #86d3ae; }
-:root[data-theme="verde"] .sol-edge-label-output text,
-:root[data-theme="verde"] .sol-edge-label-lineage text { fill: #0a5f3f; }
-:root[data-theme="verde"] .schema-header-mart { fill: #0f7a52; }
-:root[data-theme="verde"] .schema-tag-bg-mart { fill: #0a5f3f; }
-:root[data-theme="verde"] .schema-sub-bg-mart { fill: #e8f6ee; }
-:root[data-theme="verde"] .schema-sub-fg-mart { fill: #0a5f3f; }
-:root[data-theme="verde"] .schema-header-json { fill: #2a5340; }
-:root[data-theme="verde"] .schema-tag-bg-json { fill: #3f6b58; }
-:root[data-theme="verde"] .schema-sub-bg-json { fill: #edf6f1; }
-:root[data-theme="verde"] .schema-sub-fg-json { fill: #1b3a2c; }
 
 /* Semantic Subgraphs & Architectural Styling (Mermaid fallback) */
 g.subgraph[data-id*="stream" i] > rect:nth-of-type(1),
@@ -766,13 +647,13 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .hero h1 { font-size: 30px; }
   th { position: static; box-shadow: none; }
 }
-</style></head><body><a class="skip" href="#main">Ir para o conteúdo</a><aside class="sidebar"><p class="brand">Guia rápido</p><strong>project-html-docs · Guia Rápido</strong><label for="search">Pesquisar documentação</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="Buscar tópicos… (/)"><button id="search-clear" type="button" hidden aria-label="Limpar busca">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="Conteúdo"><a href="#resumo" data-audience="all"><span>01</span>O que é e para quem</a><a href="#solucao" data-audience="all"><span>02</span>Como funciona</a><a href="#uso" data-audience="operations"><span>03</span>Como usar</a><a href="#regras" data-audience="technical"><span>04</span>Regras e limites</a><a href="#operacao" data-audience="operations"><span>05</span>Verificação e atualização</a><a href="#referencias" data-audience="all"><span>06</span>Referências essenciais</a><a href="#document-references" data-audience="technical">Referências</a></nav><small>HTML único · leitura offline<br>1.7.0 · 2026-11-15</small></aside><main id="main"><header class="hero"><p class="eyebrow">project-html-docs · guia rápido</p><h1>project-html-docs · Guia Rápido</h1><p class="subtitle">Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.</p><div class="badges"><span class="badge-mode">Guia rápido</span><span>~8 min de leitura</span><span>1.7.0</span><span>Atualizado: 2026-11-15</span><span>HTML único · leitura offline</span><span>Dados observados em: 2026-11-15 · snapshot local de implementação</span><a class="hero-companion" href="documentacao.html">Manual completo ↗</a></div></header><div class="content"><div class="hero-cards"><article class="metric"><span class="label">Entrega</span><strong>1 HTML offline</strong><p>CSS, JavaScript e SVG embutidos; nenhum servidor ou CDN na leitura.</p></article><article class="metric"><span class="label">Descoberta</span><strong>0 tokens de LLM</strong><p>inspect_repo.py usa AST e regex, sem executar o projeto analisado.</p></article><article class="metric"><span class="label">Integridade</span><strong>SHA-256 + Git</strong><p>O recibo registra as fontes; o verify detecta drift e impacto.</p></article><article class="metric"><span class="label">Temas</span><strong>Vermelho padrão</strong><p>Verde, Azul e Vermelho; a preferência fica no navegador.</p></article></div><div class="toolbar"><span class="hint">Navegue por assunto ou filtre por perfil de leitura.</span><div class="audience-filter" role="group" aria-label="Perfil de leitura"><button type="button" data-audience-filter="all" class="is-active">Todas</button><button type="button" data-audience-filter="business">Visão de negócio</button><button type="button" data-audience-filter="technical">Visão técnica</button><button type="button" data-audience-filter="operations">Operação</button></div><div class="theme-filter" role="group" aria-label="Tema de cores"><button type="button" data-theme-select="verde" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-verde" aria-hidden="true"></span>Verde</button><button type="button" data-theme-select="azul" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-azul" aria-hidden="true"></span>Azul</button><button type="button" data-theme-select="vermelho" class="is-active" aria-pressed="true"><span class="theme-swatch theme-swatch-vermelho" aria-hidden="true"></span>Vermelho</button></div><div class="toolbar-actions"><button id="expand" type="button">Expandir tudo</button><button id="collapse" type="button">Recolher tudo</button><button id="print" type="button">Imprimir / PDF</button></div></div><p id="no-results" hidden>Nenhuma seção encontrada.</p><details class="doc-section" id="resumo" data-audience="all" open><summary class="section-heading"><span class="number">01</span><h2>O que é e para quem</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O <code>project-html-docs</code> transforma o <strong>estado implementado</strong> de um repositório em um manual técnico e funcional, entregue como <strong>um único HTML offline</strong>. Ele não audita, não redesenha e não promete modernização: explica o que existe, como se conecta, quais regras aplica e como é operado.</p>
+</style></head><body><a class="skip" href="#main">Ir para o conteúdo</a><aside class="sidebar"><p class="brand">Guia rápido</p><strong>project-html-docs · Guia Rápido</strong><label for="search">Pesquisar documentação</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="Buscar tópicos… (/)"><button id="search-clear" type="button" hidden aria-label="Limpar busca">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="Conteúdo"><a href="#resumo" data-audience="all"><span>01</span>O que é e para quem</a><a href="#solucao" data-audience="all"><span>02</span>Como funciona</a><a href="#uso" data-audience="operations"><span>03</span>Como usar</a><a href="#regras" data-audience="technical"><span>04</span>Regras e limites</a><a href="#operacao" data-audience="operations"><span>05</span>Verificação e atualização</a><a href="#referencias" data-audience="all"><span>06</span>Referências essenciais</a><a href="#document-references" data-audience="technical">Referências</a></nav><small>HTML único · leitura offline<br>1.7.0 · 2026-11-15</small></aside><main id="main"><header class="hero"><p class="eyebrow">project-html-docs · guia rápido</p><h1>project-html-docs · Guia Rápido</h1><p class="subtitle">Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.</p><div class="badges"><span class="badge-mode">Guia rápido</span><span>~8 min de leitura</span><span>1.7.0</span><span>Atualizado: 2026-11-15</span><span>HTML único · leitura offline</span><span>Dados observados em: 2026-11-15 · snapshot local de implementação</span><a class="hero-companion" href="documentacao.html">Manual completo ↗</a></div></header><div class="content"><div class="hero-cards"><article class="metric"><span class="label">Entrega</span><strong>1 HTML offline</strong><p>CSS, JavaScript e SVG embutidos; nenhum servidor ou CDN na leitura.</p></article><article class="metric"><span class="label">Descoberta</span><strong>0 tokens de LLM</strong><p>inspect_repo.py usa AST e regex, sem executar o projeto analisado.</p></article><article class="metric"><span class="label">Integridade</span><strong>SHA-256 + Git</strong><p>O recibo registra as fontes; o verify detecta drift e impacto.</p></article><article class="metric"><span class="label">Temas</span><strong>Vermelho padrão</strong><p>Vermelho e Azul; a preferência fica no navegador.</p></article></div><div class="toolbar"><span class="hint">Navegue por assunto ou filtre por perfil de leitura.</span><div class="audience-filter" role="group" aria-label="Perfil de leitura"><button type="button" data-audience-filter="all" class="is-active">Todas</button><button type="button" data-audience-filter="business">Visão de negócio</button><button type="button" data-audience-filter="technical">Visão técnica</button><button type="button" data-audience-filter="operations">Operação</button></div><div class="theme-filter" role="group" aria-label="Tema de cores"><button type="button" data-theme-select="vermelho" class="is-active" aria-pressed="true"><span class="theme-swatch theme-swatch-vermelho" aria-hidden="true"></span>Vermelho</button><button type="button" data-theme-select="azul" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-azul" aria-hidden="true"></span>Azul</button></div><div class="toolbar-actions"><button id="expand" type="button">Expandir tudo</button><button id="collapse" type="button">Recolher tudo</button><button id="print" type="button">Imprimir / PDF</button></div></div><p id="no-results" hidden>Nenhuma seção encontrada.</p><details class="doc-section" id="resumo" data-audience="all" open><summary class="section-heading"><span class="number">01</span><h2>O que é e para quem</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O <code>project-html-docs</code> transforma o <strong>estado implementado</strong> de um repositório em um manual técnico e funcional, entregue como <strong>um único HTML offline</strong>. Ele não audita, não redesenha e não promete modernização: explica o que existe, como se conecta, quais regras aplica e como é operado.</p>
 <p>O mesmo documento atende dois públicos. Leitores de negócio encontram propósito, entradas, saídas, grão, regras e limites. Leitores técnicos encontram arquitetura, fluxos, contratos, dicionários, comandos e rastreabilidade entre fonte e afirmação. A interface oferece filtro por perfil, busca local, tabelas pesquisáveis, diagramas vetoriais e impressão.</p>
 <div class="cards">
 <div class="card"><h3>Negócio</h3><p>O que o projeto entrega, quem consome, qual o grão e quais regras mudam o resultado.</p></div>
 <div class="card"><h3>Técnico</h3><p>Componentes, processamento, contratos de arquivos, dependências e decisões de implementação.</p></div>
 <div class="card"><h3>Operação</h3><p>Pré-requisitos, comandos, verificação de integridade e recuperação de falhas previsíveis.</p></div>
-</div><p>A versão atual é a <strong>1.7.0</strong>, com <strong>30 testes</strong> passando em 15/11/2026. Os temas são <strong>Verde</strong>, <strong>Azul</strong> e <strong>Vermelho</strong>; o vermelho é o padrão, a escolha fica no <code>localStorage</code> e valores antigos são migrados (<code>default</code> → azul, <code>santander</code> → vermelho). O tema verde harmoniza shell, sidebar, hero e diagramas 2D sem apagar as cores semânticas de sucesso, atenção e erro.</p>
+</div><p>A versão atual é a <strong>1.7.0</strong>, com <strong>30 testes</strong> passando em 15/11/2026. Os temas são <strong>Vermelho</strong> (primeiro e padrão) e <strong>Azul</strong>; a escolha fica no <code>localStorage</code> e valores antigos são migrados (<code>santander</code> → vermelho, <code>default</code> → azul). O tema vermelho harmoniza shell, sidebar, hero e diagramas 2D sem apagar as cores semânticas de sucesso, atenção e erro.</p>
 <blockquote class="callout-rule">
 <p>Regra de negócio: documentar é descrever o comportamento atual e comprovável. Planos históricos e intenções não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.</p>
 </blockquote>
@@ -832,7 +713,7 @@ node scripts/build.mjs docs/document.json --out docs/documentacao.html
 node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
 
 # 5. Rodar a suíte quando o gerador mudar
-npm test</code></pre><p>O manifesto exige <code>title</code>, <code>subtitle</code>, <code>version</code>, <code>updated</code>, <code>content</code> e <code>sections</code>. Aceita <code>language</code>, <code>theme</code> (<code>verde</code>, <code>azul</code> ou <code>vermelho</code>), <code>mode</code> (<code>full</code> ou <code>summary</code>), <code>cards</code>, <code>companionDoc</code>, <code>repoRoot</code>, <code>revision</code>, <code>dataAsOf</code> e <code>sources</code>. Cada seção tem <code>id</code>, <code>title</code>, <code>audience</code> e, idealmente, <code>sources</code>.</p>
+npm test</code></pre><p>O manifesto exige <code>title</code>, <code>subtitle</code>, <code>version</code>, <code>updated</code>, <code>content</code> e <code>sections</code>. Aceita <code>language</code>, <code>theme</code> (<code>vermelho</code> ou <code>azul</code>), <code>mode</code> (<code>full</code> ou <code>summary</code>), <code>cards</code>, <code>companionDoc</code>, <code>repoRoot</code>, <code>revision</code>, <code>dataAsOf</code> e <code>sources</code>. Cada seção tem <code>id</code>, <code>title</code>, <code>audience</code> e, idealmente, <code>sources</code>.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -1309,11 +1190,11 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
     });
   });
 
-  // Seletor de paleta de cores (Verde, Azul e Vermelho) sem alterar layout.
+  // Seletor de paleta de cores (Vermelho e Azul) sem alterar layout.
   // O vermelho é o padrão; valores antigos do localStorage são migrados.
   const themeBtns = [...document.querySelectorAll('[data-theme-select]')];
   if (themeBtns.length) {
-    const themeAliases = { verde: 'verde', azul: 'azul', vermelho: 'vermelho', default: 'azul', santander: 'vermelho' };
+    const themeAliases = { vermelho: 'vermelho', azul: 'azul', santander: 'vermelho', default: 'azul' };
     const normalizeTheme = theme => themeAliases[theme] || 'vermelho';
     const applyTheme = (theme, persist = false) => {
       const target = normalizeTheme(theme);

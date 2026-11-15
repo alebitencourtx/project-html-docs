@@ -16,7 +16,7 @@ O fluxo da skill é deliberadamente separado em duas camadas. A primeira é **de
 
 > Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.
 
-A versão atual é a **1.7.0**, com **30 testes automatizados** passando em 15/11/2026. Ela consolida o **Guia Rápido** (`mode: "summary"`) ao lado do manual completo, os temas **Verde**, **Azul** e **Vermelho** (vermelho padrão) e a correção da roda sobre tabelas curtas, mantendo a mesma base de renderização e o mesmo recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
+A versão atual é a **1.7.0**, com **30 testes automatizados** passando em 15/11/2026. Ela consolida o **Guia Rápido** (`mode: "summary"`) ao lado do manual completo, os temas **Vermelho** (padrão) e **Azul** e a correção da roda sobre tabelas curtas, mantendo a mesma base de renderização e o mesmo recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
 
 ## Visão funcional e escopo
 
@@ -69,9 +69,9 @@ A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.
 {"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":16,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":3,"variant":"neutral"}]}
 ```
 
-O histórico recente mostra a evolução do produto em camadas. A versão 1.2.0 reformulou os gráficos de barra e ergonomia de leitura; a 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho (então chamado Santander); a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu a geometria dos diagramas, a subnavegação H3, o botão de topo e os extratores de engenharia de dados; a 1.6.0 trouxe o modo resumido; a 1.7.0 renomeou os temas para **Verde**, **Azul** e **Vermelho**, tornou o vermelho o padrão e corrigiu a rolagem sobre tabelas curtas.
+O histórico recente mostra a evolução do produto em camadas. A versão 1.2.0 reformulou os gráficos de barra e ergonomia de leitura; a 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho (então chamado Santander); a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu a geometria dos diagramas, a subnavegação H3, o botão de topo e os extratores de engenharia de dados; a 1.6.0 trouxe o modo resumido; a 1.7.0 renomeou os temas para **Vermelho** e **Azul**, tornou o vermelho o padrão e corrigiu a rolagem sobre tabelas curtas.
 
-Na interface, o seletor oferece **Verde**, **Azul** e **Vermelho**; o vermelho é o padrão, a escolha é persistida em `localStorage` e valores antigos são migrados (`default` → azul, `santander` → vermelho). O tema verde harmoniza shell, sidebar, hero e os diagramas 2D, sem apagar as cores semânticas de sucesso, atenção e erro.
+Na interface, o seletor oferece **Vermelho** (primeiro e padrão) e **Azul**; a escolha é persistida em `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). O tema vermelho harmoniza shell, sidebar, hero e os diagramas 2D, sem apagar as cores semânticas de sucesso, atenção e erro.
 
 <div class="cards">
 <div class="card"><h3>Núcleo determinístico</h3><p>Inspeção sem execução, renderização em tempo de build, validação estrutural e receipt com hashes.</p></div>
@@ -104,7 +104,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
 npm test
 ```
 
-O manifesto é o contrato do documento. Ele exige `title`, `subtitle`, `version`, `updated`, `content` e `sections`; aceita `language` (`pt-BR` ou `en`), `theme` (`verde`, `azul` ou `vermelho`, com vermelho como padrão), `mode` (`full` ou `summary`), `cards`, `companionDoc`, `repoRoot`, `revision`, `dataAsOf` e `sources`. Cada seção tem `id`, `title`, `audience` e, idealmente, `sources`.
+O manifesto é o contrato do documento. Ele exige `title`, `subtitle`, `version`, `updated`, `content` e `sections`; aceita `language` (`pt-BR` ou `en`), `theme` (`vermelho` ou `azul`, com vermelho como padrão), `mode` (`full` ou `summary`), `cards`, `companionDoc`, `repoRoot`, `revision`, `dataAsOf` e `sources`. Cada seção tem `id`, `title`, `audience` e, idealmente, `sources`.
 
 | Comando | Efeito | Saída |
 |---|---|---|
@@ -487,7 +487,7 @@ O gerador não usa banco de dados. O modelo é um conjunto de arquivos com papé
 | `sections` | array | Sim | Seções na ordem em que aparecem no Markdown |
 | `sources` | array | Recomendado | Fontes locais com id, path e descrição |
 | `language` | `pt-BR` ou `en` | Não | Idioma do shell e dos rótulos |
-| `theme` | `verde`, `azul` ou `vermelho` | Não | Tema inicial; ausência equivale a vermelho |
+| `theme` | `vermelho` ou `azul` | Não | Tema inicial; ausência equivale a vermelho |
 | `mode` | `full` ou `summary` | Não | Preset de detalhe do documento |
 | `eyebrow` | string | Não | Sobrelinha do hero; tem padrão por idioma |
 | `cards` | array de até 4 | Não | Cartões de destaque do hero |
@@ -621,7 +621,7 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | Hashes + Git no recibo | Drift detectável e impacto rastreável | Não há prova semântica nem de execução |
 | Sanitização e validação | Bloqueiam HTML perigoso, ativos externos e estruturas quebradas | Conteúdo precisa respeitar o contrato de autoria |
 | Interface desktop-first | Layout confortável em ~1440 px, com sidebar e diagramas amplos | Não há otimização para mobile ou telas estreitas |
-| Temas por cor | Vermelho padrão, com Verde e Azul alternáveis e preferência persistida | A troca de tema não altera layout, conteúdo ou semântica |
+| Temas por cor | Vermelho primeiro e padrão, com Azul alternável e preferência persistida | A troca de tema não altera layout, conteúdo ou semântica |
 | Rolagem de tabelas | A roda rola a tabela quando ela tem overflow e a página quando não tem | Tabelas altas ainda rolam internamente antes de encadear |
 | Dependências fixadas | Builds reproduzíveis e auditoria de versões | Atualização exige mudança consciente do lockfile |
 | Separação skill × projeto | O gerador é reutilizável; o conteúdo fica no repositório documentado | A skill precisa ser instalada ou referenciada no ambiente de autoria |
