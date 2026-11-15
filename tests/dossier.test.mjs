@@ -327,3 +327,66 @@ test('inspect_repo.py v1.5.0 extracts chained PySpark I/O, %run/notebook.run, en
     assert.ok(planMd.includes('UNITY_CATALOG'));
   }));
 
+test('verify.mjs detects skill renderer updates independently of source drift and recommends rebuild-only', () =>
+  withTempDir(async (dir) => {
+    const repo = path.join(dir, 'repo');
+    const docs = path.join(dir, 'docs');
+    await fs.mkdir(path.join(repo, 'src'), { recursive: true });
+    await fs.mkdir(docs, { recursive: true });
+
+    await fs.writeFile(path.join(repo, 'src/app.py'), 'print("ok")\n');
+    const manifest = {
+      title: 'Renderer Drift Test',
+      subtitle: 'Skill update detection',
+      version: '1.0',
+      updated: '2026-11-15',
+      repoRoot: '../repo',
+      content: 'content.md',
+      sections: [{ id: 'overview', title: 'Overview', audience: 'all', sources: ['app'] }],
+      sources: [{ id: 'app', path: 'src/app.py', description: 'App' }],
+    };
+    await fs.writeFile(path.join(docs, 'document.json'), JSON.stringify(manifest, null, 2));
+    await fs.writeFile(path.join(docs, 'content.md'), '## Overview\n\nUp to date prose.\n');
+
+    const outHtml = path.join(docs, 'doc.html');
+    const receipt = await build(path.join(docs, 'document.json'), outHtml);
+    assert.match(receipt.rendererSha256, /^[a-f0-9]{64}$/);
+
+    const receiptPath = path.join(docs, 'doc.validation.json');
+    const dossierPath = path.join(docs, 'inventory.json');
+    execFileSync('python3', [path.join(root, 'scripts/inspect_repo.py'), repo, '--out', dossierPath]);
+
+    // 1. Freshly built HTML matches current skill renderer
+    const freshImpact = await analyzeImpact(path.join(docs, 'document.json'), receiptPath, { dossierFile: dossierPath });
+    assert.equal(freshImpact.ok, true);
+    assert.equal(freshImpact.renderer.matches, true);
+    assert.equal(freshImpact.renderer.needsRebuild, false);
+    assert.match(renderUpdatePlan(freshImpact), /Sincronizado \(nenhuma atualização necessária\)/);
+
+    // 2. Simulate an older skill renderer hash while source files remain unchanged
+    const olderReceipt = { ...receipt, skillVersion: '1.6.0', rendererSha256: '0'.repeat(64) };
+    await fs.writeFile(receiptPath, JSON.stringify(olderReceipt, null, 2));
+
+    const skillDriftImpact = await analyzeImpact(path.join(docs, 'document.json'), receiptPath, { dossierFile: dossierPath });
+    assert.equal(skillDriftImpact.ok, true);
+    assert.equal(skillDriftImpact.renderer.matches, false);
+    assert.equal(skillDriftImpact.renderer.needsRebuild, true);
+    assert.equal(skillDriftImpact.impactedSections.length, 0);
+    const driftPlan = renderUpdatePlan(skillDriftImpact);
+    assert.match(driftPlan, /Template da skill atualizado/);
+    assert.match(driftPlan, /build\.mjs .*--force/);
+    assert.match(driftPlan, /não é necessário reler o repositório/);
+
+    // 3. Simulate a legacy receipt built before rendererSha256 existed
+    const legacyReceipt = { ...receipt, skillVersion: '1.7.0' };
+    delete legacyReceipt.rendererSha256;
+    await fs.writeFile(receiptPath, JSON.stringify(legacyReceipt, null, 2));
+
+    const legacyImpact = await analyzeImpact(path.join(docs, 'document.json'), receiptPath, { dossierFile: dossierPath });
+    assert.equal(legacyImpact.ok, true);
+    assert.equal(legacyImpact.renderer.matches, null);
+    assert.equal(legacyImpact.renderer.needsRebuild, true);
+    assert.match(renderUpdatePlan(legacyImpact), /recibo legado/);
+  }));
+
+

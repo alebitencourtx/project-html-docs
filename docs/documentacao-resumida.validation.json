@@ -2,42 +2,43 @@
   "passed": true,
   "errors": [],
   "mode": "summary",
-  "wordCount": 1651,
+  "wordCount": 1683,
   "readingMinutes": 9,
   "sections": 6,
   "contentSections": 6,
   "referenceBlocks": 1,
   "diagrams": 1,
   "charts": 1,
-  "bytes": 96121,
+  "bytes": 107339,
   "browserReviewed": false,
   "warnings": [],
-  "version": "1.7.0",
-  "skillVersion": "1.7.0",
-  "builtAt": "2026-11-15T07:11:12.328Z",
-  "manifestSha256": "bc5554c388deb499a41a1c3837bcfb0d287c905e9e6a3315cc4171fd59ecc14e",
+  "version": "1.8.0",
+  "skillVersion": "1.8.0",
+  "rendererSha256": "95798c85fd13097396d18f204306e28a7348e9b4db9dcffe2cbcea1a4107e9a7",
+  "builtAt": "2026-11-15T14:46:14.253Z",
+  "manifestSha256": "8b9c2eecfc9acffac86ebcb9e237b61a1b1d2b35d6d102ef17a261a52b5c370c",
   "document": "project-html-docs · Guia Rápido",
-  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
-  "inputSha256": "8e53ceda3851870e97c01ff31b707238f55fd7adb58637b3dbcc561fe902a5a9",
-  "htmlSha256": "4e797e28154d2ab234ac6d1d5c80139e6e6e2ae3f5a090d2b4c024af2c43521a",
+  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
+  "inputSha256": "aa4c3debd7460a3972b3cf06ac820bb5bb22c783f4c18a48227c3704de7b6184",
+  "htmlSha256": "d0ec7f9632b393ba4329ed4c5e1e9eb88089cea0e65535b22467af82afdea577",
   "sources": [
     {
       "id": "skill",
       "path": "SKILL.md",
       "description": "Contrato operacional da skill.",
-      "sha256": "10e361b9cbb9dde9481df53d7011a939c8118699e3c28df370c51ed1874007a1"
+      "sha256": "2318fdd53e017a8dba778496d4fa64ff0b605b010efa5a819ebf08f39fb170e1"
     },
     {
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos e comandos.",
-      "sha256": "6b8233812190c6ee40084a9ad13a6dceddb02543dbda7d5da2f3bd626a5bc44a"
+      "sha256": "a0c5d3c48a6877465fccc5d9c6755a230f14310925e635c69c6bff9222cf1806"
     },
     {
       "id": "package",
       "path": "package.json",
       "description": "Versão, engines e dependências fixadas.",
-      "sha256": "f657db67fb7d58bf7f9e60145e9df2eeeff6fd2e1393723de1fe375f888cdea4"
+      "sha256": "88a070df7ee2ef56beac8be236e2d7e119bd34fcef87ff0b240b70321149d0c1"
     },
     {
       "id": "schema",
@@ -49,7 +50,7 @@
       "id": "build",
       "path": "scripts/build.mjs",
       "description": "Compilador do manifesto e do Markdown.",
-      "sha256": "9b62d7f711cd9eb46a52449acacb12169f3542ba0de071023659684b3b7b166c"
+      "sha256": "b9cca5d79111a92bed0ba6da911b63d2116a493e720a65c6f0a11bbe693a9ac2"
     },
     {
       "id": "diagrams",
@@ -67,7 +68,7 @@
       "id": "verify",
       "path": "scripts/verify.mjs",
       "description": "Hashes, revisão Git e análise de impacto.",
-      "sha256": "e1a2f81b3841efc468a91acb466253567311bed6ad352eb5b9ca8d3d74936314"
+      "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065"
     },
     {
       "id": "inspect",
@@ -79,7 +80,7 @@
       "id": "authoring",
       "path": "references/authoring.md",
       "description": "Contrato de autoria e revisão.",
-      "sha256": "d3ee9011f8a48ba4562cb3f786879314d1fe468352845ea675781b05aeef9a74"
+      "sha256": "5386618d1badb1ff1006f402429f284f5e6914bb18c4482b01c606d9533750d0"
     },
     {
       "id": "tools",
@@ -91,13 +92,13 @@
       "id": "changelog",
       "path": "CHANGELOG.md",
       "description": "Histórico de versões.",
-      "sha256": "9d626c5588530ace1a5588a451239fdb245910841afa1a6d326c5f579973ba60"
+      "sha256": "463d0b15016367f1bae9f36e96b58467b1505153a9024995deb007a55b14dc81"
     },
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes de build, temas e validação.",
-      "sha256": "2586148111f1d09cd143c213d118443ed80faf36765da1f4b4e6f614e2bcce52"
+      "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122"
     },
     {
       "id": "tests-diagrams",
@@ -109,7 +110,7 @@
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
       "description": "Testes do dossiê e do impacto.",
-      "sha256": "2cd7d221bff861efad4a5264014d849316b67e70e8468faf55387edcd922ae02"
+      "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416"
     },
     {
       "id": "example-showcase",

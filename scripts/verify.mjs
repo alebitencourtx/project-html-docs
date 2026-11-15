@@ -3,6 +3,7 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
+import {computeRendererHash, getSkillVersion} from './renderer-hash.mjs';
 
 const hash = v => createHash('sha256').update(v).digest('hex');
 
@@ -60,6 +61,17 @@ export async function verify(manifestFile, receiptFile) {
   const bad = results.filter(r => r.status !== 'ok');
   const ok = bad.length === 0 && revisionMatches !== false;
 
+  const [currentRendererSha256, currentSkillVersion] = await Promise.all([
+    computeRendererHash(),
+    getSkillVersion(),
+  ]);
+  const documentedRendererSha256 = receipt.rendererSha256 || null;
+  const documentedSkillVersion = receipt.skillVersion || receipt.version || null;
+  const rendererMatches = documentedRendererSha256 ? documentedRendererSha256 === currentRendererSha256 : null;
+  const rendererNeedsRebuild = documentedRendererSha256
+    ? documentedRendererSha256 !== currentRendererSha256
+    : Boolean(documentedSkillVersion || receipt.builtAt || receipt.htmlSha256);
+
   return {
     ok,
     document: manifest.title,
@@ -67,6 +79,14 @@ export async function verify(manifestFile, receiptFile) {
       documented: receipt.revision || null,
       current: currentRevision,
       matches: revisionMatches,
+    },
+    renderer: {
+      documentedVersion: documentedSkillVersion,
+      currentVersion: currentSkillVersion,
+      documentedSha256: documentedRendererSha256,
+      currentSha256: currentRendererSha256,
+      matches: rendererMatches,
+      needsRebuild: rendererNeedsRebuild,
     },
     workingTreeDirty: Boolean(dirty),
     sources: results,
@@ -215,16 +235,40 @@ export async function analyzeImpact(manifestFile, receiptFile, {dossierFile = nu
 }
 
 export function renderUpdatePlan(impact) {
+  const sourcesSynced = Boolean(impact.ok && !impact.untrackedCoreFiles.length);
+  const rendererNeedsRebuild = Boolean(impact.renderer?.needsRebuild);
+  const overallStatus = !sourcesSynced
+    ? 'Desatualizado (revisão cirúrgica recomendada)'
+    : rendererNeedsRebuild
+      ? 'Código-fonte sincronizado · Template da skill atualizado (regere o HTML com build.mjs --force)'
+      : 'Sincronizado (nenhuma atualização necessária)';
+
   const lines = [
     '# Plano de Atualização Incremental (Drift & Impacto)',
     '',
     `- **Documento:** ${impact.document}`,
     `- **Revisão documentada:** \`${impact.revision.documented || 'n/d'}\` → **Atual:** \`${impact.revision.current || 'n/d'}\``,
-    `- **Status geral:** ${impact.ok && !impact.untrackedCoreFiles.length ? 'Sincronizado (nenhuma atualização necessária)' : 'Desatualizado (revisão cirúrgica recomendada)'}`,
-    '',
-    '## 1. Arquivos Alterados & Propagação no Grafo',
+    `- **Status geral:** ${overallStatus}`,
     '',
   ];
+
+  if (rendererNeedsRebuild) {
+    const docVer = impact.renderer?.documentedVersion || 'n/d';
+    const curVer = impact.renderer?.currentVersion || 'n/d';
+    const docHash = impact.renderer?.documentedSha256 ? `\`${impact.renderer.documentedSha256.slice(0, 12)}\`` : '`ausente (recibo legado)`';
+    const curHash = impact.renderer?.currentSha256 ? `\`${impact.renderer.currentSha256.slice(0, 12)}\`` : '`n/d`';
+    lines.push(
+      '## 0. Template & Renderer da Skill Atualizados',
+      '',
+      `- **Versão da skill:** \`${docVer}\` → \`${curVer}\` · **Hash do renderer:** ${docHash} → ${curHash}`,
+      sourcesSynced
+        ? '- **Ação recomendada:** Código-fonte e `content.md` continuam sincronizados — **não é necessário reler o repositório nem reescrever seções**. Basta executar `node <skill>/scripts/build.mjs <manifest> --out <output.html> --force` para regenerar o HTML com as melhorias mais recentes de CSS/JS/layout/diagramas.'
+        : '- **Nota:** Além das seções alteradas abaixo, a recompilação com `build.mjs --force` aplicará automaticamente as melhorias mais recentes de CSS/JS/layout/diagramas da skill.',
+      '',
+    );
+  }
+
+  lines.push('## 1. Arquivos Alterados & Propagação no Grafo', '');
 
   const badSources = impact.sources.filter(s => s.status !== 'ok');
   if (badSources.length) {

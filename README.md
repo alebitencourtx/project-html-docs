@@ -4,8 +4,8 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-33%20passing-success.svg)](#testes-automatizados)
-[![Version](https://img.shields.io/badge/version-1.7.0-orange.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-35%20passing-success.svg)](#testes-automatizados)
+[![Version](https://img.shields.io/badge/version-1.8.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
@@ -26,8 +26,8 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
   - **Guia Rápido / Visão Resumida (`mode: "summary"`)**: Versão panorâmica e objetiva para leitura em ~5 minutos, com 4 a 7 capítulos de alto sinal, badges de tempo de leitura e link cruzado (`companionDoc`) para o manual completo.
 - **Temas integrados (Vermelho e Azul)**: Alternância entre os temas **Vermelho** (padrão) e **Azul** diretamente pela barra de ferramentas, salvando a preferência no navegador e harmonizando tanto o visual da página quanto as cores dos diagramas SVG 2D.
 - **Motor próprio de diagramas 2D em SVG**: Suporte nativo a diagramas de arquitetura (`solution`) e modelagem de tabelas com linhagem (`schema`), com desvio inteligente de sobreposição de rótulos (*pill collision avoidance*) e sem depender de bibliotecas externas no navegador.
-- **Navegação focada na leitura em desktop**:
-  - Barra lateral flexível com rolagem independente que nunca sobrepõe o rodapé de leitura offline.
+- **Navegação responsiva para desktop e mobile**:
+  - Barra lateral flexível com rolagem independente no desktop e menu lateral recolhível (drawer off-canvas com barra superior compacta, botão de busca rápida, fechamento por `Esc`, backdrop ou seleção de capítulo) em telas menores (≤ 960 px).
   - Subnavegação automática para títulos `H3` recuados sob cada capítulo principal.
   - Botão flutuante para voltar ao topo da página com rolagem suave.
   - Filtro por perfil de leitor (*Todas*, *Visão de negócio*, *Visão técnica*, *Operação*), permitindo que áreas de negócio e times técnicos foquem no que interessa sem perder seções do documento.
@@ -42,7 +42,7 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
   - Parâmetros de CLI (`argparse`, `click`, `typer`) e variáveis de ambiente (`os.getenv`).
   - Suporte a arquivo `.docignore` na raiz do projeto para ignorar pastas temporárias ou artefatos gerados.
   - Montagem de um plano de leitura organizado em 4 etapas ordenadas (`reading-plan.md`).
-- **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 no código-fonte, apontando no `update-plan.md` (com resumo `git diff --stat`) exatamente quais seções da documentação precisam ser atualizadas quando o código mudar.
+- **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 no código-fonte e nos templates/assets da própria skill (`rendererSha256`), apontando no `update-plan.md` (com resumo `git diff --stat`) quais seções precisam de revisão ou quando basta apenas regerar o HTML com `build.mjs --force`.
 - **Landing Page e Showcase Oficial**: Apresentação interativa em `docs/index.html` pronta para publicação no GitHub Pages (pasta `/docs`), com vídeo demonstrativo, alternador de idiomas e navegação direta para o Manual Completo e Guia Rápido.
 
 ---
@@ -76,8 +76,9 @@ project-html-docs/
 │   ├── build.mjs               # Compila os arquivos fonte no HTML final
 │   ├── diagrams.mjs            # Motor de renderização de diagramas em SVG 2D
 │   ├── inspect_repo.py         # Análise estática do repositório e geração do plano de leitura
+│   ├── renderer-hash.mjs       # Hash determinístico dos assets/templates da própria skill
 │   ├── validate.mjs            # Validador de integridade, geometria SVG e qualidade do HTML
-│   └── verify.mjs              # Checagem de hashes SHA-256 e cálculo de impacto incremental
+│   └── verify.mjs              # Checagem de hashes SHA-256 (fontes + renderer) e impacto incremental
 ├── tests/
 │   ├── build.test.mjs          # Testes do compilador, modo summary e validador HTML
 │   ├── diagrams.test.mjs       # Testes unitários do motor de diagramas e temas
@@ -177,6 +178,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 ```
 
 O arquivo `update-plan.md` gerado listará:
+- Se o template/CSS/JS da própria skill mudou desde a última compilação (`rendererSha256`), avisando quando basta rodar `build.mjs --force` sem precisar reler o código-fonte.
 - Resumo estatístico do Git (`git diff --stat`) entre as versões.
 - Quais arquivos de código sofreram alteração direta de hash.
 - Quais módulos do sistema dependem deles e foram impactados indiretamente.
@@ -282,7 +284,7 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios, análise de impacto e integridade da landing page:
 
 ```bash
-# Rodar todos os testes unitários (33 testes)
+# Rodar todos os testes unitários (35 testes)
 npm test
 
 # Compilar os exemplos disponíveis
@@ -294,6 +296,7 @@ npm run build:showcase
 
 ## Histórico de releases
 
+- **[v1.8.0](CHANGELOG.md#180--2026-11-15)**: Visão mobile responsiva com menu lateral recolhível (drawer off-canvas até 960 px) e detecção de atualização exclusiva do renderer da skill (`rendererSha256`) no `verify.mjs --impact`.
 - **[v1.7.0](CHANGELOG.md#170--2026-11-15)**: Temas por cor (Vermelho padrão e Azul), remoção de retenção de rolagem sobre tabelas, nova landing page oficial em `docs/index.html` com vídeo demonstrativo, internacionalização e manual completo do gerador em `docs/`.
 - **[v1.6.0](CHANGELOG.md#160--2026-11-14)**: Modo Guia Rápido / Visão Resumida (`mode: "summary"`, `--mode summary`), badges de tempo de leitura (`~N min de leitura`), link seguro `companionDoc`, contagem de palavras e avisos de concisão no recibo de validação.
 - **[v1.5.0](CHANGELOG.md#150--2026-11-14)**: Sidebar flex com scroll independente, subnavegação H3, botão voltar ao topo, harmonização cromática do tema nos diagramas SVG, prevenção de colisão de rótulos, validação geométrica de SVGs, extração de cadeias PySpark, pipelines ADF, Scala e suporte a `.docignore`.

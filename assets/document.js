@@ -13,8 +13,44 @@
       };
 
   const sections = [...document.querySelectorAll('.doc-section')];
+  const sidebar = document.querySelector('#sidebar');
+  const navToggle = document.querySelector('#nav-toggle');
+  const navClose = document.querySelector('#nav-close');
+  const mobileSearchBtn = document.querySelector('#mobile-search-btn');
+  const backdrop = document.querySelector('#sidebar-backdrop');
+  const mobileMq = window.matchMedia('(max-width: 960px)');
   const search = document.querySelector('#search');
   const searchClear = document.querySelector('#search-clear');
+
+  function setDrawerOpen(open, { focusTarget = null, restoreFocus = false } = {}) {
+    if (!sidebar) return;
+    const active = Boolean(open && mobileMq.matches);
+    sidebar.classList.toggle('is-open', active);
+    document.body.classList.toggle('nav-open', active);
+    if (backdrop) backdrop.hidden = !active;
+    if (navToggle) navToggle.setAttribute('aria-expanded', active ? 'true' : 'false');
+    if (active) {
+      const target = focusTarget === 'search' ? search : (navClose || search);
+      requestAnimationFrame(() => {
+        target?.focus();
+        if (focusTarget === 'search') target?.select?.();
+      });
+    } else if (restoreFocus) {
+      navToggle?.focus();
+    }
+  }
+
+  navToggle?.addEventListener('click', () => {
+    setDrawerOpen(!sidebar?.classList.contains('is-open'), { restoreFocus: true });
+  });
+  navClose?.addEventListener('click', () => setDrawerOpen(false, { restoreFocus: true }));
+  backdrop?.addEventListener('click', () => setDrawerOpen(false, { restoreFocus: true }));
+  mobileSearchBtn?.addEventListener('click', () => setDrawerOpen(true, { focusTarget: 'search' }));
+  if (typeof mobileMq.addEventListener === 'function') {
+    mobileMq.addEventListener('change', e => { if (!e.matches) setDrawerOpen(false); });
+  } else if (typeof mobileMq.addListener === 'function') {
+    mobileMq.addListener(e => { if (!e.matches) setDrawerOpen(false); });
+  }
   const normalize = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const index = new Map(sections.map(s => [s, normalize(s.textContent)]));
   const openAncestors = el => { for (let n = el; n; n = n.parentElement) if (n.tagName === 'DETAILS') n.open = true; };
@@ -132,12 +168,19 @@
     const editable = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
     if ((e.key === '/' && !editable) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
       e.preventDefault();
-      search.focus();
-      search.select();
+      if (mobileMq.matches && !sidebar?.classList.contains('is-open')) {
+        setDrawerOpen(true, { focusTarget: 'search' });
+      } else {
+        search.focus();
+        search.select();
+      }
     } else if (e.key === 'Escape' && document.activeElement === search && search.value) {
       e.preventDefault();
       search.value = '';
       filter();
+    } else if (e.key === 'Escape' && sidebar?.classList.contains('is-open')) {
+      e.preventDefault();
+      setDrawerOpen(false, { restoreFocus: true });
     }
   });
 
@@ -263,6 +306,7 @@
     const targetId = decodeURIComponent(rawHref.slice(1));
     const el = targetId ? document.getElementById(targetId) : null;
     if (el) { search.value = ''; filter(); openAncestors(el); }
+    if (mobileMq.matches && a.closest('.sidebar')) setDrawerOpen(false);
   }));
 
   // Copia com clipboard; se o navegador negar, tenta execCommand e por fim

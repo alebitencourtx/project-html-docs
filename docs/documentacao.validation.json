@@ -2,42 +2,43 @@
   "passed": true,
   "errors": [],
   "mode": "full",
-  "wordCount": 6196,
+  "wordCount": 6224,
   "readingMinutes": 33,
   "sections": 11,
   "contentSections": 11,
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 181416,
+  "bytes": 192776,
   "browserReviewed": false,
   "warnings": [],
-  "version": "1.7.0",
-  "skillVersion": "1.7.0",
-  "builtAt": "2026-11-15T07:11:11.056Z",
-  "manifestSha256": "8031702053a41fe84b62138874530ab9c91666b8e57d80e52b0982fd0c219111",
+  "version": "1.8.0",
+  "skillVersion": "1.8.0",
+  "rendererSha256": "95798c85fd13097396d18f204306e28a7348e9b4db9dcffe2cbcea1a4107e9a7",
+  "builtAt": "2026-11-15T14:46:13.056Z",
+  "manifestSha256": "4a7318afd9c61725ac3214d659810dcaef7e8698d9eeaac26416aef303c6b191",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
-  "inputSha256": "0ecfc99867205eb67d648966b1cef75324f13c9ef7d32de6a403503e41f22e09",
-  "htmlSha256": "23753e9cc4389625355a69a3a61ad37eaef127623c5df05efe19f4737c48630e",
+  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
+  "inputSha256": "3dda25cd1b9ca8ea22610e2cda6170cff28cd709f04bec9d3c6fd3437e9f3aaa",
+  "htmlSha256": "63bd0efcb13e1c5b7d13668192cbb80804f611ddb7a61b43ed494d65b524c990",
   "sources": [
     {
       "id": "skill",
       "path": "SKILL.md",
       "description": "Contrato operacional do skill: fluxo, decisões e manutenção.",
-      "sha256": "10e361b9cbb9dde9481df53d7011a939c8118699e3c28df370c51ed1874007a1"
+      "sha256": "2318fdd53e017a8dba778496d4fa64ff0b605b010efa5a819ebf08f39fb170e1"
     },
     {
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos, comandos e recursos do projeto.",
-      "sha256": "6b8233812190c6ee40084a9ad13a6dceddb02543dbda7d5da2f3bd626a5bc44a"
+      "sha256": "a0c5d3c48a6877465fccc5d9c6755a230f14310925e635c69c6bff9222cf1806"
     },
     {
       "id": "package",
       "path": "package.json",
       "description": "Versão, engines, scripts e dependências fixadas.",
-      "sha256": "f657db67fb7d58bf7f9e60145e9df2eeeff6fd2e1393723de1fe375f888cdea4"
+      "sha256": "88a070df7ee2ef56beac8be236e2d7e119bd34fcef87ff0b240b70321149d0c1"
     },
     {
       "id": "schema",
@@ -49,7 +50,7 @@
       "id": "build",
       "path": "scripts/build.mjs",
       "description": "Compilador do manifesto e do Markdown no HTML final.",
-      "sha256": "9b62d7f711cd9eb46a52449acacb12169f3542ba0de071023659684b3b7b166c"
+      "sha256": "b9cca5d79111a92bed0ba6da911b63d2116a493e720a65c6f0a11bbe693a9ac2"
     },
     {
       "id": "diagrams",
@@ -67,7 +68,7 @@
       "id": "verify",
       "path": "scripts/verify.mjs",
       "description": "Conferência de hashes, revisão Git e análise incremental de impacto.",
-      "sha256": "e1a2f81b3841efc468a91acb466253567311bed6ad352eb5b9ca8d3d74936314"
+      "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065"
     },
     {
       "id": "inspect",
@@ -79,19 +80,19 @@
       "id": "ui",
       "path": "assets/document.js",
       "description": "Comportamentos offline da interface: busca, filtros, temas e modal.",
-      "sha256": "8b8553d51339f263efef0f6480061c24362694c0f9ea03de147b8cbb9fdea080"
+      "sha256": "b8e0c3722e0be17ea62940b29c899f68d1dd026567ce52d39d61f98d21df3fa7"
     },
     {
       "id": "styles",
       "path": "assets/document.css",
       "description": "Design system, layout desktop, temas e estilos de impressão.",
-      "sha256": "f02ba0c6dca996b3404ed5f670cbf50a364a6fa83f3727cb94e5b38b0004c1dc"
+      "sha256": "7221ddeb82ea4810f5b26a6a7e2ee848845e010e6d1c12d5ebba5e302efa414e"
     },
     {
       "id": "authoring",
       "path": "references/authoring.md",
       "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão.",
-      "sha256": "d3ee9011f8a48ba4562cb3f786879314d1fe468352845ea675781b05aeef9a74"
+      "sha256": "5386618d1badb1ff1006f402429f284f5e6914bb18c4482b01c606d9533750d0"
     },
     {
       "id": "data-engineering",
@@ -115,13 +116,13 @@
       "id": "changelog",
       "path": "CHANGELOG.md",
       "description": "Histórico de versões e mudanças do gerador.",
-      "sha256": "9d626c5588530ace1a5588a451239fdb245910841afa1a6d326c5f579973ba60"
+      "sha256": "463d0b15016367f1bae9f36e96b58467b1505153a9024995deb007a55b14dc81"
     },
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes do compilador, validador, temas, modos e avisos.",
-      "sha256": "2586148111f1d09cd143c213d118443ed80faf36765da1f4b4e6f614e2bcce52"
+      "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122"
     },
     {
       "id": "tests-diagrams",
@@ -133,7 +134,7 @@
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
       "description": "Testes do inspetor, do dossiê e da análise de impacto.",
-      "sha256": "2cd7d221bff861efad4a5264014d849316b67e70e8468faf55387edcd922ae02"
+      "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416"
     },
     {
       "id": "example-minimal",

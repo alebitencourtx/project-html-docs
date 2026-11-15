@@ -306,5 +306,41 @@ test('v1.6.0 summary mode: data-mode, quick-guide badges, companionDoc link, rea
   await assert.rejects(()=>build(path.join(dir,'bad.json'),path.join(dir,'bad.html'),{force:true}),/Unsafe companionDoc/);
 }));
 
+test('responsive mobile drawer: builds collapsible sidebar controls, reserves drawer IDs, and includes mobile breakpoints',()=>fixture(async dir=>{
+  const out=path.join(dir,'mobile-pt.html');
+  const r=await build(path.join(root,'examples/minimal/document.json'),out);
+  assert.equal(r.passed,true);
+  const html=await fs.readFile(out,'utf8');
+  const $=load(html);
+  assert.equal($('#sidebar').length,1);
+  assert.equal($('#sidebar-backdrop').length,1);
+  assert.equal($('#nav-toggle').length,1);
+  assert.equal($('#nav-toggle').attr('aria-expanded'),'false');
+  assert.equal($('#nav-toggle').attr('aria-controls'),'sidebar');
+  assert.equal($('#nav-close').length,1);
+  assert.equal($('#mobile-search-btn').length,1);
+  assert.match(html,/@media \(max-width: 960px\)/);
+  assert.match(html,/@media \(max-width: 760px\)/);
+  assert.match(html,/setDrawerOpen/);
+
+  await fs.writeFile(path.join(dir,'en.md'),'## Overview\n\nHello.\n');
+  await fs.writeFile(path.join(dir,'en.json'),JSON.stringify({
+    title:'English Doc',subtitle:'Test',version:'1.0',updated:'2026-11-15',language:'en',
+    content:'en.md',sections:[{id:'overview',title:'Overview',audience:'all'}]
+  }));
+  const outEn=path.join(dir,'mobile-en.html');
+  await build(path.join(dir,'en.json'),outEn);
+  const $en=load(await fs.readFile(outEn,'utf8'));
+  assert.equal($en('#nav-toggle').attr('aria-label'),'Open navigation menu');
+  assert.equal($en('#nav-close').attr('aria-label'),'Close navigation menu');
+
+  await fs.writeFile(path.join(dir,'reserved.md'),'## Sidebar\n\nConflict.\n');
+  await fs.writeFile(path.join(dir,'reserved.json'),JSON.stringify({
+    title:'Reserved',subtitle:'Test',version:'1.0',updated:'2026-11-15',
+    content:'reserved.md',sections:[{id:'sidebar',title:'Sidebar',audience:'all'}]
+  }));
+  await assert.rejects(()=>build(path.join(dir,'reserved.json'),path.join(dir,'reserved.html')),/Reserved section id "sidebar"/);
+}));
+
 
 

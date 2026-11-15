@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-mode="full" data-theme="vermelho"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável."><meta name="generator" content="project-html-docs 1.7.0"><title>project-html-docs · Manual do Gerador · 1.7.0</title><style>:root {
+<html lang="pt-BR" data-mode="full" data-theme="vermelho"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável."><meta name="generator" content="project-html-docs 1.8.0"><title>project-html-docs · Manual do Gerador · 1.8.0</title><style>:root {
   --ink: #172b3c;
   --muted: #526778;
   --paper: #f4f6f8;
@@ -104,7 +104,7 @@
 
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--paper); }
+body { margin: 0; background: var(--paper); overflow-x: clip; }
 a { color: var(--accent-hover); text-underline-offset: 3px; }
 button, input { font: inherit; }
 button { cursor: pointer; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; color: var(--ink); background: var(--surface); }
@@ -112,14 +112,18 @@ button:hover { border-color: var(--accent); background: var(--soft); }
 button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 
 .skip { position: absolute; left: -9999px; }
-.skip:focus { left: 20px; top: 15px; z-index: 20; background: white; padding: 12px; }
+.skip:focus { left: 20px; top: 15px; z-index: 50; background: white; padding: 12px; }
 
+.sidebar-backdrop { display: none; }
 .sidebar { position: fixed; inset: 0 auto 0 0; width: 268px; background: var(--nav); color: var(--nav-text); padding: 24px 18px 16px; display: flex; flex-direction: column; overflow: hidden; z-index: 5; }
-.brand { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--nav-brand); margin: 0 10px 8px; flex-shrink: 0; }
+.sidebar-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-shrink: 0; }
+.brand { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--nav-brand); margin: 0 10px 8px; flex: 1; min-width: 0; }
+.sidebar-close { display: none; }
 .sidebar strong { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 22px; margin: 0 10px 18px; line-height: 1.3; flex-shrink: 0; }
 .sidebar label { font-size: 12px; color: var(--nav-label); display: block; margin: 0 8px 5px; flex-shrink: 0; }
 .search-box { position: relative; flex-shrink: 0; }
 .sidebar input { width: 100%; padding: 10px 30px 10px 10px; border: 1px solid var(--nav-input-border); background: var(--nav-input-bg); color: white; border-radius: 8px; }
+.sidebar input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
 #search-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: transparent; border: 0; color: var(--nav-label); font-size: 16px; line-height: 1; padding: 3px 6px; border-radius: 4px; }
 #search-clear:hover { background: var(--nav-clear-hover); color: #ffffff; }
 mark.search-hit { background: #fef08a; color: #0f172a; padding: 0 2px; border-radius: 3px; }
@@ -134,7 +138,8 @@ mark.search-hit { background: #fef08a; color: #0f172a; padding: 0 2px; border-ra
 .sidebar small { flex-shrink: 0; background: var(--nav); border-top: 1px solid var(--nav-divider); padding: 12px 0 2px; margin: 12px 10px 0; color: var(--nav-meta); font-size: 12px; display: block; }
 .sidebar .search-count { min-height: 20px; margin: 6px 4px 0; font-size: 12px; color: var(--nav-count); flex-shrink: 0; }
 
-main { margin-left: 268px; }
+main { margin-left: 268px; min-width: 0; }
+.mobile-topbar { display: none; }
 .hero { background: var(--hero-bg); color: white; padding: 56px clamp(28px, 5vw, 80px) 44px; position: relative; overflow: hidden; }
 .hero:after { content: ""; position: absolute; right: -60px; top: -120px; width: 370px; height: 370px; border: 55px solid #ffffff06; border-radius: 50%; pointer-events: none; }
 .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 700; color: var(--hero-eyebrow); margin: 0 0 16px; }
@@ -291,7 +296,8 @@ figure { margin: 22px 0; border: 1px solid var(--line); border-radius: 12px; bac
 .diagram-scroll::-webkit-scrollbar-track { background: transparent; }
 .diagram-scroll svg { display: block; max-width: none; height: auto; margin: auto; }
 .figure-tools { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-.figure-tools button { margin-left: auto; font-size: 11px; }
+.figure-tools .figure-tag { flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+.figure-tools button { margin-left: auto; font-size: 11px; flex-shrink: 0; }
 figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: 10px; }
 
 .figure-legend {
@@ -598,26 +604,384 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .hero h1 { font-size: 50px; }
 }
 
-@media (max-width: 1000px) {
-  .sidebar { width: 220px; padding: 22px 12px; }
-  main { margin-left: 220px; }
-  .content { padding: 24px; }
-  .section-heading { padding: 20px; }
-  .section-body { padding: 0 20px 20px; }
-  .hero { padding: 36px 24px; }
-  .audience { font-size: 9px; }
+@media (max-width: 960px) {
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: 52px;
+    padding: 0 12px;
+    background: var(--nav);
+    color: var(--nav-text);
+    border-bottom: 1px solid var(--nav-divider);
+  }
+  #nav-toggle,
+  #mobile-search-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+    min-width: 40px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--nav-input-border);
+    background: var(--nav-input-bg);
+    color: var(--nav-text);
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  #nav-toggle:hover,
+  #mobile-search-btn:hover {
+    background: var(--nav-clear-hover);
+    border-color: var(--nav-brand);
+  }
+  .mobile-topbar-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: rgba(10, 15, 22, 0.56);
+    backdrop-filter: blur(2px);
+  }
+  .sidebar {
+    width: min(304px, 86vw);
+    z-index: 40;
+    padding: 18px 14px 14px;
+    transform: translateX(-105%);
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+    box-shadow: none;
+  }
+  .sidebar.is-open {
+    transform: translateX(0);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
+  }
+  .sidebar-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid var(--nav-input-border);
+    background: var(--nav-input-bg);
+    color: var(--nav-text);
+    font-size: 20px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .sidebar-close:hover {
+    background: var(--nav-clear-hover);
+    border-color: var(--nav-brand);
+  }
+  .sidebar strong {
+    font-size: 19px;
+    margin: 0 10px 14px;
+  }
+  .sidebar input {
+    font-size: 16px;
+    min-height: 42px;
+  }
+  .sidebar nav a {
+    min-height: 40px;
+    align-items: center;
+  }
+  .sidebar nav .nav-sub a {
+    min-height: 36px;
+    align-items: center;
+  }
+  body.nav-open {
+    overflow: hidden;
+  }
+  main {
+    margin-left: 0;
+  }
+  .doc-section,
+  h3[id],
+  h4[id],
+  tr[id] {
+    scroll-margin-top: 66px;
+  }
+  .hero {
+    padding: 32px 22px 28px;
+  }
+  .content {
+    padding: 22px 20px 60px;
+  }
+  .section-heading {
+    padding: 18px 20px;
+  }
+  .section-body {
+    padding: 0 20px 22px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: 26px 16px 24px;
+  }
+  .hero:after {
+    width: 220px;
+    height: 220px;
+    right: -70px;
+    top: -80px;
+    border-width: 34px;
+  }
+  .hero h1 {
+    font-size: clamp(24px, 6.4vw, 34px);
+    margin-bottom: 12px;
+    text-wrap: balance;
+  }
+  .hero .subtitle {
+    font-size: 15.5px;
+    line-height: 1.55;
+    margin-bottom: 18px;
+  }
+  .badges {
+    gap: 6px;
+  }
+  .badges span,
+  .badges a.hero-companion {
+    font-size: 11.5px;
+    padding: 4px 9px;
+  }
+  html[data-mode="summary"] .hero {
+    padding: 24px 16px 22px;
+  }
+  html[data-mode="summary"] .content {
+    padding: 18px 14px 48px;
+  }
+  .content {
+    padding: 18px 14px 56px;
+  }
+  .hero-cards {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .metric {
+    padding: 14px 16px;
+  }
+  .metric strong {
+    font-size: 20px;
+    margin: 5px 0;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .card {
+    padding: 14px 16px;
+  }
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .toolbar .hint {
+    margin-right: 0;
+    font-size: 12.5px;
+  }
+  .audience-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+  }
+  .audience-filter button {
+    justify-content: center;
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+  .theme-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    width: 100%;
+  }
+  .theme-filter button {
+    justify-content: center;
+    min-height: 38px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+  .toolbar-actions button {
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 11.5px;
+    text-align: center;
+  }
+  .doc-section {
+    border-radius: 11px;
+    margin-bottom: 14px;
+  }
+  .section-heading {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 6px 10px;
+    padding: 15px 16px;
+  }
+  .section-heading .number {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 12px;
+  }
+  .section-heading h2 {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 18px;
+    line-height: 1.28;
+  }
+  .section-heading:after {
+    grid-column: 3;
+    grid-row: 1;
+    margin-left: 4px;
+  }
+  .section-heading .audience {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    font-size: 9.5px;
+    padding: 3px 7px;
+  }
+  .section-body {
+    padding: 0 16px 18px;
+    font-size: 15px;
+  }
+  .section-body > p:first-child {
+    font-size: 15.5px;
+  }
+  h3 {
+    font-size: 17px;
+    margin: 22px 0 10px;
+  }
+  h4 {
+    font-size: 15px;
+    margin: 18px 0 6px;
+  }
+  blockquote {
+    margin: 14px 0;
+    padding: 10px 14px;
+  }
+  figure {
+    padding: 12px;
+    margin: 16px 0;
+  }
+  .diagram-scroll,
+  .chart,
+  .table-wrap {
+    -webkit-overflow-scrolling: touch;
+  }
+  .diagram-scroll svg {
+    max-width: none !important;
+  }
+  .figure-tools {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .figure-tools button {
+    min-height: 36px;
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+  .table-filter {
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0 -8px;
+  }
+  .table-filter input {
+    max-width: none;
+    width: 100%;
+    flex: 1 1 100%;
+    font-size: 16px;
+    min-height: 40px;
+  }
+  .table-wrap {
+    margin: 14px 0;
+    max-height: 62vh;
+  }
+  th, td {
+    padding: 9px 10px;
+    font-size: 12.5px;
+  }
+  pre {
+    padding: 40px 12px 12px;
+    font-size: 12px;
+  }
+  .copy {
+    min-height: 30px;
+    padding: 4px 10px;
+    font-size: 11.5px;
+  }
+  dialog {
+    width: calc(100vw - 16px);
+    max-width: none;
+    max-height: 92dvh;
+    padding: 14px;
+  }
+  .dialog-head {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .dialog-controls {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  .dialog-controls button {
+    min-height: 36px;
+    padding: 5px 10px;
+  }
+  .dialog-canvas {
+    max-height: 68dvh;
+  }
+  #back-to-top {
+    right: 14px;
+    bottom: 14px;
+    padding: 9px 14px;
+    min-height: 40px;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .section-heading:after { transition: none; }
+  .section-heading:after,
+  .sidebar { transition: none; }
 }
 
 @media print {
   @page { size: A4; margin: 14mm; }
-  .sidebar, .toolbar, .audience-filter, .theme-filter, .table-filter, .figure-tools, .copy, .skip, #back-to-top, dialog { display: none !important; }
+  .sidebar, .sidebar-backdrop, .mobile-topbar, .toolbar, .audience-filter, .theme-filter, .table-filter, .figure-tools, .copy, .skip, #back-to-top, dialog { display: none !important; }
   main { margin: 0; }
   .hero { background: white; color: var(--ink); padding: 0 0 20px; border-bottom: 2px solid var(--accent); }
   .hero .subtitle, .eyebrow { color: var(--th-fg); }
@@ -647,7 +1011,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .hero h1 { font-size: 30px; }
   th { position: static; box-shadow: none; }
 }
-</style></head><body><a class="skip" href="#main">Ir para o conteúdo</a><aside class="sidebar"><p class="brand">Documentação de projeto</p><strong>project-html-docs · Manual do Gerador</strong><label for="search">Pesquisar documentação</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="Buscar tópicos… (/)"><button id="search-clear" type="button" hidden aria-label="Limpar busca">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="Conteúdo"><a href="#resumo" data-audience="all"><span>01</span>Resumo executivo</a><a href="#escopo" data-audience="all"><span>02</span>Visão funcional e escopo</a><a href="#estado" data-audience="all"><span>03</span>Estado atual da solução</a><a href="#uso" data-audience="operations"><span>04</span>Como usar</a><a href="#solucao" data-audience="all"><span>05</span>Desenho da solução</a><a href="#fluxo" data-audience="technical"><span>06</span>Fluxo e processamento</a><a href="#regras" data-audience="technical"><span>07</span>Regras funcionais e validações</a><div class="nav-sub" data-parent="regras"><a href="#regras-contrato-de-conteudo-e-de-build">Contrato de conteúdo e de build</a><a href="#regras-modo-guia-rapido">Modo Guia Rápido</a><a href="#regras-impacto-e-propagacao">Impacto e propagação</a><a href="#regras-graficos-e-diagramas">Gráficos e diagramas</a></div><a href="#modelo" data-audience="technical"><span>08</span>Modelo e relacionamento dos artefatos</a><div class="nav-sub" data-parent="modelo"><a href="#modelo-dicionario-do-manifesto">Dicionário do manifesto</a><a href="#modelo-dicionario-do-recibo">Dicionário do recibo</a><a href="#modelo-dicionario-do-dossie">Dicionário do dossiê</a></div><a href="#operacao" data-audience="operations"><span>09</span>Operação e recuperação</a><a href="#decisoes" data-audience="all"><span>10</span>Decisões e limites</a><div class="nav-sub" data-parent="decisoes"><a href="#decisoes-limitacoes-conhecidas">Limitações conhecidas</a></div><a href="#glossario" data-audience="all"><span>11</span>Glossário e referências</a><div class="nav-sub" data-parent="glossario"><a href="#glossario-arquivos-de-referencia">Arquivos de referência</a></div><a href="#document-references" data-audience="technical">Referências</a></nav><small>HTML único · leitura offline<br>1.7.0 · 2026-11-15</small></aside><main id="main"><header class="hero"><p class="eyebrow">project-html-docs · manual do próprio gerador</p><h1>project-html-docs · Manual do Gerador</h1><p class="subtitle">Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.</p><div class="badges"><span>1.7.0</span><span>Atualizado: 2026-11-15</span><span>HTML único · leitura offline</span><span>Dados observados em: 2026-11-15 · snapshot local de implementação; sem telemetria de produção</span><a class="hero-companion" href="documentacao-resumida.html">Guia rápido ↗</a></div></header><div class="content"><div class="hero-cards"><article class="metric"><span class="label">Entrega</span><strong>1 HTML offline</strong><p>CSS, JavaScript e SVG embutidos; nenhum servidor, CDN ou runtime externo na leitura.</p></article><article class="metric"><span class="label">Descoberta</span><strong>0 tokens de LLM</strong><p>O inspect_repo.py varre o repositório com AST e regex, sem executar o código analisado.</p></article><article class="metric"><span class="label">Integridade</span><strong>SHA-256 + Git</strong><p>Cada fonte entra no recibo; o verify.mjs detecta drift e calcula as seções afetadas.</p></article><article class="metric"><span class="label">Versão atual</span><strong>1.7.0 · 30 testes</strong><p>Manual completo e Guia Rápido; suíte passando em 15/11/2026.</p></article></div><div class="toolbar"><span class="hint">Navegue por assunto ou filtre por perfil de leitura.</span><div class="audience-filter" role="group" aria-label="Perfil de leitura"><button type="button" data-audience-filter="all" class="is-active">Todas</button><button type="button" data-audience-filter="business">Visão de negócio</button><button type="button" data-audience-filter="technical">Visão técnica</button><button type="button" data-audience-filter="operations">Operação</button></div><div class="theme-filter" role="group" aria-label="Tema de cores"><button type="button" data-theme-select="vermelho" class="is-active" aria-pressed="true"><span class="theme-swatch theme-swatch-vermelho" aria-hidden="true"></span>Vermelho</button><button type="button" data-theme-select="azul" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-azul" aria-hidden="true"></span>Azul</button></div><div class="toolbar-actions"><button id="expand" type="button">Expandir tudo</button><button id="collapse" type="button">Recolher tudo</button><button id="print" type="button">Imprimir / PDF</button></div></div><p id="no-results" hidden>Nenhuma seção encontrada.</p><details class="doc-section" id="resumo" data-audience="all" open><summary class="section-heading"><span class="number">01</span><h2>Resumo executivo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O <code>project-html-docs</code> é uma skill operacional e um conjunto de scripts que transforma o <strong>estado implementado</strong> de um repositório de software ou de engenharia de dados em um manual técnico e funcional, entregue como <strong>um único arquivo HTML offline</strong>. A proposta não é auditar, modernizar ou redesenhar o projeto: é explicar o que existe, como se conecta, quais regras aplica e como é operado.</p>
+</style></head><body><a class="skip" href="#main">Ir para o conteúdo</a><div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div><aside id="sidebar" class="sidebar"><div class="sidebar-head"><p class="brand">Documentação de projeto</p><button id="nav-close" class="sidebar-close" type="button" aria-label="Fechar menu de navegação">×</button></div><strong>project-html-docs · Manual do Gerador</strong><label for="search">Pesquisar documentação</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="Buscar tópicos… (/)"><button id="search-clear" type="button" hidden aria-label="Limpar busca">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="Conteúdo"><a href="#resumo" data-audience="all"><span>01</span>Resumo executivo</a><a href="#escopo" data-audience="all"><span>02</span>Visão funcional e escopo</a><a href="#estado" data-audience="all"><span>03</span>Estado atual da solução</a><a href="#uso" data-audience="operations"><span>04</span>Como usar</a><a href="#solucao" data-audience="all"><span>05</span>Desenho da solução</a><a href="#fluxo" data-audience="technical"><span>06</span>Fluxo e processamento</a><a href="#regras" data-audience="technical"><span>07</span>Regras funcionais e validações</a><div class="nav-sub" data-parent="regras"><a href="#regras-contrato-de-conteudo-e-de-build">Contrato de conteúdo e de build</a><a href="#regras-modo-guia-rapido">Modo Guia Rápido</a><a href="#regras-impacto-e-propagacao">Impacto e propagação</a><a href="#regras-graficos-e-diagramas">Gráficos e diagramas</a></div><a href="#modelo" data-audience="technical"><span>08</span>Modelo e relacionamento dos artefatos</a><div class="nav-sub" data-parent="modelo"><a href="#modelo-dicionario-do-manifesto">Dicionário do manifesto</a><a href="#modelo-dicionario-do-recibo">Dicionário do recibo</a><a href="#modelo-dicionario-do-dossie">Dicionário do dossiê</a></div><a href="#operacao" data-audience="operations"><span>09</span>Operação e recuperação</a><a href="#decisoes" data-audience="all"><span>10</span>Decisões e limites</a><div class="nav-sub" data-parent="decisoes"><a href="#decisoes-limitacoes-conhecidas">Limitações conhecidas</a></div><a href="#glossario" data-audience="all"><span>11</span>Glossário e referências</a><div class="nav-sub" data-parent="glossario"><a href="#glossario-arquivos-de-referencia">Arquivos de referência</a></div><a href="#document-references" data-audience="technical">Referências</a></nav><small>HTML único · leitura offline<br>1.8.0 · 2026-11-15</small></aside><main id="main"><div class="mobile-topbar"><button id="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="Abrir menu de navegação"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/></svg><span>Menu</span></button><span class="mobile-topbar-title">project-html-docs · Manual do Gerador</span><button id="mobile-search-btn" type="button" aria-label="Pesquisar documentação"><svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="17" y2="17"/></svg></button></div><header class="hero"><p class="eyebrow">project-html-docs · manual do próprio gerador</p><h1>project-html-docs · Manual do Gerador</h1><p class="subtitle">Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.</p><div class="badges"><span>1.8.0</span><span>Atualizado: 2026-11-15</span><span>HTML único · leitura offline</span><span>Dados observados em: 2026-11-15 · snapshot local de implementação; sem telemetria de produção</span><a class="hero-companion" href="documentacao-resumida.html">Guia rápido ↗</a></div></header><div class="content"><div class="hero-cards"><article class="metric"><span class="label">Entrega</span><strong>1 HTML offline</strong><p>CSS, JavaScript e SVG embutidos; nenhum servidor, CDN ou runtime externo na leitura.</p></article><article class="metric"><span class="label">Descoberta</span><strong>0 tokens de LLM</strong><p>O inspect_repo.py varre o repositório com AST e regex, sem executar o código analisado.</p></article><article class="metric"><span class="label">Integridade</span><strong>SHA-256 + Git</strong><p>Cada fonte entra no recibo; o verify.mjs detecta drift e calcula as seções afetadas.</p></article><article class="metric"><span class="label">Versão atual</span><strong>1.8.0 · 35 testes</strong><p>Manual completo e Guia Rápido responsivos; suíte passando em 15/11/2026.</p></article></div><div class="toolbar"><span class="hint">Navegue por assunto ou filtre por perfil de leitura.</span><div class="audience-filter" role="group" aria-label="Perfil de leitura"><button type="button" data-audience-filter="all" class="is-active">Todas</button><button type="button" data-audience-filter="business">Visão de negócio</button><button type="button" data-audience-filter="technical">Visão técnica</button><button type="button" data-audience-filter="operations">Operação</button></div><div class="theme-filter" role="group" aria-label="Tema de cores"><button type="button" data-theme-select="vermelho" class="is-active" aria-pressed="true"><span class="theme-swatch theme-swatch-vermelho" aria-hidden="true"></span>Vermelho</button><button type="button" data-theme-select="azul" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-azul" aria-hidden="true"></span>Azul</button></div><div class="toolbar-actions"><button id="expand" type="button">Expandir tudo</button><button id="collapse" type="button">Recolher tudo</button><button id="print" type="button">Imprimir / PDF</button></div></div><p id="no-results" hidden>Nenhuma seção encontrada.</p><details class="doc-section" id="resumo" data-audience="all" open><summary class="section-heading"><span class="number">01</span><h2>Resumo executivo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O <code>project-html-docs</code> é uma skill operacional e um conjunto de scripts que transforma o <strong>estado implementado</strong> de um repositório de software ou de engenharia de dados em um manual técnico e funcional, entregue como <strong>um único arquivo HTML offline</strong>. A proposta não é auditar, modernizar ou redesenhar o projeto: é explicar o que existe, como se conecta, quais regras aplica e como é operado.</p>
 <p>O resultado é pensado para dois públicos que normalmente recebem documentos separados: leitores de negócio, que precisam entender propósito, entradas, saídas e limites; e leitores técnicos, que precisam de arquitetura, fluxos, contratos de dados, regras e receitas de execução. A mesma página oferece filtro por perfil de leitura, busca local, dicionários pesquisáveis, diagramas vetoriais e impressão, sem exigir servidor, CDN ou acesso à internet.</p>
 <div class="cards">
 <div class="card"><h3>Para negócio</h3><p>O que o projeto entrega, quem consome, qual o grão dos dados, quais regras mudam o resultado e quais limites impedem uma leitura incorreta.</p></div>
@@ -660,7 +1024,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
 <blockquote class="callout-limit">
 <p>Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.</p>
 </blockquote>
-<p>A versão atual é a <strong>1.7.0</strong>, com <strong>30 testes automatizados</strong> passando em 15/11/2026. Ela consolida o <strong>Guia Rápido</strong> (<code>mode: "summary"</code>) ao lado do manual completo, os temas <strong>Vermelho</strong> (padrão) e <strong>Azul</strong> e a correção da roda sobre tabelas curtas, mantendo a mesma base de renderização e o mesmo recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.</p>
+<p>A versão atual é a <strong>1.8.0</strong>, com <strong>35 testes automatizados</strong> passando em 15/11/2026. Ela consolida o <strong>Guia Rápido</strong> (<code>mode: "summary"</code>) ao lado do manual completo, os temas <strong>Vermelho</strong> (padrão) e <strong>Azul</strong>, a visão mobile com menu lateral recolhível e o rastreamento de drift do próprio renderer (<code>rendererSha256</code>), mantendo o fluxo offline e o recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.</p>
 <div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-package">package.json</a></div></div></details>
 <details class="doc-section" id="escopo" data-audience="all" open><summary class="section-heading"><span class="number">02</span><h2>Visão funcional e escopo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A skill resolve um problema recorrente: a documentação de um projeto envelhece mais rápido que o código, e os documentos costumam ser escritos em formatos que não sobrevivem a ambientes corporativos fechados. Aqui, as entradas permanecem editáveis em texto e o produto final é um artefato portátil, sem dependências de runtime.</p>
 <div class="table-wrap"><table>
@@ -735,7 +1099,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
 <p>Limitação: quando o repositório não estabelece propósito de negócio, ownership, status de deploy ou justificativa histórica, a skill orienta consultar contexto de produto ou perguntar o fato específico. O código pode provar a implementação, não a intenção original.</p>
 </blockquote>
 <div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-authoring">references/authoring.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-data-engineering">references/data-engineering.md</a></div></div></details>
-<details class="doc-section" id="estado" data-audience="all" open><summary class="section-heading"><span class="number">03</span><h2>Estado atual da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A versão 1.7.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é <strong>Node 22 ou superior</strong> e <strong>Python 3.10 ou superior</strong>; o leitor final precisa apenas de um navegador moderno. A suíte executa com <code>npm test</code> e cobre compilação, validação, diagramas, gráficos, temas, modos e análise de impacto.</p>
+<details class="doc-section" id="estado" data-audience="all" open><summary class="section-heading"><span class="number">03</span><h2>Estado atual da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A versão 1.8.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é <strong>Node 22 ou superior</strong> e <strong>Python 3.10 ou superior</strong>; o leitor final precisa apenas de um navegador moderno. A suíte executa com <code>npm test</code> e cobre compilação, validação, diagramas, gráficos, temas, modos, layout responsivo e análise de impacto.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -781,12 +1145,12 @@ dialog::backdrop { background: var(--dialog-backdrop); }
 </tr>
 </tbody></table></div>
 <p>A contagem acima vem do <code>inventory.json</code> gerado em 15/11/2026, exceto <code>document.css</code>, medido diretamente porque a lista de extensões do inspetor não inclui <code>.css</code>. O dossiê classificou o repositório como <strong>small</strong>: 23 arquivos totais, 13 arquivos core e 5.156 linhas de código ou schema.</p>
-<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 188" role="img" aria-label="Testes automatizados por arquivo" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:840px"><g class="chart-gridlines" aria-hidden="true"><line class="chart-gridline" x1="355" y1="10" x2="355" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="490" y1="10" x2="490" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="625" y1="10" x2="625" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="760" y1="10" x2="760" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/></g><g class="chart-row" tabindex="0"><title>tests/build.test.mjs: 16 testes</title><text class="chart-label" x="206" y="32" text-anchor="end" fill="#314c5e">tests/build.test.mjs</text><rect class="chart-track" x="220" y="16" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="16" width="540" height="23" rx="4" fill="#16a34a"/><text class="chart-value chart-value-inside" x="750" y="32" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">16</text></g><g class="chart-row" tabindex="0"><title>tests/diagrams.test.mjs: 11 testes</title><text class="chart-label" x="206" y="74" text-anchor="end" fill="#314c5e">tests/diagrams.test.mjs</text><rect class="chart-track" x="220" y="58" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="58" width="371" height="23" rx="4" fill="#087f8c"/><text class="chart-value chart-value-inside" x="581" y="74" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">11</text></g><g class="chart-row" tabindex="0"><title>tests/dossier.test.mjs: 3 testes</title><text class="chart-label" x="206" y="116" text-anchor="end" fill="#314c5e">tests/dossier.test.mjs</text><rect class="chart-track" x="220" y="100" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="100" width="101" height="23" rx="4" fill="#64748b"/><text class="chart-value chart-value-inside" x="311" y="116" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">3</text></g><g class="chart-axis" aria-hidden="true"><line class="chart-axis-line" x1="220" y1="136" x2="760" y2="136" stroke="#cbd5e1" stroke-width="1"/><line class="chart-axis-tick" x1="220" y1="136" x2="220" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="220" y="152" text-anchor="start" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">0</text><line class="chart-axis-tick" x1="355" y1="136" x2="355" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="355" y="152" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">4</text><line class="chart-axis-tick" x1="490" y1="136" x2="490" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="490" y="152" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">8</text><line class="chart-axis-tick" x1="625" y1="136" x2="625" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="625" y="152" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">12</text><line class="chart-axis-tick" x1="760" y1="136" x2="760" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="760" y="152" text-anchor="end" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">16</text></g><text x="220" y="182" fill="#526778" font-size="12">0 · testes · escala linear</text></svg><figcaption><strong>Testes automatizados por arquivo</strong> · npm test · execução local · 2026-11-15</figcaption><details><summary>Dados do gráfico</summary><div class="table-wrap"><table><thead><tr><th>Categoria</th><th>testes</th></tr></thead><tbody><tr><td>tests/build.test.mjs</td><td>16</td></tr><tr><td>tests/diagrams.test.mjs</td><td>11</td></tr><tr><td>tests/dossier.test.mjs</td><td>3</td></tr></tbody></table></div></details></figure><p>O histórico recente mostra a evolução do produto em camadas. A versão 1.2.0 reformulou os gráficos de barra e ergonomia de leitura; a 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho (então chamado Santander); a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu a geometria dos diagramas, a subnavegação H3, o botão de topo e os extratores de engenharia de dados; a 1.6.0 trouxe o modo resumido; a 1.7.0 renomeou os temas para <strong>Vermelho</strong> e <strong>Azul</strong>, tornou o vermelho o padrão e corrigiu a rolagem sobre tabelas curtas.</p>
+<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 230" role="img" aria-label="Testes automatizados por arquivo" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:840px"><g class="chart-gridlines" aria-hidden="true"><line class="chart-gridline" x1="355" y1="10" x2="355" y2="178" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="490" y1="10" x2="490" y2="178" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="625" y1="10" x2="625" y2="178" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="760" y1="10" x2="760" y2="178" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/></g><g class="chart-row" tabindex="0"><title>tests/build.test.mjs: 17 testes</title><text class="chart-label" x="206" y="32" text-anchor="end" fill="#314c5e">tests/build.test.mjs</text><rect class="chart-track" x="220" y="16" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="16" width="540" height="23" rx="4" fill="#16a34a"/><text class="chart-value chart-value-inside" x="750" y="32" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">17</text></g><g class="chart-row" tabindex="0"><title>tests/diagrams.test.mjs: 11 testes</title><text class="chart-label" x="206" y="74" text-anchor="end" fill="#314c5e">tests/diagrams.test.mjs</text><rect class="chart-track" x="220" y="58" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="58" width="349" height="23" rx="4" fill="#087f8c"/><text class="chart-value chart-value-inside" x="559" y="74" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">11</text></g><g class="chart-row" tabindex="0"><title>tests/dossier.test.mjs: 4 testes</title><text class="chart-label" x="206" y="116" text-anchor="end" fill="#314c5e">tests/dossier.test.mjs</text><rect class="chart-track" x="220" y="100" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="100" width="127" height="23" rx="4" fill="#64748b"/><text class="chart-value chart-value-inside" x="337" y="116" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">4</text></g><g class="chart-row" tabindex="0"><title>tests/landing.test.mjs: 3 testes</title><text class="chart-label" x="206" y="158" text-anchor="end" fill="#314c5e">tests/landing.test.mjs</text><rect class="chart-track" x="220" y="142" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="142" width="95" height="23" rx="4" fill="#087f8c"/><text class="chart-value chart-value-inside" x="305" y="158" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">3</text></g><g class="chart-axis" aria-hidden="true"><line class="chart-axis-line" x1="220" y1="178" x2="760" y2="178" stroke="#cbd5e1" stroke-width="1"/><line class="chart-axis-tick" x1="220" y1="178" x2="220" y2="182" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="220" y="194" text-anchor="start" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">0</text><line class="chart-axis-tick" x1="355" y1="178" x2="355" y2="182" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="355" y="194" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">4,25</text><line class="chart-axis-tick" x1="490" y1="178" x2="490" y2="182" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="490" y="194" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">8,5</text><line class="chart-axis-tick" x1="625" y1="178" x2="625" y2="182" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="625" y="194" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">12,75</text><line class="chart-axis-tick" x1="760" y1="178" x2="760" y2="182" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="760" y="194" text-anchor="end" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">17</text></g><text x="220" y="224" fill="#526778" font-size="12">0 · testes · escala linear</text></svg><figcaption><strong>Testes automatizados por arquivo</strong> · npm test · execução local · 2026-11-15</figcaption><details><summary>Dados do gráfico</summary><div class="table-wrap"><table><thead><tr><th>Categoria</th><th>testes</th></tr></thead><tbody><tr><td>tests/build.test.mjs</td><td>17</td></tr><tr><td>tests/diagrams.test.mjs</td><td>11</td></tr><tr><td>tests/dossier.test.mjs</td><td>4</td></tr><tr><td>tests/landing.test.mjs</td><td>3</td></tr></tbody></table></div></details></figure><p>O histórico recente mostra a evolução do produto em camadas. A versão 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho; a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu diagramas, subnavegação H3 e extratores; a 1.6.0 trouxe o modo resumido; a 1.7.0 consolidou os temas <strong>Vermelho</strong> e <strong>Azul</strong> e a rolagem sobre tabelas curtas; e a 1.8.0 adicionou o menu lateral recolhível no mobile e a detecção de atualizações do renderer (<code>rendererSha256</code>).</p>
 <p>Na interface, o seletor oferece <strong>Vermelho</strong> (primeiro e padrão) e <strong>Azul</strong>; a escolha é persistida em <code>localStorage</code> e valores antigos são migrados (<code>santander</code> → vermelho, <code>default</code> → azul). O tema vermelho harmoniza shell, sidebar, hero e os diagramas 2D, sem apagar as cores semânticas de sucesso, atenção e erro.</p>
 <div class="cards">
 <div class="card"><h3>Núcleo determinístico</h3><p>Inspeção sem execução, renderização em tempo de build, validação estrutural e receipt com hashes.</p></div>
 <div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive, filtro por audiência, temas, filtro local de tabelas, cópia e modal com zoom.</p></div>
-<div class="card"><h3>Qualidade verificável</h3><p>30 testes, exemplos mínimo e showcase, guardas de segurança e avisos de autoria no recibo.</p></div>
+<div class="card"><h3>Qualidade verificável</h3><p>35 testes, exemplos mínimo e showcase, guardas de segurança e avisos de autoria no recibo.</p></div>
 </div><blockquote class="callout-warning">
 <p>Atenção: a suíte prova o comportamento dos geradores e do HTML produzido; ela não prova que o conteúdo semântico de um manual específico está correto. Essa verificação continua sendo responsabilidade da autoria e da revisão.</p>
 </blockquote>
@@ -857,7 +1221,7 @@ npm test</code></pre><p>O manifesto é o contrato do documento. Ele exige <code>
 </tr>
 <tr>
 <td><code>npm test</code></td>
-<td>Executa os 30 testes</td>
+<td>Executa os 35 testes</td>
 <td>Resultado da suíte</td>
 </tr>
 </tbody></table></div>
@@ -892,7 +1256,7 @@ Mais detalhe.</code></pre><p>Para um Guia Rápido, use um manifesto separado com
 <p>Atenção: o leitor final não precisa de Node, Python ou servidor. Essas ferramentas são necessárias apenas para gerar e verificar o documento. O HTML pode ser copiado para um compartilhamento, anexado a um processo ou aberto localmente.</p>
 </blockquote>
 <blockquote class="callout-limit">
-<p>Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, revise o documento em uma janela desktop de aproximadamente 1440 px, exercite busca, filtros, modal e impressão, e declare o que não foi verificado.</p>
+<p>Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, revise o documento em desktop (~1440 px) e mobile (~390 px), exercite menu recolhível, busca, filtros, modal e impressão, e declare o que não foi verificado.</p>
 </blockquote>
 <div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-authoring">references/authoring.md</a> <a href="#ref-agent">agents/openai.yaml</a></div></div></details>
 <details class="doc-section" id="solucao" data-audience="all" open><summary class="section-heading"><span class="number">05</span><h2>Desenho da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A solução separa <strong>descoberta</strong>, <strong>compilação</strong> e <strong>verificação</strong>. A descoberta é opcional para compilar, mas alimenta a leitura cirúrgica e a análise de impacto. A compilação é inteiramente local e resolve todos os visuais em tempo de build. A verificação compara o que foi documentado com o estado atual das fontes e produz um plano de revisão.</p>
@@ -1699,7 +2063,7 @@ Mais detalhe.</code></pre><p>Para um Guia Rápido, use um manifesto separado com
 </tbody></table></div>
 <p>O ciclo de atualização recomendado é: gerar um novo dossiê, rodar o verify em modo impacto, abrir o <code>update-plan.md</code>, revisar apenas as seções <code>stale</code> e as fontes alteradas, ajustar o conteúdo e recompilar. O plano mostra as fontes diretas, os dependentes transitivos, os arquivos core novos que ainda não estão no manifesto e o resumo <code>git diff --stat</code> quando a revisão documentada difere da atual.</p>
 <pre><code class="language-bash">python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md</code></pre><p>A revisão de entrega deve cobrir: overflow global, sidebar com rolagem independente sem sobrepor o rodapé, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas), fechamento do modal com Escape e impressão com todas as seções. O teste deve ser feito em desktop, por volta de 1440 px; o layout não é otimizado para telas estreitas.</p>
+node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md</code></pre><p>A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (<code>#nav-toggle</code>, <code>#nav-close</code>, backdrop, <code>Escape</code> e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas), fechamento do modal com Escape e impressão com todas as seções. O teste deve cobrir tanto desktop (~1440 px) quanto mobile (~390 px).</p>
 <blockquote class="callout-rule">
 <p>Regra de negócio: <code>--force</code> é uma decisão editorial, não um atalho de automação. Use quando a intenção for substituir deliberadamente o HTML existente e mantenha o recibo anterior se precisar comparar versões.</p>
 </blockquote>
@@ -1750,9 +2114,9 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 <td>Conteúdo precisa respeitar o contrato de autoria</td>
 </tr>
 <tr>
-<td>Interface desktop-first</td>
-<td>Layout confortável em ~1440 px, com sidebar e diagramas amplos</td>
-<td>Não há otimização para mobile ou telas estreitas</td>
+<td>Interface responsiva (desktop + mobile)</td>
+<td>Sidebar fixa em ~1440 px e drawer lateral recolhível em ≤ 960 px</td>
+<td>Tabelas e diagramas extensos usam rolagem horizontal local em telas estreitas</td>
 </tr>
 <tr>
 <td>Temas por cor</td>
@@ -1822,7 +2186,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 <tr>
 <td>Validação estrutural</td>
 <td>Não garante clareza, precisão ou beleza</td>
-<td>Revisão desktop e leitura crítica</td>
+<td>Revisão em desktop/mobile e leitura crítica</td>
 </tr>
 <tr>
 <td>Mermaid embutido no build</td>
@@ -1830,9 +2194,9 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 <td>Editar o texto do fence e recompilar</td>
 </tr>
 <tr>
-<td>Mobile não otimizado</td>
-<td>Layout pode ficar apertado em telas estreitas</td>
-<td>Usar desktop; o produto declara essa escolha</td>
+<td>Diagramas largos em telas estreitas</td>
+<td>Diagramas detalhados exigem arraste lateral em smartphones</td>
+<td>Usar rolagem horizontal local ou o botão Ampliar (Ajustar à tela)</td>
 </tr>
 </tbody></table></div>
 <blockquote class="callout-rule">
@@ -1966,6 +2330,10 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 <td>Varredura estática, dossiê e plano de leitura</td>
 </tr>
 <tr>
+<td><code>scripts/renderer-hash.mjs</code></td>
+<td>Hash SHA-256 determinístico dos arquivos do renderer da skill</td>
+</tr>
+<tr>
 <td><code>assets/document.css</code></td>
 <td>Design system, temas e estilos de impressão</td>
 </tr>
@@ -1983,11 +2351,11 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 </tr>
 <tr>
 <td><code>tests/</code></td>
-<td>30 testes de build, diagramas, dossiê e impacto</td>
+<td>35 testes de build, diagramas, dossiê, impacto e landing page</td>
 </tr>
 </tbody></table></div>
-<p>Este manual foi gerado a partir da revisão <code>78dc658d3b1a895a64aa0956b306955eb240989d</code>, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco <strong>Referências do documento</strong>, gerado automaticamente a partir de <code>sources[]</code>. Para aprofundar, comece por <a href="#uso">Como usar</a>, <a href="#solucao">Desenho da solução</a> e <a href="#operacao">Operação e recuperação</a>.</p>
-<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-tools">references/tools.md</a> <a href="#ref-changelog">CHANGELOG.md</a></div></div></details><details class="doc-section" id="document-references" data-audience="technical"><summary class="section-heading"><h2>Referências do documento</h2></summary><div class="section-body"><p>Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.</p><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead><tbody><tr id="ref-skill"><td class="source-path">SKILL.md</td><td>Contrato operacional do skill: fluxo, decisões e manutenção.</td></tr><tr id="ref-readme"><td class="source-path">README.md</td><td>Visão geral, requisitos, comandos e recursos do projeto.</td></tr><tr id="ref-package"><td class="source-path">package.json</td><td>Versão, engines, scripts e dependências fixadas.</td></tr><tr id="ref-schema"><td class="source-path">schemas/document.schema.json</td><td>Esquema JSON do manifesto document.json.</td></tr><tr id="ref-build"><td class="source-path">scripts/build.mjs</td><td>Compilador do manifesto e do Markdown no HTML final.</td></tr><tr id="ref-diagrams"><td class="source-path">scripts/diagrams.mjs</td><td>Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid.</td></tr><tr id="ref-validate"><td class="source-path">scripts/validate.mjs</td><td>Validador estrutural do HTML, dos SVGs e da navegação.</td></tr><tr id="ref-verify"><td class="source-path">scripts/verify.mjs</td><td>Conferência de hashes, revisão Git e análise incremental de impacto.</td></tr><tr id="ref-inspect"><td class="source-path">scripts/inspect_repo.py</td><td>Inspetor estático do repositório e gerador do dossiê/plano de leitura.</td></tr><tr id="ref-ui"><td class="source-path">assets/document.js</td><td>Comportamentos offline da interface: busca, filtros, temas e modal.</td></tr><tr id="ref-styles"><td class="source-path">assets/document.css</td><td>Design system, layout desktop, temas e estilos de impressão.</td></tr><tr id="ref-authoring"><td class="source-path">references/authoring.md</td><td>Contrato de autoria, sintaxe de diagramas e critérios de revisão.</td></tr><tr id="ref-data-engineering"><td class="source-path">references/data-engineering.md</td><td>Perfil de documentação para engenharia de dados, nuvem e streaming.</td></tr><tr id="ref-tools"><td class="source-path">references/tools.md</td><td>Dependências, escopo e separação entre autoria e renderização.</td></tr><tr id="ref-agent"><td class="source-path">agents/openai.yaml</td><td>Metadados de descoberta da skill em agentes compatíveis.</td></tr><tr id="ref-changelog"><td class="source-path">CHANGELOG.md</td><td>Histórico de versões e mudanças do gerador.</td></tr><tr id="ref-tests-build"><td class="source-path">tests/build.test.mjs</td><td>Testes do compilador, validador, temas, modos e avisos.</td></tr><tr id="ref-tests-diagrams"><td class="source-path">tests/diagrams.test.mjs</td><td>Testes do motor 2D, Mermaid, gráficos e exemplos.</td></tr><tr id="ref-tests-dossier"><td class="source-path">tests/dossier.test.mjs</td><td>Testes do inspetor, do dossiê e da análise de impacto.</td></tr><tr id="ref-example-minimal"><td class="source-path">examples/minimal/document.json</td><td>Manifesto mínimo executável.</td></tr><tr id="ref-example-showcase"><td class="source-path">examples/showcase/document.json</td><td>Manifesto completo com as 11 categorias de leitura.</td></tr></tbody></table></div><p class="revision">Código: 78dc658d3b1a895a64aa0956b306955eb240989d</p></div></details><footer>project-html-docs · Manual do Gerador · 1.7.0 · HTML único · leitura offline</footer></div><button id="back-to-top" type="button" hidden aria-label="Topo">↑ Topo</button></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-zoom-out" type="button" aria-label="Reduzir zoom">−</button><span id="dialog-zoom-label" class="dialog-zoom-label" aria-live="polite">100%</span><button id="dialog-zoom-in" type="button" aria-label="Aumentar zoom">+</button><button id="dialog-fit" type="button">Ajustar à tela</button><button id="dialog-actual" type="button" class="is-active">Tamanho real</button><button id="dialog-close" type="button">Fechar</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>(() => {
+<p>Este manual foi gerado a partir da revisão <code>2379ed11b8980038afcfb545659d22ed90ecee74</code>, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco <strong>Referências do documento</strong>, gerado automaticamente a partir de <code>sources[]</code>. Para aprofundar, comece por <a href="#uso">Como usar</a>, <a href="#solucao">Desenho da solução</a> e <a href="#operacao">Operação e recuperação</a>.</p>
+<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-tools">references/tools.md</a> <a href="#ref-changelog">CHANGELOG.md</a></div></div></details><details class="doc-section" id="document-references" data-audience="technical"><summary class="section-heading"><h2>Referências do documento</h2></summary><div class="section-body"><p>Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.</p><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead><tbody><tr id="ref-skill"><td class="source-path">SKILL.md</td><td>Contrato operacional do skill: fluxo, decisões e manutenção.</td></tr><tr id="ref-readme"><td class="source-path">README.md</td><td>Visão geral, requisitos, comandos e recursos do projeto.</td></tr><tr id="ref-package"><td class="source-path">package.json</td><td>Versão, engines, scripts e dependências fixadas.</td></tr><tr id="ref-schema"><td class="source-path">schemas/document.schema.json</td><td>Esquema JSON do manifesto document.json.</td></tr><tr id="ref-build"><td class="source-path">scripts/build.mjs</td><td>Compilador do manifesto e do Markdown no HTML final.</td></tr><tr id="ref-diagrams"><td class="source-path">scripts/diagrams.mjs</td><td>Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid.</td></tr><tr id="ref-validate"><td class="source-path">scripts/validate.mjs</td><td>Validador estrutural do HTML, dos SVGs e da navegação.</td></tr><tr id="ref-verify"><td class="source-path">scripts/verify.mjs</td><td>Conferência de hashes, revisão Git e análise incremental de impacto.</td></tr><tr id="ref-inspect"><td class="source-path">scripts/inspect_repo.py</td><td>Inspetor estático do repositório e gerador do dossiê/plano de leitura.</td></tr><tr id="ref-ui"><td class="source-path">assets/document.js</td><td>Comportamentos offline da interface: busca, filtros, temas e modal.</td></tr><tr id="ref-styles"><td class="source-path">assets/document.css</td><td>Design system, layout desktop, temas e estilos de impressão.</td></tr><tr id="ref-authoring"><td class="source-path">references/authoring.md</td><td>Contrato de autoria, sintaxe de diagramas e critérios de revisão.</td></tr><tr id="ref-data-engineering"><td class="source-path">references/data-engineering.md</td><td>Perfil de documentação para engenharia de dados, nuvem e streaming.</td></tr><tr id="ref-tools"><td class="source-path">references/tools.md</td><td>Dependências, escopo e separação entre autoria e renderização.</td></tr><tr id="ref-agent"><td class="source-path">agents/openai.yaml</td><td>Metadados de descoberta da skill em agentes compatíveis.</td></tr><tr id="ref-changelog"><td class="source-path">CHANGELOG.md</td><td>Histórico de versões e mudanças do gerador.</td></tr><tr id="ref-tests-build"><td class="source-path">tests/build.test.mjs</td><td>Testes do compilador, validador, temas, modos e avisos.</td></tr><tr id="ref-tests-diagrams"><td class="source-path">tests/diagrams.test.mjs</td><td>Testes do motor 2D, Mermaid, gráficos e exemplos.</td></tr><tr id="ref-tests-dossier"><td class="source-path">tests/dossier.test.mjs</td><td>Testes do inspetor, do dossiê e da análise de impacto.</td></tr><tr id="ref-example-minimal"><td class="source-path">examples/minimal/document.json</td><td>Manifesto mínimo executável.</td></tr><tr id="ref-example-showcase"><td class="source-path">examples/showcase/document.json</td><td>Manifesto completo com as 11 categorias de leitura.</td></tr></tbody></table></div><p class="revision">Código: 2379ed11b8980038afcfb545659d22ed90ecee74</p></div></details><footer>project-html-docs · Manual do Gerador · 1.8.0 · HTML único · leitura offline</footer></div><button id="back-to-top" type="button" hidden aria-label="Topo">↑ Topo</button></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-zoom-out" type="button" aria-label="Reduzir zoom">−</button><span id="dialog-zoom-label" class="dialog-zoom-label" aria-live="polite">100%</span><button id="dialog-zoom-in" type="button" aria-label="Aumentar zoom">+</button><button id="dialog-fit" type="button">Ajustar à tela</button><button id="dialog-actual" type="button" class="is-active">Tamanho real</button><button id="dialog-close" type="button">Fechar</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>(() => {
   const lang = document.documentElement.lang.startsWith('pt');
   const words = lang
     ? {
@@ -2002,8 +2370,44 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
       };
 
   const sections = [...document.querySelectorAll('.doc-section')];
+  const sidebar = document.querySelector('#sidebar');
+  const navToggle = document.querySelector('#nav-toggle');
+  const navClose = document.querySelector('#nav-close');
+  const mobileSearchBtn = document.querySelector('#mobile-search-btn');
+  const backdrop = document.querySelector('#sidebar-backdrop');
+  const mobileMq = window.matchMedia('(max-width: 960px)');
   const search = document.querySelector('#search');
   const searchClear = document.querySelector('#search-clear');
+
+  function setDrawerOpen(open, { focusTarget = null, restoreFocus = false } = {}) {
+    if (!sidebar) return;
+    const active = Boolean(open && mobileMq.matches);
+    sidebar.classList.toggle('is-open', active);
+    document.body.classList.toggle('nav-open', active);
+    if (backdrop) backdrop.hidden = !active;
+    if (navToggle) navToggle.setAttribute('aria-expanded', active ? 'true' : 'false');
+    if (active) {
+      const target = focusTarget === 'search' ? search : (navClose || search);
+      requestAnimationFrame(() => {
+        target?.focus();
+        if (focusTarget === 'search') target?.select?.();
+      });
+    } else if (restoreFocus) {
+      navToggle?.focus();
+    }
+  }
+
+  navToggle?.addEventListener('click', () => {
+    setDrawerOpen(!sidebar?.classList.contains('is-open'), { restoreFocus: true });
+  });
+  navClose?.addEventListener('click', () => setDrawerOpen(false, { restoreFocus: true }));
+  backdrop?.addEventListener('click', () => setDrawerOpen(false, { restoreFocus: true }));
+  mobileSearchBtn?.addEventListener('click', () => setDrawerOpen(true, { focusTarget: 'search' }));
+  if (typeof mobileMq.addEventListener === 'function') {
+    mobileMq.addEventListener('change', e => { if (!e.matches) setDrawerOpen(false); });
+  } else if (typeof mobileMq.addListener === 'function') {
+    mobileMq.addListener(e => { if (!e.matches) setDrawerOpen(false); });
+  }
   const normalize = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const index = new Map(sections.map(s => [s, normalize(s.textContent)]));
   const openAncestors = el => { for (let n = el; n; n = n.parentElement) if (n.tagName === 'DETAILS') n.open = true; };
@@ -2121,12 +2525,19 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
     const editable = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
     if ((e.key === '/' && !editable) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
       e.preventDefault();
-      search.focus();
-      search.select();
+      if (mobileMq.matches && !sidebar?.classList.contains('is-open')) {
+        setDrawerOpen(true, { focusTarget: 'search' });
+      } else {
+        search.focus();
+        search.select();
+      }
     } else if (e.key === 'Escape' && document.activeElement === search && search.value) {
       e.preventDefault();
       search.value = '';
       filter();
+    } else if (e.key === 'Escape' && sidebar?.classList.contains('is-open')) {
+      e.preventDefault();
+      setDrawerOpen(false, { restoreFocus: true });
     }
   });
 
@@ -2252,6 +2663,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
     const targetId = decodeURIComponent(rawHref.slice(1));
     const el = targetId ? document.getElementById(targetId) : null;
     if (el) { search.value = ''; filter(); openAncestors(el); }
+    if (mobileMq.matches && a.closest('.sidebar')) setDrawerOpen(false);
   }));
 
   // Copia com clipboard; se o navegador negar, tenta execCommand e por fim

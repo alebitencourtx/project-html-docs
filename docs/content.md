@@ -16,7 +16,7 @@ O fluxo da skill é deliberadamente separado em duas camadas. A primeira é **de
 
 > Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.
 
-A versão atual é a **1.7.0**, com **30 testes automatizados** passando em 15/11/2026. Ela consolida o **Guia Rápido** (`mode: "summary"`) ao lado do manual completo, os temas **Vermelho** (padrão) e **Azul** e a correção da roda sobre tabelas curtas, mantendo a mesma base de renderização e o mesmo recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
+A versão atual é a **1.8.0**, com **35 testes automatizados** passando em 15/11/2026. Ela consolida o **Guia Rápido** (`mode: "summary"`) ao lado do manual completo, os temas **Vermelho** (padrão) e **Azul**, a visão mobile com menu lateral recolhível e o rastreamento de drift do próprio renderer (`rendererSha256`), mantendo o fluxo offline e o recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
 
 ## Visão funcional e escopo
 
@@ -51,7 +51,7 @@ Quando o repositório documentado é uma esteira de dados, a skill incorpora o p
 
 ## Estado atual da solução
 
-A versão 1.7.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, validação, diagramas, gráficos, temas, modos e análise de impacto.
+A versão 1.8.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, validação, diagramas, gráficos, temas, modos, layout responsivo e análise de impacto.
 
 | Componente | Linhas | Papel |
 |---|---|---|
@@ -66,17 +66,17 @@ A versão 1.7.0 é um pacote Node.js privado, com dependências fixadas e um scr
 A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **small**: 23 arquivos totais, 13 arquivos core e 5.156 linhas de código ou schema.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":16,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":3,"variant":"neutral"}]}
+{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":17,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":4,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":3,"variant":"accent"}]}
 ```
 
-O histórico recente mostra a evolução do produto em camadas. A versão 1.2.0 reformulou os gráficos de barra e ergonomia de leitura; a 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho (então chamado Santander); a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu a geometria dos diagramas, a subnavegação H3, o botão de topo e os extratores de engenharia de dados; a 1.6.0 trouxe o modo resumido; a 1.7.0 renomeou os temas para **Vermelho** e **Azul**, tornou o vermelho o padrão e corrigiu a rolagem sobre tabelas curtas.
+O histórico recente mostra a evolução do produto em camadas. A versão 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho; a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu diagramas, subnavegação H3 e extratores; a 1.6.0 trouxe o modo resumido; a 1.7.0 consolidou os temas **Vermelho** e **Azul** e a rolagem sobre tabelas curtas; e a 1.8.0 adicionou o menu lateral recolhível no mobile e a detecção de atualizações do renderer (`rendererSha256`).
 
 Na interface, o seletor oferece **Vermelho** (primeiro e padrão) e **Azul**; a escolha é persistida em `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). O tema vermelho harmoniza shell, sidebar, hero e os diagramas 2D, sem apagar as cores semânticas de sucesso, atenção e erro.
 
 <div class="cards">
 <div class="card"><h3>Núcleo determinístico</h3><p>Inspeção sem execução, renderização em tempo de build, validação estrutural e receipt com hashes.</p></div>
 <div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive, filtro por audiência, temas, filtro local de tabelas, cópia e modal com zoom.</p></div>
-<div class="card"><h3>Qualidade verificável</h3><p>30 testes, exemplos mínimo e showcase, guardas de segurança e avisos de autoria no recibo.</p></div>
+<div class="card"><h3>Qualidade verificável</h3><p>35 testes, exemplos mínimo e showcase, guardas de segurança e avisos de autoria no recibo.</p></div>
 </div>
 
 > Atenção: a suíte prova o comportamento dos geradores e do HTML produzido; ela não prova que o conteúdo semântico de um manual específico está correto. Essa verificação continua sendo responsabilidade da autoria e da revisão.
@@ -116,7 +116,7 @@ O manifesto é o contrato do documento. Ele exige `title`, `subtitle`, `version`
 | `node scripts/verify.mjs <manifest> <receipt>` | Compara fontes e revisão com o recibo | Relatório JSON |
 | `node scripts/verify.mjs <manifest> <receipt> --strict` | Falha com código 1 quando há drift | Relatório JSON |
 | `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Calcula seções afetadas e grava o plano | Relatório + `update-plan.md` |
-| `npm test` | Executa os 30 testes | Resultado da suíte |
+| `npm test` | Executa os 35 testes | Resultado da suíte |
 
 O conteúdo começa obrigatoriamente com um `##` cujo texto coincida, na ordem, com `sections[].title`. Cada `###` vira subnavegação lateral. Um `#` dentro do Markdown é reservado ao título do documento e provoca erro de build. Tabelas ganham cabeçalho fixo, rolagem local e filtro automático a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas. Diagramas são declarados em fences próprios.
 
@@ -160,7 +160,7 @@ Para um Guia Rápido, use um manifesto separado com `"mode": "summary"` e, opcio
 
 > Atenção: o leitor final não precisa de Node, Python ou servidor. Essas ferramentas são necessárias apenas para gerar e verificar o documento. O HTML pode ser copiado para um compartilhamento, anexado a um processo ou aberto localmente.
 
-> Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, revise o documento em uma janela desktop de aproximadamente 1440 px, exercite busca, filtros, modal e impressão, e declare o que não foi verificado.
+> Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, revise o documento em desktop (~1440 px) e mobile (~390 px), exercite menu recolhível, busca, filtros, modal e impressão, e declare o que não foi verificado.
 
 ## Desenho da solução
 
@@ -600,7 +600,7 @@ python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-p
 node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
-A revisão de entrega deve cobrir: overflow global, sidebar com rolagem independente sem sobrepor o rodapé, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas), fechamento do modal com Escape e impressão com todas as seções. O teste deve ser feito em desktop, por volta de 1440 px; o layout não é otimizado para telas estreitas.
+A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (`#nav-toggle`, `#nav-close`, backdrop, `Escape` e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas), fechamento do modal com Escape e impressão com todas as seções. O teste deve cobrir tanto desktop (~1440 px) quanto mobile (~390 px).
 
 > Regra de negócio: `--force` é uma decisão editorial, não um atalho de automação. Use quando a intenção for substituir deliberadamente o HTML existente e mantenha o recibo anterior se precisar comparar versões.
 
@@ -620,7 +620,7 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | Inspeção estática | Zero execução de código e zero tokens de LLM | Heurísticas podem gerar falsos positivos |
 | Hashes + Git no recibo | Drift detectável e impacto rastreável | Não há prova semântica nem de execução |
 | Sanitização e validação | Bloqueiam HTML perigoso, ativos externos e estruturas quebradas | Conteúdo precisa respeitar o contrato de autoria |
-| Interface desktop-first | Layout confortável em ~1440 px, com sidebar e diagramas amplos | Não há otimização para mobile ou telas estreitas |
+| Interface responsiva (desktop + mobile) | Sidebar fixa em ~1440 px e drawer lateral recolhível em ≤ 960 px | Tabelas e diagramas extensos usam rolagem horizontal local em telas estreitas |
 | Temas por cor | Vermelho primeiro e padrão, com Azul alternável e preferência persistida | A troca de tema não altera layout, conteúdo ou semântica |
 | Rolagem de tabelas | A roda rola a tabela quando ela tem overflow e a página quando não tem | Tabelas altas ainda rolam internamente antes de encadear |
 | Dependências fixadas | Builds reproduzíveis e auditoria de versões | Atualização exige mudança consciente do lockfile |
@@ -637,9 +637,9 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | Duas versões editoriais | Manual completo e Guia Rápido exigem dois inputs | Usar `companionDoc` e manter o guia enxuto |
 | Gráfico apenas de barras | Séries temporais e valores negativos não são suportados | Outro renderizador documentado ou tabela |
 | Impacto depende de `sections[].sources` | Fontes não vinculadas não são roteadas | Preencher `sources` em todas as seções aplicáveis |
-| Validação estrutural | Não garante clareza, precisão ou beleza | Revisão desktop e leitura crítica |
+| Validação estrutural | Não garante clareza, precisão ou beleza | Revisão em desktop/mobile e leitura crítica |
 | Mermaid embutido no build | Não há edição interativa no HTML final | Editar o texto do fence e recompilar |
-| Mobile não otimizado | Layout pode ficar apertado em telas estreitas | Usar desktop; o produto declara essa escolha |
+| Diagramas largos em telas estreitas | Diagramas detalhados exigem arraste lateral em smartphones | Usar rolagem horizontal local ou o botão Ampliar (Ajustar à tela) |
 
 > Regra de negócio: a skill documenta o estado atual. Backlog de defeitos, maturidade, severidade e plano de modernização não fazem parte da entrega, a menos que solicitados explicitamente.
 
@@ -682,10 +682,11 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | `scripts/validate.mjs` | Auditoria estrutural do HTML e dos SVGs |
 | `scripts/verify.mjs` | Hashes, revisão Git, impacto e plano de atualização |
 | `scripts/inspect_repo.py` | Varredura estática, dossiê e plano de leitura |
+| `scripts/renderer-hash.mjs` | Hash SHA-256 determinístico dos arquivos do renderer da skill |
 | `assets/document.css` | Design system, temas e estilos de impressão |
 | `assets/document.js` | Busca, filtros, temas, cópia e modal de diagramas |
 | `examples/minimal/` | Exemplo mínimo executável |
 | `examples/showcase/` | Exemplo completo com as 11 categorias e diagramas avançados |
-| `tests/` | 30 testes de build, diagramas, dossiê e impacto |
+| `tests/` | 35 testes de build, diagramas, dossiê, impacto e landing page |
 
-Este manual foi gerado a partir da revisão `78dc658d3b1a895a64aa0956b306955eb240989d`, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
+Este manual foi gerado a partir da revisão `2379ed11b8980038afcfb545659d22ed90ecee74`, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).

@@ -10,7 +10,7 @@ O mesmo documento atende dois públicos. Leitores de negócio encontram propósi
 <div class="card"><h3>Operação</h3><p>Pré-requisitos, comandos, verificação de integridade e recuperação de falhas previsíveis.</p></div>
 </div>
 
-A versão atual é a **1.7.0**, com **30 testes** passando em 15/11/2026. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). O tema vermelho harmoniza shell, sidebar, hero e diagramas 2D sem apagar as cores semânticas de sucesso, atenção e erro.
+A versão atual é a **1.8.0**, com **35 testes** passando em 15/11/2026. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile, além de detecção automática de atualizações no renderer (`rendererSha256`).
 
 > Regra de negócio: documentar é descrever o comportamento atual e comprovável. Planos históricos e intenções não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.
 
@@ -97,7 +97,7 @@ O manifesto exige `title`, `subtitle`, `version`, `updated`, `content` e `sectio
 | `node scripts/build.mjs <manifest> --out <html> --mode summary` | Guia Rápido e recibo |
 | `node scripts/verify.mjs <manifest> <receipt>` | Conferência de fontes e revisão |
 | `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Plano de atualização por impacto |
-| `npm test` | 30 testes da suíte |
+| `npm test` | 35 testes da suíte |
 
 O conteúdo começa com um `##` cujo texto coincide, na ordem, com `sections[].title`. Cada `###` vira subnavegação. Um `#` é reservado ao título do documento. Tabelas ganham cabeçalho fixo e filtro a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas.
 
@@ -105,7 +105,7 @@ Para gerar as duas versões, use manifestos separados: `document.json` em modo `
 
 > Atenção: o leitor final não precisa de Node, Python ou servidor. O HTML pode ser copiado, anexado ou aberto localmente.
 
-> Limitação: o build não prova qualidade semântica nem visual. A revisão em desktop (~1440 px) continua obrigatória.
+> Limitação: o build não prova qualidade semântica nem visual. A revisão em desktop (~1440 px) e mobile (~390 px) continua obrigatória.
 
 ## Regras e limites
 
@@ -135,8 +135,8 @@ Para gerar as duas versões, use manifestos separados: `document.json` em modo `
 | `.css` fora do inspetor | Folhas de estilo não entram no dossiê | Ler o CSS quando o visual for relevante |
 | Títulos H2 exatos | Acento ou ordem divergente quebra o build | Comparar manifesto e conteúdo |
 | Gráfico só de barras | Sem séries temporais ou valores negativos | Usar tabela ou outro renderizador |
-| Validação estrutural | Não garante clareza ou beleza | Revisão desktop e leitura crítica |
-| Mobile não otimizado | Layout apertado em telas estreitas | Usar desktop |
+| Validação estrutural | Não garante clareza ou beleza | Revisão em desktop/mobile e leitura crítica |
+| Diagramas largos no mobile | Exigem arraste lateral em telas estreitas | Usar rolagem local ou Ampliar (Ajustar à tela) |
 
 > Limitação: a skill documenta o estado atual. Backlog de defeitos, maturidade, severidade e plano de modernização não fazem parte da entrega, a menos que solicitados.
 
@@ -144,7 +144,7 @@ Para gerar as duas versões, use manifestos separados: `document.json` em modo `
 
 ## Verificação e atualização
 
-O `verify.mjs` relê o manifesto e o recibo, confere hashes, caminhos e existência de cada fonte, detecta fontes inesperadas e compara a revisão Git documentada com a atual. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos e marca apenas as seções `stale`.
+O `verify.mjs` relê o manifesto e o recibo, confere hashes das fontes e do renderer da skill (`rendererSha256`), detecta fontes inesperadas e compara a revisão Git documentada com a atual. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos, marca apenas as seções `stale` e avisa quando basta rodar `build.mjs --force` por mudança exclusiva do template da skill.
 
 ```bash
 python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
@@ -154,7 +154,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 O plano mostra fontes alteradas, dependentes, arquivos core novos, resumo `git diff --stat` e as seções que precisam de revisão. Se uma fonte mudou e não está vinculada a nenhuma seção, o plano avisa; corrija `sections[].sources` antes de confiar no roteamento.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":16,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":3,"variant":"neutral"}]}
+{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":17,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":4,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":3,"variant":"accent"}]}
 ```
 
 | Sintoma | Causa provável | Ação |
@@ -166,7 +166,7 @@ O plano mostra fontes alteradas, dependentes, arquivos core novos, resumo `git d
 | Revisão Git diferente | Commit novo desde o recibo | Rodar impacto e revisar `stale` |
 | Página para de rolar sobre tabela | HTML antigo com contenção de roda | Recompilar com 1.7.0+ |
 
-A revisão de entrega cobre overflow global, sidebar sem sobrepor o rodapé, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, cópia, temas, modal com Escape e impressão. Use desktop em ~1440 px; o layout não é otimizado para telas estreitas.
+A revisão de entrega cobre overflow global, menu lateral recolhível no mobile, sidebar sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, cópia, temas, modal com Escape e impressão em desktop (~1440 px) e mobile (~390 px).
 
 > Regra de negócio: `--force` é uma decisão editorial, não um atalho de automação.
 

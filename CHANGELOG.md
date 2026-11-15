@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.8.0 — 2026-11-15
+
+Responsividade mobile com barra lateral recolhível e detecção automática de atualizações no renderer/template da própria skill.
+
+### Adicionado
+
+- **Visão Mobile & Menu Lateral Recolhível (`scripts/build.mjs`, `assets/document.css`, `assets/document.js`)**:
+  - Barra superior fixa compacta (`.mobile-topbar`) em viewports `<= 960 px` com botão para abrir o menu (`#nav-toggle`), título truncado e atalho rápido de busca (`#mobile-search-btn`).
+  - Gaveta lateral off-canvas recolhível (`#sidebar` com `translateX`), botão fechar (`#nav-close`), backdrop clicável (`#sidebar-backdrop`), bloqueio de rolagem com gaveta aberta (`body.nav-open`) e fechamento por `Escape`, clique fora, redimensionamento para desktop ou toque em qualquer link de navegação.
+  - Atalhos `/` e `Ctrl/Cmd+K` abrem o menu automaticamente no mobile antes de focar a busca, sem ícone duplicado de limpar busca no WebKit.
+  - Responsividade geral (`<= 760 px`) para cartões, barra de ferramentas (filtros e ações em grade), cabeçalhos de seção, tabelas, modal de diagramas (`92dvh`) e rolagem horizontal tátil em diagramas sem overflow horizontal da página; layout desktop (`1440 px`) preservado intacto.
+- **Detecção de drift do template/renderer da skill (`scripts/renderer-hash.mjs`, `scripts/build.mjs`, `scripts/verify.mjs`)**:
+  - Recibos `*.validation.json` agora gravam `rendererSha256` (hash determinístico de `assets/document.css`, `assets/document.js`, `scripts/build.mjs`, `scripts/diagrams.mjs`, `scripts/validate.mjs` e `scripts/renderer-hash.mjs`).
+  - `verify.mjs` e `verify.mjs --impact` retornam o bloco `renderer` (`matches`, `needsRebuild`) e o `update-plan.md` passa a instruir reconstrução direta (`build.mjs --force`) sem reler o repositório quando apenas a skill foi atualizada (inclusive para recibos legados).
+- **Testes**: suíte ampliada para **35 testes** cobrindo drawer mobile responsivo, IDs reservados, localização PT/EN, `rendererSha256` e detecção de atualizações exclusivas da skill.
+
 ## 1.7.0 — 2026-11-15
 
 Renomeação dos temas por cor, com **Vermelho** como padrão, inclusão do tema **Verde** e correção da rolagem sobre tabelas curtas.

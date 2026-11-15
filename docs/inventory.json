@@ -1,31 +1,29 @@
 {
   "dossierVersion": "1.5.0",
-  "generatedAt": "2026-11-15T06:57:14.322469+00:00",
-  "repository": "C:\\Users\\alebi\\Documents\\ChatGPT\\teste-opendata\\project-html-docs",
-  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
-  "workingTreeChanges": "M CHANGELOG.md\n M README.md\n M SKILL.md\n M assets/document.css\n M assets/document.js\n M package-lock.json\n M package.json\n M references/authoring.md\n M schemas/document.schema.json\n M scripts/build.mjs\n M tests/build.test.mjs\n?? docs/",
+  "generatedAt": "2026-11-15T14:46:11.666999+00:00",
+  "repository": "/app/applet/project-html-docs",
+  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
+  "workingTreeChanges": "M CHANGELOG.md\n M README.md\n M SKILL.md\n M assets/document.css\n M assets/document.js\n M docs/content-summary.md\n M docs/content.md\n M docs/document-summary.json\n M docs/document.json\n M docs/documentacao-resumida.html\n M docs/documentacao-resumida.validation.json\n M docs/documentacao.html\n M docs/documentacao.validation.json\n M docs/index.html\n M docs/landing-i18n.mjs\n M package-lock.json\n M package.json\n M references/authoring.md\n M scripts/build.mjs\n M scripts/verify.mjs\n M tests/build.test.mjs\n M tests/dossier.test.mjs\n?? scripts/renderer-hash.mjs",
   "includes": [],
-  "excludes": [
-    "docs"
-  ],
+  "excludes": [],
   "countsByKind": {
-    "code": 9,
-    "config": 6,
-    "docs": 8
+    "code": 13,
+    "config": 8,
+    "docs": 11
   },
   "stackSignals": {
-    "api_service": 6,
+    "api_service": 8,
     "azure_blob_adls": 5,
     "cosmos_db": 4,
     "data_quality": 1,
-    "databricks": 7,
+    "databricks": 10,
     "dbt": 2,
     "delta_lake": 4,
     "event_hubs": 6,
     "iceberg": 1,
     "orchestration": 2,
     "scala": 3,
-    "spark_pyspark": 7,
+    "spark_pyspark": 10,
     "sql_warehouse": 6,
     "terraform_iac": 3
   },
@@ -54,6 +52,20 @@
       "event_hubs",
       "spark_pyspark",
       "sql_warehouse"
+    ],
+    "docs/content.md": [
+      "databricks",
+      "spark_pyspark"
+    ],
+    "docs/index.html": [
+      "api_service",
+      "databricks",
+      "spark_pyspark"
+    ],
+    "docs/landing-i18n.mjs": [
+      "api_service",
+      "databricks",
+      "spark_pyspark"
     ],
     "references/data-engineering.md": [
       "api_service",
@@ -106,9 +118,9 @@
   },
   "scaleProfile": {
     "tier": "small",
-    "totalFiles": 23,
-    "coreFiles": 13,
-    "totalCodeLines": 5156,
+    "totalFiles": 32,
+    "coreFiles": 18,
+    "totalCodeLines": 5913,
     "recommendedStrategy": "Leitura sequencial guiada por Ondas 1 -> 2 -> 3 (projeto compacto)."
   },
   "entrypoints": {
@@ -181,7 +193,7 @@
   "inlineConfigs": {
     "package.json": {
       "name": "project-html-docs",
-      "version": "1.7.0",
+      "version": "1.8.0",
       "scripts": {
         "test": "node --test tests/*.test.mjs",
         "build:example": "node scripts/build.mjs examples/minimal/document.json --out examples/minimal/documentacao.html --force",
@@ -194,6 +206,33 @@
         "marked",
         "sanitize-html"
       ]
+    },
+    "docs/document-summary.json": {
+      "title": "project-html-docs · Guia Rápido",
+      "subtitle": "Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e v...",
+      "eyebrow": "project-html-docs · guia rápido",
+      "version": "1.8.0",
+      "updated": "2026-11-15",
+      "language": "pt-BR",
+      "theme": "vermelho",
+      "mode": "summary",
+      "content": "content-summary.md",
+      "repoRoot": ".."
+    },
+    "docs/document.json": {
+      "title": "project-html-docs · Manual do Gerador",
+      "subtitle": "Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML ún...",
+      "eyebrow": "project-html-docs · manual do próprio gerador",
+      "version": "1.8.0",
+      "updated": "2026-11-15",
+      "language": "pt-BR",
+      "theme": "vermelho",
+      "mode": "full",
+      "content": "content.md",
+      "companionDoc": {
+        "href": "documentacao-resumida.html",
+        "label": "Guia rápido"
+      }
     },
     "examples/minimal/document.json": {
       "title": "Daily sales",
@@ -340,11 +379,10 @@
         },
         "theme": {
           "enum": [
-            "verde",
-            "azul",
             "vermelho",
-            "default",
-            "santander"
+            "azul",
+            "santander",
+            "default"
           ]
         },
         "mode": {
@@ -378,28 +416,89 @@
     }
   },
   "symbolIndex": {
+    "docs/landing-i18n.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "resolveLang",
+          "kind": "function",
+          "startLine": 196,
+          "endLine": 196,
+          "signature": "resolveLang(input)"
+        },
+        {
+          "name": "getCopy",
+          "kind": "function",
+          "startLine": 204,
+          "endLine": 204,
+          "signature": "getCopy(lang)"
+        }
+      ],
+      "dataIO": []
+    },
+    "docs/landing.js": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "getInitialLang",
+          "kind": "function",
+          "startLine": 49,
+          "endLine": 49,
+          "signature": "getInitialLang()"
+        },
+        {
+          "name": "updateVideoToggleLabel",
+          "kind": "function",
+          "startLine": 81,
+          "endLine": 81,
+          "signature": "updateVideoToggleLabel()"
+        },
+        {
+          "name": "applyLanguage",
+          "kind": "function",
+          "startLine": 87,
+          "endLine": 87,
+          "signature": "applyLanguage(lang, { persist = true } = {})"
+        },
+        {
+          "name": "syncActiveChapter",
+          "kind": "function",
+          "startLine": 135,
+          "endLine": 135,
+          "signature": "syncActiveChapter(timeSeconds)"
+        },
+        {
+          "name": "selectRecipe",
+          "kind": "function",
+          "startLine": 148,
+          "endLine": 148,
+          "signature": "selectRecipe(recipeId)"
+        }
+      ],
+      "dataIO": []
+    },
     "scripts/build.mjs": {
       "constants": [],
       "symbols": [
         {
           "name": "enhanceSectionHtml",
           "kind": "function",
-          "startLine": 31,
-          "endLine": 31,
+          "startLine": 33,
+          "endLine": 33,
           "signature": "enhanceSectionHtml(rawHtml,sectionId=null,usedIds=new Set()"
         },
         {
           "name": "barChart",
           "kind": "function",
-          "startLine": 73,
-          "endLine": 73,
+          "startLine": 75,
+          "endLine": 75,
           "signature": "barChart(spec,locale='pt-BR')"
         },
         {
           "name": "build",
           "kind": "function",
-          "startLine": 110,
-          "endLine": 110,
+          "startLine": 112,
+          "endLine": 112,
           "signature": "build(manifestFile,output,{force=false,mode:cliMode}={})"
         }
       ],
@@ -556,17 +655,17 @@
         {
           "name": "SKIP",
           "line": 23,
-          "value": "{'node_modules', 'data', '.pytest_cache', 'build', 'target', '.git', '.ruff_cach"
+          "value": "{'.ruff_cache', 'node_modules', 'venv', 'coverage', 'data', 'dist', '.venv', '.t"
         },
         {
           "name": "EXTENSIONS",
           "line": 29,
-          "value": "{'.graphql', '.scala', '.hql', '.html', '.ini', '.ipynb', '.md', '.ddl', '.json'"
+          "value": "{'.ts', '.yml', '.jsx', '.json', '.dml', '.scala', '.java', '.rst', '.ini', '.tx"
         },
         {
           "name": "SPECIAL_NAMES",
           "line": 37,
-          "value": "{'Makefile', 'Dockerfile', 'Procfile', 'Jenkinsfile'}"
+          "value": "{'Makefile', 'Procfile', 'Jenkinsfile', 'Dockerfile'}"
         },
         {
           "name": "KIND",
@@ -608,7 +707,7 @@
         {
           "name": "NOISE_DATA_EXTS",
           "line": 106,
-          "value": "{'.csv', '.parquet'}"
+          "value": "{'.parquet', '.csv'}"
         },
         {
           "name": "GENERATED_ARTIFACT_PATTERNS",
@@ -815,6 +914,26 @@
         }
       ]
     },
+    "scripts/renderer-hash.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "computeRendererHash",
+          "kind": "function",
+          "startLine": 17,
+          "endLine": 17,
+          "signature": "computeRendererHash(skillRoot = ROOT)"
+        },
+        {
+          "name": "getSkillVersion",
+          "kind": "function",
+          "startLine": 27,
+          "endLine": 27,
+          "signature": "getSkillVersion(skillRoot = ROOT)"
+        }
+      ],
+      "dataIO": []
+    },
     "scripts/validate.mjs": {
       "constants": [],
       "symbols": [
@@ -834,43 +953,43 @@
         {
           "name": "git",
           "kind": "function",
-          "startLine": 9,
-          "endLine": 9,
+          "startLine": 10,
+          "endLine": 10,
           "signature": "git(cwd, ...args)"
         },
         {
           "name": "readJson",
           "kind": "function",
-          "startLine": 17,
-          "endLine": 17,
+          "startLine": 18,
+          "endLine": 18,
           "signature": "readJson(file)"
         },
         {
           "name": "verify",
           "kind": "function",
-          "startLine": 21,
-          "endLine": 21,
+          "startLine": 22,
+          "endLine": 22,
           "signature": "verify(manifestFile, receiptFile)"
         },
         {
           "name": "analyzeImpact",
           "kind": "function",
-          "startLine": 83,
-          "endLine": 83,
+          "startLine": 103,
+          "endLine": 103,
           "signature": "analyzeImpact(manifestFile, receiptFile, {dossierFile = null} = {})"
         },
         {
           "name": "renderUpdatePlan",
           "kind": "function",
-          "startLine": 217,
-          "endLine": 217,
+          "startLine": 237,
+          "endLine": 237,
           "signature": "renderUpdatePlan(impact)"
         },
         {
           "name": "getFlagValue",
           "kind": "function",
-          "startLine": 291,
-          "endLine": 291,
+          "startLine": 335,
+          "endLine": 335,
           "signature": "getFlagValue(argv, flag)"
         }
       ],
@@ -928,7 +1047,7 @@
         "startLine": 170
       },
       {
-        "name": "generated HTML defaults to the red theme, exposes Verde/Azul/Vermelho and maps legacy theme aliases",
+        "name": "generated HTML defaults to the red theme, exposes Vermelho/Azul in order and maps legacy theme aliases",
         "startLine": 176
       },
       {
@@ -942,6 +1061,10 @@
       {
         "name": "v1.6.0 summary mode: data-mode, quick-guide badges, companionDoc link, readingMinutes, and length warnings",
         "startLine": 276
+      },
+      {
+        "name": "responsive mobile drawer: builds collapsible sidebar controls, reserves drawer IDs, and includes mobile breakpoints",
+        "startLine": 309
       }
     ],
     "tests/diagrams.test.mjs": [
@@ -982,12 +1105,35 @@
       {
         "name": "verify.mjs --impact propagates drift through dependency graph and marks only stale sections",
         "startLine": 171
+      },
+      {
+        "name": "verify.mjs detects skill renderer updates independently of source drift and recommends rebuild-only",
+        "startLine": 330
+      }
+    ],
+    "tests/landing.test.mjs": [
+      {
+        "name": "PT and EN translation dictionaries share identical non-empty keys",
+        "startLine": 12
+      },
+      {
+        "name": "resolveLang and getCopy normalize language tags safely",
+        "startLine": 22
+      },
+      {
+        "name": "docs/index.html references valid i18n keys, local assets, and chapter buttons",
+        "startLine": 31
       }
     ]
   },
   "dependencyGraph": {
     "edges": [
       {
+        "from": "docs/landing.js",
+        "to": "docs/landing-i18n.mjs",
+        "kind": "import"
+      },
+      {
         "from": "scripts/build.mjs",
         "to": "scripts/validate.mjs",
         "kind": "import"
@@ -995,6 +1141,16 @@
       {
         "from": "scripts/build.mjs",
         "to": "scripts/diagrams.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/build.mjs",
+        "to": "scripts/renderer-hash.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/verify.mjs",
+        "to": "scripts/renderer-hash.mjs",
         "kind": "import"
       },
       {
@@ -1035,20 +1191,30 @@
       {
         "from": "tests/dossier.test.mjs",
         "to": "scripts/verify.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/landing.test.mjs",
+        "to": "docs/landing-i18n.mjs",
         "kind": "import"
       }
     ],
     "inDegree": {
+      "docs/landing-i18n.mjs": 2,
       "scripts/build.mjs": 3,
       "scripts/diagrams.mjs": 2,
+      "scripts/renderer-hash.mjs": 2,
       "scripts/validate.mjs": 3,
       "scripts/verify.mjs": 2
     },
     "outDegree": {
-      "scripts/build.mjs": 2,
+      "docs/landing.js": 1,
+      "scripts/build.mjs": 3,
+      "scripts/verify.mjs": 1,
       "tests/build.test.mjs": 3,
       "tests/diagrams.test.mjs": 3,
-      "tests/dossier.test.mjs": 2
+      "tests/dossier.test.mjs": 2,
+      "tests/landing.test.mjs": 1
     }
   },
   "readingWaves": {
@@ -1080,7 +1246,7 @@
       {
         "path": "README.md",
         "kind": "docs",
-        "lines": 298,
+        "lines": 312,
         "centrality": 5,
         "stacks": [
           "api_service",
@@ -1104,6 +1270,24 @@
         "path": "agents/openai.yaml",
         "kind": "config",
         "lines": 5,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/document-summary.json",
+        "kind": "config",
+        "lines": 94,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/document.json",
+        "kind": "config",
+        "lines": 129,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1150,8 +1334,8 @@
       {
         "path": "scripts/build.mjs",
         "kind": "code",
-        "lines": 226,
-        "centrality": 8,
+        "lines": 232,
+        "centrality": 9,
         "stacks": [],
         "symbolsCount": 3,
         "testsCount": 0
@@ -1166,6 +1350,28 @@
         "testsCount": 0
       },
       {
+        "path": "scripts/verify.mjs",
+        "kind": "code",
+        "lines": 373,
+        "centrality": 5,
+        "stacks": [],
+        "symbolsCount": 6,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/landing-i18n.mjs",
+        "kind": "code",
+        "lines": 207,
+        "centrality": 4,
+        "stacks": [
+          "api_service",
+          "databricks",
+          "spark_pyspark"
+        ],
+        "symbolsCount": 2,
+        "testsCount": 0
+      },
+      {
         "path": "scripts/diagrams.mjs",
         "kind": "code",
         "lines": 1367,
@@ -1175,18 +1381,27 @@
         "testsCount": 0
       },
       {
-        "path": "scripts/verify.mjs",
+        "path": "scripts/renderer-hash.mjs",
         "kind": "code",
-        "lines": 329,
+        "lines": 31,
         "centrality": 4,
         "stacks": [],
-        "symbolsCount": 6,
+        "symbolsCount": 2,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/landing.js",
+        "kind": "code",
+        "lines": 256,
+        "centrality": 1,
+        "stacks": [],
+        "symbolsCount": 5,
         "testsCount": 0
       },
       {
         "path": "assets/document.js",
         "kind": "code",
-        "lines": 472,
+        "lines": 516,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1198,7 +1413,7 @@
       {
         "path": "tests/dossier.test.mjs",
         "kind": "code",
-        "lines": 330,
+        "lines": 393,
         "centrality": 1,
         "stacks": [
           "api_service",
@@ -1213,12 +1428,12 @@
           "terraform_iac"
         ],
         "symbolsCount": 0,
-        "testsCount": 1
+        "testsCount": 2
       },
       {
         "path": "CHANGELOG.md",
         "kind": "docs",
-        "lines": 177,
+        "lines": 193,
         "centrality": 0,
         "stacks": [
           "api_service",
@@ -1246,6 +1461,40 @@
           "event_hubs",
           "spark_pyspark",
           "sql_warehouse"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/content-summary.md",
+        "kind": "docs",
+        "lines": 204,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/content.md",
+        "kind": "docs",
+        "lines": 693,
+        "centrality": 0,
+        "stacks": [
+          "databricks",
+          "spark_pyspark"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "docs/index.html",
+        "kind": "docs",
+        "lines": 355,
+        "centrality": 0,
+        "stacks": [
+          "api_service",
+          "databricks",
+          "spark_pyspark"
         ],
         "symbolsCount": 0,
         "testsCount": 0
@@ -1310,11 +1559,11 @@
       {
         "path": "tests/build.test.mjs",
         "kind": "code",
-        "lines": 311,
+        "lines": 347,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
-        "testsCount": 16
+        "testsCount": 17
       },
       {
         "path": "tests/diagrams.test.mjs",
@@ -1329,16 +1578,25 @@
         ],
         "symbolsCount": 0,
         "testsCount": 8
+      },
+      {
+        "path": "tests/landing.test.mjs",
+        "kind": "code",
+        "lines": 70,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 3
       }
     ]
   },
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 20656,
-      "lines": 177,
+      "bytes": 22713,
+      "lines": 193,
       "kind": "docs",
-      "sha256": "9d626c5588530ace1a5588a451239fdb245910841afa1a6d326c5f579973ba60",
+      "sha256": "463d0b15016367f1bae9f36e96b58467b1505153a9024995deb007a55b14dc81",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1354,10 +1612,10 @@
     },
     {
       "path": "README.md",
-      "bytes": 15707,
-      "lines": 298,
+      "bytes": 17568,
+      "lines": 312,
       "kind": "docs",
-      "sha256": "99013c2270eead24ae542d08ccf3648f1e159d739ac8d25242762d6bff28da69",
+      "sha256": "a0c5d3c48a6877465fccc5d9c6755a230f14310925e635c69c6bff9222cf1806",
       "stacks": [
         "api_service",
         "databricks",
@@ -1369,10 +1627,10 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 13371,
+      "bytes": 14302,
       "lines": 53,
       "kind": "docs",
-      "sha256": "4649cb6871c4acc2d263fa58da5d5a1688728907456a029562cb4a2cde200406",
+      "sha256": "2318fdd53e017a8dba778496d4fa64ff0b605b010efa5a819ebf08f39fb170e1",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1390,7 +1648,7 @@
       "bytes": 22497,
       "lines": 622,
       "kind": "config",
-      "sha256": "a499aaf16e1841f74b450709aa1d0ae37bd5d9abe732f1a3d835b1d4ee180ed0",
+      "sha256": "4099302222158d3b3370b7d391a48c369bd7a23027d91b8860f52df149752213",
       "wave": 1,
       "centrality": 0
     },
@@ -1399,27 +1657,104 @@
       "bytes": 564,
       "lines": 10,
       "kind": "config",
-      "sha256": "f657db67fb7d58bf7f9e60145e9df2eeeff6fd2e1393723de1fe375f888cdea4",
+      "sha256": "88a070df7ee2ef56beac8be236e2d7e119bd34fcef87ff0b240b70321149d0c1",
       "wave": 1,
       "centrality": 5
     },
     {
       "path": "agents/openai.yaml",
-      "bytes": 251,
+      "bytes": 247,
       "lines": 5,
       "kind": "config",
-      "sha256": "00b931cdbc30e9b1eab2aa1ff129438215845b1dd4a3ba6fcbd03e78cb885015",
+      "sha256": "aa03469faae81b3438cbd6ac3b522a53d4e80531e20c065875355a571685bf2d",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "assets/document.js",
-      "bytes": 19409,
-      "lines": 472,
+      "bytes": 21536,
+      "lines": 516,
       "kind": "code",
-      "sha256": "87b476b4b1af05ba35be5af7eff074a6a700524165e00a32b12842af2df856aa",
+      "sha256": "b8e0c3722e0be17ea62940b29c899f68d1dd026567ce52d39d61f98d21df3fa7",
       "wave": 2,
       "centrality": 0
+    },
+    {
+      "path": "docs/content-summary.md",
+      "bytes": 14447,
+      "lines": 204,
+      "kind": "docs",
+      "sha256": "aa4c3debd7460a3972b3cf06ac820bb5bb22c783f4c18a48227c3704de7b6184",
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "docs/content.md",
+      "bytes": 54326,
+      "lines": 693,
+      "kind": "docs",
+      "sha256": "3dda25cd1b9ca8ea22610e2cda6170cff28cd709f04bec9d3c6fd3437e9f3aaa",
+      "stacks": [
+        "databricks",
+        "spark_pyspark"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "docs/document-summary.json",
+      "bytes": 4039,
+      "lines": 94,
+      "kind": "config",
+      "sha256": "8b9c2eecfc9acffac86ebcb9e237b61a1b1d2b35d6d102ef17a261a52b5c370c",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "docs/document.json",
+      "bytes": 6115,
+      "lines": 129,
+      "kind": "config",
+      "sha256": "4a7318afd9c61725ac3214d659810dcaef7e8698d9eeaac26416aef303c6b191",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "docs/index.html",
+      "bytes": 20970,
+      "lines": 355,
+      "kind": "docs",
+      "sha256": "e42f5edcc35e001a04e2ceea6fd3d43ffa387719c7cd9e0b1810566267ec256e",
+      "stacks": [
+        "api_service",
+        "databricks",
+        "spark_pyspark"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "docs/landing-i18n.mjs",
+      "bytes": 13740,
+      "lines": 207,
+      "kind": "code",
+      "sha256": "b1b4c14b7192a8f5e5a48408abd107a6c11d45659c09b2c84d8c7274df756b2b",
+      "stacks": [
+        "api_service",
+        "databricks",
+        "spark_pyspark"
+      ],
+      "wave": 2,
+      "centrality": 4
+    },
+    {
+      "path": "docs/landing.js",
+      "bytes": 7557,
+      "lines": 256,
+      "kind": "code",
+      "sha256": "555aa8368847197b1cef84cf8e26c33885fc39622b21aa98104496f53d708605",
+      "wave": 2,
+      "centrality": 1
     },
     {
       "path": "examples/minimal/content.md",
@@ -1459,10 +1794,10 @@
     },
     {
       "path": "references/authoring.md",
-      "bytes": 17852,
+      "bytes": 17999,
       "lines": 160,
       "kind": "docs",
-      "sha256": "7f6fc210a4fdbd52ae28263e4a89ae18541f547936b80bc757f9d62b2dfc16e0",
+      "sha256": "5386618d1badb1ff1006f402429f284f5e6914bb18c4482b01c606d9533750d0",
       "wave": 4,
       "centrality": 0
     },
@@ -1500,21 +1835,21 @@
     },
     {
       "path": "schemas/document.schema.json",
-      "bytes": 1783,
+      "bytes": 1774,
       "lines": 20,
       "kind": "config",
-      "sha256": "a80393b272cf13943f55480efeb7ffc8e6f376c62199234dd9e9d4a7d7b22e8a",
+      "sha256": "7b4c856a05bb0aeaae00451c4f4febd0baaf186ad81c95a63b143e23af015309",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "scripts/build.mjs",
-      "bytes": 26405,
-      "lines": 226,
+      "bytes": 27555,
+      "lines": 232,
       "kind": "code",
-      "sha256": "32e4eca9463e7d5f175e5f9c9adcc7dfab91d005617482437d27d7d3849fb55d",
+      "sha256": "b9cca5d79111a92bed0ba6da911b63d2116a493e720a65c6f0a11bbe693a9ac2",
       "wave": 2,
-      "centrality": 8
+      "centrality": 9
     },
     {
       "path": "scripts/diagrams.mjs",
@@ -1551,6 +1886,15 @@
       "centrality": 7
     },
     {
+      "path": "scripts/renderer-hash.mjs",
+      "bytes": 887,
+      "lines": 31,
+      "kind": "code",
+      "sha256": "3077c43340aca8eb008f62de54a653022d82b328af5ea76dfcf8594812b203a7",
+      "wave": 2,
+      "centrality": 4
+    },
+    {
       "path": "scripts/validate.mjs",
       "bytes": 5509,
       "lines": 77,
@@ -1561,19 +1905,19 @@
     },
     {
       "path": "scripts/verify.mjs",
-      "bytes": 12393,
-      "lines": 329,
+      "bytes": 14826,
+      "lines": 373,
       "kind": "code",
-      "sha256": "e1a2f81b3841efc468a91acb466253567311bed6ad352eb5b9ca8d3d74936314",
+      "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065",
       "wave": 2,
-      "centrality": 4
+      "centrality": 5
     },
     {
       "path": "tests/build.test.mjs",
-      "bytes": 19120,
-      "lines": 311,
+      "bytes": 21165,
+      "lines": 347,
       "kind": "code",
-      "sha256": "6190f877a2d9aeca77763ad1fdf2f595d6e3f48c692c2fe41d2dfdd67aabda87",
+      "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122",
       "wave": 4,
       "centrality": 0
     },
@@ -1594,10 +1938,10 @@
     },
     {
       "path": "tests/dossier.test.mjs",
-      "bytes": 14856,
-      "lines": 330,
+      "bytes": 18160,
+      "lines": 393,
       "kind": "code",
-      "sha256": "2cd7d221bff861efad4a5264014d849316b67e70e8468faf55387edcd922ae02",
+      "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1612,6 +1956,15 @@
       ],
       "wave": 4,
       "centrality": 1
+    },
+    {
+      "path": "tests/landing.test.mjs",
+      "bytes": 2469,
+      "lines": 70,
+      "kind": "code",
+      "sha256": "f6d5f825fa66e64b7b93261c0ce6b7a634c00f7c7e6be9e0434d927d8a5b27f0",
+      "wave": 4,
+      "centrality": 0
     }
   ],
   "note": "Static deterministic dossier only; zero LLM calls and zero execution of project code. Secret-like values are redacted."
