@@ -9,7 +9,7 @@
   "mode": "summary",
   "content": "content-summary.md",
   "repoRoot": "..",
-  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
+  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
   "dataAsOf": "2026-11-15 · snapshot local de implementação",
   "companionDoc": { "href": "documentacao.html", "label": "Manual completo" },
   "cards": [
@@ -45,7 +45,7 @@
       "id": "solucao",
       "title": "Como funciona",
       "audience": "all",
-      "sources": ["build", "diagrams", "verify", "inspect"]
+      "sources": ["build", "diagrams", "verify", "inspect", "renderer-hash"]
     },
     {
       "id": "uso",
@@ -63,7 +63,7 @@
       "id": "operacao",
       "title": "Verificação e atualização",
       "audience": "operations",
-      "sources": ["verify", "tests-build", "tests-diagrams", "tests-dossier", "changelog"]
+      "sources": ["verify", "renderer-hash", "tests-build", "tests-diagrams", "tests-dossier", "tests-landing", "changelog"]
     },
     {
       "id": "referencias",
@@ -80,14 +80,16 @@
     {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown."},
     {"id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor de diagramas 2D e Mermaid."},
     {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML e dos SVGs."},
-    {"id": "verify", "path": "scripts/verify.mjs", "description": "Hashes, revisão Git e análise de impacto."},
+    {"id": "verify", "path": "scripts/verify.mjs", "description": "Hashes de fontes/renderer, revisão Git e análise de impacto."},
+    {"id": "renderer-hash", "path": "scripts/renderer-hash.mjs", "description": "Hash SHA-256 dos assets e scripts de renderização da skill."},
     {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Dossiê estático e plano de leitura."},
     {"id": "authoring", "path": "references/authoring.md", "description": "Contrato de autoria e revisão."},
     {"id": "tools", "path": "references/tools.md", "description": "Dependências e escopo."},
     {"id": "changelog", "path": "CHANGELOG.md", "description": "Histórico de versões."},
-    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes de build, temas e validação."},
+    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes de build, drawer mobile, temas e validação."},
     {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes de diagramas, gráficos e exemplos."},
-    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do dossiê e do impacto."},
+    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do dossiê, impacto e drift do renderer."},
+    {"id": "tests-landing", "path": "tests/landing.test.mjs", "description": "Testes da landing page e dicionários PT/EN."},
     {"id": "example-showcase", "path": "examples/showcase/document.json", "description": "Exemplo completo com 11 categorias."}
   ]
 }

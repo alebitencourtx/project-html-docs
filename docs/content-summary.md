@@ -165,6 +165,7 @@ O plano mostra fontes alteradas, dependentes, arquivos core novos, resumo `git d
 | `verify` com `changed` | Fonte mudou desde o build | Revisar a seção e recompilar |
 | Revisão Git diferente | Commit novo desde o recibo | Rodar impacto e revisar `stale` |
 | Página para de rolar sobre tabela | HTML antigo com contenção de roda | Recompilar com 1.7.0+ |
+| `Template da skill atualizado` | CSS/JS/builder da skill mudou sem mudar o código | Rodar apenas `build.mjs --force` |
 
 A revisão de entrega cobre overflow global, menu lateral recolhível no mobile, sidebar sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, cópia, temas, modal com Escape e impressão em desktop (~1440 px) e mobile (~390 px).
 

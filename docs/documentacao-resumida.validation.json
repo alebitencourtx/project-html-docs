@@ -2,25 +2,25 @@
   "passed": true,
   "errors": [],
   "mode": "summary",
-  "wordCount": 1683,
+  "wordCount": 1723,
   "readingMinutes": 9,
   "sections": 6,
   "contentSections": 6,
   "referenceBlocks": 1,
   "diagrams": 1,
   "charts": 1,
-  "bytes": 107339,
+  "bytes": 108029,
   "browserReviewed": false,
   "warnings": [],
   "version": "1.8.0",
   "skillVersion": "1.8.0",
   "rendererSha256": "95798c85fd13097396d18f204306e28a7348e9b4db9dcffe2cbcea1a4107e9a7",
-  "builtAt": "2026-11-15T14:46:14.253Z",
-  "manifestSha256": "8b9c2eecfc9acffac86ebcb9e237b61a1b1d2b35d6d102ef17a261a52b5c370c",
+  "builtAt": "2026-11-15T14:51:17.673Z",
+  "manifestSha256": "4fe604e206d1234b71d1958c03bf76a3f5b8739eee4855140a556a74918d34dd",
   "document": "project-html-docs · Guia Rápido",
-  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
-  "inputSha256": "aa4c3debd7460a3972b3cf06ac820bb5bb22c783f4c18a48227c3704de7b6184",
-  "htmlSha256": "d0ec7f9632b393ba4329ed4c5e1e9eb88089cea0e65535b22467af82afdea577",
+  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
+  "inputSha256": "4c6115a490564accba975735514add7ddeb5be28927b16f5cea30d491a48f86a",
+  "htmlSha256": "02ab0be4d2d7f8886a3bb6b27453e44f24accc395f2fe2163807672057965fe8",
   "sources": [
     {
       "id": "skill",
@@ -67,8 +67,14 @@
     {
       "id": "verify",
       "path": "scripts/verify.mjs",
-      "description": "Hashes, revisão Git e análise de impacto.",
+      "description": "Hashes de fontes/renderer, revisão Git e análise de impacto.",
       "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065"
+    },
+    {
+      "id": "renderer-hash",
+      "path": "scripts/renderer-hash.mjs",
+      "description": "Hash SHA-256 dos assets e scripts de renderização da skill.",
+      "sha256": "3077c43340aca8eb008f62de54a653022d82b328af5ea76dfcf8594812b203a7"
     },
     {
       "id": "inspect",
@@ -97,7 +103,7 @@
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
-      "description": "Testes de build, temas e validação.",
+      "description": "Testes de build, drawer mobile, temas e validação.",
       "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122"
     },
     {
@@ -109,8 +115,14 @@
     {
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
-      "description": "Testes do dossiê e do impacto.",
+      "description": "Testes do dossiê, impacto e drift do renderer.",
       "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416"
+    },
+    {
+      "id": "tests-landing",
+      "path": "tests/landing.test.mjs",
+      "description": "Testes da landing page e dicionários PT/EN.",
+      "sha256": "f6d5f825fa66e64b7b93261c0ce6b7a634c00f7c7e6be9e0434d927d8a5b27f0"
     },
     {
       "id": "example-showcase",

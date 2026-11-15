@@ -2,25 +2,25 @@
   "passed": true,
   "errors": [],
   "mode": "full",
-  "wordCount": 6224,
-  "readingMinutes": 33,
+  "wordCount": 6385,
+  "readingMinutes": 34,
   "sections": 11,
   "contentSections": 11,
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 192776,
+  "bytes": 194670,
   "browserReviewed": false,
   "warnings": [],
   "version": "1.8.0",
   "skillVersion": "1.8.0",
   "rendererSha256": "95798c85fd13097396d18f204306e28a7348e9b4db9dcffe2cbcea1a4107e9a7",
-  "builtAt": "2026-11-15T14:46:13.056Z",
-  "manifestSha256": "4a7318afd9c61725ac3214d659810dcaef7e8698d9eeaac26416aef303c6b191",
+  "builtAt": "2026-11-15T14:51:16.524Z",
+  "manifestSha256": "aac46c7b7c7d289141454500d2bf90b8a30d7737c7ebbd6ec55daf889c5ab8c1",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
-  "inputSha256": "3dda25cd1b9ca8ea22610e2cda6170cff28cd709f04bec9d3c6fd3437e9f3aaa",
-  "htmlSha256": "63bd0efcb13e1c5b7d13668192cbb80804f611ddb7a61b43ed494d65b524c990",
+  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
+  "inputSha256": "d6d2270c59d0ae4325fe838705cfe7cb52736d3d229f4eb008c6cd25542a03d3",
+  "htmlSha256": "8bdd93fcbe67032dcd442325e2b618eafabd226f91a59ecb59ef91efdbcd7bca",
   "sources": [
     {
       "id": "skill",
@@ -67,8 +67,14 @@
     {
       "id": "verify",
       "path": "scripts/verify.mjs",
-      "description": "Conferência de hashes, revisão Git e análise incremental de impacto.",
+      "description": "Conferência de hashes de fontes/renderer, revisão Git e análise incremental de impacto.",
       "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065"
+    },
+    {
+      "id": "renderer-hash",
+      "path": "scripts/renderer-hash.mjs",
+      "description": "Cálculo determinístico do SHA-256 dos assets e scripts de renderização da skill.",
+      "sha256": "3077c43340aca8eb008f62de54a653022d82b328af5ea76dfcf8594812b203a7"
     },
     {
       "id": "inspect",
@@ -79,13 +85,13 @@
     {
       "id": "ui",
       "path": "assets/document.js",
-      "description": "Comportamentos offline da interface: busca, filtros, temas e modal.",
+      "description": "Comportamentos offline da interface: drawer mobile, busca, filtros, temas e modal.",
       "sha256": "b8e0c3722e0be17ea62940b29c899f68d1dd026567ce52d39d61f98d21df3fa7"
     },
     {
       "id": "styles",
       "path": "assets/document.css",
-      "description": "Design system, layout desktop, temas e estilos de impressão.",
+      "description": "Design system, layout responsivo (desktop + drawer mobile), temas e estilos de impressão.",
       "sha256": "7221ddeb82ea4810f5b26a6a7e2ee848845e010e6d1c12d5ebba5e302efa414e"
     },
     {
@@ -121,7 +127,7 @@
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
-      "description": "Testes do compilador, validador, temas, modos e avisos.",
+      "description": "Testes do compilador, drawer mobile, validador, temas, modos e avisos.",
       "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122"
     },
     {
@@ -133,8 +139,14 @@
     {
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
-      "description": "Testes do inspetor, do dossiê e da análise de impacto.",
+      "description": "Testes do inspetor, dossiê, impacto e drift do renderer.",
       "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416"
+    },
+    {
+      "id": "tests-landing",
+      "path": "tests/landing.test.mjs",
+      "description": "Testes de integridade, i18n PT/EN e capítulos da landing page.",
+      "sha256": "f6d5f825fa66e64b7b93261c0ce6b7a634c00f7c7e6be9e0434d927d8a5b27f0"
     },
     {
       "id": "example-minimal",

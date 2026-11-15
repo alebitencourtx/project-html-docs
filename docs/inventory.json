@@ -1,9 +1,9 @@
 {
   "dossierVersion": "1.5.0",
-  "generatedAt": "2026-11-15T14:46:11.666999+00:00",
+  "generatedAt": "2026-11-15T14:49:16.128350+00:00",
   "repository": "/app/applet/project-html-docs",
-  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
-  "workingTreeChanges": "M CHANGELOG.md\n M README.md\n M SKILL.md\n M assets/document.css\n M assets/document.js\n M docs/content-summary.md\n M docs/content.md\n M docs/document-summary.json\n M docs/document.json\n M docs/documentacao-resumida.html\n M docs/documentacao-resumida.validation.json\n M docs/documentacao.html\n M docs/documentacao.validation.json\n M docs/index.html\n M docs/landing-i18n.mjs\n M package-lock.json\n M package.json\n M references/authoring.md\n M scripts/build.mjs\n M scripts/verify.mjs\n M tests/build.test.mjs\n M tests/dossier.test.mjs\n?? scripts/renderer-hash.mjs",
+  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
+  "workingTreeChanges": "",
   "includes": [],
   "excludes": [],
   "countsByKind": {
@@ -655,17 +655,17 @@
         {
           "name": "SKIP",
           "line": 23,
-          "value": "{'.ruff_cache', 'node_modules', 'venv', 'coverage', 'data', 'dist', '.venv', '.t"
+          "value": "{'node_modules', 'dist', '.pytest_cache', '.tox', 'env', 'data', '.runtime', 'ta"
         },
         {
           "name": "EXTENSIONS",
           "line": 29,
-          "value": "{'.ts', '.yml', '.jsx', '.json', '.dml', '.scala', '.java', '.rst', '.ini', '.tx"
+          "value": "{'.py', '.sql', '.txt', '.jinja', '.dml', '.java', '.ts', '.kt', '.mdx', '.hql',"
         },
         {
           "name": "SPECIAL_NAMES",
           "line": 37,
-          "value": "{'Makefile', 'Procfile', 'Jenkinsfile', 'Dockerfile'}"
+          "value": "{'Makefile', 'Jenkinsfile', 'Procfile', 'Dockerfile'}"
         },
         {
           "name": "KIND",

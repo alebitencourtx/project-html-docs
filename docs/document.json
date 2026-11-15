@@ -10,7 +10,7 @@
   "content": "content.md",
   "companionDoc": { "href": "documentacao-resumida.html", "label": "Guia rápido" },
   "repoRoot": "..",
-  "revision": "2379ed11b8980038afcfb545659d22ed90ecee74",
+  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
   "dataAsOf": "2026-11-15 · snapshot local de implementação; sem telemetria de produção",
   "cards": [
     {
@@ -51,7 +51,7 @@
       "id": "estado",
       "title": "Estado atual da solução",
       "audience": "all",
-      "sources": ["package", "changelog", "tests-build", "tests-diagrams", "tests-dossier"]
+      "sources": ["package", "changelog", "tests-build", "tests-diagrams", "tests-dossier", "tests-landing"]
     },
     {
       "id": "uso",
@@ -69,7 +69,7 @@
       "id": "fluxo",
       "title": "Fluxo e processamento",
       "audience": "technical",
-      "sources": ["inspect", "build", "verify", "validate"]
+      "sources": ["inspect", "build", "verify", "validate", "renderer-hash"]
     },
     {
       "id": "regras",
@@ -81,13 +81,13 @@
       "id": "modelo",
       "title": "Modelo e relacionamento dos artefatos",
       "audience": "technical",
-      "sources": ["schema", "build", "verify", "inspect"]
+      "sources": ["schema", "build", "verify", "inspect", "renderer-hash"]
     },
     {
       "id": "operacao",
       "title": "Operação e recuperação",
       "audience": "operations",
-      "sources": ["readme", "package", "build", "verify"]
+      "sources": ["readme", "package", "build", "verify", "renderer-hash"]
     },
     {
       "id": "decisoes",
@@ -110,18 +110,20 @@
     {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown no HTML final."},
     {"id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid."},
     {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML, dos SVGs e da navegação."},
-    {"id": "verify", "path": "scripts/verify.mjs", "description": "Conferência de hashes, revisão Git e análise incremental de impacto."},
+    {"id": "verify", "path": "scripts/verify.mjs", "description": "Conferência de hashes de fontes/renderer, revisão Git e análise incremental de impacto."},
+    {"id": "renderer-hash", "path": "scripts/renderer-hash.mjs", "description": "Cálculo determinístico do SHA-256 dos assets e scripts de renderização da skill."},
     {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Inspetor estático do repositório e gerador do dossiê/plano de leitura."},
-    {"id": "ui", "path": "assets/document.js", "description": "Comportamentos offline da interface: busca, filtros, temas e modal."},
-    {"id": "styles", "path": "assets/document.css", "description": "Design system, layout desktop, temas e estilos de impressão."},
+    {"id": "ui", "path": "assets/document.js", "description": "Comportamentos offline da interface: drawer mobile, busca, filtros, temas e modal."},
+    {"id": "styles", "path": "assets/document.css", "description": "Design system, layout responsivo (desktop + drawer mobile), temas e estilos de impressão."},
     {"id": "authoring", "path": "references/authoring.md", "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão."},
     {"id": "data-engineering", "path": "references/data-engineering.md", "description": "Perfil de documentação para engenharia de dados, nuvem e streaming."},
     {"id": "tools", "path": "references/tools.md", "description": "Dependências, escopo e separação entre autoria e renderização."},
     {"id": "agent", "path": "agents/openai.yaml", "description": "Metadados de descoberta da skill em agentes compatíveis."},
     {"id": "changelog", "path": "CHANGELOG.md", "description": "Histórico de versões e mudanças do gerador."},
-    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes do compilador, validador, temas, modos e avisos."},
+    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes do compilador, drawer mobile, validador, temas, modos e avisos."},
     {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes do motor 2D, Mermaid, gráficos e exemplos."},
-    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do inspetor, do dossiê e da análise de impacto."},
+    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do inspetor, dossiê, impacto e drift do renderer."},
+    {"id": "tests-landing", "path": "tests/landing.test.mjs", "description": "Testes de integridade, i18n PT/EN e capítulos da landing page."},
     {"id": "example-minimal", "path": "examples/minimal/document.json", "description": "Manifesto mínimo executável."},
     {"id": "example-showcase", "path": "examples/showcase/document.json", "description": "Manifesto completo com as 11 categorias de leitura."}
   ]

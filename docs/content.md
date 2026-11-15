@@ -57,13 +57,14 @@ A versão 1.8.0 é um pacote Node.js privado, com dependências fixadas e um scr
 |---|---|---|
 | `scripts/inspect_repo.py` | 1.574 | Varredura estática, extração de fatos, grafo, ondas de leitura e plano |
 | `scripts/diagrams.mjs` | 1.367 | Diagramas 2D determinísticos e enriquecimento de Mermaid |
-| `assets/document.css` | 768 | Design system, layout desktop, temas e impressão |
-| `assets/document.js` | 472 | Busca, filtros, temas, modal de diagramas e navegação |
-| `scripts/verify.mjs` | 329 | Hashes, drift, impacto e plano de atualização |
-| `scripts/build.mjs` | 226 | Manifesto, Markdown, sanitização, shell e recibo |
+| `assets/document.css` | 1.012 | Design system, layout responsivo (desktop + drawer mobile), temas e impressão |
+| `assets/document.js` | 516 | Drawer mobile, busca, filtros, temas, modal de diagramas e navegação |
+| `scripts/verify.mjs` | 373 | Hashes de fontes e do renderer, drift, impacto e plano de atualização |
+| `scripts/build.mjs` | 232 | Manifesto, Markdown, sanitização, shell responsivo e recibo |
 | `scripts/validate.mjs` | 77 | Auditoria estrutural do HTML e dos SVGs |
+| `scripts/renderer-hash.mjs` | 31 | Hash SHA-256 determinístico dos assets e scripts de renderização da skill |
 
-A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **small**: 23 arquivos totais, 13 arquivos core e 5.156 linhas de código ou schema.
+A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **small**: 32 arquivos totais, 18 arquivos core e 5.913 linhas de código ou schema.
 
 ```chart
 {"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":17,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":4,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":3,"variant":"accent"}]}
@@ -274,7 +275,7 @@ O shell embute CSS e JavaScript, monta hero, cartões, toolbar, busca, filtros e
 
 **Inspeção (`scripts/inspect_repo.py`).** A varredura percorre o repositório com exclusões padrão (`.git`, `node_modules`, ambientes virtuais, caches, `dist`, `build`, `data`), respeita `.docignore` e ignora artefatos gerados pela própria skill (`*.validation.json`, `reading-plan.md`, `update-plan.md`, `documentacao*.html`). Cada arquivo elegível recebe kind, linhas, bytes, hash e sinais de stack. Extratores especializados cobrem Python/AST, notebooks Databricks e `.ipynb`, SQL/DDL/dbt, JS/TS, Scala, Terraform/Bicep, workflows e configurações. O resultado inclui rotas, parâmetros de ambiente/CLI, contratos, linhagem SQL, recursos de IaC, símbolos, testes, grafo de dependências e ondas de leitura. Valores com nomes de segredo e connection strings são redigidos.
 
-**Verificação (`scripts/verify.mjs`).** O verificador relê o manifesto e o recibo, confere cada fonte declarada (hash, caminho, existência), detecta fontes no recibo que não estão mais no manifesto, compara a revisão Git documentada com a atual e informa se a árvore está suja. No modo impacto, percorre o grafo do dossiê em busca de dependentes transitivos, cruza os caminhos afetados com `sections[].sources` e marca apenas as seções `stale`, preservando as `fresh`.
+**Verificação (`scripts/verify.mjs`).** O verificador relê o manifesto e o recibo, confere cada fonte declarada (hash, caminho, existência), detecta fontes no recibo que não estão mais no manifesto, compara a revisão Git documentada com a atual, informa se a árvore está suja e verifica se o hash do renderer da skill (`rendererSha256`) mudou desde a compilação. No modo impacto, percorre o grafo do dossiê em busca de dependentes transitivos, cruza os caminhos afetados com `sections[].sources` e marca apenas as seções `stale`, preservando as `fresh`; quando todas as fontes estão sincronizadas e apenas o template da skill mudou, orienta a regerar diretamente com `build.mjs --force`.
 
 | Etapa | Entrada | Saída | Falha prevista |
 |---|---|---|---|
@@ -350,7 +351,7 @@ Diagramas 2D são validados pelo renderizador: `solution` e `flow` exigem títul
 
 > Exemplo prático: um gráfico com três valores `15`, `11` e `3` e unidade `testes` é válido; o maior valor ocupa a barra mais longa, o zero teria badge explícito e a tabela embutida repetiria os três pares. Um valor negativo ou um rótulo repetido interrompe o build com mensagem de erro.
 
-> Limitação: validação estrutural não substitui revisão visual. Sobreposição de rótulos, corte de texto, uma seta ambígua ou uma tabela apertada podem passar pelo HTML válido e ainda assim prejudicar a leitura; a inspeção desktop é obrigatória.
+> Limitação: validação estrutural não substitui revisão visual. Sobreposição de rótulos, corte de texto, uma seta ambígua ou uma tabela apertada podem passar pelo HTML válido e ainda assim prejudicar a leitura; a inspeção em desktop (~1440 px) e mobile (~390 px) é obrigatória.
 
 ## Modelo e relacionamento dos artefatos
 
@@ -496,7 +497,7 @@ O gerador não usa banco de dados. O modelo é um conjunto de arquivos com papé
 | `dataAsOf` | string | Não | Data dos dados observados, distinta da atualização |
 | `companionDoc` | objeto | Não | Link seguro para manual ou guia companheiro |
 
-Cada seção exige `id` (padrão `^[a-z][a-z0-9-]*$`), `title` e `audience` (`all`, `business`, `technical` ou `operations`). `sources` é uma lista de IDs de fontes. IDs de seção não podem colidir com o shell (`main`, `search`, `expand`, `print`, `diagram-dialog`, entre outros). O schema usa `additionalProperties: false`, portanto campos não previstos são rejeitados.
+Cada seção exige `id` (padrão `^[a-z][a-z0-9-]*$`), `title` e `audience` (`all`, `business`, `technical` ou `operations`). `sources` é uma lista de IDs de fontes. IDs de seção não podem colidir com o shell (`main`, `sidebar`, `sidebar-backdrop`, `nav-toggle`, `nav-close`, `mobile-search-btn`, `search`, `expand`, `collapse`, `print`, `back-to-top`, `diagram-dialog`, entre outros). O schema usa `additionalProperties: false`, portanto campos não previstos são rejeitados.
 
 </details>
 
@@ -521,6 +522,7 @@ Cada seção exige `id` (padrão `^[a-z][a-z0-9-]*$`), `title` e `audience` (`al
 | `warnings` | array | Avisos não bloqueantes de autoria |
 | `version` | string | Versão da skill que gerou o recibo |
 | `skillVersion` | string | Versão da skill registrada no build |
+| `rendererSha256` | string | Hash SHA-256 dos assets e scripts de renderização da skill |
 | `builtAt` | ISO 8601 | Momento do build |
 | `manifestSha256` | string | Hash do manifesto bruto |
 | `inputSha256` | string | Hash do Markdown de entrada |
@@ -592,8 +594,9 @@ A operação é local e idempotente na maior parte dos casos. O build recusa sob
 | Revisão Git diferente | Commit novo desde o recibo | Reexecute o impacto e revise as seções `stale` |
 | Árvore suja | Alterações não commitadas | Trate como snapshot local e confirme as fontes lidas |
 | Página para de rolar sobre tabela | HTML antigo com contenção de roda em `.table-wrap` | Recompile com a versão 1.7.0 ou posterior; a contenção foi removida |
+| Layout mobile sem gaveta ou com `Template da skill atualizado` | HTML antigo compilado antes das melhorias da skill | Recompile diretamente com `build.mjs --force` sem reler o repositório |
 
-O ciclo de atualização recomendado é: gerar um novo dossiê, rodar o verify em modo impacto, abrir o `update-plan.md`, revisar apenas as seções `stale` e as fontes alteradas, ajustar o conteúdo e recompilar. O plano mostra as fontes diretas, os dependentes transitivos, os arquivos core novos que ainda não estão no manifesto e o resumo `git diff --stat` quando a revisão documentada difere da atual.
+O ciclo de atualização recomendado é: gerar um novo dossiê, rodar o verify em modo impacto e abrir o `update-plan.md`. Se houver mudanças de código, revise apenas as seções `stale` e as fontes alteradas antes de recompilar; se apenas o template da skill tiver mudado (`renderer.needsRebuild: true` com fontes sincronizadas), pule a releitura e rode diretamente `build.mjs --force`. O plano mostra alterações de renderer, fontes diretas, dependentes transitivos, novos arquivos core e `git diff --stat` quando a revisão documentada difere da atual.
 
 ```bash
 python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
@@ -689,4 +692,4 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | `examples/showcase/` | Exemplo completo com as 11 categorias e diagramas avançados |
 | `tests/` | 35 testes de build, diagramas, dossiê, impacto e landing page |
 
-Este manual foi gerado a partir da revisão `2379ed11b8980038afcfb545659d22ed90ecee74`, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
+Este manual foi gerado a partir da revisão `dd4f63ffc499560ddbb42eb23be463a2658bbf94`, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
