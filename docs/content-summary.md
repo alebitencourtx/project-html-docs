@@ -10,7 +10,7 @@ O mesmo documento atende dois públicos. Leitores de negócio encontram propósi
 <div class="card"><h3>Operação</h3><p>Pré-requisitos, comandos, verificação de integridade e recuperação de falhas previsíveis.</p></div>
 </div>
 
-A versão atual é a **1.9.0**, com **40 testes** passando em 15/11/2026. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` sem sobrescrita passiva na carga, e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile (`inert` + *focus trap*), harmonização Mermaid no tema vermelho e verificação estendida de artefatos e `rendererSha256`.
+A versão atual é a **1.10.0**, com **51 testes** passando em 15/11/2026 (incluindo Chromium headless). Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` sem sobrescrita passiva na carga, e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile (`inert` sincronizado + *focus trap*), zoom `Fit` monótono, impressão de tabelas filtradas, validação formal AJV e hashes canônicos LF.
 
 > Regra de negócio: documentar é descrever o comportamento atual e comprovável. Planos históricos e intenções não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.
 
@@ -61,7 +61,7 @@ A solução separa **compilação** e **verificação**. A compilação é local
 | Recibo | Registra hashes, revisão, métricas e avisos | `validation.json` |
 | Verificação | Compara fontes e revisão, calcula dependentes e seções afetadas | Relatório JSON e `update-plan.md` |
 
-O `build.mjs` usa AJV para o schema, Marked para o Markdown, sanitize-html para o conteúdo e Cheerio para a auditoria. O `diagrams.mjs` desenha `solution`/`flow`/`schema` em SVG e enriquece Mermaid. O `validate.mjs` rejeita ativos externos, âncoras quebradas, SVG inválido, tabelas sem cabeçalho e LaTeX não renderizado. O `verify.mjs` lê o recibo, compara SHA-256 e revisão Git e percorre o grafo do dossiê.
+O `build.mjs` usa AJV para o schema do manifesto (`document.schema.json`) e dos diagramas (`diagram.schema.json`), Marked para o Markdown, sanitize-html para o conteúdo e Cheerio para a auditoria. O `diagrams.mjs` desenha `solution`/`flow`/`schema` em SVG e enriquece Mermaid. O `validate.mjs` rejeita ativos externos, URLs com controle/protocolo inseguro, âncoras quebradas, SVG inválido, tabelas sem cabeçalho e LaTeX não renderizado. O `verify.mjs` lê o recibo, valida `receiptStatus` + SHA-256 LF (`sha256-lf-text-v1`) e percorre o grafo do dossiê modular (`scripts/inspector/*`).
 
 > Regra de negócio: o HTML é a entrega, mas os inputs continuam sendo a fonte editável. Nenhum fato deve existir apenas dentro do HTML.
 
@@ -95,10 +95,10 @@ O manifesto exige `title`, `subtitle`, `version`, `updated`, `content` e `sectio
 | `python scripts/inspect_repo.py <repo> --out <json> --plan <md>` | Dossiê estático e plano de leitura |
 | `node scripts/build.mjs <manifest> --out <html>` | Manual completo e recibo |
 | `node scripts/build.mjs <manifest> --out <html> --mode summary` | Guia Rápido e recibo |
-| `node scripts/verify.mjs <manifest> <receipt>` | Conferência de fontes, artefatos e revisão (`sourceDrift`) |
-| `node scripts/verify.mjs <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` após revisão real |
+| `node scripts/verify.mjs <manifest> <receipt> [--html <html>]` | Conferência de fontes LF, artefatos e revisão (`sourceDrift`) |
+| `node scripts/verify.mjs <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` após revisão real em desktop e mobile |
 | `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Plano de atualização por impacto |
-| `npm test` | 40 testes da suíte |
+| `npm test` | 51 testes da suíte (incluindo Chromium headless) |
 
 O conteúdo começa com um `##` cujo texto coincide, na ordem, com `sections[].title`. Cada `###` vira subnavegação. Um `#` é reservado ao título do documento. Tabelas ganham cabeçalho fixo e filtro a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas.
 
@@ -145,7 +145,7 @@ Para gerar as duas versões, use manifestos separados: `document.json` em modo `
 
 ## Verificação e atualização
 
-O `verify.mjs` relê o manifesto e o recibo, confere hashes das fontes, dos artefatos de autoria (`manifestSha256`, `inputSha256`, `htmlSha256`) e do renderer da skill (`rendererSha256`), detecta fontes inesperadas e diferencia commits exclusivos de documentação via `revision.sourceDrift`. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos, marca apenas as seções `stale` e avisa quando basta rodar `build.mjs --force` por mudança exclusiva do template da skill; com `--mark-reviewed`, grava `browserReviewed: true` e `browserReviewedAt` no recibo após validação visual real.
+O `verify.mjs` relê o manifesto e o recibo (`receiptStatus`), confere hashes canônicos LF (`sha256-lf-text-v1`) das fontes, dos artefatos de autoria (`manifestSha256`, `inputSha256`, `htmlSha256`) e do renderer da skill (`rendererSha256`, incluindo libs e `package-lock.json`), detecta fontes inesperadas e diferencia commits exclusivos de documentação via `revision.sourceDrift`. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos, marca apenas as seções `stale` e avisa quando basta rodar `build.mjs --force`; com `--mark-reviewed`, grava `browserReviewed: true` e `browserReviewedAt` no recibo após validação visual real.
 
 ```bash
 python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
@@ -155,7 +155,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 O plano mostra fontes alteradas, dependentes, arquivos core novos (truncando listagens acima de 25 itens), resumo `git diff --stat` e as seções que precisam de revisão. Se uma fonte mudou e não está vinculada a nenhuma seção, o plano avisa; corrija `sections[].sources` antes de confiar no roteamento.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":18,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":12,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":6,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":4,"variant":"accent"}]}
+{"type":"bar","title":"Testes automatizados por arquivo (1.10.0)","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"success"}]}
 ```
 
 | Sintoma | Causa provável | Ação |
@@ -183,23 +183,23 @@ A revisão de entrega cobre overflow global, menu lateral recolhível no mobile 
 | `SKILL.md` | Fluxo operacional, decisões e manutenção da skill |
 | `README.md` | Visão geral, requisitos, comandos e recursos |
 | `references/authoring.md` | Contrato de autoria, sintaxe de diagramas e revisão |
-| `schemas/document.schema.json` | Esquema do manifesto |
-| `scripts/build.mjs` | Compilador, sanitização, shell e recibo |
+| `schemas/document.schema.json` + `diagram.schema.json` | Esquemas AJV de manifesto, diagramas 2D e gráficos |
+| `scripts/build.mjs` + `scripts/lib/*` | Compilador, sanitização URL/HTML, hashes LF e shell |
 | `scripts/diagrams.mjs` | Diagramas SVG 2D e Mermaid |
 | `scripts/validate.mjs` | Auditoria estrutural do HTML e dos SVGs |
-| `scripts/verify.mjs` | Hashes, revisão Git e impacto |
-| `scripts/inspect_repo.py` | Dossiê estático e plano de leitura |
-| `assets/document.css` | Design system, temas e impressão |
-| `assets/document.js` | Busca, filtros, temas e modal |
+| `scripts/verify.mjs` | Hashes LF, completeness do recibo, revisão Git e impacto |
+| `scripts/inspect_repo.py` + `scripts/inspector/*` | Dossiê estático modular e plano de leitura |
+| `assets/document.css` | Design system, temas e `@media print` |
+| `assets/document.js` | Busca, filtros (`aria-pressed`), zoom `Fit` e `inert` |
 | `examples/showcase/` | Exemplo completo com 11 categorias |
 
 | Termo | Significado |
 |---|---|
 | Manifesto | `document.json`, contrato do manual |
 | Dossiê | `inventory.json`, fotografia estática do repositório |
-| Recibo | `validation.json`, resultado do build |
+| Recibo | `validation.json`, resultado do build (`sha256-lf-text-v1`) |
 | Drift | Diferença entre fontes atuais e recibo |
 | `stale` | Seção cujas fontes mudaram e precisa de revisão |
 | Guia Rápido | Modo `summary`, com 4 a 7 capítulos |
 
-Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da revisão `5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e` em 15/11/2026.
+Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da revisão `12ea3444daf308d63a29a52e970352074f2331a7` (v1.10.0) em 15/11/2026.

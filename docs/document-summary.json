@@ -2,15 +2,15 @@
   "title": "project-html-docs · Guia Rápido",
   "subtitle": "Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.",
   "eyebrow": "project-html-docs · guia rápido",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "updated": "2026-11-15",
   "language": "pt-BR",
   "theme": "vermelho",
   "mode": "summary",
   "content": "content-summary.md",
   "repoRoot": "..",
-  "revision": "5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e",
-  "dataAsOf": "2026-11-15 · snapshot local de implementação",
+  "revision": "12ea3444daf308d63a29a52e970352074f2331a7",
+  "dataAsOf": "2026-11-15 · snapshot local v1.10.0 de implementação",
   "companionDoc": { "href": "documentacao.html", "label": "Manual completo" },
   "cards": [
     {
@@ -21,17 +21,17 @@
     {
       "label": "Descoberta",
       "value": "0 tokens de LLM",
-      "description": "inspect_repo.py usa AST e regex, sem executar o projeto analisado."
+      "description": "inspect_repo.py e inspector/ usam AST e regex, sem executar o projeto analisado."
     },
     {
       "label": "Integridade",
-      "value": "SHA-256 + Git",
-      "description": "O recibo registra as fontes; o verify detecta drift e impacto."
+      "value": "SHA-256 LF + CI",
+      "description": "O recibo registra hashes sha256-lf-text-v1; o verify detecta drift e impacto."
     },
     {
-      "label": "Temas",
-      "value": "Vermelho padrão",
-      "description": "Vermelho e Azul; a preferência fica no navegador."
+      "label": "Versão & Testes",
+      "value": "1.10.0 · 51 testes",
+      "description": "Suites Node + Chromium headless; temas Vermelho (padrão) e Azul persistidos."
     }
   ],
   "sections": [
@@ -39,13 +39,13 @@
       "id": "resumo",
       "title": "O que é e para quem",
       "audience": "all",
-      "sources": ["skill", "readme", "package"]
+      "sources": ["skill", "readme", "package", "license"]
     },
     {
       "id": "solucao",
       "title": "Como funciona",
       "audience": "all",
-      "sources": ["build", "diagrams", "verify", "inspect", "renderer-hash"]
+      "sources": ["build", "diagrams", "verify", "inspect", "renderer-hash", "lib-hash", "lib-urls"]
     },
     {
       "id": "uso",
@@ -57,39 +57,44 @@
       "id": "regras",
       "title": "Regras e limites",
       "audience": "technical",
-      "sources": ["authoring", "build", "validate", "schema"]
+      "sources": ["authoring", "build", "validate", "schema", "schema-diagram"]
     },
     {
       "id": "operacao",
       "title": "Verificação e atualização",
       "audience": "operations",
-      "sources": ["verify", "renderer-hash", "tests-build", "tests-diagrams", "tests-dossier", "tests-landing", "changelog"]
+      "sources": ["verify", "renderer-hash", "tests-build", "tests-diagrams", "tests-dossier", "tests-landing", "tests-browser", "changelog"]
     },
     {
       "id": "referencias",
       "title": "Referências essenciais",
       "audience": "all",
-      "sources": ["skill", "tools", "example-showcase"]
+      "sources": ["skill", "tools", "example-showcase", "license"]
     }
   ],
   "sources": [
     {"id": "skill", "path": "SKILL.md", "description": "Contrato operacional da skill."},
     {"id": "readme", "path": "README.md", "description": "Visão geral, requisitos e comandos."},
     {"id": "package", "path": "package.json", "description": "Versão, engines e dependências fixadas."},
+    {"id": "license", "path": "LICENSE", "description": "Texto da licença MIT."},
     {"id": "schema", "path": "schemas/document.schema.json", "description": "Esquema do manifesto document.json."},
-    {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown."},
+    {"id": "schema-diagram", "path": "schemas/diagram.schema.json", "description": "Esquema formal de diagramas 2D e barChart."},
+    {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown com gravação atômica."},
     {"id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor de diagramas 2D e Mermaid."},
-    {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML e dos SVGs."},
-    {"id": "verify", "path": "scripts/verify.mjs", "description": "Hashes de fontes/renderer, revisão Git e análise de impacto."},
-    {"id": "renderer-hash", "path": "scripts/renderer-hash.mjs", "description": "Hash SHA-256 dos assets e scripts de renderização da skill."},
-    {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Dossiê estático e plano de leitura."},
+    {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML, links seguros e SVGs."},
+    {"id": "verify", "path": "scripts/verify.mjs", "description": "Hashes canônicos LF, completeness do recibo, revisão Git e impacto."},
+    {"id": "renderer-hash", "path": "scripts/renderer-hash.mjs", "description": "Hash SHA-256 dos assets, lib/, schemas e lockfile da skill."},
+    {"id": "lib-urls", "path": "scripts/lib/urls.mjs", "description": "Sanitização de links e protocolos permitidos."},
+    {"id": "lib-hash", "path": "scripts/lib/hash.mjs", "description": "Canonicalização LF textual e hash binário."},
+    {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Fachada CLI do dossiê estático e plano de leitura."},
     {"id": "authoring", "path": "references/authoring.md", "description": "Contrato de autoria e revisão."},
     {"id": "tools", "path": "references/tools.md", "description": "Dependências e escopo."},
     {"id": "changelog", "path": "CHANGELOG.md", "description": "Histórico de versões."},
-    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes de build, drawer mobile, temas e validação."},
-    {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes de diagramas, gráficos e exemplos."},
-    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do dossiê, impacto e drift do renderer."},
-    {"id": "tests-landing", "path": "tests/landing.test.mjs", "description": "Testes da landing page e dicionários PT/EN."},
+    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes de build, segurança URL, colisões, canonicalização LF e CLI."},
+    {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes de diagramas, contratos AJV, gráficos e exemplos."},
+    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do dossiê modular, DDL, Blob/Cosmos, impacto e renderer."},
+    {"id": "tests-landing", "path": "tests/landing.test.mjs", "description": "Testes da landing page, receita e consistência de metadados."},
+    {"id": "tests-browser", "path": "tests/browser.test.mjs", "description": "Testes reais em Chromium headless (drawer mobile, zoom Fit, print e ARIA)."},
     {"id": "example-showcase", "path": "examples/showcase/document.json", "description": "Exemplo completo com 11 categorias."}
   ]
 }

@@ -26,11 +26,14 @@ let currentRecipe = 'cli';
 
 const langButtons = Array.from(document.querySelectorAll('[data-lang-btn]'));
 const i18nNodes = Array.from(document.querySelectorAll('[data-i18n]'));
+const i18nAriaNodes = Array.from(document.querySelectorAll('[data-i18n-aria]'));
 const video = document.getElementById('demo-video');
 const videoToggleBtn = document.getElementById('video-toggle-btn');
 const videoReplayBtn = document.getElementById('video-replay-btn');
 const chapterButtons = Array.from(document.querySelectorAll('[data-chapter]'));
+const recipeTablist = document.querySelector('.recipe-tabs[role="tablist"]');
 const recipeTabs = Array.from(document.querySelectorAll('[data-recipe]'));
+const recipePanel = document.getElementById('panel-recipe');
 const recipeCodeEl = document.getElementById('recipe-code');
 const copyBtn = document.getElementById('copy-recipe-btn');
 
@@ -58,6 +61,13 @@ function applyLanguage(lang, { persist = true } = {}) {
     const key = el.getAttribute('data-i18n');
     if (key && key in copy) {
       el.textContent = copy[key];
+    }
+  }
+
+  for (const el of i18nAriaNodes) {
+    const key = el.getAttribute('data-i18n-aria');
+    if (key && key in copy) {
+      el.setAttribute('aria-label', copy[key]);
     }
   }
 
@@ -101,7 +111,7 @@ function syncActiveChapter(timeSeconds) {
   }
 }
 
-function selectRecipe(recipeId) {
+function selectRecipe(recipeId, { focusTab = false } = {}) {
   if (!(recipeId in RECIPES)) return;
   currentRecipe = recipeId;
   if (recipeCodeEl) {
@@ -110,6 +120,13 @@ function selectRecipe(recipeId) {
   for (const tab of recipeTabs) {
     const active = tab.getAttribute('data-recipe') === recipeId;
     tab.setAttribute('aria-selected', active ? 'true' : 'false');
+    tab.setAttribute('tabindex', active ? '0' : '-1');
+    if (active) {
+      if (recipePanel && tab.id) {
+        recipePanel.setAttribute('aria-labelledby', tab.id);
+      }
+      if (focusTab) tab.focus();
+    }
   }
 }
 
@@ -161,6 +178,23 @@ for (const tab of recipeTabs) {
   tab.addEventListener('click', () => {
     const id = tab.getAttribute('data-recipe');
     if (id) selectRecipe(id);
+  });
+}
+
+if (recipeTablist && recipeTabs.length) {
+  recipeTablist.addEventListener('keydown', (e) => {
+    const idx = recipeTabs.indexOf(document.activeElement);
+    if (idx === -1) return;
+    let nextIdx = null;
+    if (e.key === 'ArrowRight') nextIdx = (idx + 1) % recipeTabs.length;
+    else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + recipeTabs.length) % recipeTabs.length;
+    else if (e.key === 'Home') nextIdx = 0;
+    else if (e.key === 'End') nextIdx = recipeTabs.length - 1;
+    if (nextIdx !== null) {
+      e.preventDefault();
+      const id = recipeTabs[nextIdx]?.getAttribute('data-recipe');
+      if (id) selectRecipe(id, { focusTab: true });
+    }
   });
 }
 

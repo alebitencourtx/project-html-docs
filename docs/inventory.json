@@ -1,36 +1,37 @@
 {
   "dossierVersion": "1.5.0",
-  "generatedAt": "2026-11-15T15:51:21.446449+00:00",
+  "generatedAt": "2026-11-15T19:49:37.804610+00:00",
   "repository": "/app/applet/project-html-docs",
-  "revision": "5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e",
-  "workingTreeChanges": "M docs/index.html\n M docs/inventory.json\n M docs/landing-i18n.mjs\n M docs/landing.js\n M docs/reading-plan.md",
+  "revision": "12ea3444daf308d63a29a52e970352074f2331a7",
+  "workingTreeChanges": "M docs/content-summary.md\n M docs/content.md\n M docs/document-summary.json\n M docs/document.json\n M docs/documentacao-resumida.html\n M docs/documentacao-resumida.validation.json\n M docs/documentacao.html\n M docs/documentacao.validation.json\n M docs/index.html\n M docs/inventory.json\n M docs/landing-i18n.mjs\n M docs/landing.js\n M docs/reading-plan.md",
   "includes": [],
   "excludes": [],
   "countsByKind": {
-    "code": 13,
-    "config": 8,
+    "code": 23,
+    "config": 10,
     "docs": 11
   },
   "stackSignals": {
     "api_service": 8,
     "azure_blob_adls": 5,
-    "cosmos_db": 4,
+    "cosmos_db": 5,
     "data_quality": 1,
-    "databricks": 10,
-    "dbt": 2,
-    "delta_lake": 4,
-    "event_hubs": 6,
-    "iceberg": 1,
-    "orchestration": 3,
+    "databricks": 11,
+    "dbt": 7,
+    "delta_lake": 5,
+    "event_hubs": 7,
+    "iceberg": 2,
+    "orchestration": 7,
     "scala": 3,
-    "spark_pyspark": 10,
-    "sql_warehouse": 6,
-    "terraform_iac": 3
+    "spark_pyspark": 12,
+    "sql_warehouse": 9,
+    "terraform_iac": 4
   },
   "stacksByFile": {
     "CHANGELOG.md": [
       "api_service",
       "azure_blob_adls",
+      "cosmos_db",
       "databricks",
       "event_hubs",
       "orchestration",
@@ -53,8 +54,16 @@
       "spark_pyspark",
       "sql_warehouse"
     ],
+    ".github/workflows/ci.yml": [
+      "orchestration"
+    ],
     "docs/content.md": [
       "databricks",
+      "orchestration",
+      "spark_pyspark"
+    ],
+    "docs/document.json": [
+      "orchestration",
       "spark_pyspark"
     ],
     "docs/index.html": [
@@ -81,7 +90,13 @@
     "references/tools.md": [
       "databricks"
     ],
-    "scripts/inspect_repo.py": [
+    "scripts/build.mjs": [
+      "dbt"
+    ],
+    "scripts/validate.mjs": [
+      "dbt"
+    ],
+    "scripts/inspector/extractors.py": [
       "api_service",
       "azure_blob_adls",
       "cosmos_db",
@@ -96,6 +111,31 @@
       "spark_pyspark",
       "sql_warehouse",
       "terraform_iac"
+    ],
+    "scripts/inspector/graph.py": [
+      "databricks",
+      "event_hubs",
+      "orchestration",
+      "spark_pyspark",
+      "sql_warehouse",
+      "terraform_iac"
+    ],
+    "scripts/inspector/sql_parser.py": [
+      "delta_lake",
+      "iceberg",
+      "sql_warehouse"
+    ],
+    "scripts/lib/hash.mjs": [
+      "sql_warehouse"
+    ],
+    "scripts/lib/html-shell.mjs": [
+      "dbt"
+    ],
+    "scripts/lib/urls.mjs": [
+      "dbt"
+    ],
+    "tests/build.test.mjs": [
+      "dbt"
     ],
     "tests/diagrams.test.mjs": [
       "dbt",
@@ -119,13 +159,29 @@
   },
   "scaleProfile": {
     "tier": "medium",
-    "totalFiles": 32,
-    "coreFiles": 18,
-    "totalCodeLines": 6438,
+    "totalFiles": 44,
+    "coreFiles": 29,
+    "totalCodeLines": 8285,
     "recommendedStrategy": "Leitura seletiva em Ondas 1 -> 2 -> 3; usar intervalos [Lstart-Lend] dos símbolos para arquivos > 200 linhas e consultar testsIndex em vez de ler testes integrais."
   },
   "entrypoints": {
-    "workflows": [],
+    "workflows": [
+      {
+        "file": ".github/workflows/ci.yml",
+        "name": "CI",
+        "triggers": [
+          "pull_request",
+          "push"
+        ],
+        "crons": [],
+        "runCommands": [
+          "npm ci --ignore-scripts",
+          "npm test",
+          "|",
+          "|"
+        ]
+      }
+    ],
     "databricksBundles": [],
     "adfPipelines": [],
     "endpoints": [
@@ -137,7 +193,8 @@
       }
     ],
     "cliOrMainFiles": [
-      "scripts/inspect_repo.py"
+      "scripts/inspect_repo.py",
+      "scripts/inspector/extractors.py"
     ]
   },
   "envAndCliParams": [
@@ -145,27 +202,27 @@
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "repository",
-      "line": 1630
+      "line": 61
     },
     {
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--out",
-      "line": 1631,
+      "line": 62,
       "help": "Output JSON inventory/dossier path"
     },
     {
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--plan",
-      "line": 1632,
+      "line": 63,
       "help": "Optional output Markdown reading-plan path"
     },
     {
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--include",
-      "line": 1633,
+      "line": 64,
       "default": "",
       "help": "Comma-separated path fragments to include"
     },
@@ -173,14 +230,14 @@
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--exclude",
-      "line": 1634,
+      "line": 65,
       "default": "",
       "help": "Comma-separated path fragments to exclude"
     }
   ],
   "notebooks": [
     {
-      "path": "scripts/inspect_repo.py",
+      "path": "scripts/inspector/extractors.py",
       "format": "databricks_py",
       "cells": 1,
       "languages": [
@@ -194,7 +251,7 @@
   "inlineConfigs": {
     "package.json": {
       "name": "project-html-docs",
-      "version": "1.9.0",
+      "version": "1.10.0",
       "scripts": {
         "test": "node --test tests/*.test.mjs",
         "build:example": "node scripts/build.mjs examples/minimal/document.json --out examples/minimal/documentacao.html --force",
@@ -212,28 +269,13 @@
       "title": "project-html-docs · Guia Rápido",
       "subtitle": "Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e v...",
       "eyebrow": "project-html-docs · guia rápido",
-      "version": "1.8.0",
+      "version": "1.10.0",
       "updated": "2026-11-15",
       "language": "pt-BR",
       "theme": "vermelho",
       "mode": "summary",
       "content": "content-summary.md",
       "repoRoot": ".."
-    },
-    "docs/document.json": {
-      "title": "project-html-docs · Manual do Gerador",
-      "subtitle": "Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML ún...",
-      "eyebrow": "project-html-docs · manual do próprio gerador",
-      "version": "1.8.0",
-      "updated": "2026-11-15",
-      "language": "pt-BR",
-      "theme": "vermelho",
-      "mode": "full",
-      "content": "content.md",
-      "companionDoc": {
-        "href": "documentacao-resumida.html",
-        "label": "Guia rápido"
-      }
     },
     "examples/minimal/document.json": {
       "title": "Daily sales",
@@ -341,6 +383,532 @@
         "..."
       ]
     },
+    "schemas/diagram.schema.json": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "$id": "diagram.schema.json",
+      "definitions": {
+        "role": {
+          "type": "string",
+          "enum": [
+            "regulator",
+            "danger",
+            "analytical",
+            "info",
+            "step",
+            "neutral",
+            "output",
+            "success",
+            "..."
+          ]
+        },
+        "side": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right",
+            "top",
+            "bottom"
+          ]
+        },
+        "legendItem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label"
+          ],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "box",
+                "solid",
+                "dashed"
+              ]
+            },
+            "role": {
+              "$ref": "#/definitions/role"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "solutionDiagram": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "nodes"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cols": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "colGap": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rowGap": {
+              "type": "number",
+              "minimum": 0
+            },
+            "colWidth": {
+              "type": "number",
+              "minimum": 60
+            },
+            "inputs": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "nodes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "zones": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "subtitle": {
+                    "type": "string"
+                  },
+                  "variant": {
+                    "type": "string",
+                    "enum": [
+                      "warm",
+                      "cool",
+                      "teal",
+                      "amber",
+                      "neutral"
+                    ]
+                  },
+                  "row": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "rowSpan": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "colStart": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "colSpan": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "callouts": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "text"
+                      ],
+                      "properties": {
+                        "col": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "row": {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        "text": {
+                          "type": "string"
+                        },
+                        "role": {
+                          "$ref": "#/definitions/role"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "nodes": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "title"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "col": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "row": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "colSpan": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "rowSpan": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "step": {
+                    "type": [
+                      "string",
+                      "integer"
+                    ]
+                  },
+                  "role": {
+                    "$ref": "#/definitions/role"
+                  },
+                  "shape": {
+                    "type": "string",
+                    "enum": [
+                      "card",
+                      "cylinder",
+                      "decision"
+                    ]
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "lines": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "edges": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "to": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "fromSide": {
+                    "$ref": "#/definitions/side"
+                  },
+                  "toSide": {
+                    "$ref": "#/definitions/side"
+                  },
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "bottom",
+                      "bottom-inner",
+                      "top"
+                    ]
+                  },
+                  "branch": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ]
+                  },
+                  "role": {
+                    "$ref": "#/definitions/role"
+                  },
+                  "style": {
+                    "type": "string",
+                    "enum": [
+                      "solid",
+                      "dashed",
+                      "thick"
+                    ]
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "legend": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/legendItem"
+              }
+            }
+          }
+        },
+        "schemaDiagram": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "entities"
+          ],
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "cols": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "colGap": {
+              "type": "number",
+              "minimum": 0
+            },
+            "rowGap": {
+              "type": "number",
+              "minimum": 0
+            },
+            "entities": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "id",
+                  "name"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "table",
+                      "mart",
+                      "json",
+                      "external"
+                    ]
+                  },
+                  "grain": {
+                    "type": "string"
+                  },
+                  "col": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "row": {
+                    "type": "integer",
+                    "minimum": 0
+                  },
+                  "columns": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "name"
+                      ],
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "nullable": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "relations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "to": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "fk",
+                      "relation",
+                      "lineage"
+                    ]
+                  },
+                  "fromSide": {
+                    "$ref": "#/definitions/side"
+                  },
+                  "toSide": {
+                    "$ref": "#/definitions/side"
+                  },
+                  "channel": {
+                    "type": "string",
+                    "enum": [
+                      "bottom",
+                      "top"
+                    ]
+                  },
+                  "fromCard": {
+                    "type": "string",
+                    "enum": [
+                      "1",
+                      "1..1",
+                      "0..1",
+                      "1..N",
+                      "0..N",
+                      "N"
+                    ]
+                  },
+                  "toCard": {
+                    "type": "string",
+                    "enum": [
+                      "1",
+                      "1..1",
+                      "0..1",
+                      "1..N",
+                      "0..N",
+                      "N"
+                    ]
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "legend": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/legendItem"
+              }
+            },
+            "note": {
+              "type": "string"
+            }
+          }
+        },
+        "chartSpec": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "title",
+            "unit",
+            "source",
+            "data"
+          ],
+          "properties": {
+            "type": {
+              "const": "bar"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            },
+            "asOf": {
+              "type": "string"
+            },
+            "data": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 40,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "label",
+                  "value"
+                ],
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 45
+                  },
+                  "value": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "variant": {
+                    "type": "string",
+                    "enum": [
+                      "accent",
+                      "warning",
+                      "danger",
+                      "success",
+                      "neutral"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "schemas/document.schema.json": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "type": "object",
@@ -366,7 +934,8 @@
           "type": "string"
         },
         "version": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         "updated": {
           "type": "string",
@@ -411,8 +980,25 @@
           }
         },
         "content": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
+      },
+      "if": {
+        "properties": {
+          "sources": {
+            "type": "array",
+            "minItems": 1
+          }
+        },
+        "required": [
+          "sources"
+        ]
+      },
+      "then": {
+        "required": [
+          "repoRoot"
+        ]
       }
     }
   },
@@ -423,15 +1009,15 @@
         {
           "name": "resolveLang",
           "kind": "function",
-          "startLine": 257,
-          "endLine": 257,
+          "startLine": 270,
+          "endLine": 270,
           "signature": "resolveLang(input)"
         },
         {
           "name": "getCopy",
           "kind": "function",
-          "startLine": 265,
-          "endLine": 265,
+          "startLine": 278,
+          "endLine": 278,
           "signature": "getCopy(lang)"
         }
       ],
@@ -450,30 +1036,30 @@
         {
           "name": "updateVideoToggleLabel",
           "kind": "function",
-          "startLine": 37,
-          "endLine": 37,
+          "startLine": 40,
+          "endLine": 40,
           "signature": "updateVideoToggleLabel()"
         },
         {
           "name": "applyLanguage",
           "kind": "function",
-          "startLine": 43,
-          "endLine": 43,
+          "startLine": 46,
+          "endLine": 46,
           "signature": "applyLanguage(lang, { persist = true } = {})"
         },
         {
           "name": "syncActiveChapter",
           "kind": "function",
-          "startLine": 91,
-          "endLine": 91,
+          "startLine": 101,
+          "endLine": 101,
           "signature": "syncActiveChapter(timeSeconds)"
         },
         {
           "name": "selectRecipe",
           "kind": "function",
-          "startLine": 104,
-          "endLine": 104,
-          "signature": "selectRecipe(recipeId)"
+          "startLine": 114,
+          "endLine": 114,
+          "signature": "selectRecipe(recipeId, { focusTab = false } = {})"
         }
       ],
       "dataIO": []
@@ -482,60 +1068,39 @@
       "constants": [],
       "symbols": [
         {
-          "name": "enhanceSectionHtml",
-          "kind": "function",
-          "startLine": 33,
-          "endLine": 33,
-          "signature": "enhanceSectionHtml(rawHtml,sectionId=null,usedIds=new Set()"
-        },
-        {
           "name": "barChart",
           "kind": "function",
-          "startLine": 75,
-          "endLine": 75,
-          "signature": "barChart(spec,locale='pt-BR')"
+          "startLine": 29,
+          "endLine": 29,
+          "signature": "barChart(spec, locale = 'pt-BR')"
+        },
+        {
+          "name": "ensureWritableTarget",
+          "kind": "function",
+          "startLine": 91,
+          "endLine": 91,
+          "signature": "ensureWritableTarget(targetPath, protectedPaths, { force, label })"
+        },
+        {
+          "name": "writeAtomicFile",
+          "kind": "function",
+          "startLine": 107,
+          "endLine": 107,
+          "signature": "writeAtomicFile(targetPath, data)"
         },
         {
           "name": "build",
           "kind": "function",
-          "startLine": 112,
-          "endLine": 112,
-          "signature": "build(manifestFile,output,{force=false,mode:cliMode}={})"
+          "startLine": 118,
+          "endLine": 118,
+          "signature": "build(manifestFile, output, { force = false, mode: cliMode } = {})"
         },
         {
-          "name": "esc",
+          "name": "parseBuildCliArgs",
           "kind": "function",
-          "startLine": 16,
-          "endLine": 16,
-          "signature": "esc(v)"
-        },
-        {
-          "name": "hash",
-          "kind": "function",
-          "startLine": 17,
-          "endLine": 17,
-          "signature": "hash(v)"
-        },
-        {
-          "name": "clean",
-          "kind": "function",
-          "startLine": 19,
-          "endLine": 19,
-          "signature": "clean(v)"
-        },
-        {
-          "name": "slugify",
-          "kind": "function",
-          "startLine": 29,
-          "endLine": 29,
-          "signature": "slugify(v)"
-        },
-        {
-          "name": "normalizeTheme",
-          "kind": "function",
-          "startLine": 31,
-          "endLine": 31,
-          "signature": "normalizeTheme(v)"
+          "startLine": 412,
+          "endLine": 412,
+          "signature": "parseBuildCliArgs(args)"
         }
       ],
       "dataIO": []
@@ -544,150 +1109,157 @@
       "constants": [],
       "symbols": [
         {
+          "name": "validateChartSpec",
+          "kind": "function",
+          "startLine": 14,
+          "endLine": 14,
+          "signature": "validateChartSpec(spec)"
+        },
+        {
           "name": "charWidth",
           "kind": "function",
-          "startLine": 37,
-          "endLine": 37,
+          "startLine": 56,
+          "endLine": 56,
           "signature": "charWidth(c, fontSize = 12, mono = false)"
         },
         {
           "name": "measureText",
           "kind": "function",
-          "startLine": 48,
-          "endLine": 48,
+          "startLine": 67,
+          "endLine": 67,
           "signature": "measureText(str, fontSize = 12, mono = false)"
         },
         {
           "name": "parseRichTokens",
           "kind": "function",
-          "startLine": 57,
-          "endLine": 57,
+          "startLine": 76,
+          "endLine": 76,
           "signature": "parseRichTokens(text)"
         },
         {
           "name": "splitLongCode",
           "kind": "function",
-          "startLine": 72,
-          "endLine": 72,
+          "startLine": 91,
+          "endLine": 91,
           "signature": "splitLongCode(str, maxW, fontSize)"
         },
         {
           "name": "wrapRichLines",
           "kind": "function",
-          "startLine": 108,
-          "endLine": 108,
+          "startLine": 127,
+          "endLine": 127,
           "signature": "wrapRichLines(lines, maxW, fontSize = 11.5)"
         },
         {
           "name": "renderWrappedLinesSvg",
           "kind": "function",
-          "startLine": 156,
-          "endLine": 156,
+          "startLine": 175,
+          "endLine": 175,
           "signature": "renderWrappedLinesSvg(visualLines, startX, startY, lineH, fontSize = 11.5, fill = '#334155', align = ')"
         },
         {
           "name": "roundedOrthogonalPath",
           "kind": "function",
-          "startLine": 188,
-          "endLine": 188,
+          "startLine": 207,
+          "endLine": 207,
           "signature": "roundedOrthogonalPath(pts, radius = 6)"
         },
         {
           "name": "renderLegendHtml",
           "kind": "function",
-          "startLine": 217,
-          "endLine": 217,
+          "startLine": 236,
+          "endLine": 236,
           "signature": "renderLegendHtml(legend, locale = 'pt-BR')"
         },
         {
           "name": "renderInlineCodeHtml",
           "kind": "function",
-          "startLine": 233,
-          "endLine": 233,
+          "startLine": 252,
+          "endLine": 252,
           "signature": "renderInlineCodeHtml(text)"
         },
         {
           "name": "cleanDiagramTitle",
           "kind": "function",
-          "startLine": 238,
-          "endLine": 238,
+          "startLine": 257,
+          "endLine": 257,
           "signature": "cleanDiagramTitle(title)"
         },
         {
           "name": "wrapFigure",
           "kind": "function",
-          "startLine": 242,
-          "endLine": 242,
+          "startLine": 261,
+          "endLine": 261,
           "signature": "wrapFigure(svg, title, { legendHtml = '', noteHtml = '', diagramLabel = 'Ampliar' } = {})"
         },
         {
           "name": "wrapEdgeLabelText",
           "kind": "function",
-          "startLine": 247,
-          "endLine": 247,
+          "startLine": 266,
+          "endLine": 266,
           "signature": "wrapEdgeLabelText(text, maxW, fontSize = 10.5)"
         },
         {
           "name": "pillMetrics",
           "kind": "function",
-          "startLine": 271,
-          "endLine": 271,
+          "startLine": 290,
+          "endLine": 290,
           "signature": "pillMetrics(text, fontSize = 10.5)"
         },
         {
           "name": "resolvePillPositions",
           "kind": "function",
-          "startLine": 277,
-          "endLine": 277,
+          "startLine": 296,
+          "endLine": 296,
           "signature": "resolvePillPositions(pills, boxObstacles, maxCanvasW = 1800)"
         },
         {
           "name": "renderPillLabel",
           "kind": "function",
-          "startLine": 331,
-          "endLine": 331,
+          "startLine": 350,
+          "endLine": 350,
           "signature": "renderPillLabel(x, y, text, { bg = '#ffffff', stroke = '#cbd5e1', fg = '#334155', fontSize = 10.)"
         },
         {
           "name": "renderNodeCard",
           "kind": "function",
-          "startLine": 342,
-          "endLine": 342,
+          "startLine": 361,
+          "endLine": 361,
           "signature": "renderNodeCard(node, x, y, w, h, layout)"
         },
         {
           "name": "layoutNodeBox",
           "kind": "function",
-          "startLine": 413,
-          "endLine": 413,
+          "startLine": 432,
+          "endLine": 432,
           "signature": "layoutNodeBox(node, colWidth)"
         },
         {
           "name": "renderSolutionDiagram",
           "kind": "function",
-          "startLine": 456,
-          "endLine": 456,
+          "startLine": 475,
+          "endLine": 475,
           "signature": "renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Ampliar', mode = 'solution' } = {})"
         },
         {
           "name": "renderSchemaDiagram",
           "kind": "function",
-          "startLine": 936,
-          "endLine": 936,
+          "startLine": 958,
+          "endLine": 958,
           "signature": "renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Ampliar' } = {})"
         },
         {
           "name": "enhanceMermaidSvg",
           "kind": "function",
-          "startLine": 1324,
-          "endLine": 1324,
+          "startLine": 1349,
+          "endLine": 1349,
           "signature": "enhanceMermaidSvg($, mermaidSource)"
         },
         {
           "name": "esc",
           "kind": "function",
-          "startLine": 1,
-          "endLine": 1,
+          "startLine": 20,
+          "endLine": 20,
           "signature": "esc(v)"
         }
       ],
@@ -696,23 +1268,300 @@
     "scripts/inspect_repo.py": {
       "constants": [
         {
+          "name": "_HERE",
+          "line": 12,
+          "value": "Path(__file__).resolve().parent"
+        }
+      ],
+      "symbols": [],
+      "dataIO": []
+    },
+    "scripts/renderer-hash.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "computeRendererHash",
+          "kind": "function",
+          "startLine": 26,
+          "endLine": 26,
+          "signature": "computeRendererHash(skillRoot = ROOT)"
+        },
+        {
+          "name": "getSkillVersion",
+          "kind": "function",
+          "startLine": 37,
+          "endLine": 37,
+          "signature": "getSkillVersion(skillRoot = ROOT)"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/validate.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "validateHtml",
+          "kind": "function",
+          "startLine": 7,
+          "endLine": 7,
+          "signature": "validateHtml(html)"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/verify.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "git",
+          "kind": "function",
+          "startLine": 8,
+          "endLine": 8,
+          "signature": "git(cwd, ...args)"
+        },
+        {
+          "name": "readJson",
+          "kind": "function",
+          "startLine": 16,
+          "endLine": 16,
+          "signature": "readJson(file)"
+        },
+        {
+          "name": "hashByAlgorithm",
+          "kind": "function",
+          "startLine": 20,
+          "endLine": 20,
+          "signature": "hashByAlgorithm(buf, filePath, useCanonicalText)"
+        },
+        {
+          "name": "checkFileHash",
+          "kind": "function",
+          "startLine": 24,
+          "endLine": 24,
+          "signature": "checkFileHash(filePath, expectedSha256, { useCanonicalText = false } = {})"
+        },
+        {
+          "name": "resolveCandidateHtmlPath",
+          "kind": "function",
+          "startLine": 34,
+          "endLine": 34,
+          "signature": "resolveCandidateHtmlPath(receiptPath, receipt, explicitHtmlFile)"
+        },
+        {
+          "name": "verify",
+          "kind": "function",
+          "startLine": 45,
+          "endLine": 45,
+          "signature": "verify(manifestFile, receiptFile, { strict = false, htmlFile = null } = {})"
+        },
+        {
+          "name": "analyzeImpact",
+          "kind": "function",
+          "startLine": 206,
+          "endLine": 206,
+          "signature": "analyzeImpact(manifestFile, receiptFile, { dossierFile = null, strict = false, htmlFile = null)"
+        },
+        {
+          "name": "renderUpdatePlan",
+          "kind": "function",
+          "startLine": 338,
+          "endLine": 338,
+          "signature": "renderUpdatePlan(impact)"
+        },
+        {
+          "name": "parseVerifyCliArgs",
+          "kind": "function",
+          "startLine": 463,
+          "endLine": 463,
+          "signature": "parseVerifyCliArgs(argv)"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/inspector/extractors.py": {
+      "constants": [
+        {
+          "name": "STACK_PATTERNS",
+          "line": 13,
+          "value": {
+            "spark_pyspark": "('pyspark', 'sparksession', 'spark.read', 'spark.write', 'spark.table', 'spark.s",
+            "databricks": "('databricks', 'dbutils', 'unity_catalog', 'databricks.yml', '# databricks noteb",
+            "delta_lake": "('deltatable', 'using delta', '.format(\"delta\")', \".format('delta')\", 'merge int",
+            "cosmos_db": "('azure.cosmos', 'cosmosclient', 'cosmos_db', 'cosmos.oltp', 'com.azure.cosmos.s",
+            "event_hubs": "('azure.eventhub', 'eventhubconsumerclient', 'eventhubproducerclient', 'format(\"",
+            "azure_blob_adls": "('azure.storage.blob', 'blobserviceclient', 'azure.storage.filedatalake', 'datal",
+            "dbt": "('dbt_project.yml', 'profiles.yml', 'dbt_packages', 'ref(', 'source(')",
+            "sql_warehouse": "('duckdb', 'pyarrow', 'parquet', 'snowflake', 'bigquery', 'synapse', 'create tab",
+            "iceberg": "('iceberg', 'using iceberg')",
+            "orchestration": "('airflow', 'dag(', '@dag', 'dagster', '@asset', '@job', 'prefect', '@flow', '@t"
+          }
+        }
+      ],
+      "symbols": [
+        {
+          "name": "detect_stack_signals",
+          "kind": "function",
+          "startLine": 62,
+          "endLine": 86,
+          "decorators": [],
+          "signature": "detect_stack_signals(posix_path: str, text: str) -> list[str]",
+          "doc": null
+        },
+        {
+          "name": "_unparse",
+          "kind": "function",
+          "startLine": 89,
+          "endLine": 95,
+          "decorators": [],
+          "signature": "_unparse(node: ast.AST | None) -> str | None",
+          "doc": null
+        },
+        {
+          "name": "_const_value",
+          "kind": "function",
+          "startLine": 98,
+          "endLine": 103,
+          "decorators": [],
+          "signature": "_const_value(node: ast.AST) -> Any",
+          "doc": null
+        },
+        {
+          "name": "_call_chain",
+          "kind": "function",
+          "startLine": 106,
+          "endLine": 116,
+          "decorators": [],
+          "signature": "_call_chain(node: ast.AST) -> list[str]",
+          "doc": null
+        },
+        {
+          "name": "_spark_chain_details",
+          "kind": "function",
+          "startLine": 119,
+          "endLine": 167,
+          "decorators": [],
+          "signature": "_spark_chain_details(call_node: ast.Call) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "_strip_databricks_cells",
+          "kind": "function",
+          "startLine": 170,
+          "endLine": 221,
+          "decorators": [],
+          "signature": "_strip_databricks_cells(text: str) -> tuple[bool, list[dict[str, Any]], str]",
+          "doc": null
+        },
+        {
+          "name": "_extract_regex_python_symbols",
+          "kind": "function",
+          "startLine": 224,
+          "endLine": 237,
+          "decorators": [],
+          "signature": "_extract_regex_python_symbols(text: str) -> list[dict[str, Any]]",
+          "doc": null
+        },
+        {
+          "name": "_collect_python_type_hints",
+          "kind": "function",
+          "startLine": 240,
+          "endLine": 260,
+          "decorators": [],
+          "signature": "_collect_python_type_hints(tree: ast.AST) -> dict[str, str]",
+          "doc": null
+        },
+        {
+          "name": "_classify_container_client_call",
+          "kind": "function",
+          "startLine": 263,
+          "endLine": 285,
+          "decorators": [],
+          "signature": "_classify_container_client_call(chain: list[str], var_types: dict[str, str], imported_modules: set[str]) -> str | None",
+          "doc": null
+        },
+        {
+          "name": "extract_python_facts",
+          "kind": "function",
+          "startLine": 288,
+          "endLine": 661,
+          "decorators": [],
+          "signature": "extract_python_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_ipynb_facts",
+          "kind": "function",
+          "startLine": 664,
+          "endLine": 696,
+          "decorators": [],
+          "signature": "extract_ipynb_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_js_ts_facts",
+          "kind": "function",
+          "startLine": 699,
+          "endLine": 784,
+          "decorators": [],
+          "signature": "extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_scala_facts",
+          "kind": "function",
+          "startLine": 787,
+          "endLine": 812,
+          "decorators": [],
+          "signature": "extract_scala_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_workflow_or_config",
+          "kind": "function",
+          "startLine": 815,
+          "endLine": 888,
+          "decorators": [],
+          "signature": "extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_iac_resources",
+          "kind": "function",
+          "startLine": 891,
+          "endLine": 899,
+          "decorators": [],
+          "signature": "extract_iac_resources(posix_path: str, text: str) -> list[dict[str, str]]",
+          "doc": null
+        }
+      ],
+      "dataIO": [
+        {
+          "op": "spark_format",
+          "format": "delta",
+          "line": 24
+        }
+      ]
+    },
+    "scripts/inspector/graph.py": {
+      "constants": [
+        {
           "name": "SKIP",
-          "line": 23,
-          "value": "{'venv', '.git', '.tox', '.venv', '.runtime', 'dist', 'node_modules', '.ruff_cac"
+          "line": 27,
+          "value": "{'node_modules', '.pytest_cache', '.git', '.ruff_cache', '__pycache__', '.next',"
         },
         {
           "name": "EXTENSIONS",
-          "line": 29,
-          "value": "{'.hql', '.scala', '.tsx', '.md', '.java', '.json', '.py', '.avsc', '.dml', '.sq"
+          "line": 33,
+          "value": "{'.sql', '.kt', '.rs', '.js', '.md', '.mjs', '.cs', '.sh', '.jsx', '.ts', '.py',"
         },
         {
           "name": "SPECIAL_NAMES",
-          "line": 37,
-          "value": "{'Procfile', 'Makefile', 'Jenkinsfile', 'Dockerfile'}"
+          "line": 41,
+          "value": "{'Procfile', 'Dockerfile', 'Jenkinsfile', 'Makefile'}"
         },
         {
           "name": "KIND",
-          "line": 39,
+          "line": 43,
           "value": {
             ".md": "docs",
             ".mdx": "docs",
@@ -727,201 +1576,27 @@
           }
         },
         {
-          "name": "STACK_PATTERNS",
-          "line": 53,
-          "value": {
-            "spark_pyspark": "('pyspark', 'sparksession', 'spark.read', 'spark.write', 'spark.table', 'spark.s",
-            "databricks": "('databricks', 'dbutils', 'unity_catalog', 'databricks.yml', '# databricks noteb",
-            "delta_lake": "('deltatable', 'using delta', '.format(\"delta\")', \".format('delta')\", 'merge int",
-            "cosmos_db": "('azure.cosmos', 'cosmosclient', 'cosmos_db', 'cosmos.oltp', 'com.azure.cosmos.s",
-            "event_hubs": "('azure.eventhub', 'eventhubconsumerclient', 'eventhubproducerclient', 'format(\"",
-            "azure_blob_adls": "('azure.storage.blob', 'blobserviceclient', 'azure.storage.filedatalake', 'datal",
-            "dbt": "('dbt_project.yml', 'profiles.yml', 'dbt_packages', 'ref(', 'source(')",
-            "sql_warehouse": "('duckdb', 'pyarrow', 'parquet', 'snowflake', 'bigquery', 'synapse', 'create tab",
-            "iceberg": "('iceberg', 'using iceberg')",
-            "orchestration": "('airflow', 'dag(', '@dag', 'dagster', '@asset', '@job', 'prefect', '@flow', '@t"
-          }
-        },
-        {
-          "name": "SECRET_NAME_RE",
-          "line": 101,
-          "value": "<redacted>"
-        },
-        {
-          "name": "SECRET_VALUE_RE",
-          "line": 106,
-          "value": "<redacted>"
-        },
-        {
           "name": "NOISE_DATA_EXTS",
-          "line": 110,
-          "value": "{'.csv', '.parquet'}"
+          "line": 58,
+          "value": "{'.parquet', '.csv'}"
         },
         {
           "name": "GENERATED_ARTIFACT_PATTERNS",
-          "line": 111,
+          "line": 59,
           "value": "('*.validation.json', 'reading-plan.md', 'update-plan.md', 'documentacao*.html')"
+        },
+        {
+          "name": "JS_TS_EXTS",
+          "line": 60,
+          "value": "('.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.mts', '.cts')"
         }
       ],
       "symbols": [
         {
-          "name": "is_secret_name",
-          "kind": "function",
-          "startLine": 114,
-          "endLine": 115,
-          "decorators": [],
-          "signature": "is_secret_name(name: str) -> bool",
-          "doc": null
-        },
-        {
-          "name": "redact_inline_secrets",
-          "kind": "function",
-          "startLine": 118,
-          "endLine": 119,
-          "decorators": [],
-          "signature": "redact_inline_secrets(text: str) -> str",
-          "doc": null
-        },
-        {
-          "name": "safe_preview_value",
-          "kind": "function",
-          "startLine": 122,
-          "endLine": 138,
-          "decorators": [],
-          "signature": "safe_preview_value(name: str, raw_val: Any) -> Any",
-          "doc": null
-        },
-        {
-          "name": "detect_stack_signals",
-          "kind": "function",
-          "startLine": 141,
-          "endLine": 160,
-          "decorators": [],
-          "signature": "detect_stack_signals(posix_path: str, text: str) -> list[str]",
-          "doc": null
-        },
-        {
-          "name": "_unparse",
-          "kind": "function",
-          "startLine": 163,
-          "endLine": 169,
-          "decorators": [],
-          "signature": "_unparse(node: ast.AST | None) -> str | None",
-          "doc": null
-        },
-        {
-          "name": "_const_value",
-          "kind": "function",
-          "startLine": 172,
-          "endLine": 177,
-          "decorators": [],
-          "signature": "_const_value(node: ast.AST) -> Any",
-          "doc": null
-        },
-        {
-          "name": "_call_chain",
-          "kind": "function",
-          "startLine": 180,
-          "endLine": 190,
-          "decorators": [],
-          "signature": "_call_chain(node: ast.AST) -> list[str]",
-          "doc": null
-        },
-        {
-          "name": "_spark_chain_details",
-          "kind": "function",
-          "startLine": 193,
-          "endLine": 233,
-          "decorators": [],
-          "signature": "_spark_chain_details(call_node: ast.Call) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "_strip_databricks_cells",
-          "kind": "function",
-          "startLine": 236,
-          "endLine": 290,
-          "decorators": [],
-          "signature": "_strip_databricks_cells(text: str) -> tuple[bool, list[dict[str, Any]], str]",
-          "doc": null
-        },
-        {
-          "name": "_extract_regex_python_symbols",
-          "kind": "function",
-          "startLine": 293,
-          "endLine": 306,
-          "decorators": [],
-          "signature": "_extract_regex_python_symbols(text: str) -> list[dict[str, Any]]",
-          "doc": null
-        },
-        {
-          "name": "extract_sql_facts",
-          "kind": "function",
-          "startLine": 309,
-          "endLine": 404,
-          "decorators": [],
-          "signature": "extract_sql_facts(text: str, origin: str) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "extract_python_facts",
-          "kind": "function",
-          "startLine": 407,
-          "endLine": 772,
-          "decorators": [],
-          "signature": "extract_python_facts(posix_path: str, text: str) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "extract_ipynb_facts",
-          "kind": "function",
-          "startLine": 775,
-          "endLine": 808,
-          "decorators": [],
-          "signature": "extract_ipynb_facts(posix_path: str, text: str) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "extract_js_ts_facts",
-          "kind": "function",
-          "startLine": 811,
-          "endLine": 883,
-          "decorators": [],
-          "signature": "extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "extract_scala_facts",
-          "kind": "function",
-          "startLine": 886,
-          "endLine": 911,
-          "decorators": [],
-          "signature": "extract_scala_facts(posix_path: str, text: str) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "extract_workflow_or_config",
-          "kind": "function",
-          "startLine": 914,
-          "endLine": 982,
-          "decorators": [],
-          "signature": "extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]",
-          "doc": null
-        },
-        {
-          "name": "extract_iac_resources",
-          "kind": "function",
-          "startLine": 985,
-          "endLine": 993,
-          "decorators": [],
-          "signature": "extract_iac_resources(posix_path: str, text: str) -> list[dict[str, str]]",
-          "doc": null
-        },
-        {
           "name": "_resolve_python_import",
           "kind": "function",
-          "startLine": 996,
-          "endLine": 1017,
+          "startLine": 63,
+          "endLine": 84,
           "decorators": [],
           "signature": "_resolve_python_import(imp: dict[str, Any], from_file: str, module_index: dict[str, str]) -> list[str]",
           "doc": null
@@ -929,8 +1604,8 @@
         {
           "name": "_resolve_js_import",
           "kind": "function",
-          "startLine": 1020,
-          "endLine": 1029,
+          "startLine": 87,
+          "endLine": 96,
           "decorators": [],
           "signature": "_resolve_js_import(specifier: str, from_file: str, all_paths: set[str]) -> str | None",
           "doc": null
@@ -938,8 +1613,8 @@
         {
           "name": "_resolve_notebook_target",
           "kind": "function",
-          "startLine": 1032,
-          "endLine": 1049,
+          "startLine": 99,
+          "endLine": 116,
           "decorators": [],
           "signature": "_resolve_notebook_target(raw_ref: str, from_file: str, all_paths: set[str]) -> str | None",
           "doc": null
@@ -947,8 +1622,8 @@
         {
           "name": "inspect",
           "kind": "function",
-          "startLine": 1052,
-          "endLine": 1476,
+          "startLine": 119,
+          "endLine": 574,
           "decorators": [],
           "signature": "inspect(root: Path, includes: list[str] | None, excludes: list[str] | None, ignore_paths: set[str] | None) -> dict[str, Any]",
           "doc": null
@@ -956,220 +1631,394 @@
         {
           "name": "render_reading_plan",
           "kind": "function",
-          "startLine": 1479,
-          "endLine": 1625,
+          "startLine": 577,
+          "endLine": 735,
           "decorators": [],
           "signature": "render_reading_plan(dossier: dict[str, Any]) -> str",
           "doc": null
         }
       ],
-      "dataIO": [
-        {
-          "op": "spark_format",
-          "format": "delta",
-          "line": 64
-        }
-      ]
+      "dataIO": []
     },
-    "scripts/renderer-hash.mjs": {
+    "scripts/inspector/redaction.py": {
+      "constants": [
+        {
+          "name": "SECRET_NAME_RE",
+          "line": 7,
+          "value": "<redacted>"
+        },
+        {
+          "name": "SECRET_VALUE_RE",
+          "line": 12,
+          "value": "<redacted>"
+        },
+        {
+          "name": "CLI_SECRET_FLAG_RE",
+          "line": 16,
+          "value": "<redacted>"
+        },
+        {
+          "name": "ENV_SECRET_ASSIGN_RE",
+          "line": 23,
+          "value": "<redacted>"
+        },
+        {
+          "name": "CONN_STR_RE",
+          "line": 30,
+          "value": "<redacted>"
+        }
+      ],
+      "symbols": [
+        {
+          "name": "is_secret_name",
+          "kind": "function",
+          "startLine": 36,
+          "endLine": 37,
+          "decorators": [],
+          "signature": "is_secret_name(name: str) -> bool",
+          "doc": null
+        },
+        {
+          "name": "_mask_cli_flag",
+          "kind": "function",
+          "startLine": 40,
+          "endLine": 47,
+          "decorators": [],
+          "signature": "_mask_cli_flag(m: re.Match[str]) -> str",
+          "doc": null
+        },
+        {
+          "name": "_mask_env_assign",
+          "kind": "function",
+          "startLine": 50,
+          "endLine": 55,
+          "decorators": [],
+          "signature": "_mask_env_assign(m: re.Match[str]) -> str",
+          "doc": null
+        },
+        {
+          "name": "redact_inline_secrets",
+          "kind": "function",
+          "startLine": 58,
+          "endLine": 65,
+          "decorators": [],
+          "signature": "redact_inline_secrets(text: str) -> str",
+          "doc": null
+        },
+        {
+          "name": "redact_sensitive_text",
+          "kind": "function",
+          "startLine": 68,
+          "endLine": 70,
+          "decorators": [],
+          "signature": "redact_sensitive_text(text: str) -> str",
+          "doc": "Alias for centralized secret masking before any truncation."
+        },
+        {
+          "name": "safe_preview_value",
+          "kind": "function",
+          "startLine": 73,
+          "endLine": 89,
+          "decorators": [],
+          "signature": "safe_preview_value(name: str, raw_val: Any) -> Any",
+          "doc": null
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/inspector/sql_parser.py": {
+      "constants": [
+        {
+          "name": "CONSTRAINT_PREFIX_RE",
+          "line": 7,
+          "value": "re.compile('^(PRIMARY|FOREIGN|UNIQUE|CONSTRAINT|CHECK|INDEX|KEY|FULLTEXT|SPATIAL|LIKE)\\\\b', re.IGNOR"
+        }
+      ],
+      "symbols": [
+        {
+          "name": "_extract_balanced_parens",
+          "kind": "function",
+          "startLine": 13,
+          "endLine": 42,
+          "decorators": [],
+          "signature": "_extract_balanced_parens(text: str, open_idx: int, max_scan: int) -> tuple[str, int] | None",
+          "doc": null
+        },
+        {
+          "name": "_split_top_level_sql_items",
+          "kind": "function",
+          "startLine": 45,
+          "endLine": 101,
+          "decorators": [],
+          "signature": "_split_top_level_sql_items(body: str) -> list[str]",
+          "doc": null
+        },
+        {
+          "name": "_parse_ddl_column",
+          "kind": "function",
+          "startLine": 104,
+          "endLine": 149,
+          "decorators": [],
+          "signature": "_parse_ddl_column(raw_col: str) -> dict[str, str] | None",
+          "doc": null
+        },
+        {
+          "name": "extract_sql_facts",
+          "kind": "function",
+          "startLine": 152,
+          "endLine": 248,
+          "decorators": [],
+          "signature": "extract_sql_facts(text: str, origin: str) -> dict[str, Any]",
+          "doc": null
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/lib/hash.mjs": {
       "constants": [],
       "symbols": [
         {
-          "name": "computeRendererHash",
+          "name": "hashRaw",
+          "kind": "function",
+          "startLine": 13,
+          "endLine": 13,
+          "signature": "hashRaw(bufOrStr)"
+        },
+        {
+          "name": "isBinaryBuffer",
+          "kind": "function",
+          "startLine": 17,
+          "endLine": 17,
+          "signature": "isBinaryBuffer(buf, filePath = '')"
+        },
+        {
+          "name": "canonicalizeTextBuffer",
+          "kind": "function",
+          "startLine": 24,
+          "endLine": 24,
+          "signature": "canonicalizeTextBuffer(bufOrStr, filePath = '')"
+        },
+        {
+          "name": "hashCanonicalText",
+          "kind": "function",
+          "startLine": 34,
+          "endLine": 34,
+          "signature": "hashCanonicalText(bufOrStr, filePath = '')"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/lib/html-shell.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "cleanMarkdownHtml",
+          "kind": "function",
+          "startLine": 11,
+          "endLine": 11,
+          "signature": "cleanMarkdownHtml(rawHtml)"
+        },
+        {
+          "name": "enhanceSectionHtml",
+          "kind": "function",
+          "startLine": 42,
+          "endLine": 42,
+          "signature": "enhanceSectionHtml(rawHtml, sectionId = null, usedIds = new Set()"
+        },
+        {
+          "name": "renderHtmlDocument",
+          "kind": "function",
+          "startLine": 85,
+          "endLine": 85,
+          "signature": "renderHtmlDocument({\n  spec, pkgVersion, en, locale, mode, initialTheme, words, css, js,\n  nav, ref)"
+        },
+        {
+          "name": "esc",
+          "kind": "function",
+          "startLine": 5,
+          "endLine": 5,
+          "signature": "esc(v)"
+        },
+        {
+          "name": "slugify",
+          "kind": "function",
+          "startLine": 35,
+          "endLine": 35,
+          "signature": "slugify(v)"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/lib/i18n.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "normalizeTheme",
+          "kind": "function",
+          "startLine": 15,
+          "endLine": 15,
+          "signature": "normalizeTheme(v)"
+        },
+        {
+          "name": "getUiWords",
           "kind": "function",
           "startLine": 19,
           "endLine": 19,
-          "signature": "computeRendererHash(skillRoot = ROOT)"
-        },
-        {
-          "name": "getSkillVersion",
-          "kind": "function",
-          "startLine": 29,
-          "endLine": 29,
-          "signature": "getSkillVersion(skillRoot = ROOT)"
+          "signature": "getUiWords(en, mode)"
         }
       ],
       "dataIO": []
     },
-    "scripts/validate.mjs": {
+    "scripts/lib/urls.mjs": {
       "constants": [],
       "symbols": [
         {
-          "name": "validateHtml",
+          "name": "isSafeHref",
           "kind": "function",
-          "startLine": 6,
-          "endLine": 6,
-          "signature": "validateHtml(html)"
-        }
-      ],
-      "dataIO": []
-    },
-    "scripts/verify.mjs": {
-      "constants": [],
-      "symbols": [
-        {
-          "name": "git",
-          "kind": "function",
-          "startLine": 10,
-          "endLine": 10,
-          "signature": "git(cwd, ...args)"
+          "startLine": 4,
+          "endLine": 4,
+          "signature": "isSafeHref(rawHref, { allowRelative = true } = {})"
         },
         {
-          "name": "readJson",
+          "name": "assertSafeHref",
           "kind": "function",
-          "startLine": 18,
-          "endLine": 18,
-          "signature": "readJson(file)"
-        },
-        {
-          "name": "checkOptionalFileHash",
-          "kind": "function",
-          "startLine": 22,
-          "endLine": 22,
-          "signature": "checkOptionalFileHash(filePath, expectedSha256)"
-        },
-        {
-          "name": "verify",
-          "kind": "function",
-          "startLine": 32,
-          "endLine": 32,
-          "signature": "verify(manifestFile, receiptFile)"
-        },
-        {
-          "name": "analyzeImpact",
-          "kind": "function",
-          "startLine": 147,
-          "endLine": 147,
-          "signature": "analyzeImpact(manifestFile, receiptFile, {dossierFile = null} = {})"
-        },
-        {
-          "name": "renderUpdatePlan",
-          "kind": "function",
-          "startLine": 281,
-          "endLine": 281,
-          "signature": "renderUpdatePlan(impact)"
-        },
-        {
-          "name": "getFlagValue",
-          "kind": "function",
-          "startLine": 402,
-          "endLine": 402,
-          "signature": "getFlagValue(argv, flag)"
-        },
-        {
-          "name": "hash",
-          "kind": "function",
-          "startLine": 8,
-          "endLine": 8,
-          "signature": "hash(v)"
+          "startLine": 23,
+          "endLine": 23,
+          "signature": "assertSafeHref(rawHref, label = 'href')"
         }
       ],
       "dataIO": []
     }
   },
   "testsIndex": {
+    "tests/browser.test.mjs": [
+      {
+        "name": "M05 headless Chromium: landing page WAI-ARIA tabs keyboard navigation and PT/EN aria-label translation",
+        "startLine": 277
+      }
+    ],
     "tests/build.test.mjs": [
       {
         "name": "runnable example: offline diagrams, accessible values and nested details survive rendering",
-        "startLine": 16
+        "startLine": 19
       },
       {
         "name": "multiple SVGs namespace marker identifiers; unsafe Markdown HTML cannot execute",
-        "startLine": 33
+        "startLine": 36
       },
       {
         "name": "content/manifest mismatch fails without creating an output",
-        "startLine": 43
+        "startLine": 46
       },
       {
         "name": "chart rejects misleading values and duplicate categories; zero remains zero",
-        "startLine": 49
+        "startLine": 52
       },
       {
         "name": "chart keeps a 45-character label inside the SVG and marks zero",
-        "startLine": 58
+        "startLine": 61
       },
       {
         "name": "chart features: semantic variants, accessible row titles, value proximity, dignified zero, and grid scale",
-        "startLine": 69
+        "startLine": 72
       },
       {
         "name": "validator rejects runtime/asset dependencies and broken navigation",
-        "startLine": 114
+        "startLine": 117
       },
       {
         "name": "validator rejects incomplete structures and inline external styles",
-        "startLine": 119
+        "startLine": 122
       },
       {
         "name": "verify detects changed sources and receipt drift",
-        "startLine": 131
+        "startLine": 134
       },
       {
         "name": "validator rejects raw LaTeX math in prose/tables while allowing currency and code blocks",
-        "startLine": 147
+        "startLine": 150
       },
       {
         "name": "generated HTML uses concise search placeholder that fits sidebar input",
-        "startLine": 162
+        "startLine": 165
       },
       {
         "name": "runtime script enables local table filters inside nested <details> dictionaries without touching chart tables",
-        "startLine": 170
+        "startLine": 173
       },
       {
         "name": "generated HTML defaults to the red theme, exposes Vermelho/Azul in order and maps legacy theme aliases",
-        "startLine": 176
+        "startLine": 179
       },
       {
         "name": "table wrappers do not trap page wheel scrolling",
-        "startLine": 221
+        "startLine": 224
       },
       {
         "name": "v1.5.0 build & validate: H3 subnav, back-to-top, H1 guard, authoring warnings, and SVG structural audit",
-        "startLine": 228
+        "startLine": 231
       },
       {
         "name": "v1.6.0 summary mode: data-mode, quick-guide badges, companionDoc link, readingMinutes, and length warnings",
-        "startLine": 276
+        "startLine": 279
       },
       {
         "name": "responsive mobile drawer: builds collapsible sidebar controls, reserves drawer IDs, and includes mobile breakpoints",
-        "startLine": 309
+        "startLine": 312
+      },
+      {
+        "name": "F01 URL security: blocks control-character obfuscated javascript/data/protocol-relative hrefs in build & validate",
+        "startLine": 400
+      },
+      {
+        "name": "F06 & M02 canonical LF hashing and lockfile renderer identity",
+        "startLine": 497
+      },
+      {
+        "name": "F14 strict UTF-8 encoding across text assets, agents/openai.yaml, schemas and docs",
+        "startLine": 528
+      },
+      {
+        "name": "M03 CLI argument validation rejects unknown flags, invalid mode, and missing flag values",
+        "startLine": 548
       }
     ],
     "tests/diagrams.test.mjs": [
       {
         "name": "parseRichTokens and wrapRichLines isolate inline code chips and hard-wrap long separatorless tokens",
-        "startLine": 22
+        "startLine": 23
       },
       {
         "name": "renderSchemaDiagram renders typed entities, wrapped grain, spread ports, natural key order and lineage vs FK",
-        "startLine": 95
+        "startLine": 96
       },
       {
         "name": "enhanceMermaidSvg upgrades ER column order, PK/FK classes, composite branch badges and state colors",
-        "startLine": 157
+        "startLine": 158
       },
       {
         "name": "build enforces reserved IDs, localized eyebrow, safe table attributes, typed callouts, and column badges",
-        "startLine": 185
+        "startLine": 186
       },
       {
         "name": "inspect_repo.py discovers Jinja/SQL/DDL data-engineering templates and detects stackSignals",
-        "startLine": 236
+        "startLine": 237
       },
       {
         "name": "showcase example builds cleanly preserving all 11 categories, audience filters, dictionary badges and new diagrams",
-        "startLine": 255
+        "startLine": 256
       },
       {
         "name": "renderSolutionDiagram auto-bypasses explicit right->left skip edges and wraps long bold titles in narrow boxes",
-        "startLine": 333
+        "startLine": 334
       },
       {
         "name": "renderSchemaDiagram routes cross-row bottom->right relations through inter-row gutter around intermediate entities",
-        "startLine": 361
+        "startLine": 362
+      },
+      {
+        "name": "M03 & F15 schema contract: diagram and chart renderers reject unknown keys like column badge or relation cardinality",
+        "startLine": 521
       }
     ],
     "tests/dossier.test.mjs": [
@@ -1185,19 +2034,19 @@
     "tests/landing.test.mjs": [
       {
         "name": "PT and EN translation dictionaries share identical non-empty keys",
-        "startLine": 14
+        "startLine": 17
       },
       {
         "name": "resolveLang and getCopy normalize language tags safely",
-        "startLine": 24
+        "startLine": 27
       },
       {
-        "name": "docs/index.html references valid i18n keys, local assets, and chapter buttons",
-        "startLine": 33
+        "name": "docs/index.html references valid i18n keys, ARIA labels/tabs, local assets, and chapter buttons",
+        "startLine": 36
       },
       {
-        "name": "landing RECIPES.manifest strictly validates against document.schema.json and RECIPES.cli uses valid verify flags",
-        "startLine": 73
+        "name": "F13 landing RECIPES.manifest strictly validates against document.schema.json and builds successfully",
+        "startLine": 95
       }
     ]
   },
@@ -1224,8 +2073,98 @@
         "kind": "import"
       },
       {
+        "from": "scripts/build.mjs",
+        "to": "scripts/lib/urls.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/build.mjs",
+        "to": "scripts/lib/hash.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/build.mjs",
+        "to": "scripts/lib/i18n.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/build.mjs",
+        "to": "scripts/lib/html-shell.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/renderer-hash.mjs",
+        "to": "scripts/lib/hash.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/validate.mjs",
+        "to": "scripts/lib/urls.mjs",
+        "kind": "import"
+      },
+      {
         "from": "scripts/verify.mjs",
         "to": "scripts/renderer-hash.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/verify.mjs",
+        "to": "scripts/lib/hash.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/__init__.py",
+        "to": "scripts/inspector/redaction.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/__init__.py",
+        "to": "scripts/inspector/sql_parser.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/__init__.py",
+        "to": "scripts/inspector/extractors.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/__init__.py",
+        "to": "scripts/inspector/graph.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/extractors.py",
+        "to": "scripts/inspector/redaction.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/extractors.py",
+        "to": "scripts/inspector/sql_parser.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/graph.py",
+        "to": "scripts/inspector/extractors.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/graph.py",
+        "to": "scripts/inspector/redaction.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/inspector/graph.py",
+        "to": "scripts/inspector/sql_parser.py",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/lib/html-shell.mjs",
+        "to": "scripts/lib/urls.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/browser.test.mjs",
+        "to": "scripts/build.mjs",
         "kind": "import"
       },
       {
@@ -1241,6 +2180,16 @@
       {
         "from": "tests/build.test.mjs",
         "to": "scripts/verify.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/build.test.mjs",
+        "to": "scripts/renderer-hash.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/build.test.mjs",
+        "to": "scripts/lib/urls.mjs",
         "kind": "import"
       },
       {
@@ -1272,33 +2221,53 @@
         "from": "tests/landing.test.mjs",
         "to": "docs/landing-i18n.mjs",
         "kind": "import"
+      },
+      {
+        "from": "tests/landing.test.mjs",
+        "to": "scripts/build.mjs",
+        "kind": "import"
       }
     ],
     "inDegree": {
       "docs/landing-i18n.mjs": 2,
-      "scripts/build.mjs": 3,
+      "scripts/build.mjs": 5,
       "scripts/diagrams.mjs": 2,
-      "scripts/renderer-hash.mjs": 2,
+      "scripts/inspector/extractors.py": 2,
+      "scripts/inspector/graph.py": 1,
+      "scripts/inspector/redaction.py": 3,
+      "scripts/inspector/sql_parser.py": 3,
+      "scripts/lib/hash.mjs": 3,
+      "scripts/lib/html-shell.mjs": 1,
+      "scripts/lib/i18n.mjs": 1,
+      "scripts/lib/urls.mjs": 4,
+      "scripts/renderer-hash.mjs": 3,
       "scripts/validate.mjs": 3,
       "scripts/verify.mjs": 2
     },
     "outDegree": {
       "docs/landing.js": 1,
-      "scripts/build.mjs": 3,
-      "scripts/verify.mjs": 1,
-      "tests/build.test.mjs": 3,
+      "scripts/build.mjs": 7,
+      "scripts/inspector/__init__.py": 4,
+      "scripts/inspector/extractors.py": 2,
+      "scripts/inspector/graph.py": 3,
+      "scripts/lib/html-shell.mjs": 1,
+      "scripts/renderer-hash.mjs": 1,
+      "scripts/validate.mjs": 1,
+      "scripts/verify.mjs": 2,
+      "tests/browser.test.mjs": 1,
+      "tests/build.test.mjs": 5,
       "tests/diagrams.test.mjs": 3,
       "tests/dossier.test.mjs": 2,
-      "tests/landing.test.mjs": 1
+      "tests/landing.test.mjs": 2
     }
   },
   "readingWaves": {
     "wave1": [
       {
-        "path": "scripts/inspect_repo.py",
+        "path": "scripts/inspector/extractors.py",
         "kind": "code",
-        "lines": 1656,
-        "centrality": 7,
+        "lines": 900,
+        "centrality": 13,
         "stacks": [
           "api_service",
           "azure_blob_adls",
@@ -1315,13 +2284,24 @@
           "sql_warehouse",
           "terraform_iac"
         ],
-        "symbolsCount": 22,
+        "symbolsCount": 15,
+        "testsCount": 0
+      },
+      {
+        "path": ".github/workflows/ci.yml",
+        "kind": "config",
+        "lines": 36,
+        "centrality": 5,
+        "stacks": [
+          "orchestration"
+        ],
+        "symbolsCount": 0,
         "testsCount": 0
       },
       {
         "path": "README.md",
         "kind": "docs",
-        "lines": 313,
+        "lines": 325,
         "centrality": 5,
         "stacks": [
           "api_service",
@@ -1342,6 +2322,15 @@
         "testsCount": 0
       },
       {
+        "path": "scripts/inspect_repo.py",
+        "kind": "code",
+        "lines": 87,
+        "centrality": 4,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
         "path": "agents/openai.yaml",
         "kind": "config",
         "lines": 5,
@@ -1353,7 +2342,7 @@
       {
         "path": "docs/document-summary.json",
         "kind": "config",
-        "lines": 96,
+        "lines": 101,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1362,9 +2351,12 @@
       {
         "path": "docs/document.json",
         "kind": "config",
-        "lines": 131,
+        "lines": 145,
         "centrality": 0,
-        "stacks": [],
+        "stacks": [
+          "orchestration",
+          "spark_pyspark"
+        ],
         "symbolsCount": 0,
         "testsCount": 0
       },
@@ -1396,9 +2388,18 @@
         "testsCount": 0
       },
       {
+        "path": "schemas/diagram.schema.json",
+        "kind": "config",
+        "lines": 217,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
         "path": "schemas/document.schema.json",
         "kind": "config",
-        "lines": 20,
+        "lines": 81,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1409,34 +2410,107 @@
       {
         "path": "scripts/build.mjs",
         "kind": "code",
-        "lines": 242,
-        "centrality": 9,
+        "lines": 468,
+        "centrality": 17,
+        "stacks": [
+          "dbt"
+        ],
+        "symbolsCount": 5,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/lib/urls.mjs",
+        "kind": "code",
+        "lines": 29,
+        "centrality": 8,
+        "stacks": [
+          "dbt"
+        ],
+        "symbolsCount": 2,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/renderer-hash.mjs",
+        "kind": "code",
+        "lines": 41,
+        "centrality": 7,
         "stacks": [],
-        "symbolsCount": 8,
+        "symbolsCount": 2,
         "testsCount": 0
       },
       {
         "path": "scripts/validate.mjs",
         "kind": "code",
-        "lines": 82,
+        "lines": 83,
+        "centrality": 7,
+        "stacks": [
+          "dbt"
+        ],
+        "symbolsCount": 1,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/inspector/redaction.py",
+        "kind": "code",
+        "lines": 90,
         "centrality": 6,
         "stacks": [],
-        "symbolsCount": 1,
+        "symbolsCount": 6,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/inspector/sql_parser.py",
+        "kind": "code",
+        "lines": 249,
+        "centrality": 6,
+        "stacks": [
+          "delta_lake",
+          "iceberg",
+          "sql_warehouse"
+        ],
+        "symbolsCount": 4,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/lib/hash.mjs",
+        "kind": "code",
+        "lines": 37,
+        "centrality": 6,
+        "stacks": [
+          "sql_warehouse"
+        ],
+        "symbolsCount": 4,
         "testsCount": 0
       },
       {
         "path": "scripts/verify.mjs",
         "kind": "code",
-        "lines": 456,
-        "centrality": 5,
+        "lines": 551,
+        "centrality": 6,
         "stacks": [],
-        "symbolsCount": 8,
+        "symbolsCount": 9,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/inspector/graph.py",
+        "kind": "code",
+        "lines": 736,
+        "centrality": 5,
+        "stacks": [
+          "databricks",
+          "event_hubs",
+          "orchestration",
+          "spark_pyspark",
+          "sql_warehouse",
+          "terraform_iac"
+        ],
+        "symbolsCount": 5,
         "testsCount": 0
       },
       {
         "path": "docs/landing-i18n.mjs",
         "kind": "code",
-        "lines": 268,
+        "lines": 281,
         "centrality": 4,
         "stacks": [
           "api_service",
@@ -1449,17 +2523,37 @@
       {
         "path": "scripts/diagrams.mjs",
         "kind": "code",
-        "lines": 1415,
+        "lines": 1440,
         "centrality": 4,
         "stacks": [],
-        "symbolsCount": 21,
+        "symbolsCount": 22,
         "testsCount": 0
       },
       {
-        "path": "scripts/renderer-hash.mjs",
+        "path": "scripts/inspector/__init__.py",
         "kind": "code",
         "lines": 33,
         "centrality": 4,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/lib/html-shell.mjs",
+        "kind": "code",
+        "lines": 92,
+        "centrality": 3,
+        "stacks": [
+          "dbt"
+        ],
+        "symbolsCount": 5,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/lib/i18n.mjs",
+        "kind": "code",
+        "lines": 46,
+        "centrality": 2,
         "stacks": [],
         "symbolsCount": 2,
         "testsCount": 0
@@ -1467,7 +2561,7 @@
       {
         "path": "docs/landing.js",
         "kind": "code",
-        "lines": 212,
+        "lines": 246,
         "centrality": 1,
         "stacks": [],
         "symbolsCount": 5,
@@ -1476,7 +2570,7 @@
       {
         "path": "assets/document.js",
         "kind": "code",
-        "lines": 570,
+        "lines": 612,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1488,7 +2582,7 @@
       {
         "path": "tests/dossier.test.mjs",
         "kind": "code",
-        "lines": 498,
+        "lines": 671,
         "centrality": 1,
         "stacks": [
           "api_service",
@@ -1509,11 +2603,12 @@
       {
         "path": "CHANGELOG.md",
         "kind": "docs",
-        "lines": 220,
+        "lines": 254,
         "centrality": 0,
         "stacks": [
           "api_service",
           "azure_blob_adls",
+          "cosmos_db",
           "databricks",
           "event_hubs",
           "orchestration",
@@ -1544,7 +2639,7 @@
       {
         "path": "docs/content-summary.md",
         "kind": "docs",
-        "lines": 205,
+        "lines": 206,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1553,10 +2648,11 @@
       {
         "path": "docs/content.md",
         "kind": "docs",
-        "lines": 696,
+        "lines": 712,
         "centrality": 0,
         "stacks": [
           "databricks",
+          "orchestration",
           "spark_pyspark"
         ],
         "symbolsCount": 0,
@@ -1633,18 +2729,29 @@
         "testsCount": 0
       },
       {
-        "path": "tests/build.test.mjs",
+        "path": "tests/browser.test.mjs",
         "kind": "code",
-        "lines": 400,
+        "lines": 325,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
-        "testsCount": 17
+        "testsCount": 1
+      },
+      {
+        "path": "tests/build.test.mjs",
+        "kind": "code",
+        "lines": 566,
+        "centrality": 0,
+        "stacks": [
+          "dbt"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 21
       },
       {
         "path": "tests/diagrams.test.mjs",
         "kind": "code",
-        "lines": 522,
+        "lines": 553,
         "centrality": 0,
         "stacks": [
           "dbt",
@@ -1653,12 +2760,12 @@
           "spark_pyspark"
         ],
         "symbolsCount": 0,
-        "testsCount": 8
+        "testsCount": 9
       },
       {
         "path": "tests/landing.test.mjs",
         "kind": "code",
-        "lines": 84,
+        "lines": 149,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1669,13 +2776,14 @@
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 26346,
-      "lines": 220,
+      "bytes": 31940,
+      "lines": 254,
       "kind": "docs",
-      "sha256": "5e91fffe737f05cf4531ff23812c7fdc63b02fc1c7b0543a194ce07f982dcee2",
+      "sha256": "1f3bacbaae576de6fdddc9722341621f7600bccbe2e393efad6d8aafd5a7a091",
       "stacks": [
         "api_service",
         "azure_blob_adls",
+        "cosmos_db",
         "databricks",
         "event_hubs",
         "orchestration",
@@ -1688,10 +2796,10 @@
     },
     {
       "path": "README.md",
-      "bytes": 18228,
-      "lines": 313,
+      "bytes": 19721,
+      "lines": 325,
       "kind": "docs",
-      "sha256": "2d3ade2f59ff3514f8de613d9791fa4e951ddffdb904865274268cb1bfa8c4e2",
+      "sha256": "c8b5fca1400cbf9578cc5ab9c479b378128cd342a53bd1a690495c8896b4befd",
       "stacks": [
         "api_service",
         "databricks",
@@ -1703,10 +2811,10 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 14845,
+      "bytes": 15062,
       "lines": 53,
       "kind": "docs",
-      "sha256": "aaefb11e9ae172c787be4c6e56d3cac2abe591ea474662ef94d8e2c26526f092",
+      "sha256": "89edf5883aea49ffd74ac1260b0b3c426a979618536aedb15e08e9587e984e39",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1721,57 +2829,70 @@
     },
     {
       "path": "package-lock.json",
-      "bytes": 22497,
+      "bytes": 22499,
       "lines": 622,
       "kind": "config",
-      "sha256": "9a7666583b060868ac8b6bb0c57117ed5ad5cab81b016286057f34c2f90b5697",
+      "sha256": "d95295a19e524b8e519e4f4d763156af14f70bfc9a573b35cbdac84301eb0ae8",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "package.json",
-      "bytes": 564,
+      "bytes": 565,
       "lines": 10,
       "kind": "config",
-      "sha256": "ae53cff603eeb562c652a3b37d11e9f73d0902256d61dbcd9260049016029244",
+      "sha256": "0024711ec6d4bb84ad6b0bb7fabc8937afe2eea1901f4132e544da54164692dd",
+      "wave": 1,
+      "centrality": 5
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 936,
+      "lines": 36,
+      "kind": "config",
+      "sha256": "e4e0b585c617d5d8aef23c63ce9d58bc6c52fd1a076480e5ebbbc67c3f154355",
+      "stacks": [
+        "orchestration"
+      ],
       "wave": 1,
       "centrality": 5
     },
     {
       "path": "agents/openai.yaml",
-      "bytes": 247,
+      "bytes": 252,
       "lines": 5,
       "kind": "config",
-      "sha256": "aa03469faae81b3438cbd6ac3b522a53d4e80531e20c065875355a571685bf2d",
+      "sha256": "760486d9c6135d83560ee971886a2d4d9aee4d78a7a15656b210f4632cefdda6",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "assets/document.js",
-      "bytes": 23495,
-      "lines": 570,
+      "bytes": 24832,
+      "lines": 612,
       "kind": "code",
-      "sha256": "c4cfce702caa12cfead22b3d944b775fa443d8accebfe5474c77a5b76fc7ad79",
+      "sha256": "4ae524eb48705b6ce78b210f39eb963d5b24f35151ac8a111b3cafbc1a93bc54",
       "wave": 2,
       "centrality": 0
     },
     {
       "path": "docs/content-summary.md",
-      "bytes": 14569,
-      "lines": 205,
+      "bytes": 15772,
+      "lines": 206,
       "kind": "docs",
-      "sha256": "4c6115a490564accba975735514add7ddeb5be28927b16f5cea30d491a48f86a",
+      "sha256": "290f0790c36719e48df35a98320f22e086bde18239e59e14c61954f9caa3938b",
       "wave": 4,
       "centrality": 0
     },
     {
       "path": "docs/content.md",
-      "bytes": 55319,
-      "lines": 696,
+      "bytes": 59865,
+      "lines": 712,
       "kind": "docs",
-      "sha256": "d6d2270c59d0ae4325fe838705cfe7cb52736d3d229f4eb008c6cd25542a03d3",
+      "sha256": "82e7ca76e4db51f2e53a5c665df1cfd9f6c4cc93d83b9c4db1fdfd4493b3fe8b",
       "stacks": [
         "databricks",
+        "orchestration",
         "spark_pyspark"
       ],
       "wave": 4,
@@ -1779,28 +2900,32 @@
     },
     {
       "path": "docs/document-summary.json",
-      "bytes": 4412,
-      "lines": 96,
+      "bytes": 5308,
+      "lines": 101,
       "kind": "config",
-      "sha256": "4fe604e206d1234b71d1958c03bf76a3f5b8739eee4855140a556a74918d34dd",
+      "sha256": "84ca05989d4c3a03cb970d8de3c2317f277b8891c0705f91a5e372debaaffdf0",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "docs/document.json",
-      "bytes": 6576,
-      "lines": 131,
+      "bytes": 9246,
+      "lines": 145,
       "kind": "config",
-      "sha256": "aac46c7b7c7d289141454500d2bf90b8a30d7737c7ebbd6ec55daf889c5ab8c1",
+      "sha256": "e8ea02e172226030cb52502ae8ed3ec28fd416fbeb502b54e7bb6f760cea968f",
+      "stacks": [
+        "orchestration",
+        "spark_pyspark"
+      ],
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "docs/index.html",
-      "bytes": 20971,
+      "bytes": 21372,
       "lines": 355,
       "kind": "docs",
-      "sha256": "2e7a92231204dcbe7a3112e816f2e77e3aba151162b8cad771976ce795d30df5",
+      "sha256": "00c6f25d117bf52049d05ac4e7d71b15528768f9c14829c60f94b2127875c892",
       "stacks": [
         "api_service",
         "databricks",
@@ -1811,10 +2936,10 @@
     },
     {
       "path": "docs/landing-i18n.mjs",
-      "bytes": 16094,
-      "lines": 268,
+      "bytes": 16677,
+      "lines": 281,
       "kind": "code",
-      "sha256": "27a28f9f54867fedbabd8f093fa3dde20674746737be4d5fe0136d1a78514d55",
+      "sha256": "2e6bb185ceef1bf9ef7d4e13a0fbdfeab27c2a96e5cdcc35ad56d3020c099cd1",
       "stacks": [
         "api_service",
         "databricks",
@@ -1825,10 +2950,10 @@
     },
     {
       "path": "docs/landing.js",
-      "bytes": 6142,
-      "lines": 212,
+      "bytes": 7453,
+      "lines": 246,
       "kind": "code",
-      "sha256": "94a6af36d08f26834baab8dc0eca0ae7914118c481ea745ead6bf2f0a77c4bef",
+      "sha256": "2cdc1f14525a1a20683b92b742c934e81820602155e48dbb7660d2d024e01464",
       "wave": 2,
       "centrality": 1
     },
@@ -1870,10 +2995,10 @@
     },
     {
       "path": "references/authoring.md",
-      "bytes": 18629,
+      "bytes": 19005,
       "lines": 160,
       "kind": "docs",
-      "sha256": "ec777792648c0047d6cbd6db79dd77ad7beb79fa7f5515f224a6419ce97d91ca",
+      "sha256": "d70832f12732bbb4d895409799a5aded28867d174e6731d010508bee2c606426",
       "wave": 4,
       "centrality": 0
     },
@@ -1910,38 +3035,98 @@
       "centrality": 0
     },
     {
-      "path": "schemas/document.schema.json",
-      "bytes": 1774,
-      "lines": 20,
+      "path": "schemas/diagram.schema.json",
+      "bytes": 8181,
+      "lines": 217,
       "kind": "config",
-      "sha256": "7b4c856a05bb0aeaae00451c4f4febd0baaf186ad81c95a63b143e23af015309",
+      "sha256": "bc92b15f410f28d5e269d05a9197c7777bec44446a95a9f9299734d3445600cf",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "schemas/document.schema.json",
+      "bytes": 2632,
+      "lines": 81,
+      "kind": "config",
+      "sha256": "3aaba89459ed8445c82f548519f40c18f1887d72c307c9178b4bd2a98e5760cd",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "scripts/build.mjs",
-      "bytes": 28049,
-      "lines": 242,
+      "bytes": 22950,
+      "lines": 468,
       "kind": "code",
-      "sha256": "3ed75d42f0e8f7c65c53f808a82b10a59a1744ecd497f17a4e50d494c7e426e7",
+      "sha256": "863705d3372aadfdb7028f41323df1269a0b4da8f3a5afe088f06b3f863bdde0",
+      "stacks": [
+        "dbt"
+      ],
       "wave": 2,
-      "centrality": 9
+      "centrality": 17
     },
     {
       "path": "scripts/diagrams.mjs",
-      "bytes": 67807,
-      "lines": 1415,
+      "bytes": 69064,
+      "lines": 1440,
       "kind": "code",
-      "sha256": "10f6e85cc300dceac128857cfd60c03698a7d14ac5b00b23ee38335c8d81ea59",
+      "sha256": "1f7b431176fe1348c1fd586b6e274d2b4cd8aa9d46a76ecfc1ff21c2d44457e0",
       "wave": 2,
       "centrality": 4
     },
     {
       "path": "scripts/inspect_repo.py",
-      "bytes": 80284,
-      "lines": 1656,
+      "bytes": 2930,
+      "lines": 87,
       "kind": "code",
-      "sha256": "848a5b533dc615ae9e2fe229f7108af218e45f92b7706b84e99f5ac91bbb2bbd",
+      "sha256": "daac83e2ccaca8bc5916703057d9240007e510d380b5b8ccd05ee860c03d4e68",
+      "wave": 1,
+      "centrality": 4
+    },
+    {
+      "path": "scripts/renderer-hash.mjs",
+      "bytes": 1234,
+      "lines": 41,
+      "kind": "code",
+      "sha256": "a10f6c70106547fdbd242170036060b92faddea5040e76f79c575c41cede3e2e",
+      "wave": 2,
+      "centrality": 7
+    },
+    {
+      "path": "scripts/validate.mjs",
+      "bytes": 5853,
+      "lines": 83,
+      "kind": "code",
+      "sha256": "834a2c8a687887e9fd228d41e3f70d623e57037b27413bc81caaf387269a9923",
+      "stacks": [
+        "dbt"
+      ],
+      "wave": 2,
+      "centrality": 7
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "bytes": 21843,
+      "lines": 551,
+      "kind": "code",
+      "sha256": "9b0434298eabaa8e4afded5fca705e330c6f51ddad664e69821245961fc6da9c",
+      "wave": 2,
+      "centrality": 6
+    },
+    {
+      "path": "scripts/inspector/__init__.py",
+      "bytes": 886,
+      "lines": 33,
+      "kind": "code",
+      "sha256": "874d2e5bc18236127d27d9df14e57df696892f584a78b3b04d4a7926c04da5f9",
+      "wave": 2,
+      "centrality": 4
+    },
+    {
+      "path": "scripts/inspector/extractors.py",
+      "bytes": 45641,
+      "lines": 900,
+      "kind": "code",
+      "sha256": "9a0612e0b73f90276eb2e09fcd46aa32e6e22e928e021421d8efe724ebecb861",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1959,50 +3144,120 @@
         "terraform_iac"
       ],
       "wave": 1,
-      "centrality": 7
+      "centrality": 13
     },
     {
-      "path": "scripts/renderer-hash.mjs",
-      "bytes": 939,
-      "lines": 33,
+      "path": "scripts/inspector/graph.py",
+      "bytes": 33343,
+      "lines": 736,
       "kind": "code",
-      "sha256": "8759b3dd8ef25f8d05073b05cfb42f15c2cfcd8a2cf54baf5e4cd9f1388dda84",
-      "wave": 2,
-      "centrality": 4
-    },
-    {
-      "path": "scripts/validate.mjs",
-      "bytes": 5771,
-      "lines": 82,
-      "kind": "code",
-      "sha256": "9315a9dc63e5bb17a223b85d6faaa7271691b1b0c888eaba0799655436f4719f",
-      "wave": 2,
-      "centrality": 6
-    },
-    {
-      "path": "scripts/verify.mjs",
-      "bytes": 18495,
-      "lines": 456,
-      "kind": "code",
-      "sha256": "5234d1e42f8dc98afaee9c91e5f197adb1169a230772b7034612efbf64012dea",
+      "sha256": "4453927c4b5d6921564d08c0a6d583db599f15290e8a8264df9f6547a1004d31",
+      "stacks": [
+        "databricks",
+        "event_hubs",
+        "orchestration",
+        "spark_pyspark",
+        "sql_warehouse",
+        "terraform_iac"
+      ],
       "wave": 2,
       "centrality": 5
     },
     {
-      "path": "tests/build.test.mjs",
-      "bytes": 24982,
-      "lines": 400,
+      "path": "scripts/inspector/redaction.py",
+      "bytes": 3324,
+      "lines": 90,
       "kind": "code",
-      "sha256": "e84b8df59b5bfec622fd66859e2fe148d7d04d1b75156b5e13e06caac6c7fd61",
+      "sha256": "b4ccb67d9e6c1e9cf4a92bf9da68fcc79fb6ffbbce9ee08da78b84ddb94a2b5c",
+      "wave": 2,
+      "centrality": 6
+    },
+    {
+      "path": "scripts/inspector/sql_parser.py",
+      "bytes": 8593,
+      "lines": 249,
+      "kind": "code",
+      "sha256": "2f37a04ced6a18d3624c37d46a2e9602d2745352cd7339e8e234dbcfc30706a8",
+      "stacks": [
+        "delta_lake",
+        "iceberg",
+        "sql_warehouse"
+      ],
+      "wave": 2,
+      "centrality": 6
+    },
+    {
+      "path": "scripts/lib/hash.mjs",
+      "bytes": 1154,
+      "lines": 37,
+      "kind": "code",
+      "sha256": "dea9d8f3c50a59c0486cf3125a95bccb7af782c73a1e3b216ff12a910705442f",
+      "stacks": [
+        "sql_warehouse"
+      ],
+      "wave": 2,
+      "centrality": 6
+    },
+    {
+      "path": "scripts/lib/html-shell.mjs",
+      "bytes": 8802,
+      "lines": 92,
+      "kind": "code",
+      "sha256": "de56c44e1e5ee1cf286895e9a4812ecec5b36c2a0f0a6650e83a49e726f644bc",
+      "stacks": [
+        "dbt"
+      ],
+      "wave": 2,
+      "centrality": 3
+    },
+    {
+      "path": "scripts/lib/i18n.mjs",
+      "bytes": 2786,
+      "lines": 46,
+      "kind": "code",
+      "sha256": "0ab0c3810092294d929c6557e7a4f57e1c0cf0f1bebdcd213cd539be32fa04c8",
+      "wave": 2,
+      "centrality": 2
+    },
+    {
+      "path": "scripts/lib/urls.mjs",
+      "bytes": 999,
+      "lines": 29,
+      "kind": "code",
+      "sha256": "dd8bbf4ca8cdf238bf2a18b9e9f3dd7a162021a9022a393fc237c23a0b642066",
+      "stacks": [
+        "dbt"
+      ],
+      "wave": 2,
+      "centrality": 8
+    },
+    {
+      "path": "tests/browser.test.mjs",
+      "bytes": 14116,
+      "lines": 325,
+      "kind": "code",
+      "sha256": "cefda1e73fbcc9eeca9aea71f129cae02e8016e47a5cd3bd7ecdb112ae9e5d73",
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "tests/build.test.mjs",
+      "bytes": 33962,
+      "lines": 566,
+      "kind": "code",
+      "sha256": "f7e0d23379d04dbd515fef1c1b91bc0b93105ca580cf3ae011fe933919031221",
+      "stacks": [
+        "dbt"
+      ],
       "wave": 4,
       "centrality": 0
     },
     {
       "path": "tests/diagrams.test.mjs",
-      "bytes": 26417,
-      "lines": 522,
+      "bytes": 27666,
+      "lines": 553,
       "kind": "code",
-      "sha256": "e7c785b18e0da753ffe9418f3853157be57109db89c1e3ce0a96e739c3bab9a6",
+      "sha256": "ebb1bbc90e13a48d9232dd55efa4aefb03cfb03261aae1921ab7dd3961280bcd",
       "stacks": [
         "dbt",
         "delta_lake",
@@ -2014,10 +3269,10 @@
     },
     {
       "path": "tests/dossier.test.mjs",
-      "bytes": 24060,
-      "lines": 498,
+      "bytes": 32920,
+      "lines": 671,
       "kind": "code",
-      "sha256": "0e0471bba24a01749100bb169e6ccee30e709b837d7de1f7bcaf3928447d0267",
+      "sha256": "8eb0095380484653abc4e0a547726811a304de4d2c4d33bd7f4592e722aab4df",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -2036,13 +3291,102 @@
     },
     {
       "path": "tests/landing.test.mjs",
-      "bytes": 3189,
-      "lines": 84,
+      "bytes": 6511,
+      "lines": 149,
       "kind": "code",
-      "sha256": "65fc955df9ac609848620f619ef72295b4bb5ccbf9d93b24b5a856d02312d727",
+      "sha256": "857c3679eefe797b2c2de801d15e199371769c3c390a6c4a7965dd88c25534fa",
       "wave": 4,
       "centrality": 0
     }
   ],
+  "omittedCounts": {
+    "generated_artifact": 8,
+    "output_artifact": 2,
+    "skip_dir": 3,
+    "unsupported_ext": 7
+  },
+  "omittedFiles": [
+    {
+      "path": ".git/",
+      "reason": "skip_dir"
+    },
+    {
+      "path": "node_modules/",
+      "reason": "skip_dir"
+    },
+    {
+      "path": ".gitattributes",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": "LICENSE",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": "assets/document.css",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": "docs/demo-poster.png",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": "docs/demo.mp4",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": "docs/documentacao-resumida.html",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "docs/documentacao-resumida.validation.json",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "docs/documentacao.html",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "docs/documentacao.validation.json",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "docs/inventory.json",
+      "reason": "output_artifact"
+    },
+    {
+      "path": "docs/landing.css",
+      "reason": "unsupported_ext"
+    },
+    {
+      "path": "docs/reading-plan.md",
+      "reason": "output_artifact"
+    },
+    {
+      "path": "examples/minimal/documentacao.html",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "examples/minimal/documentacao.validation.json",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "examples/showcase/documentacao.html",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "examples/showcase/documentacao.validation.json",
+      "reason": "generated_artifact"
+    },
+    {
+      "path": "scripts/inspector/__pycache__/",
+      "reason": "skip_dir"
+    }
+  ],
+  "parseWarnings": [],
   "note": "Static deterministic dossier only; zero LLM calls and zero execution of project code. Secret-like values are redacted."
 }
