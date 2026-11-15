@@ -372,12 +372,27 @@
   }
   window.addEventListener('hashchange', revealHash);
   if (location.hash) requestAnimationFrame(revealHash);
-  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     if (a.closest('svg')) return;
     const rawHref = a.getAttribute('href') || '';
+    if (!rawHref || rawHref === '#') return;
     const targetId = decodeURIComponent(rawHref.slice(1));
     const el = targetId ? document.getElementById(targetId) : null;
-    if (el) { search.value = ''; filter(); openAncestors(el); }
+    if (el) {
+      e.preventDefault();
+      search.value = '';
+      filter();
+      openAncestors(el);
+      el.scrollIntoView({ behavior: 'smooth' });
+      try {
+        if (history.pushState) {
+          history.pushState(null, '', rawHref);
+        } else {
+          location.hash = rawHref;
+        }
+      } catch {}
+    }
     if (mobileMq.matches && a.closest('.sidebar')) setDrawerOpen(false);
   }));
 

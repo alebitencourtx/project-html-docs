@@ -9,20 +9,20 @@
   "referenceBlocks": 1,
   "diagrams": 1,
   "charts": 1,
-  "bytes": 120277,
+  "bytes": 120679,
   "browserReviewed": true,
   "warnings": [],
   "version": "1.11.0",
   "skillVersion": "1.11.0",
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao-resumida.html",
-  "rendererSha256": "8e059010cffca2b743f53aab5a9b722a17b801bfb62574860f0129f54d88e83f",
-  "builtAt": "2026-11-15T22:24:06.305Z",
+  "rendererSha256": "86afd2e6a96ec02fe80621080fa7c1ced18b5cca81e28af0c188355a8b380eda",
+  "builtAt": "2026-11-15T22:48:53.535Z",
   "manifestSha256": "67dcf35c83e33e95c32a2119bfac65bc7c130d20de07bedfc45b1b3a07cbb7a7",
   "document": "project-html-docs · Guia Rápido",
   "revision": "0bd28610dc21a44172a1a52389be089b68247948",
   "inputSha256": "925a8089d0cbbbe9b4ee4ee4d12ca0dd63b5bc8598e69c35bbf23a0cf4b7be04",
-  "htmlSha256": "07e5b6d8cd945d14a64f97abfa11928f72c29479cb98072de6ea0575542e1705",
+  "htmlSha256": "d5d8883246ed958f66a30e0c110d6e68ecce3fdf2302fa7aa68a6c9c83132233",
   "sources": [
     {
       "id": "skill",
@@ -193,5 +193,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T22:24:06.833Z"
+  "browserReviewedAt": "2026-11-15T22:49:03.970Z"
 }

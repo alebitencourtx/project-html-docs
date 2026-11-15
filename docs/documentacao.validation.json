@@ -9,20 +9,20 @@
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 215097,
+  "bytes": 215499,
   "browserReviewed": true,
   "warnings": [],
   "version": "1.11.0",
   "skillVersion": "1.11.0",
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao.html",
-  "rendererSha256": "8e059010cffca2b743f53aab5a9b722a17b801bfb62574860f0129f54d88e83f",
-  "builtAt": "2026-11-15T22:24:05.516Z",
+  "rendererSha256": "86afd2e6a96ec02fe80621080fa7c1ced18b5cca81e28af0c188355a8b380eda",
+  "builtAt": "2026-11-15T22:48:52.836Z",
   "manifestSha256": "538381b3dd7e6ba4f2c7a86b872e4069c488fa6ce6ba4ecd43a3b872dcf69258",
   "document": "project-html-docs · Manual do Gerador",
   "revision": "0bd28610dc21a44172a1a52389be089b68247948",
   "inputSha256": "0be495d5afa224e67003578870cb55b58518ecea84c5b3b797d8da02a2fd8262",
-  "htmlSha256": "a5220e3d3280f05c478cd29c2e940fda9f6776fe91f242ff065d3d07ea8def5b",
+  "htmlSha256": "dc57eed849feadb3586e4bcb9bd3579f8e0682e415c882280ed4d733e2252200",
   "sources": [
     {
       "id": "skill",
@@ -166,13 +166,13 @@
       "id": "ui",
       "path": "assets/document.js",
       "description": "Comportamentos offline: drawer mobile inert sincronizado, zoom Fit monótono, busca e impressão.",
-      "sha256": "4ae524eb48705b6ce78b210f39eb963d5b24f35151ac8a111b3cafbc1a93bc54"
+      "sha256": "5d1e2509c51423868908e9cecd58bedd4fdf37dff0c757cca3d2649d172c75c7"
     },
     {
       "id": "styles",
       "path": "assets/document.css",
       "description": "Design system, layout responsivo, temas e regras @media print.",
-      "sha256": "1e9eec395f2fc195d33c58fcf2680a9f34a37eaa68ec6b8f29fa20915c1d0334"
+      "sha256": "8484b3c48229e6ae6a419a690a01b5a68b78101deeba50fda80671227f2fe5ed"
     },
     {
       "id": "authoring",
@@ -277,5 +277,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T22:24:06.594Z"
+  "browserReviewedAt": "2026-11-15T22:49:03.693Z"
 }

@@ -232,9 +232,9 @@ blockquote.callout-limit { background: #fef2f2; border-left-color: #dc2626; }
 .card p { font-size: 14px; margin: 8px 0; }
 
 .table-wrap {
-  /* Sem contenção de encadeamento: tabelas curtas não devem capturar a roda e travar a página. */
-  overflow: auto;
-  max-height: min(72vh, 680px);
+  overflow-x: auto;
+  overflow-y: visible;
+  max-height: none;
   margin: 18px 0;
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -278,7 +278,8 @@ pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
 
 figure { margin: 22px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--figure-bg); padding: 16px; }
 .diagram-scroll {
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   text-align: center;
   padding: 10px 0;
   scrollbar-width: thin;
@@ -769,6 +770,11 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .section-body {
     padding: 0 20px 22px;
   }
+  .table-wrap {
+    overflow-x: auto;
+    overflow-y: visible;
+    max-height: none;
+  }
   dialog {
     width: calc(100vw - 16px);
     max-width: none;
@@ -987,7 +993,9 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   }
   .table-wrap {
     margin: 14px 0;
-    max-height: 62vh;
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: visible;
   }
   th, td {
     padding: 9px 10px;
@@ -1010,9 +1018,6 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  html { scroll-behavior: smooth; }
-}
 @media (prefers-reduced-motion: reduce) {
   .section-heading:after,
   .sidebar { transition: none; }
