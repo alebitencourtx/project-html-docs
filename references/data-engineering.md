@@ -15,7 +15,8 @@ Separate execution order, lineage and association. List all composite-key compon
      3. **Entrega e Grão** (qual tabela/BI é consumido e o que 1 linha representa);
      4. **Reuso / Limite** (política de reprocessamento ou restrição relevante).
 2. **Tagging Preciso de Audiência (`audience`)**:
-   - Preserve **todas as 11 sessões** da jornada do leitor (`all`, `business`, `technical`, `operations`) para que o filtro interativo do documento ajude gerentes e analistas a focar no negócio sem perder o acesso completo às especificações de engenharia.
+   - Preserve **todas as categorias aplicáveis** da jornada do leitor e distribua `audience` com precisão entre `all`, `business`, `technical` e `operations` (evite marcar quase todas as seções como `all`) para que o filtro interativo ajude gerentes, analistas e engenheiros a focar sem perder o acesso completo às especificações.
+   - Sempre que houver consumo por usuários finais e analistas além do batch, separe em capítulos distintos: **uso do produto / triagem** (`business`), **como consultar os dados** com receitas SQL/Parquet copiáveis (`technical`) e **como executar / operar** (`operations`). Use blocos `.cards` em 3 colunas para orientar leitura executiva, triagem rápida e armadilhas de consulta.
 3. **Callouts Semânticos em Regras e Operação**:
    - Use citações prefixadas para destacar visualmente semântica de negócio e restrições técnicas:
      - `> Regra de negócio: ...` — definição funcional em linguagem simples;
@@ -45,6 +46,7 @@ Separate execution order, lineage and association. List all composite-key compon
    - Declare explicitamente `kind` (`"table"`, `"mart"`, `"json"`, `"external"`) e `grain` (*"Grão: 1 linha = ..."*) em cada entidade.
    - Liste chaves (`PK`, `FK`, `UK`) e colunas principais na ordem natural `[Badge] nome_coluna — tipo`.
    - Use `kind: "lineage"` (linha tracejada) para projeções/agregações (`GROUP BY`) e `1..N` / `0..N` (Crow's Foot) apenas para relações reais de identidade.
+   - Quando houver estado lógico/bruto e múltiplas projeções analíticas ou marts, **divida em dois diagramas `schema` focados** (ex.: estado lógico & bruto vs projeções tabulares & linhagem) e agrupe os dicionários completos de campos e enums em blocos `<details>` dedicados ao final do documento.
 
 ## Regras de Negócio, Qualidade e Métricas em Gráficos
 
@@ -65,6 +67,6 @@ Operation explains trigger, configuration, parameters, prerequisite state, outpu
 |---|---|---|
 | Execução interrompida no meio do mês | Falha transitória de cluster/rede durante um lote | Reexecutar sem alterar parâmetros; lotes anteriores já gravados são reaproveitados automaticamente |
 
-Use snapshots only when supplied or locally available within scope. Identify run/date/source; do not call them live. Retention or threshold charts can explain implementation without running a pipeline. Never fabricate records to populate executive cards.
+Use snapshots only when supplied or locally available within scope. Identify run/date/source and distinguish clearly between a local repository/implementation snapshot (`snapshot local de implementação`) and live runtime telemetry; do not call them live. Retention or threshold charts can explain implementation without running a pipeline. Never fabricate records to populate executive cards.
 
 This is an as-is guide. Document constraints affecting use. Do not invent owners, SLAs, classifications, optimization plans or historical rationale. An implemented choice can be described even when its original rationale is unknown.

@@ -16,7 +16,7 @@
 | Decisions | Current choices and established rationale | ADRs and maintained docs |
 | Glossary/references | Terms and sources for deeper reading | Domain context, local paths |
 
-Combine related categories or add project-specific sections. Do not force empty categories. Explain behavior before implementation details. Prefer useful recipes to embedding entire modules. Identify audiences without splitting the same facts into contradictory business and technical documents.
+Combine related categories or add project-specific sections (for example, separating product/dashboard usage from SQL/query consumption recipes, batch execution CLI, data continuity/quality, and grouped data dictionaries). Do not force empty categories. Explain behavior before implementation details. Prefer useful copyable recipes to embedding entire modules. Distribute `audience` tags accurately (`all`, `business`, `technical`, `operations`)—avoid defaulting almost every chapter to `all`—without splitting the same facts into contradictory business and technical documents.
 
 ## Input format
 
@@ -24,6 +24,7 @@ Combine related categories or add project-specific sections. Do not force empty 
 
 - Required: `title`, `subtitle`, `version`, `updated` (YYYY-MM-DD), `content` (relative Markdown), `sections`.
 - `language`: `pt-BR` (default) or `en`.
+- `theme`: optional initial color palette (`default` or `santander` dark-red & black palette); the generated HTML toolbar also includes an interactive theme switcher (`Default`/`Atual` vs `Santander`) without changing layout or typography.
 - Each section: `id`, `title`, `audience` (`all`, `business`, `technical`, `operations`), optional `sources` IDs. Avoid reserved HTML shell IDs (`main`, `search`, `expand`, `collapse`, `print`, `no-results`, `document-references`, `diagram-dialog`). The HTML shell exposes an interactive reading-profile filter for these `audience` tags without removing any section from the document.
 - `repoRoot`: relative repository path; `revision`: revision actually read from Git.
 - `sources`: local `id`, `path` relative to repoRoot, `description`. The builder checks existence and records hashes separately. Files are not executed.
@@ -32,7 +33,7 @@ Combine related categories or add project-specific sections. Do not force empty 
 
 Start Markdown with `## First section title`. Every H2 maps to a manifest section; H3/H4 are subsections. H1 is generated. Links use manifest IDs, e.g. `[Rules](#rules)`. Scripts, event handlers, iframes, inline CSS and remote assets are not authoring components. HTML is sanitized.
 
-Cards use ordinary HTML:
+Cards use ordinary HTML (effective both for 3-column executive framing, triage checklists and query rules of thumb):
 
 ```html
 <div class="cards">
@@ -40,7 +41,9 @@ Cards use ordinary HTML:
 </div>
 ```
 
-For progressive detail, use `<details>` then `<summary>Detailed schema</summary>`, a blank line, Markdown, a blank line and `</details>`. Blockquotes become styled callouts; prefixing with `Regra de negócio:` / `Business rule:`, `Exemplo prático:` / `Worked example:`, `Atenção:` / `Warning:`, or `Limitação:` / `Limitation:` applies distinct semantic colors automatically. Tables gain horizontal scroll, automatic local row filtering when `>= 8` rows, and semantic column badges for `` `PK` ``, `` `FK` ``, `` `UK` ``, `` `PARTIÇÃO` ``, `` `PII` `` and `` `NOT NULL` ``. Code fences gain copy controls with manual-selection fallback. References are anchors within the single HTML.
+For progressive detail and large reference dictionaries, group related field/flag/parameter tables into native nested accordions (`<details>` then `<summary>Detailed schema</summary>`, a blank line, Markdown table, a blank line and `</details>`). Pair dense business rules with compact worked interpretation matrices (`Condition | Result | Interpretation`) in addition to prose walkthroughs. Blockquotes become styled callouts; prefixing with `Regra de negócio:` / `Business rule:`, `Exemplo prático:` / `Worked example:`, `Atenção:` / `Warning:`, or `Limitação:` / `Limitation:` applies distinct semantic colors automatically. Paragraphs, lists and callouts span the full readable width of each section card (`max-width: none`) to align cleanly with tables, diagrams and charts.
+
+Mathematical expressions and formulas must use readable Unicode symbols and HTML (`×`, `÷`, `Δ`, `≤`, `≥`, `≈`, `<sub>`, `<sup>`, `<code>`) rather than raw LaTeX (`$...$` or `$$...$$`): the generated single-file HTML is 100% offline with no MathJax/KaTeX runtime, and `validate.mjs` rejects unrendered LaTeX delimiters in prose and tables. Tables gain horizontal scroll, automatic local row filtering when `>= 8` rows (including inside nested `<details>` blocks), and semantic column badges for `` `PK` ``, `` `FK` ``, `` `UK` ``, `` `PARTIÇÃO` ``, `` `PII` `` and `` `NOT NULL` ``. Code fences gain copy controls with manual-selection fallback. References are anchors within the single HTML.
 
 ## Diagrams
 
@@ -132,7 +135,7 @@ The reusable chart component supports horizontal bars: finite nonnegative values
   - `"success"`: verde/sucesso (`#16a34a`)
   - `"neutral"`: ardósia/neutro (`#64748b`)
 - **Acessibilidade e Tooltips Nativos**: Cada linha é estruturada em um grupo `<g class="chart-row">` contendo `<title>` SVG nativo com rótulo, valor formatado e unidade, exibindo tooltip imediato sem dependência de JavaScript e permitindo realce em `:hover` e foco por teclado.
-- **Tabelas de Acessibilidade Embutidas**: A tabela de dados do `<details>` opera com largura de 100% sem forçamento de largura mínima excessiva, garantindo fluidez em dispositivos móveis.
+- **Tabelas de Acessibilidade Embutidas**: A tabela de dados do `<details>` ocupa 100% da largura do card sem forçamento de largura mínima excessiva.
 
 Add `asOf` for measured observations. State percentage denominators and duration units. Configured cadence and retention are facts about implementation, not runtime performance.
 
@@ -144,6 +147,6 @@ The receipt verifies IDs, anchors, resource closure, accessible diagram names an
 
 After building or updating a document, run `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json`. It recomputes source hashes and the Git revision and reports changed, missing or unexpected sources. Use `--strict` to fail when the document no longer matches its sources.
 
-Inspect at desktop (~1440 px) and narrow (~390 px): global overflow, labels, local table/diagram scroll, accent-insensitive search, no-result search, links into collapsed sections, expand/collapse, copy/fallback, modal close/Escape and print with all sections. Check reading with network unavailable. Report actual verification rather than inferring browser success from structural validation.
+Inspect on **desktop** (~1440 px; do not worry about or optimize for mobile/narrow viewports): global overflow, labels, local table/diagram scroll, accent-insensitive search, no-result search, links into collapsed sections, expand/collapse, copy/fallback, modal close/Escape and print with all sections. Check reading with network unavailable. Report actual verification rather than inferring browser success from structural validation.
 
 On update compare source changes and revisit dependent sections. A changed hash alone is not proof of changed meaning. Render to the requested version and preserve the previous document unless replacement was requested.

@@ -353,7 +353,7 @@ function layoutNodeBox(node, colWidth) {
   let curT = '';
   for (const w of titleWords) {
     const next = curT ? `${curT} ${w}` : w;
-    if (curT && measureText(next, 12.5, false) > titleMaxW) {
+    if (curT && measureText(next, 12.5, false) * 1.07 > titleMaxW) {
       titleLines.push(curT);
       curT = w;
     } else {
@@ -411,8 +411,25 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   const maxZoneRow = zones.length ? Math.max(...zones.map(z => Number(z.row ?? 0) + Number(z.rowSpan ?? 1) - 1)) : 0;
   const numRows = Math.max(maxNodeRow + 1, maxZoneRow + 1);
 
+  const rawColGap = Number(spec.colGap || 76);
   const colWidth = Number(spec.colWidth || 236);
-  const colGap = Number(spec.colGap || 76);
+  // Ensure horizontal gap fits adjacent same-row edge labels without overlapping boxes
+  let minNeededColGap = rawColGap;
+  const quickCoords = new Map(spec.nodes.map(n => [n.id, { col: Number(n.col ?? 0), row: Number(n.row ?? 0) }]));
+  for (const e of edges) {
+    if (e.channel || e.from === e.to || !e.label) continue;
+    const fc = quickCoords.get(e.from);
+    const tc = quickCoords.get(e.to);
+    if (!fc || !tc) continue;
+    const fS = e.fromSide || (tc.col >= fc.col ? 'right' : 'left');
+    const tS = e.toSide || (tc.col >= fc.col ? 'left' : 'right');
+    if (fS === 'right' && tS === 'left' && fc.row === tc.row && tc.col === fc.col + 1) {
+      const wrapped = wrapEdgeLabelText(e.label, 92, 10.5).split('\n');
+      const pw = Math.round(Math.max(...wrapped.map(l => measureText(l, 10.5, false))) + 18);
+      if (pw + 28 > minNeededColGap) minNeededColGap = pw + 28;
+    }
+  }
+  const colGap = minNeededColGap;
   const rowGap = Number(spec.rowGap || 58);
   const stackGap = 14;
   const padLeft = 24;
@@ -472,27 +489,41 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     const tc = nodeCoord.get(e.to);
     if (!fc || !tc) throw Error(`Edge references unknown node: ${e.from} -> ${e.to}`);
 
+    if (e.from === e.to) {
+      const rightBlocked = occupiedCell.has(`${fc.col + 1}:${fc.row}`);
+      const bottomBlocked = occupiedCell.has(`${fc.col}:${fc.row + 1}`);
+      const loopSide = !rightBlocked ? 'right' : !bottomBlocked ? 'bottom' : 'top';
+      return { ...e, channel: undefined, isSelfLoop: true, loopSide, fSide: loopSide, tSide: loopSide };
+    }
+
     let channel = e.channel;
-    if (!channel && !e.fromSide && !e.toSide && fc.row === tc.row && Math.abs(fc.col - tc.col) > 1) {
+    const isHorizEndpoint = (!e.fromSide || e.fromSide === 'right' || e.fromSide === 'left') &&
+      (!e.toSide || e.toSide === 'left' || e.toSide === 'right');
+    let midRowBypass = false;
+    if (!channel && isHorizEndpoint && fc.row === tc.row && Math.abs(fc.col - tc.col) > 1) {
       const minC = Math.min(fc.col, tc.col);
       const maxC = Math.max(fc.col, tc.col);
       let blocked = false;
       for (let c = minC + 1; c < maxC; c++) {
         if (occupiedCell.has(`${c}:${fc.row}`)) { blocked = true; break; }
       }
-      if (blocked) channel = fc.row === 0 ? 'top' : 'bottom';
+      if (blocked) {
+        if (fc.row === 0) channel = 'top';
+        else if (fc.row === numRows - 1) channel = 'bottom';
+        else midRowBypass = true;
+      }
     }
 
     let fSide = e.fromSide;
     let tSide = e.toSide;
-    if (!fSide || !tSide) {
-      if (channel === 'bottom' || channel === 'bottom-inner') {
-        fSide = fSide || 'bottom';
-        tSide = tSide || 'bottom';
-      } else if (channel === 'top') {
-        fSide = fSide || 'top';
-        tSide = tSide || 'top';
-      } else if (fc.col === tc.col) {
+    if (channel === 'bottom' || channel === 'bottom-inner') {
+      fSide = 'bottom';
+      tSide = 'bottom';
+    } else if (channel === 'top' || midRowBypass) {
+      fSide = 'top';
+      tSide = 'top';
+    } else if (!fSide || !tSide) {
+      if (fc.col === tc.col) {
         fSide = fSide || (tc.row >= fc.row ? 'bottom' : 'top');
         tSide = tSide || (tc.row >= fc.row ? 'top' : 'bottom');
       } else if (tc.col >= fc.col) {
@@ -503,7 +534,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
         tSide = tSide || 'right';
       }
     }
-    return { ...e, channel, fSide, tSide };
+    return { ...e, channel, midRowBypass, fSide, tSide };
   });
 
   // Channel allocation for bottom/top routed edges
@@ -514,7 +545,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     ...bottomChannelEdges.filter(e => e.channel === 'bottom-inner'),
     ...bottomChannelEdges.filter(e => e.channel === 'bottom'),
   ];
-  const extraTop = topChannelEdges.length ? topChannelEdges.length * 34 + 14 : 0;
+  const extraTop = topChannelEdges.length ? topChannelEdges.length * 38 + 18 : 0;
   const extraBottom = orderedBottom.length ? orderedBottom.length * 38 + 26 : 22;
 
   // Compute zone header wrapping height allowance
@@ -644,49 +675,123 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   let edgesSvg = '';
   let edgeLabelsSvg = '';
   let topIdx = 0;
+  let extraCanvasRight = 0;
+  let extraCanvasBottom = 0;
+  const allBoxes = [...nodeBoxes.values()];
 
   for (const e of resolvedEdges) {
     const fromBox = nodeBoxes.get(e.from);
     const toBox = nodeBoxes.get(e.to);
     const { fSide, tSide } = e;
 
-    const p1 = nextPort(e.from, fSide, fromBox);
-    const p2 = nextPort(e.to, tSide, toBox);
     let pts;
     let labelPos;
+    let selfLoopLabelWidth = 0;
 
-    if (e.channel === 'bottom' || e.channel === 'bottom-inner') {
-      const idx = e.channel === 'bottom-inner' ? 0 : Math.max(orderedBottom.some(x => x.channel === 'bottom-inner') ? 1 : 0, orderedBottom.indexOf(e));
-      const laneY = contentBottom + 20 + idx * 34;
-      pts = [p1, [p1[0], laneY], [p2[0], laneY], p2];
-      labelPos = [(p1[0] + p2[0]) / 2, laneY];
-    } else if (e.channel === 'top') {
-      const laneY = padTop + extraTop - 22 - topIdx * 32;
-      topIdx++;
-      pts = [p1, [p1[0], laneY], [p2[0], laneY], p2];
-      labelPos = [(p1[0] + p2[0]) / 2, laneY];
-    } else if (fSide === 'right' && tSide === 'left') {
-      if (Math.abs(p1[1] - p2[1]) < 4) {
-        pts = [p1, p2];
-        labelPos = [(p1[0] + p2[0]) / 2, p1[1] - 13];
+    if (e.isSelfLoop) {
+      if (e.loopSide === 'right') {
+        const loopX = fromBox.x + fromBox.w + 24;
+        const y1 = fromBox.cy - 12;
+        const y2 = fromBox.cy + 12;
+        pts = [[fromBox.x + fromBox.w, y1], [loopX, y1], [loopX, y2], [fromBox.x + fromBox.w, y2]];
+        if (e.label) {
+          const wrapped = wrapEdgeLabelText(e.label, 120, 10.5);
+          const lines = wrapped.split('\n');
+          selfLoopLabelWidth = Math.round(Math.max(...lines.map(l => measureText(l, 10.5, false))) + 18);
+          labelPos = [loopX + selfLoopLabelWidth / 2 + 8, fromBox.cy];
+          extraCanvasRight = Math.max(extraCanvasRight, (loopX + selfLoopLabelWidth + 24) - totalW);
+        } else {
+          extraCanvasRight = Math.max(extraCanvasRight, (loopX + 20) - totalW);
+        }
+      } else if (e.loopSide === 'bottom') {
+        const loopY = fromBox.y + fromBox.h + 24;
+        const x1 = fromBox.cx - 18;
+        const x2 = fromBox.cx + 18;
+        pts = [[x1, fromBox.y + fromBox.h], [x1, loopY], [x2, loopY], [x2, fromBox.y + fromBox.h]];
+        labelPos = [fromBox.cx, loopY + 14];
+        extraCanvasBottom = Math.max(extraCanvasBottom, (loopY + 34) - totalH);
+      } else {
+        const loopY = Math.max(18, fromBox.y - 24);
+        const x1 = fromBox.cx - 18;
+        const x2 = fromBox.cx + 18;
+        pts = [[x1, fromBox.y], [x1, loopY], [x2, loopY], [x2, fromBox.y]];
+        labelPos = [fromBox.cx, loopY - 12];
+      }
+    } else {
+      const p1 = nextPort(e.from, fSide, fromBox);
+      const p2 = nextPort(e.to, tSide, toBox);
+
+      if (e.channel === 'bottom' || e.channel === 'bottom-inner') {
+        const idx = e.channel === 'bottom-inner' ? 0 : Math.max(orderedBottom.some(x => x.channel === 'bottom-inner') ? 1 : 0, orderedBottom.indexOf(e));
+        const laneY = contentBottom + 20 + idx * 34;
+        const startBlocker = allBoxes.find(b => b !== fromBox && p1[0] >= b.x - 4 && p1[0] <= b.x + b.w + 4 && b.y < laneY && b.y + b.h > p1[1]);
+        const endBlocker = allBoxes.find(b => b !== toBox && p2[0] >= b.x - 4 && p2[0] <= b.x + b.w + 4 && b.y < laneY && b.y + b.h > p2[1]);
+        if (startBlocker) {
+          const fc = nodeCoord.get(e.from);
+          const detourX = (fc.col === numCols - 1 || !occupiedCell.has(`${fc.col + 1}:${fc.row}`))
+            ? Math.max(fromBox.x + fromBox.w, startBlocker.x + startBlocker.w) + 18
+            : Math.min(fromBox.x, startBlocker.x) - 18;
+          extraCanvasRight = Math.max(extraCanvasRight, detourX + 20 - totalW);
+          const exitY = fSide === 'bottom' ? Math.min(p1[1] + 14, startBlocker.y - 12) : p1[1];
+          const pathPts = [p1];
+          if (fSide === 'bottom') pathPts.push([p1[0], exitY]);
+          pathPts.push([detourX, exitY], [detourX, laneY], [p2[0], laneY]);
+          if (tSide === 'top' && toBox === startBlocker) {
+            const enterY = p2[1] - 14;
+            pts = fSide === 'bottom'
+              ? [p1, [p1[0], exitY], [detourX, exitY], [detourX, enterY], [p2[0], enterY], p2]
+              : [p1, [detourX, exitY], [detourX, enterY], [p2[0], enterY], p2];
+            labelPos = [detourX, (exitY + enterY) / 2];
+          } else {
+            pathPts.push(p2);
+            pts = pathPts;
+            labelPos = [(detourX + p2[0]) / 2, laneY];
+          }
+        } else if (endBlocker) {
+          const tc = nodeCoord.get(e.to);
+          const detourX = (tc.col === numCols - 1 || !occupiedCell.has(`${tc.col + 1}:${tc.row}`))
+            ? Math.max(toBox.x + toBox.w, endBlocker.x + endBlocker.w) + 18
+            : Math.min(toBox.x, endBlocker.x) - 18;
+          extraCanvasRight = Math.max(extraCanvasRight, detourX + 20 - totalW);
+          const enterY = tSide === 'top' ? Math.min(p2[1] - 14, endBlocker.y - 12) : p2[1];
+          pts = [p1, [p1[0], laneY], [detourX, laneY], [detourX, enterY], [p2[0], enterY], p2];
+          labelPos = [(p1[0] + detourX) / 2, laneY];
+        } else {
+          pts = [p1, [p1[0], laneY], [p2[0], laneY], p2];
+          labelPos = [(p1[0] + p2[0]) / 2, laneY];
+        }
+      } else if (e.channel === 'top') {
+        const laneY = padTop + extraTop - 26 - topIdx * 36;
+        topIdx++;
+        pts = [p1, [p1[0], laneY], [p2[0], laneY], p2];
+        labelPos = [(p1[0] + p2[0]) / 2, laneY];
+      } else if (e.midRowBypass) {
+        const laneY = Math.min(fromBox.y, toBox.y) - Math.min(20, rowGap / 2);
+        pts = [p1, [p1[0], laneY], [p2[0], laneY], p2];
+        labelPos = [(p1[0] + p2[0]) / 2, laneY];
+      } else if (fSide === 'right' && tSide === 'left') {
+        if (Math.abs(p1[1] - p2[1]) < 4) {
+          pts = [p1, p2];
+          labelPos = [(p1[0] + p2[0]) / 2, p1[1] - 13];
+        } else {
+          const midX = (p1[0] + p2[0]) / 2;
+          pts = [p1, [midX, p1[1]], [midX, p2[1]], p2];
+          labelPos = [midX, (p1[1] + p2[1]) / 2];
+        }
+      } else if ((fSide === 'bottom' && tSide === 'top') || (fSide === 'top' && tSide === 'bottom')) {
+        if (Math.abs(p1[0] - p2[0]) < 6) {
+          pts = [p1, p2];
+          labelPos = [p1[0], (p1[1] + p2[1]) / 2];
+        } else {
+          const midY = (p1[1] + p2[1]) / 2;
+          pts = [p1, [p1[0], midY], [p2[0], midY], p2];
+          labelPos = [(p1[0] + p2[0]) / 2, midY];
+        }
       } else {
         const midX = (p1[0] + p2[0]) / 2;
         pts = [p1, [midX, p1[1]], [midX, p2[1]], p2];
         labelPos = [midX, (p1[1] + p2[1]) / 2];
       }
-    } else if ((fSide === 'bottom' && tSide === 'top') || (fSide === 'top' && tSide === 'bottom')) {
-      if (Math.abs(p1[0] - p2[0]) < 6) {
-        pts = [p1, p2];
-        labelPos = [p1[0], (p1[1] + p2[1]) / 2];
-      } else {
-        const midY = (p1[1] + p2[1]) / 2;
-        pts = [p1, [p1[0], midY], [p2[0], midY], p2];
-        labelPos = [(p1[0] + p2[0]) / 2, midY];
-      }
-    } else {
-      const midX = (p1[0] + p2[0]) / 2;
-      pts = [p1, [midX, p1[1]], [midX, p2[1]], p2];
-      labelPos = [midX, (p1[1] + p2[1]) / 2];
     }
 
     const markerKey = e.branch === 'yes' ? 'yes' : e.branch === 'no' ? 'no' : (e.role && ROLE_PALETTE[e.role]) ? e.role : 'default';
@@ -704,17 +809,20 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
       else if (e.role && ROLE_PALETTE[e.role]) {
         pillStyle = { bg: ROLE_PALETTE[e.role].header, stroke: ROLE_PALETTE[e.role].border, fg: ROLE_PALETTE[e.role].title };
       }
-      const isHorizGap = !e.channel && (fSide === 'right' && tSide === 'left');
-      const maxLblW = isHorizGap ? Math.max(58, colGap - 14) : e.channel ? Math.max(120, Math.abs(p2[0] - p1[0]) - 24) : 136;
+      const isHorizGap = !e.isSelfLoop && !e.channel && (fSide === 'right' && tSide === 'left');
+      const maxLblW = e.isSelfLoop ? 120 : isHorizGap ? Math.max(40, colGap - 26) : e.channel ? 140 : 136;
       const labelText = wrapEdgeLabelText(e.label, maxLblW, 10.5);
       edgeLabelsSvg += `<g class="sol-edge-label-wrap" data-from="${esc(e.from)}" data-to="${esc(e.to)}">${renderPillLabel(labelPos[0], labelPos[1], labelText, pillStyle)}</g>`;
     }
   }
 
+  const finalW = Math.ceil(totalW + Math.max(0, extraCanvasRight));
+  const finalH = Math.ceil(totalH + Math.max(0, extraCanvasBottom));
+
   // Render nodes
   const nodesSvg = [...nodeBoxes.values()].map(b => renderNodeCard(b.node, b.x, b.y, b.w, b.h, b.layout)).join('');
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" class="sol-svg" role="img" aria-label="${esc(spec.title)}" data-natural-width="${totalW}" style="width:${totalW}px;max-width:100%;height:auto"><defs>${defsSvg}</defs>${zonesSvg}${edgesSvg}${nodesSvg}${edgeLabelsSvg}</svg>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${finalW} ${finalH}" width="${finalW}" height="${finalH}" class="sol-svg" role="img" aria-label="${esc(spec.title)}" data-natural-width="${finalW}" style="width:${finalW}px;max-width:100%;height:auto"><defs>${defsSvg}</defs>${zonesSvg}${edgesSvg}${nodesSvg}${edgeLabelsSvg}</svg>`;
 
   const legendHtml = renderLegendHtml(spec.legend, locale);
   const noteHtml = spec.note ? `<p class="diagram-note">${esc(spec.note)}</p>` : '';
@@ -750,7 +858,7 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
   const entLayouts = new Map();
   for (const ent of spec.entities) {
     const cols = Array.isArray(ent.columns) ? ent.columns : [];
-    const headerW = measureText(ent.name, 13, false) + 110;
+    const headerW = measureText(ent.name, 13, false) * 1.07 + 110;
     const rowWidths = cols.map(c => {
       const keyList = c.key ? String(c.key).split(',').map(k => k.trim()).filter(Boolean) : [];
       const badgeW = keyList.length ? keyList.length * 26 + 6 : 12;
@@ -781,38 +889,36 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     return Math.max(96, ...matching.map(e => entLayouts.get(e.id).h));
   });
 
-  const colX = [];
-  let cx = padX;
-  for (let c = 0; c < numCols; c++) {
-    colX.push(cx);
-    cx += colWidths[c] + (c < numCols - 1 ? colGap : 0);
-  }
-  const rowY = [];
-  let ry = padY;
-  for (let r = 0; r < numRows; r++) {
-    rowY.push(ry);
-    ry += rowHeights[r] + (r < numRows - 1 ? rowGap : 0);
-  }
-
   const occupiedEntity = new Set(spec.entities.map(e => `${Number(e.col ?? 0)}:${Number(e.row ?? 0)}`));
   const entityCoord = new Map(spec.entities.map(e => [e.id, { col: Number(e.col ?? 0), row: Number(e.row ?? 0) }]));
   const resolvedRelations = relations.map(rel => {
     const fc = entityCoord.get(rel.from);
     const tc = entityCoord.get(rel.to);
     if (!fc || !tc) throw Error(`Schema relation references unknown entity: ${rel.from} -> ${rel.to}`);
+
     let channel = rel.channel;
-    if (!channel && !rel.fromSide && !rel.toSide && fc.row === tc.row && Math.abs(fc.col - tc.col) > 1) {
+    const isHorizEndpoint = (!rel.fromSide || rel.fromSide === 'right' || rel.fromSide === 'left') &&
+      (!rel.toSide || rel.toSide === 'left' || rel.toSide === 'right');
+    if (!channel && isHorizEndpoint && fc.row === tc.row && Math.abs(fc.col - tc.col) > 1) {
       const minC = Math.min(fc.col, tc.col);
       const maxC = Math.max(fc.col, tc.col);
       for (let c = minC + 1; c < maxC; c++) {
-        if (occupiedEntity.has(`${c}:${fc.row}`)) { channel = 'bottom'; break; }
+        if (occupiedEntity.has(`${c}:${fc.row}`)) {
+          channel = fc.row === 0 && numRows > 1 ? 'top' : 'bottom';
+          break;
+        }
       }
     }
     let fSide = rel.fromSide;
     let tSide = rel.toSide;
-    if (!fSide || !tSide) {
-      if (channel === 'bottom') { fSide = fSide || 'bottom'; tSide = tSide || 'bottom'; }
-      else if (fc.col === tc.col) {
+    if (channel === 'bottom') {
+      fSide = 'bottom';
+      tSide = 'bottom';
+    } else if (channel === 'top') {
+      fSide = 'top';
+      tSide = 'top';
+    } else if (!fSide || !tSide) {
+      if (fc.col === tc.col) {
         fSide = fSide || (tc.row >= fc.row ? 'bottom' : 'top');
         tSide = tSide || (tc.row >= fc.row ? 'top' : 'bottom');
       } else if (tc.col >= fc.col) {
@@ -824,8 +930,24 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     return { ...rel, channel, fSide, tSide };
   });
 
-  const totalW = cx + padX;
+  const topChanCount = resolvedRelations.filter(rel => rel.channel === 'top').length;
   const bottomChanCount = resolvedRelations.filter(rel => rel.channel === 'bottom').length;
+  const extraTop = topChanCount ? topChanCount * 36 + 14 : 0;
+
+  const colX = [];
+  let cx = padX;
+  for (let c = 0; c < numCols; c++) {
+    colX.push(cx);
+    cx += colWidths[c] + (c < numCols - 1 ? colGap : 0);
+  }
+  const rowY = [];
+  let ry = padY + extraTop;
+  for (let r = 0; r < numRows; r++) {
+    rowY.push(ry);
+    ry += rowHeights[r] + (r < numRows - 1 ? rowGap : 0);
+  }
+
+  const totalW = cx + padX;
   const totalH = ry + padY + (bottomChanCount ? bottomChanCount * 32 + 12 : 0);
 
   const entBoxes = new Map();
@@ -899,14 +1021,35 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     return [box.cx + offset, box.y + box.h];
   }
 
+  const allEntBoxes = [...entBoxes.values()];
+  function segmentHitsBox(ax, ay, bx, by, box, pad = 4) {
+    const minX = Math.min(ax, bx), maxX = Math.max(ax, bx);
+    const minY = Math.min(ay, by), maxY = Math.max(ay, by);
+    return maxX > box.x - pad && minX < box.x + box.w + pad && maxY > box.y - pad && minY < box.y + box.h + pad;
+  }
+  function pathHitsAnyBox(pts, skipBoxes) {
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [ax, ay] = pts[i];
+      const [bx, by] = pts[i + 1];
+      for (const box of allEntBoxes) {
+        if (skipBoxes.includes(box)) continue;
+        if (segmentHitsBox(ax, ay, bx, by, box)) return true;
+      }
+    }
+    return false;
+  }
+
   // Render relations
   let relsSvg = '';
   let relLabelsSvg = '';
   let bIdx = 0;
+  let tIdx = 0;
 
   for (const rel of resolvedRelations) {
     const b1 = entBoxes.get(rel.from);
     const b2 = entBoxes.get(rel.to);
+    const fc = entityCoord.get(rel.from);
+    const tc = entityCoord.get(rel.to);
     const { fSide, tSide } = rel;
 
     const p1 = nextSchemaPort(rel.from, fSide, b1);
@@ -914,15 +1057,49 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
 
     let pts;
     let lblPos;
+    const stubOffset = Math.min(28, Math.max(18, colGap / 4));
     if (rel.channel === 'bottom') {
       const ly = ry + 18 + bIdx * 30;
       bIdx++;
+      pts = [p1, [p1[0], ly], [p2[0], ly], p2];
+      lblPos = [(p1[0] + p2[0]) / 2, ly];
+    } else if (rel.channel === 'top') {
+      const ly = padY + extraTop - 22 - tIdx * 32;
+      tIdx++;
       pts = [p1, [p1[0], ly], [p2[0], ly], p2];
       lblPos = [(p1[0] + p2[0]) / 2, ly];
     } else if (fSide === 'right' && tSide === 'left') {
       const midX = (p1[0] + p2[0]) / 2;
       pts = [p1, [midX, p1[1]], [midX, p2[1]], p2];
       lblPos = [midX, (p1[1] + p2[1]) / 2];
+    } else if ((fSide === 'top' || fSide === 'bottom') && (tSide === 'left' || tSide === 'right')) {
+      const midY = (p1[1] + p2[1]) / 2;
+      const defaultPts = [p1, [p1[0], midY], [p2[0], midY], p2];
+      if (fc.row !== tc.row || pathHitsAnyBox(defaultPts, [b1, b2])) {
+        const gutterY = fSide === 'bottom'
+          ? (fc.row < numRows - 1 ? rowY[fc.row] + rowHeights[fc.row] + rowGap / 2 : b1.y + b1.h + 24)
+          : (fc.row > 0 ? rowY[fc.row] - rowGap / 2 : Math.max(10, rowY[0] - 24));
+        const stubX = tSide === 'right' ? b2.x + b2.w + stubOffset : b2.x - stubOffset;
+        pts = [p1, [p1[0], gutterY], [stubX, gutterY], [stubX, p2[1]], p2];
+        lblPos = [(p1[0] + stubX) / 2, gutterY];
+      } else {
+        pts = defaultPts;
+        lblPos = [(p1[0] + p2[0]) / 2, midY];
+      }
+    } else if ((fSide === 'left' || fSide === 'right') && (tSide === 'top' || tSide === 'bottom')) {
+      const midY = (p1[1] + p2[1]) / 2;
+      const defaultPts = [p1, [p1[0], midY], [p2[0], midY], p2];
+      if (fc.row !== tc.row || pathHitsAnyBox(defaultPts, [b1, b2])) {
+        const stubX = fSide === 'right' ? b1.x + b1.w + stubOffset : b1.x - stubOffset;
+        const gutterY = tSide === 'top'
+          ? (tc.row > 0 ? rowY[tc.row] - rowGap / 2 : Math.max(10, rowY[0] - 24))
+          : (tc.row < numRows - 1 ? rowY[tc.row] + rowHeights[tc.row] + rowGap / 2 : b2.y + b2.h + 24);
+        pts = [p1, [stubX, p1[1]], [stubX, gutterY], [p2[0], gutterY], p2];
+        lblPos = [(stubX + p2[0]) / 2, gutterY];
+      } else {
+        pts = defaultPts;
+        lblPos = [(p1[0] + p2[0]) / 2, midY];
+      }
     } else {
       const midY = (p1[1] + p2[1]) / 2;
       pts = [p1, [p1[0], midY], [p2[0], midY], p2];

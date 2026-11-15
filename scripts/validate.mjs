@@ -28,6 +28,11 @@ export function validateHtml(html) {
     if(tag==='h4'&&!sawH3)errors.push(`H4 without H3: ${text}`);
   });
   $('figure svg').each((_,e)=>{if(!$(e).attr('aria-label')&&!$(e).attr('aria-labelledby'))errors.push('SVG missing accessible name');});
+  const proseClone=$('main').clone();proseClone.find('pre,code,svg,script,style').remove();
+  const proseText=proseClone.text();
+  if(/\$\$[\s\S]+?\$\$|\\(?:text|frac|sum|Delta|times|le|ge|approx|cdot)\s*(?:\{|\\|\b)|\$[^$\n]*\\(?:text|frac|sum|Delta|times|le|ge)|\$[0-9][0-9.,]*%?\$/m.test(proseText)){
+    errors.push('Unrendered LaTeX math in prose/tables (use Unicode/HTML instead of $...$)');
+  }
   const totalSections=$('.doc-section').length;const referenceBlocks=$('#document-references').length;const sections=totalSections-referenceBlocks;
   return {passed:errors.length===0,errors,sections,contentSections:sections,referenceBlocks,diagrams:$('figure.diagram').length,charts:$('figure.chart').length,bytes:Buffer.byteLength(html),browserReviewed:false};
 }

@@ -143,3 +143,53 @@ test('verify detects changed sources and receipt drift',()=>fixture(async dir=>{
   assert.equal(result.ok,false);
   assert.equal(result.sources[0].status,'changed');
 }));
+
+test('validator rejects raw LaTeX math in prose/tables while allowing currency and code blocks',()=>{
+  const base=(body)=>`<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><main><details class="doc-section" open><summary><h2>S</h2></summary><div class="section-body">${body}</div></details></main></body></html>`;
+
+  const withBlockMath=validateHtml(base('<p>$$\\text{Taxa} = \\frac{a}{b}$$</p>'));
+  assert.equal(withBlockMath.passed,false);
+  assert.ok(withBlockMath.errors.some(e=>e.includes('Unrendered LaTeX math')));
+
+  const withInlineNumMath=validateHtml(base('<table><thead><tr><th>Valor</th></tr></thead><tbody><tr><td>$10.000$</td></tr></tbody></table>'));
+  assert.equal(withInlineNumMath.passed,false);
+  assert.ok(withInlineNumMath.errors.some(e=>e.includes('Unrendered LaTeX math')));
+
+  const withCurrencyAndCode=validateHtml(base('<p>Custos entre $10 e $20 ou R$ 100.</p><pre><code>echo "$HOME" && printf "$$"</code></pre><p>Variável <code>$\\Delta$</code> em trecho técnico.</p>'));
+  assert.equal(withCurrencyAndCode.passed,true,withCurrencyAndCode.errors.join('; '));
+});
+
+test('generated HTML uses concise search placeholder that fits sidebar input',()=>fixture(async dir=>{
+  const out=path.join(dir,'doc.html');
+  await build(path.join(root,'examples/minimal/document.json'),out);
+  const $=load(await fs.readFile(out,'utf8'));
+  const placeholder=$('#search').attr('placeholder')||'';
+  assert.ok(placeholder.length>0&&placeholder.length<=20,`Expected concise search placeholder, got "${placeholder}" (${placeholder.length} chars)`);
+}));
+
+test('runtime script enables local table filters inside nested <details> dictionaries without touching chart tables',async()=>{
+  const js=await fs.readFile(path.join(root,'assets/document.js'),'utf8');
+  assert.match(js,/querySelectorAll\(['"]\.section-body \.table-wrap['"]\)/);
+  assert.match(js,/wrap\.closest\(['"]\.chart['"]\)/);
+});
+
+test('generated HTML includes theme switcher (Default/Atual vs Santander) and supports manifest theme="santander"',()=>fixture(async dir=>{
+  await fs.writeFile(path.join(dir,'content.md'),'## S\n\nTexto.\n');
+  await fs.writeFile(path.join(dir,'document.json'),JSON.stringify({
+    title:'Santander Doc',subtitle:'Tema',version:'1.0',updated:'2026-11-14',theme:'santander',content:'content.md',
+    sections:[{id:'sec',title:'S',audience:'all'}]
+  }));
+  const out=path.join(dir,'santander.html');
+  const r=await build(path.join(dir,'document.json'),out);
+  assert.equal(r.passed,true);
+  const html=await fs.readFile(out,'utf8');
+  const $=load(html);
+  assert.equal($('html').attr('data-theme'),'santander');
+  assert.equal($('[data-theme-select="default"]').length,1);
+  assert.equal($('[data-theme-select="santander"].is-active').length,1);
+  assert.match(html,/:root\[data-theme="santander"\]/);
+  assert.match(html,/--accent:\s*#990000/);
+}));
+
+
+

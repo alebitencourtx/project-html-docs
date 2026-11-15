@@ -173,8 +173,34 @@
     });
   });
 
-  // Filtro local automático para dicionários e tabelas extensas (>= 8 linhas)
-  document.querySelectorAll('.section-body > .table-wrap').forEach(wrap => {
+  // Seletor de paleta de cores (Atual vs Santander) sem alterar layout
+  const themeBtns = [...document.querySelectorAll('[data-theme-select]')];
+  if (themeBtns.length) {
+    const applyTheme = (theme, persist = false) => {
+      const target = theme === 'santander' ? 'santander' : 'default';
+      if (target === 'santander') document.documentElement.setAttribute('data-theme', 'santander');
+      else document.documentElement.removeAttribute('data-theme');
+      themeBtns.forEach(b => {
+        const active = b.dataset.themeSelect === target;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      if (persist) {
+        try { localStorage.setItem('project-docs-theme', target); } catch {}
+      }
+    };
+    let initialTheme = document.documentElement.getAttribute('data-theme') === 'santander' ? 'santander' : 'default';
+    try {
+      const saved = localStorage.getItem('project-docs-theme');
+      if (saved === 'santander' || saved === 'default') initialTheme = saved;
+    } catch {}
+    applyTheme(initialTheme, false);
+    themeBtns.forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.themeSelect, true)));
+  }
+
+  // Filtro local automático para dicionários e tabelas extensas (>= 8 linhas), inclusive dentro de <details>
+  document.querySelectorAll('.section-body .table-wrap').forEach(wrap => {
+    if (wrap.closest('.chart')) return;
     const tbody = wrap.querySelector('tbody');
     if (!tbody) return;
     const rows = [...tbody.querySelectorAll('tr')];

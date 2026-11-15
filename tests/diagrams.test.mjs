@@ -281,3 +281,125 @@ test('showcase example builds cleanly preserving all 11 categories, audience fil
     await fs.rm(dir, { recursive: true, force: true });
   }
 });
+
+test('renderSolutionDiagram routes self-loops externally, widens colGap for horizontal labels, and detours same-column bottom edges around blockers', () => {
+  const html = renderSolutionDiagram({
+    title: 'Roteamento de fluxos e desvios',
+    cols: 3,
+    colGap: 40,
+    zones: [
+      { id: 'z1', title: 'ESTÁGIO', variant: 'warm', row: 0, colStart: 1, colSpan: 2 },
+    ],
+    nodes: [
+      { id: 'n0', col: 0, row: 0, role: 'step', title: 'Origem', lines: ['passo 0'] },
+      { id: 'n1', col: 1, row: 0, role: 'step', title: 'Validação', lines: ['passo 1'] },
+      { id: 'dec', col: 2, row: 0, shape: 'decision', role: 'warning', title: 'Publicar?', lines: ['checa critérios'] },
+      { id: 'prom', col: 2, row: 1, role: 'output', title: 'Promover', lines: ['publica release'] },
+    ],
+    edges: [
+      { from: 'n0', to: 'n1', label: 'dados ok ou falha final' },
+      { from: 'n1', to: 'dec', label: 'sim' },
+      { from: 'dec', to: 'dec', branch: 'no', style: 'dashed', label: 'Não · mantém draft' },
+      { from: 'dec', to: 'prom', channel: 'bottom', style: 'dashed', label: 'prova de deploy' },
+    ],
+  });
+
+  const $ = load(html);
+  const svg = $('svg.sol-svg');
+  const viewBox = svg.attr('viewBox').split(/\s+/).map(Number);
+  assert.ok(viewBox[2] > 24 * 2 + 236 * 3 + 40 * 2, `Expected canvas width (${viewBox[2]}) to expand for self-loop and wide horizontal label`);
+
+  // Self-loop label pill must sit outside the dec node right edge
+  const decRect = $('.sol-node[data-node-id="dec"] rect').first();
+  const decRight = Number(decRect.attr('x')) + Number(decRect.attr('width'));
+  const selfLabelRect = $('.sol-edge-label-wrap[data-from="dec"][data-to="dec"] rect').first();
+  assert.ok(Number(selfLabelRect.attr('x')) > decRight, `Self-loop pill x (${selfLabelRect.attr('x')}) must be to the right of node (${decRight})`);
+
+  // Horizontal label between col 0 and col 1 must fit without clipping node rects
+  const n0Right = Number($('.sol-node[data-node-id="n0"] rect').first().attr('x')) + Number($('.sol-node[data-node-id="n0"] rect').first().attr('width'));
+  const n1Left = Number($('.sol-node[data-node-id="n1"] rect').first().attr('x'));
+  const gap = n1Left - n0Right;
+  const hLabelW = Number($('.sol-edge-label-wrap[data-from="n0"][data-to="n1"] rect').first().attr('width'));
+  assert.ok(gap >= hLabelW + 10, `Expected expanded colGap (${gap}) to accommodate horizontal label (${hLabelW})`);
+
+  // Bottom-channel edge dec -> prom must detour horizontally around prom instead of dropping straight through its center
+  const decPromPath = $('.sol-edge[data-from="dec"][data-to="prom"]').attr('d');
+  const promX = Number($('.sol-node[data-node-id="prom"] rect').first().attr('x'));
+  const promW = Number($('.sol-node[data-node-id="prom"] rect').first().attr('width'));
+  const pathXs = [...decPromPath.matchAll(/[MLQ]([\d.]+),/g)].map(m => Number(m[1]));
+  assert.ok(pathXs.some(x => x > promX + promW), `Expected dec->prom bottom edge to detour right past ${promX + promW}, got Xs=${pathXs.join(',')}`);
+});
+
+test('renderSolutionDiagram auto-bypasses explicit right->left skip edges and wraps long bold titles in narrow boxes', () => {
+  const html = renderSolutionDiagram({
+    title: 'Bypass e quebra de título',
+    colWidth: 196,
+    zones: [{ id: 'z1', title: 'ESTÁGIO 1', variant: 'warm', row: 0, colStart: 1, colSpan: 2 }],
+    nodes: [
+      { id: 'apis', col: 0, row: 0, role: 'regulator', title: 'Oito Admins', lines: ['origem'] },
+      { id: 'restore', col: 1, row: 0, step: 1, role: 'step', title: 'Restaurar e validar', lines: ['estado'] },
+      { id: 'collect', col: 2, row: 0, step: 2, role: 'step', title: 'Diagnóstico + última boa', lines: ['coleta'] },
+    ],
+    edges: [
+      { from: 'apis', to: 'collect', fromSide: 'right', toSide: 'left', label: 'JSON Admin' },
+      { from: 'restore', to: 'collect', label: 'ok' },
+    ],
+  });
+
+  const $ = load(html);
+  const restoreRect = $('.sol-node[data-node-id="restore"] rect').first();
+  const restoreTop = Number(restoreRect.attr('y'));
+  const pillRect = $('.sol-edge-label-wrap[data-from="apis"][data-to="collect"] rect').first();
+  const pillBottom = Number(pillRect.attr('y')) + Number(pillRect.attr('height'));
+  assert.ok(pillBottom < restoreTop, `Expected JSON Admin pill bottom (${pillBottom}) above restore top (${restoreTop})`);
+
+  // Long bold title on collect (colWidth=196) should wrap into 2 <text> lines instead of clipping edge
+  const collectTexts = $('.sol-node[data-node-id="collect"] text[font-weight="700"]').length;
+  assert.ok(collectTexts >= 3, `Expected step badge + >=2 wrapped title lines, got ${collectTexts}`);
+});
+
+test('renderSchemaDiagram routes cross-row bottom->right relations through inter-row gutter around intermediate entities', () => {
+  const html = renderSchemaDiagram({
+    title: 'Entidades lógicas',
+    entities: [
+      { id: 'runs', name: 'runs', kind: 'json', col: 0, row: 0, columns: [{ key: 'PK', name: 'run_id', type: 'string' }] },
+      { id: 'reports', name: 'reports', kind: 'json', col: 1, row: 0, columns: [{ key: 'PK,FK', name: 'run_id', type: 'string' }] },
+      { id: 'probes', name: 'probes', kind: 'json', col: 2, row: 0, columns: [{ key: 'FK', name: 'run_id', type: 'string' }] },
+      { id: 'observations', name: 'observations', kind: 'json', col: 0, row: 1, columns: [{ key: 'PK', name: 'entity_id', type: 'string' }] },
+      { id: 'incidents', name: 'incidents', kind: 'json', col: 1, row: 1, grain: 'Grão: 1 ocorrência = entidade ou fonte × regra', columns: [{ key: 'PK', name: 'id', type: 'string' }] },
+    ],
+    relations: [
+      { from: 'runs', to: 'reports', fromCard: '1', toCard: '1..N', label: 'contém' },
+      { from: 'runs', to: 'probes', fromSide: 'right', toSide: 'left', kind: 'lineage', label: 'atalho topo' },
+      { from: 'reports', to: 'observations', fromSide: 'bottom', toSide: 'right', fromCard: '1', toCard: '1..N', label: 'normaliza' },
+    ],
+  });
+
+  const $ = load(html);
+  const incRect = $('.schema-entity[data-node-id="incidents"] rect').first();
+  const incX = Number(incRect.attr('x'));
+  const incY = Number(incRect.attr('y'));
+  const incW = Number(incRect.attr('width'));
+  const incH = Number(incRect.attr('height'));
+
+  const normPill = $('.sol-edge-label-wrap[data-from="reports"][data-to="observations"] rect').first();
+  const normY = Number(normPill.attr('y'));
+  const normBottom = normY + Number(normPill.attr('height'));
+  assert.ok(normBottom < incY, `Expected normaliza pill bottom (${normBottom}) to stay cleanly in gutter above incidents top (${incY})`);
+
+  // Ensure every coordinate of reports->observations stays clear of incidents box interior
+  const relPath = $('.sol-edge[data-from="reports"][data-to="observations"] path').attr('d');
+  const coords = [...relPath.matchAll(/[ML]([\d.]+),([\d.]+)/g)].map(m => [Number(m[1]), Number(m[2])]);
+  for (const [x, y] of coords) {
+    const insideInc = x > incX && x < incX + incW && y > incY && y < incY + incH;
+    assert.equal(insideInc, false, `Point (${x},${y}) must not enter incidents box (${incX}..${incX + incW}, ${incY}..${incY + incH})`);
+  }
+
+  // Row 0 skip relation runs->probes should go above runs top via top channel
+  const runsTop = Number($('.schema-entity[data-node-id="runs"] rect').first().attr('y'));
+  const topPillBottom = Number($('.sol-edge-label-wrap[data-from="runs"][data-to="probes"] rect').first().attr('y')) +
+    Number($('.sol-edge-label-wrap[data-from="runs"][data-to="probes"] rect').first().attr('height'));
+  assert.ok(topPillBottom < runsTop, `Expected runs->probes top pill (${topPillBottom}) above runs top (${runsTop})`);
+});
+
+
