@@ -17,7 +17,7 @@
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao.html",
   "rendererSha256": "c7ba3436a0a3b1a2bdf4e162da5ab1cc616553b04ad541aec6486e2b21016200",
-  "builtAt": "2026-11-15T23:01:40.661Z",
+  "builtAt": "2026-11-15T23:12:49.574Z",
   "manifestSha256": "1a16388c8cc1d18d71112d97f48a63a49c3d95c5a1be6e644c30b499d7041e6c",
   "document": "project-html-docs · Manual do Gerador",
   "revision": "794daacc43437c1f0b3f2202c6ff652b5f9b7038",
@@ -34,7 +34,7 @@
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos, comandos e recursos do projeto.",
-      "sha256": "3d96e00f4b2a8a8b9864e6d4f92baa00e24476f227ab7cf795f7d01f7a339bd1"
+      "sha256": "25a5ec29dbc8d18cb45258d13fc21b861058ad847aef28a6a492a80dd73fe7d8"
     },
     {
       "id": "package",
@@ -277,5 +277,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T23:01:47.181Z"
+  "browserReviewedAt": "2026-11-15T23:12:50.678Z"
 }
