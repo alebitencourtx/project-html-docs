@@ -22,6 +22,8 @@ test('runnable example: offline diagrams, accessible values and nested details s
   assert.equal($('details').filter((_,e)=>$(e).find('summary').first().text()==='Example query').find('pre').length,1);
   assert.equal($('.chart tbody tr').length,2);
   assert.equal($('.diagram svg g.node').length,4);
+  assert.equal($('#dialog-fit').length,1);
+  assert.equal($('#dialog-actual').length,1);
   assert.ok(!html.includes('@import'));assert.ok(!html.includes('fonts.googleapis.com'));
   await assert.rejects(()=>build(path.join(root,'examples/minimal/document.json'),output),/already exists/);
   assert.equal(await fs.readFile(output,'utf8'),html);

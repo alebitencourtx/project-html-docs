@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Como os oito reportes Admin do Santander se tornam um panorama operacional: o que a solução entrega, como interpretar os resultados e como os dados são processados, publicados e recuperados."><meta name="generator" content="project-html-docs 1.1.0"><title>Admin Metrics · Documentação v2 · aplicação 1.2.0</title><style>:root {
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Como os oito reportes Admin do Santander se tornam um panorama operacional: o que a solução entrega, como interpretar os resultados e como os dados são processados, publicados e recuperados."><meta name="generator" content="project-html-docs 1.2.0"><title>Admin Metrics · Documentação v2 · aplicação 1.2.0</title><style>:root {
   --ink: #172b3c;
   --muted: #526778;
   --paper: #f4f6f8;
@@ -205,6 +205,106 @@ figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top
   vertical-align: middle;
 }
 
+/* Semantic Subgraphs & Architectural Styling */
+g.subgraph[data-id*="stream" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="realtime" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="ingest" i] > rect:nth-of-type(1) {
+  fill: #fff5f5 !important;
+  stroke: #fca5a5 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="stream" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="realtime" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="ingest" i] > rect:nth-of-type(2) {
+  fill: #fee2e2 !important;
+  stroke: #fca5a5 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="stream" i] text,
+g.subgraph[data-id*="realtime" i] text,
+g.subgraph[data-id*="ingest" i] text {
+  fill: #b91c1c !important;
+}
+
+g.subgraph[data-id*="batch" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="analytics" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="dw" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="serving" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="transform" i] > rect:nth-of-type(1) {
+  fill: #f0f9ff !important;
+  stroke: #93c5fd !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="batch" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="analytics" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="dw" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="serving" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="transform" i] > rect:nth-of-type(2) {
+  fill: #e0f2fe !important;
+  stroke: #93c5fd !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="batch" i] text,
+g.subgraph[data-id*="analytics" i] text,
+g.subgraph[data-id*="dw" i] text,
+g.subgraph[data-id*="serving" i] text,
+g.subgraph[data-id*="transform" i] text {
+  fill: #0369a1 !important;
+}
+
+g.subgraph[data-id*="input" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="source" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="entrada" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="origem" i] > rect:nth-of-type(1) {
+  fill: #f8fafc !important;
+  stroke: #94a3b8 !important;
+  stroke-dasharray: 4 4 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="input" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="source" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="entrada" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="origem" i] > rect:nth-of-type(2) {
+  fill: #f1f5f9 !important;
+  stroke: #94a3b8 !important;
+  stroke-dasharray: 4 4 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="input" i] text,
+g.subgraph[data-id*="source" i] text,
+g.subgraph[data-id*="entrada" i] text,
+g.subgraph[data-id*="origem" i] text {
+  fill: #475569 !important;
+  font-weight: 700 !important;
+}
+
+/* Node cards inside diagrams */
+.diagram-scroll g.node > rect,
+.diagram-scroll g.node > polygon {
+  rx: 6px !important;
+  ry: 6px !important;
+}
+.diagram-scroll tspan.node-title {
+  font-weight: 600 !important;
+}
+.diagram-scroll tspan.node-subtitle {
+  font-size: 11px !important;
+  fill: var(--muted) !important;
+  font-weight: 400 !important;
+}
+
 .chart { overflow-x: auto; }
 .chart svg { width: 100%; min-width: 720px; height: auto; display: block; }
 .chart .table-wrap { margin-bottom: 0; }
@@ -214,8 +314,13 @@ footer { font-size: 12px; color: var(--muted); padding: 15px 0; }
 dialog { width: 96vw; max-width: 1600px; max-height: 94vh; border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
 dialog::backdrop { background: #102b3dbb; }
 .dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 15px; }
+.dialog-controls { display: inline-flex; gap: 8px; align-items: center; margin-left: auto; }
+.dialog-controls button { padding: 5px 12px; font-size: 12px; border-radius: 6px; cursor: pointer; border: 1px solid var(--line); background: white; color: var(--fg); }
+.dialog-controls button.is-active { background: var(--accent); color: white; border-color: var(--accent); }
 .dialog-canvas { overflow: auto; max-height: 75vh; }
 .dialog-canvas svg { max-width: none; display: block; margin: auto; }
+.dialog-canvas.is-fit svg { width: 100% !important; max-width: 100% !important; height: auto !important; }
+.dialog-canvas.is-actual svg { max-width: none !important; }
 #no-results { padding: 20px; border: 1px solid var(--line); background: white; border-radius: 10px; }
 .hidden, [hidden] { display: none !important; }
 .revision { overflow-wrap: anywhere; }
@@ -481,7 +586,7 @@ dialog::backdrop { background: #102b3dbb; }
 <p>O CSV usa UTF-8 com BOM e separador ponto-e-vírgula. Busca, família e ordenação afetam tabela e exportação. Valores preservados continuam identificados, e campos com prefixos de fórmula recebem proteção no CSV.</p>
 <div class="section-sources">Referências: <a href="#ref-dashboard">docs/dashboard.md</a> <a href="#ref-app">src/admin_metrics/web/app.js</a> <a href="#ref-panorama">src/admin_metrics/panorama.py</a></div></div></details>
 <details class="doc-section" id="solucao" open><summary class="section-heading"><span class="number">05</span><h2>Desenho da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A solução é um ETL em lote executado em um único runner temporário do GitHub Actions. O estado persistido permite continuar o histórico entre execuções; DuckDB é embutido no processo, sem serviço de banco permanente.</p>
-<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 709.739 252.6" width="709.739" height="252.6" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:816.19985px;min-width:735px;max-width:100%" role="img" aria-label="Componentes da solu&#xe7;&#xe3;o e destinos de publica&#xe7;&#xe3;o" data-natural-width="816.19985">
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Componentes da solução e destinos de publicação</span><button type="button" data-expand-diagram aria-label="Ampliar: Componentes da solução e destinos de publicação">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 709.739 252.6" width="709.739" height="252.6" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:709.739px;max-width:100%;height:auto" role="img" aria-label="Componentes da solu&#xe7;&#xe3;o e destinos de publica&#xe7;&#xe3;o" data-natural-width="709.739">
 <style>
   
   text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
@@ -615,7 +720,7 @@ dialog::backdrop { background: #102b3dbb; }
 <p>O dashboard precisa dos arquivos da publicação. Este manual v2 é um HTML independente, com estilos, scripts, tabelas e diagramas incorporados.</p>
 <div class="section-sources">Referências: <a href="#ref-architecture">docs/arquitetura.md</a> <a href="#ref-pipeline">src/admin_metrics/pipeline.py</a> <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-workflow">.github/workflows/pages.yml</a></div></div></details>
 <details class="doc-section" id="fluxo" open><summary class="section-heading"><span class="number">06</span><h2>Fluxo dos dados e publicação</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>Uma nova coleta restaura o estado aprovado, observa as fontes e produz um candidato. A publicação do site e a confirmação desse estado são etapas distintas.</p>
-<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 607.91 753.3319999999999" width="607.91" height="753.3319999999999" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:699.0964999999999px;min-width:629px;max-width:100%" role="img" aria-label="Ciclo remoto de coleta e publica&#xe7;&#xe3;o" data-natural-width="699.0964999999999">
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Ciclo remoto de coleta e publicação</span><button type="button" data-expand-diagram aria-label="Ampliar: Ciclo remoto de coleta e publicação">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 607.91 753.3319999999999" width="607.91" height="753.3319999999999" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:607.91px;max-width:100%;height:auto" role="img" aria-label="Ciclo remoto de coleta e publica&#xe7;&#xe3;o" data-natural-width="607.91">
 <style>
   
   text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
@@ -692,7 +797,7 @@ dialog::backdrop { background: #102b3dbb; }
 </g>
 </svg></div><figcaption>Ciclo remoto de coleta e publicação</figcaption></figure><p>Falhas estruturais de configuração, integridade ou construção interrompem o avanço. Falhas observáveis da origem são registradas como dados de diagnóstico e podem resultar em publicação bem-sucedida. Se o deploy terminar e a confirmação falhar, o site pode referenciar uma candidata ainda draft; a reconciliação está em <a href="#operacao">Recuperação</a>.</p>
 <h3>Dentro da coleta</h3>
-<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 647.924 706.5899999999999" width="647.924" height="706.5899999999999" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:745.1125999999999px;min-width:671px;max-width:100%" role="img" aria-label="Caminho de uma fonte desde a resposta at&#xe9; a avalia&#xe7;&#xe3;o" data-natural-width="745.1125999999999">
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Caminho de uma fonte desde a resposta até a avaliação</span><button type="button" data-expand-diagram aria-label="Ampliar: Caminho de uma fonte desde a resposta até a avaliação">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 647.924 706.5899999999999" width="647.924" height="706.5899999999999" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:647.924px;max-width:100%;height:auto" role="img" aria-label="Caminho de uma fonte desde a resposta at&#xe9; a avalia&#xe7;&#xe3;o" data-natural-width="647.924">
 <style>
   
   text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
@@ -908,7 +1013,7 @@ dialog::backdrop { background: #102b3dbb; }
 <td>Aberto, em recuperação, resolvido; confirmação é uma dimensão adicional</td>
 </tr>
 </tbody></table></div>
-<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 648.8580000000002 266.1" width="648.8580000000002" height="266.1" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:746.1867000000001px;min-width:672px;max-width:100%" role="img" aria-label="Ciclo de uma ocorr&#xea;ncia de incidente" data-natural-width="746.1867000000001">
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Ciclo de uma ocorrência de incidente</span><button type="button" data-expand-diagram aria-label="Ampliar: Ciclo de uma ocorrência de incidente">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 648.8580000000002 266.1" width="648.8580000000002" height="266.1" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:648.8580000000002px;max-width:100%;height:auto" role="img" aria-label="Ciclo de uma ocorr&#xea;ncia de incidente" data-natural-width="648.8580000000002">
 <style>
   
   text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
@@ -1033,7 +1138,7 @@ dialog::backdrop { background: #102b3dbb; }
 <p>Os estados específicos de erro e rejeição preservam a elegibilidade de cada numerador. Uma falha num campo não deve ser interpretada como invalidade automática de todas as métricas.</p>
 </details><div class="section-sources">Referências: <a href="#ref-analysis">src/admin_metrics/analysis.py</a> <a href="#ref-health">src/admin_metrics/health.py</a> <a href="#ref-panorama">src/admin_metrics/panorama.py</a></div></div></details>
 <details class="doc-section" id="modelo" open><summary class="section-heading"><span class="number">09</span><h2>Modelo e relacionamento dos dados</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>O projeto mantém um estado JSON e produz uma projeção tabular para análise. O diagrama abaixo mostra identidades e relações lógicas entre estruturas; os rótulos PK indicam identidade no modelo, sem afirmar a existência de restrições SQL no JSON.</p>
-<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 670.8299999999999 262" width="670.8299999999999" height="262" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:905.6205px;min-width:815px;max-width:100%" role="img" aria-label="Identidade l&#xf3;gica da execu&#xe7;&#xe3;o e dos reportes" data-natural-width="905.6205">
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Identidade lógica da execução e dos reportes</span><button type="button" data-expand-diagram aria-label="Ampliar: Identidade lógica da execução e dos reportes">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 670.8299999999999 262" width="670.8299999999999" height="262" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:805px;max-width:100%;height:auto" role="img" aria-label="Identidade l&#xf3;gica da execu&#xe7;&#xe3;o e dos reportes" data-natural-width="805">
 <style>
   
   
@@ -1109,7 +1214,7 @@ dialog::backdrop { background: #102b3dbb; }
 <text x="371.03" y="179.61499999999998" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">identifica</text>
 <rect x="313.95799999999997" y="57.85" width="42.91400000000001" height="20.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5"/>
 <text x="335.41499999999996" y="68" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-muted)" dy="3.8499999999999996">contem</text>
-</svg></div><figcaption>Identidade lógica da execução e dos reportes</figcaption></figure><figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650.502 180" width="650.502" height="180" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:878.1777px;min-width:790px;max-width:100%" role="img" aria-label="Cada reporte da execu&#xe7;&#xe3;o pode produzir v&#xe1;rias observa&#xe7;&#xf5;es" data-natural-width="878.1777">
+</svg></div><figcaption>Identidade lógica da execução e dos reportes</figcaption></figure><figure class="diagram"><div class="figure-tools"><span class="figure-tag">Cada reporte da execução pode produzir várias observações</span><button type="button" data-expand-diagram aria-label="Ampliar: Cada reporte da execução pode produzir várias observações">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650.502 180" width="650.502" height="180" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:781px;max-width:100%;height:auto" role="img" aria-label="Cada reporte da execu&#xe7;&#xe3;o pode produzir v&#xe1;rias observa&#xe7;&#xf5;es" data-natural-width="781">
 <style>
   
   
@@ -1234,7 +1339,7 @@ dialog::backdrop { background: #102b3dbb; }
 </tr>
 </tbody></table></div>
 <p><code>reported_history</code> e <code>intervals</code> não são tabelas físicas independentes. O primeiro deriva dos arrays anteriores; os intervalos aparecem em campos da observação/payload. O bronze é relacionado por <code>source_sha</code>; as ocorrências têm identidade própria, incluindo o run de abertura, para preservar reaberturas.</p>
-<figure class="diagram"><div class="figure-tools"><span>SVG · diagrama vetorial</span><button type="button" data-expand-diagram>Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 582.248 389.3" width="582.248" height="389.3" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:669.5852px;min-width:603px;max-width:100%" role="img" aria-label="Linhagem das proje&#xe7;&#xf5;es e agrega&#xe7;&#xf5;es tabulares" data-natural-width="669.5852">
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Linhagem das projeções e agregações tabulares</span><button type="button" data-expand-diagram aria-label="Ampliar: Linhagem das projeções e agregações tabulares">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 582.248 389.3" width="582.248" height="389.3" style="--bg:#f8fbfc;--fg:#172b3c;--line:#7992a2;--accent:#087f8c;--surface:#ffffff;--border:#b8cbd5;background:var(--bg);width:582.248px;max-width:100%;height:auto" role="img" aria-label="Linhagem das proje&#xe7;&#xf5;es e agrega&#xe7;&#xf5;es tabulares" data-natural-width="582.248">
 <style>
   
   text { font-family: &apos;Segoe UI&apos;, system-ui, sans-serif; }
@@ -2013,7 +2118,7 @@ gh release download $tag --repo alebitencourtx/admin-metrics --pattern state.zip
 </tr>
 </tbody></table></div>
 </details>
-<div class="section-sources">Referências: <a href="#ref-documentation">src/admin_metrics/documentation.py</a> <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-marts">src/admin_metrics/marts.sql</a></div></div></details><details class="doc-section" id="document-references"><summary class="section-heading"><h2>Referências do documento</h2></summary><div class="section-body"><p>Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.</p><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead><tbody><tr id="ref-readme"><td class="source-path">README.md</td><td>Escopo, entrega, procedimentos e comportamento atual.</td></tr><tr id="ref-version"><td class="source-path">src/admin_metrics/__init__.py</td><td>Versão do pacote.</td></tr><tr id="ref-reporters"><td class="source-path">config/reporters.json</td><td>Catálogo das oito fontes Admin.</td></tr><tr id="ref-rules"><td class="source-path">config/rules.json</td><td>Limiares, retenção, agenda e janelas configuradas.</td></tr><tr id="ref-collect"><td class="source-path">src/admin_metrics/collect.py</td><td>Coleta HTTP, paginação, retry e preservação de respostas.</td></tr><tr id="ref-analysis"><td class="source-path">src/admin_metrics/analysis.py</td><td>Normalização, deltas, avaliação e ciclo de incidentes.</td></tr><tr id="ref-health"><td class="source-path">src/admin_metrics/health.py</td><td>Resultado da coleta e usabilidade das fontes.</td></tr><tr id="ref-panorama"><td class="source-path">src/admin_metrics/panorama.py</td><td>Panorama coerente por ciclo e por recorte.</td></tr><tr id="ref-pipeline"><td class="source-path">src/admin_metrics/pipeline.py</td><td>Execução, build e commit do estado local.</td></tr><tr id="ref-storage"><td class="source-path">src/admin_metrics/storage.py</td><td>Hash, escrita atômica e exclusão mútua.</td></tr><tr id="ref-build"><td class="source-path">src/admin_metrics/build.py</td><td>Schema Arrow, tabelas DuckDB, Parquet e publicação estática.</td></tr><tr id="ref-marts"><td class="source-path">src/admin_metrics/marts.sql</td><td>Agregados por reporte, família e instante.</td></tr><tr id="ref-documentation"><td class="source-path">src/admin_metrics/documentation.py</td><td>Dicionários de campos e geração do manual original.</td></tr><tr id="ref-cli"><td class="source-path">src/admin_metrics/cli.py</td><td>Comandos collect/build e parâmetros.</td></tr><tr id="ref-archive"><td class="source-path">src/admin_metrics/archive.py</td><td>Empacotamento e restauração do estado.</td></tr><tr id="ref-cloud"><td class="source-path">scripts/cloud_pipeline.py</td><td>Candidata, confirmação, retenção e restore remoto.</td></tr><tr id="ref-workflow"><td class="source-path">.github/workflows/pages.yml</td><td>Gatilhos, jobs de publicação e confirmação.</td></tr><tr id="ref-app"><td class="source-path">src/admin_metrics/web/app.js</td><td>Filtros, detalhes, gráficos e exportação do dashboard.</td></tr><tr id="ref-architecture"><td class="source-path">docs/arquitetura.md</td><td>Arquitetura documentada e responsabilidades.</td></tr><tr id="ref-dashboard"><td class="source-path">docs/dashboard.md</td><td>Uso do dashboard e interpretação dos estados.</td></tr><tr id="ref-operations"><td class="source-path">docs/operacao.md</td><td>Execução, retenção e recuperação.</td></tr></tbody></table></div><p class="revision">Código: a24588f93a715b92f4ef19939876bfa6ddd1c603</p></div></details><footer>Admin Metrics · Documentação v2 · aplicação 1.2.0 · HTML único · leitura offline</footer></div></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><button id="dialog-close" type="button">Fechar</button></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>(() => {
+<div class="section-sources">Referências: <a href="#ref-documentation">src/admin_metrics/documentation.py</a> <a href="#ref-build">src/admin_metrics/build.py</a> <a href="#ref-marts">src/admin_metrics/marts.sql</a></div></div></details><details class="doc-section" id="document-references"><summary class="section-heading"><h2>Referências do documento</h2></summary><div class="section-body"><p>Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.</p><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead><tbody><tr id="ref-readme"><td class="source-path">README.md</td><td>Escopo, entrega, procedimentos e comportamento atual.</td></tr><tr id="ref-version"><td class="source-path">src/admin_metrics/__init__.py</td><td>Versão do pacote.</td></tr><tr id="ref-reporters"><td class="source-path">config/reporters.json</td><td>Catálogo das oito fontes Admin.</td></tr><tr id="ref-rules"><td class="source-path">config/rules.json</td><td>Limiares, retenção, agenda e janelas configuradas.</td></tr><tr id="ref-collect"><td class="source-path">src/admin_metrics/collect.py</td><td>Coleta HTTP, paginação, retry e preservação de respostas.</td></tr><tr id="ref-analysis"><td class="source-path">src/admin_metrics/analysis.py</td><td>Normalização, deltas, avaliação e ciclo de incidentes.</td></tr><tr id="ref-health"><td class="source-path">src/admin_metrics/health.py</td><td>Resultado da coleta e usabilidade das fontes.</td></tr><tr id="ref-panorama"><td class="source-path">src/admin_metrics/panorama.py</td><td>Panorama coerente por ciclo e por recorte.</td></tr><tr id="ref-pipeline"><td class="source-path">src/admin_metrics/pipeline.py</td><td>Execução, build e commit do estado local.</td></tr><tr id="ref-storage"><td class="source-path">src/admin_metrics/storage.py</td><td>Hash, escrita atômica e exclusão mútua.</td></tr><tr id="ref-build"><td class="source-path">src/admin_metrics/build.py</td><td>Schema Arrow, tabelas DuckDB, Parquet e publicação estática.</td></tr><tr id="ref-marts"><td class="source-path">src/admin_metrics/marts.sql</td><td>Agregados por reporte, família e instante.</td></tr><tr id="ref-documentation"><td class="source-path">src/admin_metrics/documentation.py</td><td>Dicionários de campos e geração do manual original.</td></tr><tr id="ref-cli"><td class="source-path">src/admin_metrics/cli.py</td><td>Comandos collect/build e parâmetros.</td></tr><tr id="ref-archive"><td class="source-path">src/admin_metrics/archive.py</td><td>Empacotamento e restauração do estado.</td></tr><tr id="ref-cloud"><td class="source-path">scripts/cloud_pipeline.py</td><td>Candidata, confirmação, retenção e restore remoto.</td></tr><tr id="ref-workflow"><td class="source-path">.github/workflows/pages.yml</td><td>Gatilhos, jobs de publicação e confirmação.</td></tr><tr id="ref-app"><td class="source-path">src/admin_metrics/web/app.js</td><td>Filtros, detalhes, gráficos e exportação do dashboard.</td></tr><tr id="ref-architecture"><td class="source-path">docs/arquitetura.md</td><td>Arquitetura documentada e responsabilidades.</td></tr><tr id="ref-dashboard"><td class="source-path">docs/dashboard.md</td><td>Uso do dashboard e interpretação dos estados.</td></tr><tr id="ref-operations"><td class="source-path">docs/operacao.md</td><td>Execução, retenção e recuperação.</td></tr></tbody></table></div><p class="revision">Código: a24588f93a715b92f4ef19939876bfa6ddd1c603</p></div></details><footer>Admin Metrics · Documentação v2 · aplicação 1.2.0 · HTML único · leitura offline</footer></div></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-fit" type="button">Ajustar à tela</button><button id="dialog-actual" type="button" class="is-active">Tamanho real</button><button id="dialog-close" type="button">Fechar</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>(() => {
   const lang = document.documentElement.lang.startsWith('pt');
   const words = lang
     ? {copy:'Copiar',copied:'Copiado',failed:'Selecione e copie o código',found:'seção encontrada',foundPlural:'seções encontradas'}
@@ -2155,17 +2260,45 @@ gh release download $tag --repo alebitencourtx/admin-metrics --pattern state.zip
   }
 
   const dialog = document.querySelector('#diagram-dialog');
+  const dialogCanvas = document.querySelector('#dialog-canvas');
+  const btnFit = document.querySelector('#dialog-fit');
+  const btnActual = document.querySelector('#dialog-actual');
   let trigger;
+
+  function setDialogMode(mode) {
+    if (mode === 'fit') {
+      dialogCanvas.classList.add('is-fit');
+      dialogCanvas.classList.remove('is-actual');
+      btnFit?.classList.add('is-active');
+      btnActual?.classList.remove('is-active');
+    } else {
+      dialogCanvas.classList.remove('is-fit');
+      dialogCanvas.classList.add('is-actual');
+      btnActual?.classList.add('is-active');
+      btnFit?.classList.remove('is-active');
+    }
+  }
+
+  btnFit?.addEventListener('click', () => setDialogMode('fit'));
+  btnActual?.addEventListener('click', () => setDialogMode('actual'));
+
   document.querySelectorAll('[data-expand-diagram]').forEach(button => {
     button.addEventListener('click', () => {
       trigger = button;
       const figure = button.closest('figure');
       const svg = figure.querySelector('svg').cloneNode(true);
       reprefixSvg(svg, 'dialog-svg-');
-      svg.style.width = svg.getAttribute('data-natural-width') + 'px';
-      document.querySelector('#dialog-canvas').replaceChildren(svg);
-      document.querySelector('#dialog-title').textContent = figure.querySelector('figcaption').textContent;
+      const naturalWidth = parseFloat(svg.getAttribute('data-natural-width')) || 800;
+      svg.style.width = naturalWidth + 'px';
+      dialogCanvas.replaceChildren(svg);
+      document.querySelector('#dialog-title').textContent = figure.querySelector('figcaption')?.textContent || '';
       dialog.showModal();
+      // Se a largura natural for significativamente maior que o canvas útil, abre inicialmente ajustado
+      if (naturalWidth > (dialogCanvas.clientWidth || 900)) {
+        setDialogMode('fit');
+      } else {
+        setDialogMode('actual');
+      }
     });
   });
   document.querySelector('#dialog-close').addEventListener('click', () => dialog.close());

@@ -64,30 +64,31 @@ Use a descriptive title after `mermaid`. Supported by the pinned Beautiful Merma
 
 ### Diretrizes de Desenho de Solução e Arquitetura
 
-1. **Proibição Expressa de Diagramas em Linha Reta Horizontal**:
-   - É **estritamente proibido** construir diagramas de arquitetura, fluxo de processamento ou esteiras em linha reta horizontal longa (`flowchart LR` contínuo com mais de 3 nós).
-   - Linhas horizontais longas causam transbordamento severo da viewport em telas padrão (desktop 1080p e mobile), obrigando rolagem horizontal cansativa e quebrando o rastreamento visual do leitor.
+1. **Controle de Enquadramento e Orientação de Diagramas**:
+   - Evite correntes horizontais lineares excessivamente longas que ultrapassem 1.200px de largura e forcem rolagem horizontal penosa em telas desktop convencionais.
+   - Diagramas compactos e focados (com até 4-5 nós e largura natural de até ~900–1.000px) podem utilizar `flowchart LR` sem restrições.
+   - Em soluções arquiteturais complexas com múltiplos regimes e stores, utilize a **matriz bidimensional estruturada**.
 
-2. **Padrão Obrigatório: Matriz Arquitetural 2D (Entradas + Estágios Empilhados)**:
-   - Diagramas de solução e fluxo devem ser organizados como uma **matriz bidimensional estruturada**:
-     - **Coluna Lateral Esquerda (`ENTRADAS`)**: Fontes de dados, eventos externos, arquivos brutos ou cadastros auxiliares (`subgraph ENTRADAS ["ENTRADAS"] direction TB`).
-     - **Estágio Superior (`STAGE1` ou `ESTAGIO1`)**: Processamento contínuo / tempo real / validação rápida (`direction LR` com 3 a 4 nós compactos).
-     - **Estágio Inferior (`STAGE2` ou `ESTAGIO2`)**: Processamento em lote / modelagem dimensional / serving e analytics (`direction LR` com 3 a 4 nós compactos).
-     - **Conexões Inter-estágios Verticais**: Setas verticais unindo os dois andares (ex.: Data Lake persistido no Estágio 1 lido pelo Staging do Estágio 2, e notificações/confirmações em linha tracejada).
-   - **Aspect Ratio Ideal**: O diagrama 2D atinge proporção retangular equilibrada (~2:1 a ~3:1), eliminando a "torre vertical infinita" (`flowchart TD` ingênuo) e o "transbordamento horizontal infinito" (`flowchart LR` contínuo).
-   - **Passos Numerados**: Identifique cada estágio ou nó sequencial com marcadores circulares Unicode (①, ②, ③, ④, ⑤...) no título para explicitar sem ambiguidade a ordem temporal ou de dependência.
-   - **Subtítulos Descritivos com `<small>`**: Cada nó de arquitetura deve apresentar rótulo estruturado com título conciso e papel técnico em linha secundária (ex.: `node["② Ingestão Batch<br><small>Workers assíncronos e idempotentes</small>"]`).
-   - **Legendas Semânticas Padronizadas (`.figure-legend`)**: Logo abaixo de diagramas com múltiplas classes de nós ou tipos de conexões, insira um contêiner `.figure-legend` com badges de cores e linhas:
+2. **Padrão Recomendado: Matriz Arquitetural 2D (Entradas + Estágios Empilhados)**:
+   - Diagramas de arquitetura ampla de dados devem ser organizados como uma **matriz bidimensional**:
+     - **Coluna Lateral Esquerda (`subgraph ENTRADAS direction TB`)**: Fontes de dados, eventos externos, arquivos brutos ou cadastros de suporte.
+     - **Andar Superior (`subgraph INGEST_STREAM direction LR`)**: Processamento contínuo / streaming / ingestão em tempo real (3 a 4 nós compactos).
+     - **Andar Inferior (`subgraph BATCH_SERVING direction LR`)**: Processamento em lote / modelagem analítica / data warehouse e BI (3 a 4 nós compactos).
+     - **Conexões Inter-estágios Verticais**: Setas verticais unindo os dois andares (ex.: partição persistida no storage lida pelo staging analítico, e sinais de coordenação em linha tracejada).
+   - **Aspect Ratio Equilibrado**: A matriz 2D atinge proporção retangular harmoniosa (~1,5:1 a ~2,5:1), eliminando tanto a torre vertical excessiva quanto o transbordamento horizontal.
+   - **Passos Numerados nas Ações**: Identifique as ações de execução com marcadores circulares Unicode (①, ②, ③, ④, ⑤...) no título para explicitar sem ambiguidade a ordem do fluxo. Fontes e armazenamentos não devem ser numerados como ações.
+   - **Subtítulos Descritivos com `<small>`**: Cada nó de arquitetura deve apresentar rótulo estruturado com título conciso e papel técnico em linha secundária (ex.: `node["② Ingestão Batch<br><small>Workers assíncronos e idempotentes</small>"]`). O builder pós-processa classes `.node-title` e `.node-subtitle` para garantir hierarquia tipográfica no SVG.
+   - **Legendas Semânticas Padronizadas (`.figure-legend`)**: Logo abaixo de diagramas com múltiplos tipos de nós ou conexões, inclua um contêiner `.figure-legend` com badges de cores e linhas:
      ```html
      <div class="figure-legend">
-       <span class="legend-item"><span class="badge badge-danger"></span> Dados em Tempo Real / Streaming</span>
+       <span class="legend-item"><span class="badge badge-danger"></span> Ingestão Contínua / Streaming</span>
        <span class="legend-item"><span class="badge badge-info"></span> Camada Analítica / DW / Lote</span>
        <span class="legend-item"><span class="badge badge-neutral"></span> Fontes de Entrada</span>
-       <span class="legend-item"><span class="line-dashed"></span> Leitura de Metadados / Gatilhos</span>
-       <span class="legend-item"><span class="line-solid"></span> Fluxo Contínuo de Dados</span>
+       <span class="legend-item"><span class="line-dashed"></span> Metadados / Gatilhos de Orquestração</span>
+       <span class="legend-item"><span class="line-solid"></span> Fluxo Físico de Dados</span>
      </div>
      ```
-   - **Nota Técnica de Rodapé**: Logo abaixo da legenda, adicione um parágrafo conciso com métricas reais de execução (ex.: janelas de micro-lote, horários de DAG, volumes e particionamento).
+   - **Nota Técnica de Rodapé**: Logo abaixo da legenda, adicione um parágrafo conciso com métricas reais de execução (ex.: janelas de micro-lote, frequência das DAGs, volumes e particionamento).
 
 Architecture names components and boundaries; flow names actions and decisions; ER names entities, keys and established cardinalities; lineage describes transformations. Never invent foreign keys for aggregation or view derivation. Identify logical vs physical models. An overview can show essential attributes; full dictionaries belong below.
 

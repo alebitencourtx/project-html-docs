@@ -140,17 +140,45 @@
   }
 
   const dialog = document.querySelector('#diagram-dialog');
+  const dialogCanvas = document.querySelector('#dialog-canvas');
+  const btnFit = document.querySelector('#dialog-fit');
+  const btnActual = document.querySelector('#dialog-actual');
   let trigger;
+
+  function setDialogMode(mode) {
+    if (mode === 'fit') {
+      dialogCanvas.classList.add('is-fit');
+      dialogCanvas.classList.remove('is-actual');
+      btnFit?.classList.add('is-active');
+      btnActual?.classList.remove('is-active');
+    } else {
+      dialogCanvas.classList.remove('is-fit');
+      dialogCanvas.classList.add('is-actual');
+      btnActual?.classList.add('is-active');
+      btnFit?.classList.remove('is-active');
+    }
+  }
+
+  btnFit?.addEventListener('click', () => setDialogMode('fit'));
+  btnActual?.addEventListener('click', () => setDialogMode('actual'));
+
   document.querySelectorAll('[data-expand-diagram]').forEach(button => {
     button.addEventListener('click', () => {
       trigger = button;
       const figure = button.closest('figure');
       const svg = figure.querySelector('svg').cloneNode(true);
       reprefixSvg(svg, 'dialog-svg-');
-      svg.style.width = svg.getAttribute('data-natural-width') + 'px';
-      document.querySelector('#dialog-canvas').replaceChildren(svg);
-      document.querySelector('#dialog-title').textContent = figure.querySelector('figcaption').textContent;
+      const naturalWidth = parseFloat(svg.getAttribute('data-natural-width')) || 800;
+      svg.style.width = naturalWidth + 'px';
+      dialogCanvas.replaceChildren(svg);
+      document.querySelector('#dialog-title').textContent = figure.querySelector('figcaption')?.textContent || '';
       dialog.showModal();
+      // Se a largura natural for significativamente maior que o canvas útil, abre inicialmente ajustado
+      if (naturalWidth > (dialogCanvas.clientWidth || 900)) {
+        setDialogMode('fit');
+      } else {
+        setDialogMode('actual');
+      }
     });
   });
   document.querySelector('#dialog-close').addEventListener('click', () => dialog.close());

@@ -29,20 +29,28 @@ Evoluções visuais, reengenharia de gráficos, modernização do Design System 
 - **Sincronização de Scroll da Sidebar**: Integração no `IntersectionObserver` de `assets/document.js` para rolar automaticamente o link ativo da barra lateral para a área visível (`activeLink.scrollIntoView({ block: 'nearest', behavior: 'smooth' })`).
 - **Otimização para Impressão A4**: Adição de `tr { break-inside: avoid; }` e `h2, h3, h4 { break-after: avoid; }` no bloco `@media print` para prevenir quebra de linhas e títulos órfãos.
 
+### Visualização de Arquitetura e Inspeção no Desktop
+
+- **Modal de Ampliação Interativo com Controles de Escala**: Inclusão de botões "Ajustar à tela" (*Fit*) e "Tamanho real" (*100%*) no cabeçalho do `<dialog id="diagram-dialog">`, permitindo que diagramas e matrizes panorâmicas sejam inspecionados em sua totalidade de uma só vez, com alternância imediata para tamanho natural.
+- **Eliminação de Inflação Artificial de Diagramas**: Remoção do multiplicador arbitrário `* 1.15` e da restrição forçada de `min-width: 90%` em `scripts/build.mjs`, assegurando que o SVG mantenha dimensões naturais sem transbordamento forçado da viewport desktop.
+- **Hierarquia Tipográfica Real em Nós (Pós-processamento de SVG)**: Classificação automática de títulos e subtítulos gerados a partir de `<small>` com `.node-title` e `.node-subtitle`, garantindo peso e tamanho de fonte distintos sem degradação do texto.
+- **Subgraphs Semânticos Agnósticos a Projetos**: Estilização visual em tons pastel para subgraphs de esteiras de dados baseada em convenções genéricas de engenharia (`stream`/`realtime`/`ingest` em tons quentes suaves, `batch`/`dw`/`analytics`/`serving` em azul analítico suave, e `input`/`source`/`entrada` com bordas tracejadas discretas).
+- **Diretrizes Arquiteturais 2D Agnósticas**: Documentação de padrões em `references/authoring.md` e `references/data-engineering.md` orientando a divisão lógica em Entradas (esquerda), Regimes Funcionais Empilhados (tempo real vs. lote) e Consumo (direita), eliminando proibições rígidas dogmáticas e estabelecendo foco na experiência desktop.
+
 ### Padrão de Desenho da Solução em Estágios 2D Empilhados
 
-- **Proibição Expressa de Diagramas Retilíneos Horizontais**: Proibição estrita de diagramas de arquitetura e esteiras de processamento contínuos em linha reta horizontal (`flowchart LR` contínuo com mais de 3 nós).
-- **Estruturação Obrigatória em Estágios Empilhados (2D)**:
-  - Decomposição vertical em camadas com `subgraph` temáticos funcionais (Origem/Ingestão, Validação/Stage, Processamento/Regras, Armazenamento/Contratos, Consumo/Analytics).
-  - Marcadores numéricos circulares sequenciais (①..⑤) nos títulos dos nós explicitando o fluxo temporal e de dependências.
+- **Controle de Enquadramento e Orientação de Diagramas**: Orientação para evitar esteiras horizontais excessivamente longas (>1.200px), reservando `flowchart LR` para diagramas compactos e matrizes 2D para arquiteturas complexas.
+- **Estruturação em Estágios Empilhados (2D)**:
+  - Decomposição em camadas funcionais com `subgraph` temáticos (Entradas à esquerda, Streaming/Ingestão no topo, Batch/Serving na base).
+  - Marcadores numéricos circulares sequenciais (①..⑤) nos títulos dos nós de ação explicitando o fluxo temporal e de dependências (sem numerar fontes ou stores).
   - Subtítulos técnicos padronizados com `<small>` detalhando formato, particionamento e responsabilidade técnica dos componentes.
-  - Inclusão obrigatória de legendas semânticas via `.figure-legend` para comunicação de tipos de canais, armazenamento e fluxos de exceção.
+  - Inclusão de legendas semânticas via `.figure-legend` para comunicação de tipos de canais, armazenamento e fluxos de exceção.
 
 ### Contratos e Documentação Técnica
 
-- Atualização de `references/authoring.md` com as novas diretrizes obrigatórias de arquitetura em estágios 2D empilhados, legendas semânticas via `.figure-legend` e especificações completas do componente `barChart`.
-- Atualização de `references/data-engineering.md` com a proibição de pipelines horizontais lineares, padrão obrigatório de esteiras em estágios funcionais empilhados, subtítulos técnicos com metadados/formatos e métricas de dados com variantes semânticas.
-- Atualização de `SKILL.md` refletindo todas as melhorias visuais, de gráficos e de desenho de solução da versão 1.2.0.
+- Atualização de `references/authoring.md` com as diretrizes de arquitetura em estágios 2D empilhados, legendas semânticas via `.figure-legend` e especificações do componente `barChart`.
+- Atualização de `references/data-engineering.md` com diretrizes para esteiras de dados em estágios funcionais empilhados, subtítulos técnicos com metadados/formatos e métricas de dados com variantes semânticas.
+- Atualização de `package.json` para versão 1.2.0 alinhada ao `SKILL.md`.
 
 ## 1.1.0 — 2026-11-14
 

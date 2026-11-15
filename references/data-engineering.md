@@ -12,21 +12,21 @@ Separate execution order, lineage and association. List all composite-key compon
    - É **terminantemente proibido** documentar pipelines e esteiras de dados como uma cadeia horizontal contínua e plana (`flowchart LR` contínuo com mais de 3 nós).
    - Fluxos horizontais extensos quebram a responsividade em telas desktop e mobile, forçando rolagem lateral excessiva e ocultando estágios finais do processamento.
 
-2. **Diretriz Obrigatória: Matriz Arquitetural 2D (Entradas + Andares Empilhados)**:
-   - Toda esteira de engenharia de dados deve ser modelada como uma matriz funcional:
-     - `ENTRADAS`: Fontes de dados, eventos externos, arquivos brutos ou cadastros auxiliares à esquerda.
-     - `ESTÁGIO 1`: Ingestão contínua / streaming / micro-lotes / data lake em tempo real (bloco superior).
-     - `ESTÁGIO 2`: Carga em lote / orquestração / modelagem dimensional dbt / DW e BI (bloco inferior).
-     - Setas verticais interligando partições do lake ao staging do armazém e feedback operacional.
-   - **Passos Numerados Sequenciais**: Prefixar títulos de nós com marcadores circulares ①..⑦ para explicitar o fluxo causal dos dados.
-   - **Subtítulos Técnicos com `<small>`**: Identificar em cada nó o formato, particionamento e tecnologia envolvida (ex.: `node["③ Data Lake GCS<br><small>Parquet particionado por month/day/hour</small>"]`).
+2. **Diretriz Recomendada: Matriz Arquitetural 2D (Entradas + Andares Empilhados)**:
+   - Esteiras abrangentes de engenharia de dados devem ser modeladas como uma matriz funcional:
+     - `ENTRADAS / INPUTS`: Fontes de dados, eventos externos, arquivos brutos ou cadastros auxiliares à esquerda.
+     - `ESTÁGIO 1 (STREAMING / INGESTÃO)`: Ingestão contínua, micro-lotes, validação de schema e persistência bruta/bronze (andar superior).
+     - `ESTÁGIO 2 (BATCH / SERVING)`: Carga em lote, orquestração, transformações de negócio, data warehouse e camadas analíticas de consumo (andar inferior).
+     - Setas verticais interligando partições persistidas ao staging analítico e feedback operacional.
+   - **Passos Numerados em Ações de Processamento**: Prefixar títulos de nós de execução com marcadores circulares ①..⑤ para explicitar a ordem causal dos dados. Entradas, catálogos e armazenamentos físicos não devem ser numerados como ações.
+   - **Subtítulos Técnicos com `<small>`**: Identificar em cada nó o formato, particionamento e tecnologia envolvida (ex.: `node["② Transformação Silver<br><small>Tabela Delta / Particionado por dt_referencia</small>"]`). O builder atribui automaticamente classes `.node-title` e `.node-subtitle` para garantir hierarquia tipográfica no SVG.
    - **Legendas Semânticas (`.figure-legend`)**: Incluir logo abaixo do diagrama legenda identificando convenções de armazenamento, lote vs streaming, e caminhos de exceção:
      ```html
      <div class="figure-legend">
-       <span class="legend-item"><span class="badge badge-danger"></span> Ingestão Streaming Contínua</span>
+       <span class="legend-item"><span class="badge badge-danger"></span> Ingestão Streaming / Tempo Real</span>
        <span class="legend-item"><span class="badge badge-info"></span> Camada Analítica / DW / Lote</span>
        <span class="legend-item"><span class="badge badge-neutral"></span> Fontes de Entrada</span>
-       <span class="legend-item"><span class="line-dashed"></span> Leitura de Metadados / Gatilhos</span>
+       <span class="legend-item"><span class="line-dashed"></span> Metadados / Gatilhos de Orquestração</span>
        <span class="legend-item"><span class="line-solid"></span> Fluxo Físico de Dados</span>
      </div>
      ```
