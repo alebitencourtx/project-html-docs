@@ -221,11 +221,15 @@ test('generated HTML defaults to the red theme, exposes Vermelho/Azul in order a
   assert.equal((await render('legacy-default')).$('html').attr('data-theme'),'azul');
 }));
 
-test('table wrappers do not trap page wheel scrolling',()=>fixture(async dir=>{
+test('table wrappers do not trap page wheel scrolling and scroll ergonomics are sound',()=>fixture(async dir=>{
   const out=path.join(dir,'scroll.html');
   await build(path.join(root,'examples/minimal/document.json'),out);
   const html=await fs.readFile(out,'utf8');
   assert.ok(!/overscroll-behavior\s*:\s*contain/i.test(html),'Table wrappers must not contain wheel scrolling');
+  assert.ok(!/html\s*\{\s*scroll-behavior:\s*smooth;\s*\}/i.test(html),'Global smooth scroll must be removed');
+  assert.match(html,/\.diagram-scroll\s*\{[^}]*overflow-y:\s*hidden/i,'Diagram scroll must isolate vertical pointer drift');
+  assert.match(html,/\.table-wrap\s*\{[^}]*overflow-y:\s*visible/i,'Table wrap must have overflow-y visible');
+  assert.match(html,/scrollIntoView\(/i,'Anchor clicks must invoke scrollIntoView');
 }));
 
 test('v1.5.0 build & validate: H3 subnav, back-to-top, H1 guard, authoring warnings, and SVG structural audit',()=>fixture(async dir=>{

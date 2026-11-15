@@ -371,6 +371,7 @@
     if (el) { search.value = ''; filter(); openAncestors(el); el.scrollIntoView(); }
   }
   window.addEventListener('hashchange', revealHash);
+  window.addEventListener('popstate', revealHash);
   if (location.hash) requestAnimationFrame(revealHash);
   document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
     if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -379,21 +380,28 @@
     if (!rawHref || rawHref === '#') return;
     const targetId = decodeURIComponent(rawHref.slice(1));
     const el = targetId ? document.getElementById(targetId) : null;
+    if (mobileMq.matches && a.closest('.sidebar')) setDrawerOpen(false);
     if (el) {
       e.preventDefault();
       search.value = '';
       filter();
       openAncestors(el);
-      el.scrollIntoView({ behavior: 'smooth' });
+      const prefersReduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+      el.scrollIntoView({ behavior: prefersReduce ? 'auto' : 'smooth' });
+      if (a.classList.contains('skip')) {
+        el.setAttribute('tabindex', '-1');
+        el.focus?.({ preventScroll: true });
+      }
       try {
-        if (history.pushState) {
-          history.pushState(null, '', rawHref);
-        } else {
-          location.hash = rawHref;
+        if (location.hash !== rawHref) {
+          if (history.pushState) {
+            history.pushState(null, '', rawHref);
+          } else {
+            location.hash = rawHref;
+          }
         }
       } catch {}
     }
-    if (mobileMq.matches && a.closest('.sidebar')) setDrawerOpen(false);
   }));
 
   // Copia com clipboard; se o navegador negar, tenta execCommand e por fim
@@ -589,7 +597,10 @@
     const syncTopBtn = () => { backToTop.hidden = window.scrollY < 420; };
     syncTopBtn();
     window.addEventListener('scroll', syncTopBtn, { passive: true });
-    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    backToTop.addEventListener('click', () => {
+      const prefersReduce = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+      window.scrollTo({ top: 0, behavior: prefersReduce ? 'auto' : 'smooth' });
+    });
   }
 
   function setActiveNav(id) {
