@@ -5,3 +5,5 @@ tests/.output/
 .playwright-cli/
 __pycache__/
 *.pyc
+dist/
+

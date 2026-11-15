@@ -5,48 +5,70 @@ description: Document an existing software or data-engineering project for busin
 
 # Project HTML Docs
 
-Describe the project's **current implemented state**. Deliver one offline HTML file; keep editable inputs in Markdown, JSON and diagram text. A nontechnical reader should understand purpose, outputs and usage before implementation details.
+Document a repository's **current implemented state** as one self-contained, offline HTML manual backed by editable Markdown, JSON, and diagram text. Explain purpose, outputs, rules, and usage for non-technical readers before implementation details.
+
+## References (Read on Demand)
+
+- [Authoring contract](references/authoring.md) — manifest schema, Markdown/callout/table rules, validation, and incremental updates.
+- [Diagrams, charts & UI](references/diagrams.md) — deterministic 2D `solution`/`flow`/`schema` specs, `mermaid`, `chart`, and desktop/mobile ergonomics.
+- [Data engineering profile](references/data-engineering.md) — PySpark, Databricks, Delta Lake, Cosmos DB, Event Hubs, ADLS Gen2, and APIs.
+- [Tools and scope](references/tools.md) — pinned runtime dependencies and build-time scope.
+- Starter template: [examples/minimal/document.json](examples/minimal/document.json) and [examples/minimal/content.md](examples/minimal/content.md).
+
+Resolve `<skill>` to the directory containing this SKILL.md; it is not the target repository or the shell working directory. Resolve user input/output paths from the caller's working directory.
+
+## Prerequisites
+
+- **Authoring only**: Node.js `>= 22` and Python `>= 3.10` (for repository inspection). Readers only need a browser.
+- **First-time install**: `npm ci --ignore-scripts --prefix "<skill>"` (run `node "<skill>/scripts/cli.mjs" doctor` to check environment readiness).
 
 ## Workflow
 
-1. Establish the repository and output. Keep existing documentation unless replacement was requested. Read [authoring](references/authoring.md); for data pipelines, analytics, cloud/streaming (PySpark, Databricks, Cosmos DB, Event Hubs, Blob/ADLS) and APIs also read [data engineering](references/data-engineering.md).
-2. Map the repository deterministically (zero LLM tokens):
-   - **New documentation**: run `python <skill>/scripts/inspect_repo.py <repo> --out <work>/inventory.json --plan <work>/reading-plan.md`. This generates a complete static dossier (`scaleProfile`, `entrypoints`, `adfPipelines`, `envAndCliParams`, `endpoints`, `notebooks`, `dataContracts`, `sqlLineage`, `iacResources`, `dependencyGraph` including `%run`/`dbutils.notebook.run`/`adf_activity`, `symbolIndex`, `testsIndex`, `readingWaves`) and a prioritized `reading-plan.md` without executing code (auto-skipping skill artifacts, masking inline secrets/workflow tokens, and respecting `.docignore` globs, `!negations`, and `/`-anchored paths).
-   - **Updating existing documentation**: first re-run `inspect_repo.py` above, then run `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json --impact --dossier <work>/inventory.json --plan <work>/update-plan.md`. Read `update-plan.md`: if code/sources changed, inspect and update **only** changed sources, their transitive graph dependents and `stale` sections before rebuilding; if **only** the skill renderer/template changed (`renderer.needsRebuild: true` with all sources synced), skip repository re-reading and prose edits and jump straight to `build.mjs ... --force` to apply the updated HTML/CSS/JS/diagrams.
-3. Read selectively using `<work>/reading-plan.md` (**Evidence-First Reading**):
-   - Follow Wave order (`Onda 1` Entrypoints/Configs/Workflows → `Onda 2` Core Pipeline/Streaming/APIs → `Onda 3` Schemas/SQL/Notebooks/IaC).
-   - For files `> 200` lines, use the `symbolIndex` line ranges (`[Lstart-Lend]`) to slice critical functions/contracts instead of dumping whole files blindly.
-   - Use `testsIndex` (`Onda 4`) and extracted `inlineConfigs` rather than reading entire test suites upfront; open test bodies only when verifying an ambiguous business rule or edge case.
-   - When `scaleProfile.tier` is `"large"` (`> 120` core files or `> 25k` lines), split reading by graph domain boundaries (e.g., Ingestion/Streaming, Transform/SQL, Serving/Cosmos/API, Infra/CI) to gather line-cited fact packs (`file:line`) before authoring prose.
-   - Resolve contradictions using the implementing path. Historical plans do not prove implementation. Do not execute collection jobs or alter production to populate documentation.
-4. Write `<work>/document.json` and `<work>/content.md` (or `<work>/document-summary.json` + `<work>/content-summary.md` with `"mode": "summary"` when the user asks for a **Quick Guide / Resumida** view). Follow the [runnable example](examples/minimal/content.md) and [manifest](examples/minimal/document.json). Markdown H2 headings match manifest titles in order. Select sections by applicability—retaining all existing reader-journey categories without removing any section in `full` mode, or distilling to 5–6 high-signal sections (`~5–7 min` read, zero encyclopedic dictionaries) in `summary` mode—and distribute `audience` tags meaningfully across `all`, `business`, `technical` and `operations`. **Populate `sections[].sources`** with the supporting source IDs for every section so `--impact` can track section-level drift on future updates. Distinguish code/local-snapshot dates clearly in `dataAsOf` when live production telemetry is not in scope. Use the 4 Hero `cards` in data projects to answer: **Origins**, **Cadence / Window**, **Final Delivery / Grain** and **Scope / Limits**. Optionally set `"companionDoc": { "href": "...", "label": "..." }` to cross-link a Summary Quick Guide and its companion Full Manual.
-5. Install once: `npm ci --ignore-scripts --prefix <skill>`. Generate: `node <skill>/scripts/build.mjs <work>/document.json --out <work>/documentacao-v2.html` (add `--mode summary` or `"mode": "summary"` in the manifest when building a Quick Guide). Node 22+ is needed only for authoring. Readers need a browser, not a server. The builder refuses overwriting; `--force` is for a deliberate update of the requested output.
-6. Verify the document against its sources: `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json` compares source hashes, authoring artifact hashes (`manifestSha256`, `inputSha256`, `htmlSha256`), the Git revision (distinguishing doc-only commits via `sourceDrift`), and the skill renderer hash (`rendererSha256`) with the receipt (add `--impact --dossier <work>/inventory.json` during updates). Use `--strict` in CI.
-7. Read the validation receipt, inspect both **desktop** (~1440 px) and **mobile** (~390 px) layouts, and exercise the collapsible mobile sidebar drawer (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, focus trap/`inert`, `#mobile-search-btn`), search (and all-occurrence highlight/clear), audience profile filters, table dictionary search, expansion, copy, diagram enlargement/zoom and print. Once browser inspection passes with zero defects, run `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json --mark-reviewed` to stamp `browserReviewed: true` in the receipt. Deliver the HTML and disclose concrete unverified behavior.
+1. **Discover & scope (zero LLM tokens)**
+   - **New docs**:
+     ```bash
+     node "<skill>/scripts/cli.mjs" inspect <repo> --out <work>/inventory.json --plan <work>/reading-plan.md
+     ```
+     Respects `.docignore`, redacts secrets, and builds a 4-wave reading plan without executing project code.
+   - **Updating existing docs**: first re-run `inspect`, then run:
+     ```bash
+     node "<skill>/scripts/cli.mjs" verify <work>/document.json <work>/documentacao.validation.json --impact --dossier <work>/inventory.json --plan <work>/update-plan.md
+     ```
+     Read `update-plan.md`: inspect and edit **only** changed sources, transitive dependents, and `stale` sections. If **only** the skill renderer changed (`renderer.needsRebuild: true` with all sources synced), skip reading/prose edits and jump directly to step 4 with `--force`.
+2. **Read selectively from `reading-plan.md`**
+   - Follow Waves (`Onda 1` Entrypoints/Configs → `Onda 2` Core/Pipelines/APIs → `Onda 3` Schemas/SQL/IaC).
+   - For files `> 200` lines, read targeted `symbolIndex` ranges (`[Lstart-Lend]`); check `testsIndex` (`Onda 4`) only when resolving an ambiguous rule. For `scaleProfile.tier === "large"`, gather line-cited fact packs (`file:line`) by domain boundary.
+   - Resolve contradictions from the implementing path; never treat historical plans as implemented behavior or run production jobs.
+3. **Author inputs**
+   - Write `<work>/document.json` and `<work>/content.md` (or `document-summary.json` + `content-summary.md` with `"mode": "summary"` for a 5–7 min Quick Guide; use `companionDoc` to cross-link them).
+   - Match Markdown `## H2` headings to `sections[].title` in order; keep H3s for sidebar subnavigation; never use H1 in Markdown.
+   - Populate `sections[].sources` on every section for `--impact` tracking, distribute `audience` across `all`, `business`, `technical`, and `operations`, and, for data projects, frame up to 4 Hero cards around **Origins**, **Cadence / Window**, **Delivery / Grain**, and **Scope / Limits**.
+   - Keep extensive field dictionaries inside nested `<details>` blocks, explain business rules with worked matrices and semantic blockquotes (`> Regra de negócio:`, `> Exemplo prático:`, `> Atenção:`, `> Limitação:`), and prefer `solution` / `flow` / `schema` 2D diagrams over flat horizontal chains (`> 3` nodes). See [authoring](references/authoring.md) and [diagrams](references/diagrams.md).
+4. **Build offline HTML & receipt**
+   ```bash
+   node "<skill>/scripts/cli.mjs" build <work>/document.json --out <work>/documentacao.html [--mode full|summary] [--force]
+   ```
+   Compiles HTML + `<out>.validation.json` atomically after AJV schema, URL safety, LaTeX, and SVG checks pass (never overwrites without `--force`).
+5. **Verify hashes & contracts**
+   ```bash
+   node "<skill>/scripts/cli.mjs" verify <work>/document.json <work>/documentacao.validation.json --strict
+   ```
+6. **Review in a real browser & sign off**
+   - Inspect both **desktop** (~1440 px) and **mobile** (~390 px): confirm zero horizontal page overflow, mobile drawer (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, `inert`/focus trap, `#mobile-search-btn`), search highlights, audience filters, table search/print, theme switch (`Vermelho`/`Azul`), and diagram modal Fit/Zoom.
+   - After passing browser inspection, stamp the receipt:
+     ```bash
+     node "<skill>/scripts/cli.mjs" verify <work>/document.json <work>/documentacao.validation.json --mark-reviewed
+     ```
 
-## Decisions
+## Core Rules & Boundaries
 
-- Explain business rules in plain language, then give conditions/calculation, worked numerical cases and interpretation matrices (`Situação / Condição | Resultado | Leitura`). Separate using the product (e.g., dashboard or API consumer flow), querying/consuming outputs (e.g., copyable SQL/PySpark/Parquet/Cosmos recipes) and running the pipeline (`Como executar`). Use 3-column `<div class="cards">` summary blocks inside key sections for quick reading framing, and typed Markdown blockquotes (`> Regra de negócio:`, `> Exemplo prático:`, `> Atenção:`, `> Limitação:`) so non-technical and technical readers visually distinguish rules, numerical walkthroughs, warnings and constraints.
-- For **Cloud Data Engineering, Streaming & APIs** (PySpark, Databricks notebooks/bundles, Delta Lake, Azure Cosmos DB, Event Hubs, Blob/ADLS Gen2, FastAPI/Flask/REST), explicitly document write modes (`append`, `overwrite`, `merge`, `complete`/`update`), `partitionBy` / Cosmos `partition_key`, Event Hubs consumer group + `checkpointLocation`, Databricks `trigger` (`availableNow` vs `processingTime`), Unity Catalog / `abfss://` locations, API routes/methods/rate limits, and `dbutils.secrets` / Managed Identity scopes without exposing secrets.
-- Use architecture, processing and data relationships as distinct views when applicable:
-  - **Deterministic 2D Diagrams (v1.3.0 Recommended)**:
-    - `solution` fences render strict 2D grid architectures (left `inputs` column + stacked `zones` such as `warm`/`cool`/`teal`, rich multi-line cards with ①..⑤ step badges, inline `` `code` `` chips, metadata pills, cylinders, marginal `callouts`, bottom/top gutter channels, `.figure-legend` and operational `note`).
-    - `flow` fences render staged workflows with compact decision cards (no oversized diamonds), colored `yes`/`no` branch pills, and clean retry/fallback channels.
-    - `schema` / `erd` fences render typed entity cards (`table`, `mart`, `json`, `external`) with explicit `grain`, natural `[PK/FK/UK] column_name — type` ordering, zebra rows, Crow's Foot cardinalities and dashed `lineage` derivations.
-  - **`mermaid` fences (Backward Compatible)**: Produce embedded SVG via Beautiful Mermaid, enhanced at build time with rounded ER cards, natural `[PK/FK] name — type` order, semantic `Sim`/`Não` branch badges and state status colors. Never draw single-line horizontal architectures (`flowchart LR` continuous with >3 nodes); use stacked 2D stages. See [authoring](references/authoring.md) and [data engineering](references/data-engineering.md).
-- Charts need a real question, unit and source. Numerical snapshots need their date; fictional examples must be labeled. Never invent telemetry or turn absence into zero.
-  - **Bar Chart Reengineering (v1.2.0)**: Values are rendered with Gestalt proximity (inside long bars >= 64px or connected by dotted guide lines), discrete scale gridlines (25%, 50%, 75%, 100% ticks), explicit semantic zero handling (`0 (zero)` badge/text instead of crude lines), optional semantic color variants (`variant`: warning, danger, success, neutral, accent), and offline accessible `<title>` tooltips in `<g class="chart-row">`. Embedded `<details>` tables adapt fluidly without forced width penalties.
-- Keep core explanations visible. Group extensive field dictionaries, enumerations and parameter tables into nested native `details` blocks inside the Data Dictionary section (all tables `>= 8` rows—including those inside nested `details`—automatically receive a local filter input, and inline code badges `` `PK` ``, `` `FK` ``, `` `UK` ``, `` `PARTIÇÃO` ``, `` `PII` ``, `` `NOT NULL` `` inside table cells are styled semantically). Use recognizable navigation categories—never remove any existing category from the reader journey when applicable.
-- **Reading Ergonomics & Design System (v1.2.0–1.10.0)**: Support both **desktop (~1440 px) and responsive mobile (~390 px) reading** without constraining desktop tables, charts, or diagrams. On desktop (`> 960 px`), the 268 px left sidebar stays fixed alongside the content; on narrow/mobile viewports (`≤ 960 px`), the sidebar collapses off-canvas as a slide-over drawer controlled by a compact sticky mobile top bar (`#nav-toggle`, `#mobile-search-btn`, `#nav-close`, backdrop click, `Escape`, focus trap + responsive `inert` synchronization across breakpoints, and automatic close when navigating to a section), while toolbar filters stack into touch-friendly grids and wide tables, charts, and diagrams scroll horizontally inside their own containers without page overflow. Paragraphs, lists and callouts fill the full readable width of their section card so narrative text aligns cleanly with tables, diagrams and charts. Sidebar uses a flex column with an independent scrollable navigation area (never overlapping the bottom offline banner) and indented H3 subnavigation links under each H2 chapter, paired with a floating `#back-to-top` button. Write mathematical formulas using Unicode symbols and HTML tags (`×`, `÷`, `Δ`, `≤`, `≥`, `<sub>`, `<sup>`, `<code>`) rather than raw LaTeX (`$...$`, `$$...$$`), because the offline HTML ships no MathJax/KaTeX runtime (enforced by `validate.mjs`, along with `.card h3`/H4 nesting, URL protocol/control-char safety, SVG geometry/backtick/`??` audits). The toolbar includes an **Audience Reading Filter** (`All` / `Business view` / `Technical view` / `Operations`, synced with `aria-pressed`) that preserves all sections in the DOM while adjusting focus, plus a **Color Theme Selector** (**Vermelho** and **Azul**—red is first and the default; each palette harmonizes shell chrome, 2D `solution`/`schema` zones, nodes, lineage arrows, Mermaid SVG themes, and bar charts, while semantic success/warning/danger colors remain readable—persisted offline in `localStorage` on user toggle and configurable via `theme` in `document.json`). Tables feature local scrolling with truly sticky headers (`th { position: sticky }`) and automatic print restoration of locally filtered rows; short tables never trap page wheel scrolling. Search supports `/` or `Ctrl+K`, clear button (`×`) and all-occurrence term highlighting. Wide diagrams feature native CSS scroll shadows in `.diagram-scroll`, expanded pill collision avoidance and dedicated `bottom-inner` gutter lanes, inline `<code>` formatting in notes, hover/focus connection highlighting (in both page and modal), and modal Fit / 100% / Zoom (`−`/`+` monotonic from effective Fit scale with `%` readout) controls. Accordions use smooth rotating vector chevrons, and active sidebar items automatically sync inside the nav scroll area without jumping the page.
-- Preserve grain, identities, branching and edge meaning when simplifying diagrams. Split dense models into two focused `schema` diagrams (e.g., logical/raw state vs derived tabular projections/marts) rather than overcrowding one canvas or deleting meaningful relationships.
-- Describe limitations affecting correct interpretation. Do not add a defect backlog, maturity score, severity matrix or modernization plan unless requested. Sources support documentation, not an audit report.
-- When the repository cannot establish business purpose, ownership, deployment status or rationale, consult product context or ask for that specific missing fact. Code proves implementation, not a successful production run.
-- Never reproduce secret values found in code or configuration. Describe where they live (e.g., Key Vault / `dbutils.secrets` scope & key, env var names), their role and the need to rotate them; do not turn this into a security audit.
+- **Implemented state only**: code proves implementation, not production execution; state `dataAsOf` clearly and ask product context only for missing business ownership, rationale, or runtime status.
+- **No audits or redesigns**: document constraints affecting interpretation without inventing defect backlogs, maturity scores, or modernization roadmaps unless requested.
+- **No secrets & no fabricated numbers**: never reproduce secret values (name where they live, e.g. Key Vault, `dbutils.secrets`, env vars); date real snapshots and label fictional worked examples explicitly.
+- **Never copy facts across repositories**: every table, metric, and rule must come from the target codebase.
 
-## Portability and maintenance
+## Deliverables & Completion Criteria
 
-Agents without skill discovery can read this file as the entrypoint. Dependencies are pinned in `package-lock.json`; manifest paths are relative to the manifest. Never copy facts from another repository into a new document.
-
-The maintained visual and modular runtime components are `scripts/diagrams.mjs`, `scripts/lib/*`, `assets/document.css` and `assets/document.js`. Prefer them to per-project CSS. The toolbar exposes the **Vermelho** (first and default) and **Azul** themes with themed SVG diagram palette harmonization, and removes table-wrapper wheel containment so short tables never trap page scrolling. Version 1.5.0+ added deterministic pill-collision avoidance, H3 sidebar subnavigation with `#back-to-top`, SVG structural validation, deeper cloud/data-engineering dossier extractors (`scripts/inspector/*`), formal `schemas/diagram.schema.json` validation, and canonical LF receipts while retaining 100% offline single-HTML output. Change the renderer only for a demonstrated missing capability. Validate generator changes with `npm test --prefix <skill>` and regenerate the minimal and showcase examples.
-
-Diagram dependency: [Beautiful Mermaid](https://github.com/lukilabs/beautiful-mermaid), MIT, pinned at build time. See [tools and scope](references/tools.md).
+- **Artifacts**: `<work>/inventory.json`, `<work>/reading-plan.md`, `<work>/document.json`, `<work>/content.md`, `<work>/documentacao.html`, `<work>/documentacao.validation.json` (plus summary counterparts when requested).
+- **Done when**: `build` reports `passed: true`, `verify` reports `ok: true` and `receiptStatus: "complete"`, desktop & mobile browser checks pass (`browserReviewed: true`), and any unverified behavior is disclosed explicitly.
+- **Skill maintenance**: if editing the skill itself (`scripts/diagrams.mjs`, `scripts/lib/*`, `assets/*`, `scripts/cli.mjs`), run `npm test --prefix "<skill>"` and regenerate examples.

@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.11.0 — 2026-11-15
+
+Foco em ergonomia de distribuição e execução da skill em diferentes IDEs e CLIs de agentes, mantendo a estrutura de pastas na raiz intacta.
+
+### Adicionado
+
+- **Entrada única de CLI (`scripts/cli.mjs`)**:
+  - Unifica `inspect`, `build`, `verify` e `doctor` em um único ponto de entrada (`node <skill>/scripts/cli.mjs <comando>`), resolvendo assets, schemas, scripts e `node_modules` a partir da localização da própria skill independentemente do diretório de trabalho (`cwd`).
+  - Executa *preflight* claro sem dependências externas no carregamento inicial: valida versão do Node (`>= 22`), detecta Python (`>= 3.10`) de forma portável (`python3`/`python`/`py -3`), verifica instalação de `node_modules` (exibindo o comando `npm ci --ignore-scripts --prefix ...` quando ausente), valida entradas existentes, retorna caminhos resolvidos (`outPath`, `planPath`, `htmlPath`, `receiptPath`) em JSON e adota códigos de saída consistentes (`0` sucesso, `1` falha de validação/build/drift, `2` erro de argumentos, arquivo ausente ou pré-requisito).
+- **Pacote de distribuição enxuto em `.zip` (`.github/scripts/package_skill.py`, `.github/workflows/release.yml`)**:
+  - Gera um arquivo ZIP determinístico e versionado (`project-html-docs-vX.Y.Z.zip`) contendo apenas os artefatos de runtime da skill (`SKILL.md`, `LICENSE`, `package.json`, `package-lock.json`, `agents/`, `scripts/`, `assets/`, `schemas/`, `references/`, `examples/minimal/`), omitindo landing page (`docs/`), vídeo, suíte de testes e `examples/showcase/`, preservando integralmente `package.json` e `package-lock.json` para manter `rendererSha256` idêntico ao repositório.
+  - Workflow `.github/workflows/release.yml` automatiza os testes, verificação estrita e anexação do `.zip` nas Releases disparadas por tags `v*`.
+- **Referência dedicada de diagramas e design system (`references/diagrams.md`)**:
+  - Extrai especificações detalhadas de `solution`, `flow`, `schema`/`erd`, `mermaid`, `chart` e ergonomia desktop/mobile de `SKILL.md` para `references/diagrams.md` (carregado sob demanda).
+- **Testes (`tests/cli.test.mjs`)**: suíte ampliada de 51 para **55 testes**, validando `cli.mjs` (`--help`, `--version`, `doctor`, `inspect`, `build`, `verify`, execução fora da raiz da skill, códigos de saída, erro de `node_modules` ausente) e integridade + `rendererSha256` idêntico do `.zip` enxuto gerado por `package_skill.py`.
+
+### Melhorado
+
+- **`SKILL.md` enxuto**: reestruturado como porta de entrada concisa (~75 linhas) com fluxo via `scripts/cli.mjs`, entregáveis e critérios de conclusão, delegando detalhes extensos para `references/authoring.md`, `references/diagrams.md`, `references/data-engineering.md` e `references/tools.md`.
+- **CI (`.github/workflows/ci.yml`) e `.gitignore`**: execução de `cli.mjs doctor` e `cli.mjs verify --strict` na matriz Ubuntu/Windows e exclusão de `dist/` no Git.
+
 ## 1.10.0 — 2026-11-15
 
 Aplicação integral das correções de segurança, confiabilidade, fidelidade de extração, acessibilidade/interação no navegador, formalização de contratos, testes comportamentais e modularização do projeto.

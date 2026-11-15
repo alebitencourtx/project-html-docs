@@ -4,8 +4,8 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-51%20passing-success.svg)](#testes-automatizados)
-[![Version](https://img.shields.io/badge/version-1.10.0-orange.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-55%20cases-success.svg)](#testes-automatizados)
+[![Version](https://img.shields.io/badge/version-1.11.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
@@ -53,8 +53,11 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 project-html-docs/
 ├── .gitattributes              # Política de fim de linha LF e atributos binários
 ├── .github/
+│   ├── scripts/
+│   │   └── package_skill.py    # Empacotador determinístico do ZIP enxuto de release
 │   └── workflows/
-│       └── ci.yml              # Matriz CI Ubuntu/Windows (Node + Python + Playwright)
+│       ├── ci.yml              # Matriz CI Ubuntu/Windows (Node + Python + Playwright)
+│       └── release.yml         # Publicação automática do ZIP versionado nas tags v*
 ├── agents/
 │   └── openai.yaml             # Metadados UTF-8 de descoberta da skill
 ├── assets/
@@ -75,12 +78,14 @@ project-html-docs/
 ├── references/
 │   ├── authoring.md            # Guia prático de redação, sintaxe e validações
 │   ├── data-engineering.md     # Boas práticas para esteiras de dados, nuvem e streaming
+│   ├── diagrams.md             # Especificação de diagramas 2D, Mermaid, gráficos e design system
 │   └── tools.md                # Descrição das dependências do gerador
 ├── schemas/
 │   ├── diagram.schema.json     # Esquema JSON formal de solution, flow, schema e barChart
 │   └── document.schema.json    # Validação estrutural do manifesto document.json
 ├── scripts/
 │   ├── build.mjs               # Compila manifesto e Markdown no HTML final e recibo
+│   ├── cli.mjs                 # Entrada única de CLI (inspect, build, verify e doctor)
 │   ├── diagrams.mjs            # Motor SVG 2D (solution/flow/schema) e enhancer Mermaid
 │   ├── inspect_repo.py         # Fachada CLI do dossiê estático AST/regex/grafo
 │   ├── inspector/              # Pacote Python modular (redaction, sql_parser, extractors, graph)
@@ -91,6 +96,7 @@ project-html-docs/
 ├── tests/
 │   ├── browser.test.mjs        # Testes reais em Chromium headless (drawer, zoom, print, ARIA)
 │   ├── build.test.mjs          # Testes do compilador, segurança de URLs, colisões e recibos
+│   ├── cli.test.mjs            # Testes da entrada única cli.mjs e do ZIP enxuto de release
 │   ├── diagrams.test.mjs       # Testes unitários e de contrato AJV do motor de diagramas
 │   ├── dossier.test.mjs        # Testes de AST, DDL, E/S, redação, grafo e impacto
 │   └── landing.test.mjs        # Testes da landing page, i18n, receitas e consistência
@@ -98,33 +104,40 @@ project-html-docs/
 ├── LICENSE                     # Licença MIT
 ├── package.json                # Dependências fixadas e scripts de execução
 ├── README.md                   # Guia introdutório do projeto
-└── SKILL.md                    # Instruções operacionais para execução guiada por agentes
+└── SKILL.md                    # Porta de entrada enxuta para execução guiada por agentes
 ```
 
 ---
 
-## Requisitos
+## Requisitos e instalação
 
 - **Node.js**: 22 ou superior
-- **Python**: 3.10 ou superior (usado apenas no script `inspect_repo.py`)
+- **Python**: 3.10 ou superior (usado apenas na etapa `inspect`)
 
-Para instalar as dependências do projeto:
+### Instalação em IDEs / CLIs de LLM (ZIP enxuto ou Git)
+
+Baixe o `.zip` versionado da Release (`project-html-docs-v1.11.0.zip`, contendo apenas `SKILL.md`, `LICENSE`, `agents/`, `scripts/`, `assets/`, `schemas/`, `references/`, `examples/minimal/`, `package.json` e `package-lock.json` — sem `docs/`, vídeo ou testes) e extraia na pasta de skills da sua IDE/CLI:
 
 ```bash
-npm ci --ignore-scripts
+mkdir -p .claude/skills/project-html-docs
+unzip project-html-docs-v1.11.0.zip -d .claude/skills/project-html-docs
+npm ci --ignore-scripts --prefix .claude/skills/project-html-docs
+node .claude/skills/project-html-docs/scripts/cli.mjs doctor
 ```
+
+Também é possível clonar o repositório diretamente ou gerar o pacote local com `npm run package:skill`.
 
 ---
 
 ## Como usar
 
-O fluxo de documentação é dividido em quatro etapas principais:
+Você pode acionar toda a skill pela entrada única `scripts/cli.mjs` de qualquer diretório de trabalho:
 
 ### 1. Inspecionar o código do projeto
 Para entender a estrutura do repositório sem precisar ler arquivo por arquivo manualmente:
 
 ```bash
-python scripts/inspect_repo.py <caminho-do-repositorio> --out docs/inventory.json --plan docs/reading-plan.md
+node scripts/cli.mjs inspect <caminho-do-repositorio> --out docs/inventory.json --plan docs/reading-plan.md
 ```
 
 Isso gera:
@@ -144,13 +157,13 @@ Você pode usar como base os exemplos em `examples/minimal/` ou `examples/showca
 Para compilar o manual completo em arquivo único:
 
 ```bash
-node scripts/build.mjs docs/document.json --out docs/documentacao.html --force
+node scripts/cli.mjs build docs/document.json --out docs/documentacao.html --force
 ```
 
 Para compilar uma versão condensada no **Modo Guia Rápido**:
 
 ```bash
-node scripts/build.mjs docs/document-summary.json --out docs/documentacao-resumida.html --mode summary --force
+node scripts/cli.mjs build docs/document-summary.json --out docs/documentacao-resumida.html --mode summary --force
 ```
 
 No manifesto do Guia Rápido, você pode adicionar o link para o manual completo:
@@ -171,7 +184,7 @@ O comando valida a estrutura contra o esquema JSON, processa o Markdown, audita 
 Para conferir se o documento reflete fielmente os arquivos referenciados e salvar o recibo de validação:
 
 ```bash
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json
 ```
 
 ---
@@ -182,10 +195,10 @@ Quando o código do projeto for alterado, você não precisa reler o repositóri
 
 ```bash
 # 1. Atualize o inventário técnico
-python scripts/inspect_repo.py <caminho-do-repositorio> --out docs/inventory.json
+node scripts/cli.mjs inspect <caminho-do-repositorio> --out docs/inventory.json
 
 # 2. Calcule o impacto das mudanças no documento existente
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
 O arquivo `update-plan.md` gerado listará:
@@ -295,7 +308,7 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios, análise de impacto e integridade da landing page:
 
 ```bash
-# Rodar todos os testes automatizados (51 testes, incluindo Chromium headless)
+# Rodar todos os testes automatizados (55 testes, incluindo Chromium headless)
 npm test
 
 # Compilar os exemplos disponíveis
@@ -307,6 +320,7 @@ npm run build:showcase
 
 ## Histórico de releases
 
+- **[v1.11.0](CHANGELOG.md#1110--2026-11-15)**: Entrada única de CLI (`scripts/cli.mjs` com `inspect`, `build`, `verify` e `doctor`), `SKILL.md` enxuto com detalhamento de diagramas/UI movido para `references/diagrams.md`, e empacotador/workflow automático do `.zip` enxuto de release (`.github/scripts/package_skill.py` + `.github/workflows/release.yml`).
 - **[v1.10.0](CHANGELOG.md#1100--2026-11-15)**: Blindagem completa de URLs (rejeitando caracteres de controle e lista explícita de protocolos seguros), sanitização centralizada de segredos em previews/workflows/`package.json`, proteção atômica contra colisão de recibo/temporário, hashes canônicos `sha256-lf-text-v1` + `package-lock.json` no renderer, validação formal via `diagram.schema.json` e `if/then` de `repoRoot`, modularização em `scripts/lib/` e `scripts/inspector/`, correções de DDL/Blob/streaming/grafo, zoom Fit e drawer `inert`/impressão no navegador e testes reais em Chromium.
 - **[v1.9.0](CHANGELOG.md#190--2026-11-15)**: Hardening de acessibilidade mobile (`inert`, focus trap, modal até 960 px), harmonização Mermaid no tema Vermelho, verificação de artefatos + `--mark-reviewed` + `sourceDrift` no `verify.mjs`, faixas múltiplas em diagramas 2D e extração JS/TS + `.docignore` completo no `inspect_repo.py`.
 - **[v1.8.0](CHANGELOG.md#180--2026-11-15)**: Visão mobile responsiva com menu lateral recolhível (drawer off-canvas até 960 px) e detecção de atualização exclusiva do renderer da skill (`rendererSha256`) no `verify.mjs --impact`.

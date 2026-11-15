@@ -29,7 +29,8 @@ jobs:
         run: |
           npm run build:example
           npm run build:showcase
-      - name: Verify strict receipts
+      - name: Verify strict receipts and CLI doctor
         run: |
-          node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --strict
-          node scripts/verify.mjs docs/document-summary.json docs/documentacao-resumida.validation.json --strict
+          node scripts/cli.mjs doctor
+          node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --strict
+          node scripts/cli.mjs verify docs/document-summary.json docs/documentacao-resumida.validation.json --strict
