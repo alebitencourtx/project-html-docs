@@ -1,0 +1,322 @@
+{
+  "repository": "C:\\Users\\alebi\\Documents\\ChatGPT\\teste-opendata\\streamify",
+  "revision": "2c17d1fbc864844d90ff54da83669f9e987908ee",
+  "workingTreeChanges": "",
+  "includes": [],
+  "excludes": [],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 4425,
+      "kind": "docs",
+      "sha256": "9f6b69561c0119a1f3c7a8b6aacc844df405d662602b548c7015d47e9d8c9b9e"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 40,
+      "kind": "docs",
+      "sha256": "a072ab688557751fc0fdb265c36f9f1f1a0f1412657c5962ba338bdb579a305c"
+    },
+    {
+      "path": "airflow/Dockerfile",
+      "bytes": 1234,
+      "kind": "infra",
+      "sha256": "5a000761b59cac73b57318e3d369630305bdb1a042092c808a864d2abd3ba7b3"
+    },
+    {
+      "path": "airflow/docker-compose.yaml",
+      "bytes": 10442,
+      "kind": "config",
+      "sha256": "b3df9207a535b34707fc78727cfa258b8970014eb2bff2e3c85ea52e9ef11811"
+    },
+    {
+      "path": "airflow/requirements.txt",
+      "bytes": 98,
+      "kind": "docs",
+      "sha256": "b2211c8176bd9df7753d149e7258f61c00b69b5e9a878c405f74ed7ed8044a6f"
+    },
+    {
+      "path": "airflow/dags/dbt_test_dag.py",
+      "bytes": 596,
+      "kind": "code",
+      "sha256": "c06bddce3b0b2dce79234576ae1c7156324d04a56b42436954086d08c431ead6"
+    },
+    {
+      "path": "airflow/dags/load_songs_dag.py",
+      "bytes": 3785,
+      "kind": "code",
+      "sha256": "089a78ca1152ac5bcec629208213afbdaef109d53b17e4bac2b817311d3d3899"
+    },
+    {
+      "path": "airflow/dags/schema.py",
+      "bytes": 3345,
+      "kind": "code",
+      "sha256": "ad214547d934ab2a6e85eb71c958b4e828c1bda2ab81da598e23315caebc5223"
+    },
+    {
+      "path": "airflow/dags/streamify_dag.py",
+      "bytes": 4025,
+      "kind": "code",
+      "sha256": "7467f8fecb8ae41586af5f2418b10341f19472d73f46b7b38c05d5f2e9e8dca0"
+    },
+    {
+      "path": "airflow/dags/task_templates.py",
+      "bytes": 3891,
+      "kind": "code",
+      "sha256": "b3069bdb68bb4d259266890b13312c65a372d2ac572ed1f7be01d5f13eb20bc8"
+    },
+    {
+      "path": "airflow/dags/sql/auth_events.sql",
+      "bytes": 881,
+      "kind": "schema",
+      "sha256": "dfe85b229c335b621ffcb9761ef9ffd29d87b4ac32e5a9cc4932fd660389ac42"
+    },
+    {
+      "path": "airflow/dags/sql/listen_events.sql",
+      "bytes": 970,
+      "kind": "schema",
+      "sha256": "6bd99526a2a7eb7b2a80b14376bc762faa2a01f9ef1530ead5bd69a76ebc4ba6"
+    },
+    {
+      "path": "airflow/dags/sql/page_view_events.sql",
+      "bytes": 1089,
+      "kind": "schema",
+      "sha256": "7d79e766c90c75cf84a7d1c8b7fe6bb9907ec1cfcfe88049860602112cd9cf5b"
+    },
+    {
+      "path": "dbt/README.md",
+      "bytes": 586,
+      "kind": "docs",
+      "sha256": "03cda50cc31e208b7b9d5fa4998640ac25dccfd318f7184168b2f1ea0882bd48"
+    },
+    {
+      "path": "dbt/dbt_project.yml",
+      "bytes": 1406,
+      "kind": "config",
+      "sha256": "27466419f483f2c9e39cc27e4a63ffa31e2420499d34ccda38e2c6035e7918cf"
+    },
+    {
+      "path": "dbt/packages.yml",
+      "bytes": 62,
+      "kind": "config",
+      "sha256": "469baf5e40a777d71e564a6636007bb6c7541bf95f35001f9b5ba4f677fdc856"
+    },
+    {
+      "path": "dbt/profiles.yml",
+      "bytes": 703,
+      "kind": "config",
+      "sha256": "2df55e77874d42ae96e5ee01da0e77373f7bf56646af1dc306329d5e3c2798a3"
+    },
+    {
+      "path": "dbt/models/core/dim_artists.sql",
+      "bytes": 603,
+      "kind": "schema",
+      "sha256": "a10551341aa2287e83fdd4f2a972e9bd636a7c852936932b19913ee0538c9007"
+    },
+    {
+      "path": "dbt/models/core/dim_datetime.sql",
+      "bytes": 558,
+      "kind": "schema",
+      "sha256": "f85b5217eb03f0d6086c0ea4f3d6b5a8af92db4fc314a4025f9bdf1e96016738"
+    },
+    {
+      "path": "dbt/models/core/dim_location.sql",
+      "bytes": 676,
+      "kind": "schema",
+      "sha256": "76e0b20e25e1e3556928390c5f145198ac3698319f7fe41d77fa6cbc864e4f1e"
+    },
+    {
+      "path": "dbt/models/core/dim_songs.sql",
+      "bytes": 843,
+      "kind": "schema",
+      "sha256": "d2c18807d1ff5997c6a82f397e04270cb3632b56e2c19476a4bc6740b776748d"
+    },
+    {
+      "path": "dbt/models/core/dim_users.sql",
+      "bytes": 2430,
+      "kind": "schema",
+      "sha256": "7f20b8b33119ae2fc568ad10ec546bb89c45410597e881ab5d77034cd2219439"
+    },
+    {
+      "path": "dbt/models/core/fact_streams.sql",
+      "bytes": 1269,
+      "kind": "schema",
+      "sha256": "78cdc7525c4c1cba09df2420a200738cff5c6ea7a46947bd7f679829b0a0f743"
+    },
+    {
+      "path": "dbt/models/core/schema.yml",
+      "bytes": 284,
+      "kind": "config",
+      "sha256": "e2f3671cb6c70cd583cea4981180cb017c4f8091c205b8838278ed640209b0f7"
+    },
+    {
+      "path": "dbt/models/core/wide_streams.sql",
+      "bytes": 1612,
+      "kind": "schema",
+      "sha256": "48f0bfd699eef236b3d1cf77aebd46da081b6152006e6e8816ac7a255175833b"
+    },
+    {
+      "path": "dbt/seeds/songs.csv",
+      "bytes": 1992963,
+      "kind": "data",
+      "sha256": "192a7bd9251bb41ae67e44a430da456e4730285f4a6e441b37f5f1f422ee3bee"
+    },
+    {
+      "path": "dbt/seeds/state_codes.csv",
+      "bytes": 826,
+      "kind": "data",
+      "sha256": "7f7e1affa47f47ae03d556b2509f400cf1ddea8b54e2b1c202f38bde84758176"
+    },
+    {
+      "path": "eventsim/Dockerfile",
+      "bytes": 529,
+      "kind": "infra",
+      "sha256": "9ed0a928ae59663ddeb40b31bc7dcfa3878c64e91a0920955089caa85cf67c6e"
+    },
+    {
+      "path": "eventsim/README.md",
+      "bytes": 849,
+      "kind": "docs",
+      "sha256": "b2d1edfba0080d86ae5362ee71780d292bea887cad67421a42a5774b60762538"
+    },
+    {
+      "path": "eventsim/eventsim.sh",
+      "bytes": 122,
+      "kind": "code",
+      "sha256": "20ee6756f49f8258f16f663659fe8c70036de7706dbbab14edc9db5ed4eee107"
+    },
+    {
+      "path": "eventsim/examples/alt-example-config.json",
+      "bytes": 46799,
+      "kind": "config",
+      "sha256": "4d50785dd308a67f65d57b8c8d94449acef478dbe5571bbc5e82a4c401919ec6"
+    },
+    {
+      "path": "eventsim/examples/example-config.json",
+      "bytes": 47231,
+      "kind": "config",
+      "sha256": "0c78734b8fa785cd17cb6ba6a3f6119cbf29f0d8e9d1b78dc92f9f5ef4bd9506"
+    },
+    {
+      "path": "kafka/docker-compose.yml",
+      "bytes": 2476,
+      "kind": "config",
+      "sha256": "a51aa3c76fa2ff63a33c8c2d7af58f4d4d33b42e3996d9e818f0b6453d9e2f6e"
+    },
+    {
+      "path": "kafka/test_connection/produce_taxi_json.py",
+      "bytes": 1115,
+      "kind": "code",
+      "sha256": "a95e0b8a56a55f9ab2040f3655a7406a44b4e38d328860de0cadf6106ec62655"
+    },
+    {
+      "path": "scripts/airflow_startup.sh",
+      "bytes": 476,
+      "kind": "code",
+      "sha256": "f17f6f3307ffff2bb613a91b288c28b6b2d68e62dd89b1b980b70c46ba915883"
+    },
+    {
+      "path": "scripts/eventsim_startup.sh",
+      "bytes": 758,
+      "kind": "code",
+      "sha256": "8a0dd590f05721f603bf5f33ef931ca60808ebfc56fff637664bcfbc388af7b5"
+    },
+    {
+      "path": "scripts/exec_commands.sh",
+      "bytes": 2243,
+      "kind": "code",
+      "sha256": "02ef6937f7af39d584f5f4e700b95319ebe85d7ed356857231e9df7e3a92befb"
+    },
+    {
+      "path": "scripts/spark_setup.sh",
+      "bytes": 1419,
+      "kind": "code",
+      "sha256": "f7e0b60f92fb50a6730daaba6d446edcb62550b2319abded74bbe6555668ae84"
+    },
+    {
+      "path": "scripts/vm_setup.sh",
+      "bytes": 1354,
+      "kind": "code",
+      "sha256": "40f747975e8046098d668a1a907c4271ba583162cec5f127fbe5d488b6e64dc0"
+    },
+    {
+      "path": "setup/airflow.md",
+      "bytes": 2998,
+      "kind": "docs",
+      "sha256": "100687afca6c71534e9794cd6c477fae736cde4994bba2ee9a5cbb77db3d55e0"
+    },
+    {
+      "path": "setup/debug.md",
+      "bytes": 1546,
+      "kind": "docs",
+      "sha256": "773bd44ffe5b5ef1b139e1fc070afa8ef4f18dceddee15882daca732c16b1807"
+    },
+    {
+      "path": "setup/gcp.md",
+      "bytes": 2172,
+      "kind": "docs",
+      "sha256": "fa6cabe73b7d83c37bda7386261e5b37af5835017d8a312ae8f9a5aab4b31e8c"
+    },
+    {
+      "path": "setup/kafka.md",
+      "bytes": 2234,
+      "kind": "docs",
+      "sha256": "219117c6dffcafb4612eacb40a7ac80e92ac0f14829fdff592680816da88cddc"
+    },
+    {
+      "path": "setup/spark.md",
+      "bytes": 1294,
+      "kind": "docs",
+      "sha256": "f0775df7274866d966a3b37ec237b24e8afa3965d1974f3035ccd56dce6b9a52"
+    },
+    {
+      "path": "setup/ssh.md",
+      "bytes": 1737,
+      "kind": "docs",
+      "sha256": "cde01a782cd127deb12d0490ae6c744849eec96688e5a08620b296e1a0a37912"
+    },
+    {
+      "path": "setup/terraform.md",
+      "bytes": 1356,
+      "kind": "docs",
+      "sha256": "97b206a9c2f5230ad2e349c45238c95c70f50d84199ef202803e2b7ea74ccff1"
+    },
+    {
+      "path": "spark_streaming/schema.py",
+      "bytes": 3434,
+      "kind": "code",
+      "sha256": "3c54ddd64eb78b19fda5a0e3fd8d6b30a2c9279c0c6c7b3d8d1ce44707eed960"
+    },
+    {
+      "path": "spark_streaming/stream_all_events.py",
+      "bytes": 2508,
+      "kind": "code",
+      "sha256": "e872d8db56754cbb25ad50cb40499d45c3a8602bbffcf6889de9a3d36059e4e5"
+    },
+    {
+      "path": "spark_streaming/streaming_functions.py",
+      "bytes": 4458,
+      "kind": "code",
+      "sha256": "2d728b15ead7cf6f18d1c46fc051c3e89c7ef68b7506a025a76e5bc68025ab40"
+    },
+    {
+      "path": "spark_streaming/test_connection/stream_taxi_json.py",
+      "bytes": 1498,
+      "kind": "code",
+      "sha256": "933b14f2fd7bba452dc1c008232bd4728411b4258008aa7c9ac251e02f14ba3b"
+    },
+    {
+      "path": "terraform/main.tf",
+      "bytes": 3250,
+      "kind": "infra",
+      "sha256": "febad79f3252806354ce14471650546cf9fa2db2aa0759ab0c4fd8a5fd98f291"
+    },
+    {
+      "path": "terraform/variables.tf",
+      "bytes": 1224,
+      "kind": "infra",
+      "sha256": "2e96b62d6fd622f572e068a05bb26da7fdc50b2012b1834c4f0094e9e893cf10"
+    }
+  ],
+  "note": "Candidate source paths only; no semantic extraction or production execution."
+}

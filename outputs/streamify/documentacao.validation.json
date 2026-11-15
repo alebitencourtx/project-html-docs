@@ -1,0 +1,195 @@
+{
+  "passed": true,
+  "errors": [],
+  "sections": 13,
+  "contentSections": 13,
+  "referenceBlocks": 1,
+  "diagrams": 3,
+  "charts": 2,
+  "bytes": 159514,
+  "browserReviewed": false,
+  "version": "1.1.0",
+  "skillVersion": "1.1.0",
+  "builtAt": "2026-11-14T23:53:12.663Z",
+  "manifestSha256": "75a0849efceebbba52c9c23e26a714b38aab02c2efc291dda2138ff937303bf1",
+  "document": "Streamify",
+  "revision": "2c17d1fbc864844d90ff54da83669f9e987908ee",
+  "inputSha256": "280d4ba4b39c2be057efd9db9912ad44839c288d66841f644e979f27a177f336",
+  "htmlSha256": "5277f0c80857bc4114af0b07aa577ef1c59011a86cef5c0def914b30e7ff9ee8",
+  "sources": [
+    {
+      "id": "readme",
+      "path": "README.md",
+      "description": "Visão geral, objetivos de negócio, tecnologias adotadas, links e arquitetura básica.",
+      "sha256": "9f6b69561c0119a1f3c7a8b6aacc844df405d662602b548c7015d47e9d8c9b9e"
+    },
+    {
+      "id": "terraform-main",
+      "path": "terraform/main.tf",
+      "description": "Definição de infraestrutura GCP: instâncias Compute Engine, Dataproc Spark, GCS, BigQuery e firewall.",
+      "sha256": "febad79f3252806354ce14471650546cf9fa2db2aa0759ab0c4fd8a5fd98f291"
+    },
+    {
+      "id": "terraform-vars",
+      "path": "terraform/variables.tf",
+      "description": "Declaração de variáveis do Terraform, regiões, tipos de máquinas e nomes de datasets.",
+      "sha256": "2e96b62d6fd622f572e068a05bb26da7fdc50b2012b1834c4f0094e9e893cf10"
+    },
+    {
+      "id": "spark-stream",
+      "path": "spark_streaming/stream_all_events.py",
+      "description": "Script principal de Spark Streaming para consumo dos tópicos Kafka e gravação no GCS.",
+      "sha256": "e872d8db56754cbb25ad50cb40499d45c3a8602bbffcf6889de9a3d36059e4e5"
+    },
+    {
+      "id": "spark-functions",
+      "path": "spark_streaming/streaming_functions.py",
+      "description": "Funções auxiliares PySpark: sessão Spark, leituras Kafka, decodificação UDF e escrita Parquet.",
+      "sha256": "2d728b15ead7cf6f18d1c46fc051c3e89c7ef68b7506a025a76e5bc68025ab40"
+    },
+    {
+      "id": "spark-schema",
+      "path": "spark_streaming/schema.py",
+      "description": "Definição de esquemas StructType do Spark para listen_events, page_view_events e auth_events.",
+      "sha256": "3c54ddd64eb78b19fda5a0e3fd8d6b30a2c9279c0c6c7b3d8d1ce44707eed960"
+    },
+    {
+      "id": "airflow-dag",
+      "path": "airflow/dags/streamify_dag.py",
+      "description": "DAG horária do Airflow: tabelas externas temporárias, inserção particionada e execução do dbt.",
+      "sha256": "7467f8fecb8ae41586af5f2418b10341f19472d73f46b7b38c05d5f2e9e8dca0"
+    },
+    {
+      "id": "airflow-tasks",
+      "path": "airflow/dags/task_templates.py",
+      "description": "Templates modulares dos operadores BigQuery (External, Empty, InsertJob e DeleteTable).",
+      "sha256": "b3069bdb68bb4d259266890b13312c65a372d2ac572ed1f7be01d5f13eb20bc8"
+    },
+    {
+      "id": "airflow-songs",
+      "path": "airflow/dags/load_songs_dag.py",
+      "description": "DAG de carga inicial das músicas: download, conversão Parquet com PyArrow e registro no BigQuery.",
+      "sha256": "089a78ca1152ac5bcec629208213afbdaef109d53b17e4bac2b817311d3d3899"
+    },
+    {
+      "id": "airflow-schema",
+      "path": "airflow/dags/schema.py",
+      "description": "Esquemas de colunas BigQuery utilizados na criação das tabelas de staging no Airflow.",
+      "sha256": "ad214547d934ab2a6e85eb71c958b4e828c1bda2ab81da598e23315caebc5223"
+    },
+    {
+      "id": "sql-listen",
+      "path": "airflow/dags/sql/listen_events.sql",
+      "description": "Script SQL de inserção e tratamento de nulos (COALESCE) para a tabela listen_events no BigQuery.",
+      "sha256": "6bd99526a2a7eb7b2a80b14376bc762faa2a01f9ef1530ead5bd69a76ebc4ba6"
+    },
+    {
+      "id": "sql-pageview",
+      "path": "airflow/dags/sql/page_view_events.sql",
+      "description": "Script SQL de inserção e sanitização para page_view_events.",
+      "sha256": "7d79e766c90c75cf84a7d1c8b7fe6bb9907ec1cfcfe88049860602112cd9cf5b"
+    },
+    {
+      "id": "sql-auth",
+      "path": "airflow/dags/sql/auth_events.sql",
+      "description": "Script SQL de inserção e tratamento de tipos para auth_events.",
+      "sha256": "dfe85b229c335b621ffcb9761ef9ffd29d87b4ac32e5a9cc4932fd660389ac42"
+    },
+    {
+      "id": "dbt-project",
+      "path": "dbt/dbt_project.yml",
+      "description": "Configuração do projeto dbt, caminhos de modelos e estratégias de materialização (view/table).",
+      "sha256": "27466419f483f2c9e39cc27e4a63ffa31e2420499d34ccda38e2c6035e7918cf"
+    },
+    {
+      "id": "dbt-schema",
+      "path": "dbt/models/core/schema.yml",
+      "description": "Declaração de fontes de staging do BigQuery no dbt.",
+      "sha256": "e2f3671cb6c70cd583cea4981180cb017c4f8091c205b8838278ed640209b0f7"
+    },
+    {
+      "id": "dbt-fact",
+      "path": "dbt/models/core/fact_streams.sql",
+      "description": "Modelo dimensional da tabela fato fact_streams com particionamento horário e chaves substitutas.",
+      "sha256": "78cdc7525c4c1cba09df2420a200738cff5c6ea7a46947bd7f679829b0a0f743"
+    },
+    {
+      "id": "dbt-wide",
+      "path": "dbt/models/core/wide_streams.sql",
+      "description": "Visão analítica desnormalizada (wide_streams) para consumo direto pelo Data Studio/Looker Studio.",
+      "sha256": "48f0bfd699eef236b3d1cf77aebd46da081b6152006e6e8816ac7a255175833b"
+    },
+    {
+      "id": "dbt-dim-users",
+      "path": "dbt/models/core/dim_users.sql",
+      "description": "Dimensão de usuários com SCD Tipo 2 (Slowly Changing Dimension) para histórico de nível free/paid.",
+      "sha256": "7f20b8b33119ae2fc568ad10ec546bb89c45410597e881ab5d77034cd2219439"
+    },
+    {
+      "id": "dbt-dim-songs",
+      "path": "dbt/models/core/dim_songs.sql",
+      "description": "Dimensão de músicas com chaves geradas por hash, limpeza de caracteres e registro fallback.",
+      "sha256": "d2c18807d1ff5997c6a82f397e04270cb3632b56e2c19476a4bc6740b776748d"
+    },
+    {
+      "id": "dbt-dim-artists",
+      "path": "dbt/models/core/dim_artists.sql",
+      "description": "Dimensão de artistas com coordenadas geográficas e registro padrão de fallback.",
+      "sha256": "a10551341aa2287e83fdd4f2a972e9bd636a7c852936932b19913ee0538c9007"
+    },
+    {
+      "id": "dbt-dim-datetime",
+      "path": "dbt/models/core/dim_datetime.sql",
+      "description": "Dimensão de calendário horário gerada de 2018 a 2023 com flags de fim de semana.",
+      "sha256": "f85b5217eb03f0d6086c0ea4f3d6b5a8af92db4fc314a4025f9bdf1e96016738"
+    },
+    {
+      "id": "dbt-dim-location",
+      "path": "dbt/models/core/dim_location.sql",
+      "description": "Dimensão geográfica combinando coordenadas, cidade e sementes de códigos de estado.",
+      "sha256": "76e0b20e25e1e3556928390c5f145198ac3698319f7fe41d77fa6cbc864e4f1e"
+    },
+    {
+      "id": "kafka-compose",
+      "path": "kafka/docker-compose.yml",
+      "description": "Definição dos serviços Docker: Zookeeper, Kafka Broker, Schema Registry e Control Center.",
+      "sha256": "a51aa3c76fa2ff63a33c8c2d7af58f4d4d33b42e3996d9e818f0b6453d9e2f6e"
+    },
+    {
+      "id": "eventsim-script",
+      "path": "scripts/eventsim_startup.sh",
+      "description": "Script de inicialização da simulação Eventsim com 1 milhão de usuários para streaming contínuo.",
+      "sha256": "8a0dd590f05721f603bf5f33ef931ca60808ebfc56fff637664bcfbc388af7b5"
+    },
+    {
+      "id": "setup-airflow",
+      "path": "setup/airflow.md",
+      "description": "Documentação e instruções operacionais para o ambiente Airflow e dbt na VM.",
+      "sha256": "100687afca6c71534e9794cd6c477fae736cde4994bba2ee9a5cbb77db3d55e0"
+    },
+    {
+      "id": "setup-kafka",
+      "path": "setup/kafka.md",
+      "description": "Documentação e instruções operacionais para Kafka e gerador Eventsim.",
+      "sha256": "219117c6dffcafb4612eacb40a7ac80e92ac0f14829fdff592680816da88cddc"
+    },
+    {
+      "id": "setup-spark",
+      "path": "setup/spark.md",
+      "description": "Documentação e comandos para submissão do job Spark Streaming no cluster Dataproc.",
+      "sha256": "f0775df7274866d966a3b37ec237b24e8afa3965d1974f3035ccd56dce6b9a52"
+    },
+    {
+      "id": "setup-terraform",
+      "path": "setup/terraform.md",
+      "description": "Guia de provisionamento e destruição da infraestrutura na GCP com Terraform.",
+      "sha256": "97b206a9c2f5230ad2e349c45238c95c70f50d84199ef202803e2b7ea74ccff1"
+    },
+    {
+      "id": "setup-debug",
+      "path": "setup/debug.md",
+      "description": "Guia de diagnóstico de falhas, dependências de inicialização e erros conhecidos.",
+      "sha256": "773bd44ffe5b5ef1b139e1fc070afa8ef4f18dceddee15882daca732c16b1807"
+    }
+  ]
+}
