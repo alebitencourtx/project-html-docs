@@ -1,4 +1,4 @@
 node_modules/
-examples/minimal/documentacao.html
-examples/minimal/documentacao.validation.json
+examples/*/documentacao.html
+examples/*/documentacao.validation.json
 tests/.output/

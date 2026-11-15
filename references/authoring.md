@@ -24,11 +24,11 @@ Combine related categories or add project-specific sections. Do not force empty 
 
 - Required: `title`, `subtitle`, `version`, `updated` (YYYY-MM-DD), `content` (relative Markdown), `sections`.
 - `language`: `pt-BR` (default) or `en`.
-- Each section: `id`, `title`, `audience` (`all`, `business`, `technical`, `operations`), optional `sources` IDs.
+- Each section: `id`, `title`, `audience` (`all`, `business`, `technical`, `operations`), optional `sources` IDs. Avoid reserved HTML shell IDs (`main`, `search`, `expand`, `collapse`, `print`, `no-results`, `document-references`, `diagram-dialog`). The HTML shell exposes an interactive reading-profile filter for these `audience` tags without removing any section from the document.
 - `repoRoot`: relative repository path; `revision`: revision actually read from Git.
 - `sources`: local `id`, `path` relative to repoRoot, `description`. The builder checks existence and records hashes separately. Files are not executed.
 - `dataAsOf`: optional observation date/time and timezone, distinct from document update and code revision.
-- `cards`: up to four objects with `label`, `value`, `description`. Prefer stable properties; measured numbers need dates.
+- `cards`: up to four objects with `label`, `value`, `description`. Prefer stable properties; measured numbers need dates. For data-engineering projects, use the 4 Hero cards to answer business essentials: **Origens**, **Cadência / Janela**, **Entrega / Grão** and **Escopo / Limites**.
 
 Start Markdown with `## First section title`. Every H2 maps to a manifest section; H3/H4 are subsections. H1 is generated. Links use manifest IDs, e.g. `[Rules](#rules)`. Scripts, event handlers, iframes, inline CSS and remote assets are not authoring components. HTML is sanitized.
 
@@ -40,55 +40,71 @@ Cards use ordinary HTML:
 </div>
 ```
 
-For progressive detail, use `<details>` then `<summary>Detailed schema</summary>`, a blank line, Markdown, a blank line and `</details>`. Blockquotes become interpretation notes. Tables gain horizontal scroll; code fences gain copy controls with manual-selection fallback. References are anchors within the single HTML.
+For progressive detail, use `<details>` then `<summary>Detailed schema</summary>`, a blank line, Markdown, a blank line and `</details>`. Blockquotes become styled callouts; prefixing with `Regra de negócio:` / `Business rule:`, `Exemplo prático:` / `Worked example:`, `Atenção:` / `Warning:`, or `Limitação:` / `Limitation:` applies distinct semantic colors automatically. Tables gain horizontal scroll, automatic local row filtering when `>= 8` rows, and semantic column badges for `` `PK` ``, `` `FK` ``, `` `UK` ``, `` `PARTIÇÃO` ``, `` `PII` `` and `` `NOT NULL` ``. Code fences gain copy controls with manual-selection fallback. References are anchors within the single HTML.
 
 ## Diagrams
 
+The builder supports **two complementary SVG paths**, both rendered at build time as offline inline SVG inside `<figure class="diagram">`:
+
+1. **Deterministic 2D Grid Diagrams (`solution`, `flow`, `schema`) — Recommended for Solution Design, Workflows and Table Entities**:
+   - **` ```solution `** (and **` ```flow `**): JSON specification rendered by `scripts/diagrams.mjs` on a strict 2D column × row grid with aligned vertical stages (`zones`), left `inputs` column, rich multi-line cards (`step`, `title`, `lines` with inline `` `code` `` chips, `meta`), cylinder shapes (`shape: "cylinder"`), compact decision cards (`shape: "decision"`), marginal `callouts`, bottom/top gutter channels (`channel: "bottom" | "bottom-inner" | "top"`), semantic edge branches (`branch: "yes" | "no"`), built-in `.figure-legend`, and operational `note`.
+   - **` ```schema `** (or **` ```erd `**): JSON specification for data models and table entities with typed headers (`kind: "table" | "mart" | "json" | "external"`), explicit `grain`, columns in natural `[PK/FK/UK] name — type` reading order with zebra rows, Crow's Foot cardinalities (`1`, `0..1`, `1..N`, `0..N`), and dashed `kind: "lineage"` derivations.
+   - **Follow-up Table**: Pair rich `solution` diagrams with an `Objeto | Papel | Lido / gravado` summary table immediately below the figure when documenting multi-stage data pipelines.
+
+2. **Mermaid (` ```mermaid <Title> `)**:
+   - Supported by the pinned Beautiful Mermaid renderer: compact `flowchart`, `stateDiagram-v2`, `sequenceDiagram`, `classDiagram`, `erDiagram` and XY charts.
+   - At build time, `enhanceMermaidSvg` rounds ER entity cards, reorders ER columns to `[PK/FK] name — type`, differentiates `PK`/`FK`/`UK` badges, adds semantic `.edge-label-yes`/`.edge-label-no` colors, and colors state nodes (`Aberto`, `Recuperando`, `Resolvido`).
+
 ````markdown
-```mermaid Processing and persistence
-flowchart TD
-  subgraph Stage1["① Ingestão & Validação"]
-    A["Entrada Bruta<br><small>Arquivos JSON / APIs</small>"] --> B{"Estrutura Válida?<br><small>JSON Schema v7</small>"}
-  end
-  subgraph Stage2["② Processamento"]
-    B -->|Sim| C["Transformação<br><small>Normalização e Enriquecimento</small>"]
-    B -->|Não| D["Rejeição<br><small>Quarentena e Dead-letter</small>"]
-  end
-  subgraph Stage3["③ Persistência"]
-    C --> E[("Tabela Final<br><small>PostgreSQL / Particionado</small>")]
-  end
+```solution
+{
+  "title": "Componentes da solução em estágios 2D",
+  "inputs": { "label": "ENTRADAS" },
+  "zones": [
+    { "id": "z2", "title": "ESTÁGIO 2 · COMPARAÇÃO", "subtitle": "rápido, roda em toda execução", "variant": "warm", "row": 0, "colStart": 1, "colSpan": 2 },
+    { "id": "z1", "title": "ESTÁGIO 1 · SINTÉTICA", "subtitle": "pesado, só dias sem agregado válido", "variant": "cool", "row": 1, "colStart": 1, "colSpan": 2 }
+  ],
+  "nodes": [
+    { "id": "csv", "col": 0, "row": 0, "role": "regulator", "title": "CSV do painel", "lines": ["pasta `entrada/`", "1 arquivo, 1 mês"] },
+    { "id": "unify", "col": 0, "row": 1, "shape": "cylinder", "role": "analytical", "title": "Base integrada", "lines": ["`lake.report_raw`", "~200 mi/dia"] },
+    { "id": "s1", "col": 1, "row": 0, "step": 1, "role": "step", "title": "Ler e validar", "lines": ["valida chaves e corte"] },
+    { "id": "s2", "col": 1, "row": 1, "step": 2, "role": "step", "title": "Planejar", "lines": ["separa dias reaproveitáveis × a calcular"] },
+    { "id": "out", "col": 2, "row": 0, "shape": "cylinder", "role": "regulator", "title": "Resultado", "lines": ["`tabela_resultado`", "histórico + BI"] },
+    { "id": "agg", "col": 2, "row": 1, "role": "analytical", "title": "agregado_diario", "lines": ["~250 linhas/dia"] }
+  ],
+  "edges": [
+    { "from": "csv", "to": "s1" },
+    { "from": "s1", "to": "s2", "label": "dias e corte" },
+    { "from": "s1", "to": "out", "label": "escopo" },
+    { "from": "unify", "to": "s2", "label": "histórico" },
+    { "from": "s2", "to": "agg", "label": "lotes" },
+    { "from": "agg", "to": "out", "label": "dias válidos" }
+  ],
+  "legend": [
+    { "type": "box", "role": "regulator", "label": "Dados de entrada e resultado" },
+    { "type": "box", "role": "analytical", "label": "Base integrada e agregados" },
+    { "type": "box", "role": "step", "label": "Etapas executáveis" }
+  ],
+  "note": "Inclua aqui métricas reais de execução, janelas e política de reuso."
+}
 ```
 ````
 
-Use a descriptive title after `mermaid`. Supported by the pinned Beautiful Mermaid renderer: basic flowchart, state, sequence, class, ER and XY charts. Not every Mermaid feature is supported. Prefer simple nodes/edges/subgraphs; resolve parsing errors without deleting semantics.
-
-### Diretrizes de Desenho de Solução e Arquitetura
+### Diretrizes de Desenho de Solução, Fluxo e Entidade de Tabelas
 
 1. **Controle de Enquadramento e Orientação de Diagramas**:
    - Evite correntes horizontais lineares excessivamente longas que ultrapassem 1.200px de largura e forcem rolagem horizontal penosa em telas desktop convencionais.
-   - Diagramas compactos e focados (com até 4-5 nós e largura natural de até ~900–1.000px) podem utilizar `flowchart LR` sem restrições.
-   - Em soluções arquiteturais complexas com múltiplos regimes e stores, utilize a **matriz bidimensional estruturada**.
-
-2. **Padrão Recomendado: Matriz Arquitetural 2D (Entradas + Estágios Empilhados)**:
-   - Diagramas de arquitetura ampla de dados devem ser organizados como uma **matriz bidimensional**:
-     - **Coluna Lateral Esquerda (`subgraph ENTRADAS direction TB`)**: Fontes de dados, eventos externos, arquivos brutos ou cadastros de suporte.
-     - **Andar Superior (`subgraph INGEST_STREAM direction LR`)**: Processamento contínuo / streaming / ingestão em tempo real (3 a 4 nós compactos).
-     - **Andar Inferior (`subgraph BATCH_SERVING direction LR`)**: Processamento em lote / modelagem analítica / data warehouse e BI (3 a 4 nós compactos).
-     - **Conexões Inter-estágios Verticais**: Setas verticais unindo os dois andares (ex.: partição persistida no storage lida pelo staging analítico, e sinais de coordenação em linha tracejada).
-   - **Aspect Ratio Equilibrado**: A matriz 2D atinge proporção retangular harmoniosa (~1,5:1 a ~2,5:1), eliminando tanto a torre vertical excessiva quanto o transbordamento horizontal.
-   - **Passos Numerados nas Ações**: Identifique as ações de execução com marcadores circulares Unicode (①, ②, ③, ④, ⑤...) no título para explicitar sem ambiguidade a ordem do fluxo. Fontes e armazenamentos não devem ser numerados como ações.
-   - **Subtítulos Descritivos com `<small>`**: Cada nó de arquitetura deve apresentar rótulo estruturado com título conciso e papel técnico em linha secundária (ex.: `node["② Ingestão Batch<br><small>Workers assíncronos e idempotentes</small>"]`). O builder pós-processa classes `.node-title` e `.node-subtitle` para garantir hierarquia tipográfica no SVG.
-   - **Legendas Semânticas Padronizadas (`.figure-legend`)**: Logo abaixo de diagramas com múltiplos tipos de nós ou conexões, inclua um contêiner `.figure-legend` com badges de cores e linhas:
-     ```html
-     <div class="figure-legend">
-       <span class="legend-item"><span class="badge badge-danger"></span> Ingestão Contínua / Streaming</span>
-       <span class="legend-item"><span class="badge badge-info"></span> Camada Analítica / DW / Lote</span>
-       <span class="legend-item"><span class="badge badge-neutral"></span> Fontes de Entrada</span>
-       <span class="legend-item"><span class="line-dashed"></span> Metadados / Gatilhos de Orquestração</span>
-       <span class="legend-item"><span class="line-solid"></span> Fluxo Físico de Dados</span>
-     </div>
-     ```
-   - **Nota Técnica de Rodapé**: Logo abaixo da legenda, adicione um parágrafo conciso com métricas reais de execução (ex.: janelas de micro-lote, frequência das DAGs, volumes e particionamento).
+   - Diagramas compactos e focados (com até 4-5 nós) podem utilizar `flowchart LR` ou `flow` linear; arquiteturas com múltiplos regimes devem usar **`solution` em grade 2D** (Entradas à esquerda + estágios empilhados + corredores de retorno no rodapé).
+2. **Desenho de Solução em Grade 2D (`solution`)**:
+   - **Zonas empilhadas**: Estágios rápidos/superiores (`variant: "warm"`) e estágios pesados/analíticos (`variant: "cool"`) alinhados por coluna para que setas inter-estágios cruzem verticalmente sem zigue-zague.
+   - **Cartões ricos com `code` chips**: Combine título com passo circular (`step: 1..5`), explicação objetiva em `lines`, nomes de pastas/tabelas entre crases `` `...` `` e metadado opcional (`meta`).
+   - **Papéis de cor por natureza do dado**: `regulator` (vermelho), `analytical` (azul), `step` (grafite), `output` (teal), `warning` (âmbar).
+   - **Canais de retorno e notas marginais**: Use `channel: "bottom"` / `"bottom-inner"` para leituras em lote ou feedback de controle em linha tracejada (`style: "dashed"`), e `callouts` nas zonas para anotações operacionais.
+3. **Desenho de Fluxo (`flow` ou `mermaid`)**:
+   - Evite losangos gigantes: use `shape: "decision"` em `flow` (cartão compacto com badge `?`) e `branch: "yes"` / `branch: "no"` para colorir imediatamente caminhos positivos e de exceção/fallback.
+4. **Entidade de Tabelas (`schema` ou `mermaid erDiagram`)**:
+   - Identifique explicitamente o tipo de objeto (`table`, `mart`, `json`) e o **grão** (`1 linha = ...`).
+   - Apresente colunas na ordem natural `[PK/FK/UK] nome_coluna — tipo` e use `kind: "lineage"` (tracejado) para agregações/derivações — nunca invente FK para agregação.
 
 Architecture names components and boundaries; flow names actions and decisions; ER names entities, keys and established cardinalities; lineage describes transformations. Never invent foreign keys for aggregation or view derivation. Identify logical vs physical models. An overview can show essential attributes; full dictionaries belong below.
 

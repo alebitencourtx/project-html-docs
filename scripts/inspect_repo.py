@@ -1,14 +1,20 @@
-"""List documentation source candidates without importing or executing project code."""
+"""List documentation source candidates and detect data-engineering stack signals without executing project code."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 import os
 import subprocess
 from pathlib import Path
 
-SKIP = {'.git', 'node_modules', '.venv', 'venv', '__pycache__', '.runtime', 'data', 'site', 'dist', 'build', '.mypy_cache', '.pytest_cache', 'target', 'coverage'}
+SKIP = {
+    '.git', 'node_modules', '.venv', 'venv', '__pycache__', '.runtime',
+    'data', 'site', 'dist', 'build', '.mypy_cache', '.pytest_cache',
+    'target', 'coverage', '.tox', '.ruff_cache',
+}
 EXTENSIONS = {
-    '.md', '.mdx', '.rst', '.txt', '.py', '.sh', '.ps1', '.sql', '.json', '.yaml', '.yml',
+    '.md', '.mdx', '.rst', '.txt', '.py', '.sh', '.ps1', '.sql', '.hql', '.ddl', '.dml',
+    '.j2', '.jinja', '.jinja2', '.avsc', '.graphql', '.json', '.yaml', '.yml',
     '.toml', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.html', '.ipynb', '.tf', '.hcl',
     '.java', '.scala', '.go', '.rs', '.cs', '.rb', '.php', '.kt', '.proto', '.csv', '.cfg', '.ini',
 }
@@ -18,10 +24,46 @@ KIND = {
     '.py': 'code', '.sh': 'code', '.ps1': 'code', '.js': 'code', '.mjs': 'code', '.cjs': 'code',
     '.ts': 'code', '.tsx': 'code', '.jsx': 'code', '.java': 'code', '.scala': 'code', '.go': 'code',
     '.rs': 'code', '.cs': 'code', '.rb': 'code', '.php': 'code', '.kt': 'code',
-    '.sql': 'schema', '.proto': 'schema', '.json': 'config', '.yaml': 'config', '.yml': 'config',
+    '.sql': 'schema', '.hql': 'schema', '.ddl': 'schema', '.dml': 'schema',
+    '.proto': 'schema', '.avsc': 'schema', '.graphql': 'schema',
+    '.j2': 'template', '.jinja': 'template', '.jinja2': 'template',
+    '.json': 'config', '.yaml': 'config', '.yml': 'config',
     '.toml': 'config', '.cfg': 'config', '.ini': 'config', '.tf': 'infra', '.hcl': 'infra',
     '.ipynb': 'notebook', '.csv': 'data',
 }
+
+STACK_PATTERNS = {
+    'dbt': ('dbt_project.yml', 'profiles.yml', 'dbt_packages', 'ref(', 'source('),
+    'spark_pyspark': ('pyspark', 'sparksession', 'spark.read', 'spark.table'),
+    'databricks': ('databricks', 'dbutils', 'unity_catalog', 'databricks.yml'),
+    'delta_lake': ('delta', 'deltatable', 'using delta', 'merge into'),
+    'iceberg': ('iceberg', 'using iceberg'),
+    'airflow': ('airflow', 'dag(', '@dag', 'pythonoperator'),
+    'dagster': ('dagster', '@asset', '@job'),
+    'prefect': ('prefect', '@flow', '@task'),
+    'duckdb': ('duckdb',),
+    'polars': ('polars',),
+    'pandas': ('pandas',),
+    'data_quality': ('great_expectations', 'pandera', 'soda', 'dbt-expectations', 'tests:'),
+    'terraform_iac': ('.tf', '.hcl'),
+}
+
+
+def detect_stack_signals(posix_path, raw_bytes):
+    lower_path = posix_path.lower()
+    hits = set()
+    if lower_path.endswith(('.tf', '.hcl')):
+        hits.add('terraform_iac')
+    if lower_path.endswith(('dbt_project.yml', 'profiles.yml')):
+        hits.add('dbt')
+    if lower_path.endswith('databricks.yml'):
+        hits.add('databricks')
+    if len(raw_bytes) <= 262_144:
+        text = raw_bytes.decode('utf-8', errors='ignore').lower()
+        for stack, tokens in STACK_PATTERNS.items():
+            if any(tok in text or tok in lower_path for tok in tokens):
+                hits.add(stack)
+    return sorted(hits)
 
 
 def inspect(root, includes=None, excludes=None):
@@ -42,6 +84,9 @@ def inspect(root, includes=None, excludes=None):
         return True
 
     files = []
+    stack_counts = Counter()
+    kind_counts = Counter()
+
     for directory, dirs, names in os.walk(root, followlinks=False):
         dirs[:] = sorted(d for d in dirs if d not in SKIP and not (Path(directory) / d).is_symlink())
         for name in sorted(names):
@@ -57,20 +102,28 @@ def inspect(root, includes=None, excludes=None):
             if size > 2_000_000:
                 continue
             raw = p.read_bytes()
+            posix = rel.as_posix()
+            kind = KIND.get(p.suffix.lower(), 'infra' if name in SPECIAL_NAMES else 'other')
+            kind_counts[kind] += 1
+            for sig in detect_stack_signals(posix, raw):
+                stack_counts[sig] += 1
             files.append({
-                'path': rel.as_posix(),
+                'path': posix,
                 'bytes': size,
-                'kind': KIND.get(p.suffix.lower(), 'infra' if name in SPECIAL_NAMES else 'other'),
+                'kind': kind,
                 'sha256': hashlib.sha256(raw).hexdigest(),
             })
+
     return {
         'repository': str(root),
         'revision': git('rev-parse', 'HEAD'),
         'workingTreeChanges': git('status', '--short'),
         'includes': includes,
         'excludes': excludes,
+        'countsByKind': dict(sorted(kind_counts.items())),
+        'stackSignals': dict(sorted(stack_counts.items())),
         'files': files,
-        'note': 'Candidate source paths only; no semantic extraction or production execution.',
+        'note': 'Candidate source paths and static stack signals only; no semantic extraction or production execution.',
     }
 
 

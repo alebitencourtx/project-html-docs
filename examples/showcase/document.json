@@ -1,0 +1,28 @@
+{
+  "title": "Comparador Analítico PCM · Referência Visual",
+  "subtitle": "Exemplo ilustrativo completo demonstrando todas as 11 categorias preservadas e os diagramas 2D de solução, fluxo em estágios e entidades de tabelas.",
+  "eyebrow": "project-html-docs · padrão visual v1.3.0",
+  "version": "Exemplo 1.3.0",
+  "updated": "2026-11-14",
+  "language": "pt-BR",
+  "content": "content.md",
+  "cards": [
+    { "label": "Escopo", "value": "2 estágios 2D", "description": "Comparação rápida em toda execução e sintética apenas para dias sem agregado válido." },
+    { "label": "Base integrada", "value": "~200 mi/dia", "description": "Leitura seletiva por partição e versão Delta fixa quando há recalculo." },
+    { "label": "Agregação diária", "value": "~250 linhas/dia", "description": "Reaproveitamento de dias válidos reduz reprocessamento de ~18 min para ~21 s." },
+    { "label": "Leitura", "value": "11 categorias", "description": "Manual offline único preservando todas as seções funcionais e técnicas." }
+  ],
+  "sections": [
+    { "id": "resumo", "title": "Resumo executivo", "audience": "all" },
+    { "id": "escopo", "title": "Visão funcional e escopo", "audience": "all" },
+    { "id": "estado", "title": "Estado atual da solução", "audience": "all" },
+    { "id": "uso", "title": "Como usar", "audience": "all" },
+    { "id": "solucao", "title": "Desenho da solução", "audience": "all" },
+    { "id": "fluxo", "title": "Fluxo e processamento", "audience": "technical" },
+    { "id": "regras", "title": "Regras funcionais e cálculos", "audience": "business" },
+    { "id": "modelo", "title": "Modelo e relacionamento dos dados", "audience": "technical" },
+    { "id": "operacao", "title": "Operação e recuperação", "audience": "operations" },
+    { "id": "decisoes", "title": "Decisões e limites", "audience": "all" },
+    { "id": "glossario", "title": "Glossário e referências", "audience": "all" }
+  ]
+}

@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.3.0 — 2026-11-14
+
+Reengenharia visual e funcional para projetos de engenharia de dados (público técnico e não técnico), mantendo 100% de compatibilidade offline e preservação integral de todas as 11 categorias existentes.
+
+### Adicionado
+
+- **Motor SVG determinístico em grade 2D (`scripts/diagrams.mjs`)**:
+  - **`solution` / `flow`**: grade 2D estruturada com coluna lateral de entradas (`ENTRADAS`), estágios empilhados (`warm`, `cool`, `teal`, `amber`, `neutral`), cartões multi-linha com passos numerados (`step`), chips inline para `` `código` ``, cilindros limpos, cartões de decisão compactos (`shape: "decision"`), corredores dedicados no rodapé (`channel: "bottom"` / `"bottom-inner"` / `"top"`), notas marginais (`callouts`), legenda vetorial `.figure-legend` e nota técnica de rodapé.
+  - **`schema` / `erd`**: entidades de tabelas com cabeçalho tipado (`table`, `mart`, `json`, `external`), faixa explícita de **Grão** (com quebra automática de linha), leitura natural `[PK/FK/UK] nome_coluna — tipo` com zebra striping e conectores *Crow's Foot* (`1`, `0..1`, `1..N`, `0..N`) + linhagem tracejada (`kind: "lineage"`).
+- **Navegação para público técnico e não técnico (`build.mjs`, `document.js`, `document.css`)**:
+  - **Filtro de perfil de leitura** (`Todas` | `Visão de negócio` | `Visão técnica` | `Operação`): preserva todas as 11 seções no DOM/pesquisa enquanto ajusta foco e abertura das seções relevantes ao perfil.
+  - **Callouts semânticos tipados** (`Regra de negócio:`, `Exemplo prático:`, `Atenção:`, `Limitação:`) e **badges automáticos de coluna** em tabelas (`` `PK` ``, `` `FK` ``, `` `UK` ``, `` `PARTIÇÃO` ``, `` `PII` ``, `` `NOT NULL` ``).
+  - **Filtro local automático em dicionários/tabelas extensas** (`>= 8` linhas), botão limpar (`×`) e atalhos (`/` / `Ctrl+K`) na pesquisa, destaque visual dos termos buscados (`<mark class="search-hit">`), realce de conexões em `.sol-svg` (na página e dentro do modal ampliado) e controles de zoom (`−` / `+` com readout `%`) no modal `#diagram-dialog`.
+- **Descoberta estática para Engenharia de Dados (`scripts/inspect_repo.py`)**: suporte a `.j2`, `.jinja`, `.jinja2`, `.hql`, `.ddl`, `.dml`, `.avsc`, `.graphql` e extração leve de `countsByKind` e `stackSignals` (dbt, PySpark, Databricks, Delta Lake, Airflow, Dagster, DuckDB, Polars, Terraform).
+- **Exemplo completo (`examples/showcase/`)**: demonstra as 11 categorias preservadas com os novos diagramas, dicionário pesquisável, callouts tipados e matriz de incidentes.
+
+### Corrigido & Melhorado
+
+- Distribuição de portas (`nextPort`) calculada após a resolução real dos lados em `renderSolutionDiagram`, evitando sobreposição de múltiplas saídas no mesmo lado, além de distribuição de portas em `renderSchemaDiagram`.
+- Desvio automático de arestas que cruzariam nós/entidades intermediários na mesma linha, quebra automática de subtítulos de zonas e tokens de código sem separadores, folga inferior de `meta` em cilindros e quebra de rótulos em canais/arestas verticais.
+- Localização do `eyebrow` padrão para inglês (`language: "en"`), wrapper `<div class="table-wrap">` compatível com atributos na tag `<table>`, proteção contra IDs reservados do shell HTML e mensagens de erro contextualizadas para `H2` e blocos JSON.
+- Pós-processamento Mermaid aprimorado para subtítulos de subgraph protegidos (`.subgraph-title`), `erDiagram` com colunas `[Badge] nome — tipo`, `edge-label-yes/no` com prefixos compostos (ex.: `"Sim (dados novos)"`), sincronização de scrollspy no rodapé da página e limite de altura em `@media print`.
+
 ## 1.2.0 — 2026-11-14
 
 Evoluções visuais, reengenharia de gráficos, modernização do Design System e padronização arquitetural em estágios 2D empilhados desenvolvidos na branch `feature/melhorias-visuais-arquitetura`.
