@@ -274,27 +274,53 @@ function pillMetrics(text, fontSize = 10.5) {
   return { pw: Math.round(maxW + 18), ph: Math.round(lines.length * 14 + 8) };
 }
 
-function resolvePillPositions(pills, boxObstacles) {
+function resolvePillPositions(pills, boxObstacles, maxCanvasW = 1800) {
   const placed = [];
-  const offsets = [[0, 0], [0, -18], [0, 18], [0, -34], [0, 34], [-26, 0], [26, 0], [-26, -18], [26, -18], [-26, 18], [26, 18]];
+  const offsets = [
+    [0, 0], [0, -18], [0, 18], [0, -34], [0, 34],
+    [-26, 0], [26, 0], [-26, -18], [26, -18], [-26, 18], [26, 18],
+    [0, -52], [0, 52], [-56, 0], [56, 0], [-56, -24], [56, -24],
+    [-56, 24], [56, 24], [0, -72], [0, 72], [-88, 0], [88, 0],
+  ];
   const overlapsRect = (ax, ay, aw, ah, bx, by, bw, bh, pad = 4) =>
     ax < bx + bw + pad && ax + aw + pad > bx && ay < by + bh + pad && ay + ah + pad > by;
+  const rectOverlapArea = (ax, ay, aw, ah, bx, by, bw, bh) => {
+    const ox = Math.max(0, Math.min(ax + aw, bx + bw) - Math.max(ax, bx));
+    const oy = Math.max(0, Math.min(ay + ah, by + bh) - Math.max(ay, by));
+    return ox * oy;
+  };
 
   return pills.map(p => {
-    let bestX = p.x;
-    let bestY = p.y;
+    let bestX = Math.max(4 + p.pw / 2, p.x);
+    let bestY = Math.max(4 + p.ph / 2, p.y);
+    let bestPenalty = Infinity;
     for (const [dx, dy] of offsets) {
       const cx = p.x + dx;
       const cy = p.y + dy;
       const rx = cx - p.pw / 2;
       const ry = cy - p.ph / 2;
-      if (rx < 4 || ry < 4) continue;
-      const hitBox = boxObstacles.some(b => overlapsRect(rx, ry, p.pw, p.ph, b.x, b.y, b.w, b.h, 3));
-      const hitPill = placed.some(q => overlapsRect(rx, ry, p.pw, p.ph, q.rx, q.ry, q.pw, q.ph, 3));
-      if (!hitBox && !hitPill) {
+      if (rx < 4 || ry < 4 || rx + p.pw > maxCanvasW + 240) continue;
+      let penalty = 0;
+      for (const b of boxObstacles) {
+        if (overlapsRect(rx, ry, p.pw, p.ph, b.x, b.y, b.w, b.h, 3)) {
+          penalty += 1000 + rectOverlapArea(rx, ry, p.pw, p.ph, b.x, b.y, b.w, b.h);
+        }
+      }
+      for (const q of placed) {
+        if (overlapsRect(rx, ry, p.pw, p.ph, q.rx, q.ry, q.pw, q.ph, 3)) {
+          penalty += 500 + rectOverlapArea(rx, ry, p.pw, p.ph, q.rx, q.ry, q.pw, q.ph);
+        }
+      }
+      if (penalty === 0) {
         bestX = cx;
         bestY = cy;
+        bestPenalty = 0;
         break;
+      }
+      if (penalty < bestPenalty) {
+        bestPenalty = penalty;
+        bestX = cx;
+        bestY = cy;
       }
     }
     placed.push({ rx: bestX - p.pw / 2, ry: bestY - p.ph / 2, pw: p.pw, ph: p.ph });
@@ -442,7 +468,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   const edges = Array.isArray(spec.edges) ? spec.edges : [];
   const hasInputs = Boolean(spec.inputs && (spec.inputs.label || (spec.inputs.nodes || []).length));
 
-  const maxNodeCol = Math.max(0, ...spec.nodes.map(n => Number(n.col ?? 0)));
+  const maxNodeCol = Math.max(0, ...spec.nodes.map(n => Number(n.col ?? 0) + Math.max(1, Number(n.colSpan ?? 1)) - 1));
   const maxZoneCol = zones.length ? Math.max(...zones.map(z => Number(z.colStart ?? 0) + Number(z.colSpan ?? 1) - 1)) : 0;
   const maxCalloutCol = zones.reduce((m, z) => {
     const cs = Array.isArray(z.callouts) ? z.callouts : [];
@@ -450,7 +476,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   }, 0);
   const numCols = Math.max(Number(spec.cols || 0), maxNodeCol + 1, maxZoneCol + 1, maxCalloutCol + 1);
 
-  const maxNodeRow = Math.max(0, ...spec.nodes.map(n => Number(n.row ?? 0)));
+  const maxNodeRow = Math.max(0, ...spec.nodes.map(n => Number(n.row ?? 0) + Math.max(1, Number(n.rowSpan ?? 1)) - 1));
   const maxZoneRow = zones.length ? Math.max(...zones.map(z => Number(z.row ?? 0) + Number(z.rowSpan ?? 1) - 1)) : 0;
   const numRows = Math.max(maxNodeRow + 1, maxZoneRow + 1);
 
@@ -458,7 +484,11 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   const colWidth = Number(spec.colWidth || 236);
   // Ensure horizontal gap fits adjacent same-row edge labels without overlapping boxes
   let minNeededColGap = rawColGap;
-  const quickCoords = new Map(spec.nodes.map(n => [n.id, { col: Number(n.col ?? 0), row: Number(n.row ?? 0) }]));
+  const quickCoords = new Map(spec.nodes.map(n => [n.id, {
+    col: Number(n.col ?? 0),
+    colSpan: Math.max(1, Number(n.colSpan ?? 1)),
+    row: Number(n.row ?? 0),
+  }]));
   for (const e of edges) {
     if (e.channel || e.from === e.to || !e.label) continue;
     const fc = quickCoords.get(e.from);
@@ -466,7 +496,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     if (!fc || !tc) continue;
     const fS = e.fromSide || (tc.col >= fc.col ? 'right' : 'left');
     const tS = e.toSide || (tc.col >= fc.col ? 'left' : 'right');
-    if (fS === 'right' && tS === 'left' && fc.row === tc.row && tc.col === fc.col + 1) {
+    if (fS === 'right' && tS === 'left' && fc.row === tc.row && tc.col === fc.col + fc.colSpan) {
       const wrapped = wrapEdgeLabelText(e.label, 92, 10.5).split('\n');
       const pw = Math.round(Math.max(...wrapped.map(l => measureText(l, 10.5, false))) + 18);
       if (pw + 28 > minNeededColGap) minNeededColGap = pw + 28;
@@ -523,9 +553,25 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     return maxH + (rowHasZoneHeader[r] ? 56 : 14) + 22;
   });
 
-  // Resolve edge routing (including auto-bypass around intermediate nodes in same row)
-  const occupiedCell = new Set(spec.nodes.map(n => `${Number(n.col ?? 0)}:${Number(n.row ?? 0)}`));
-  const nodeCoord = new Map(spec.nodes.map(n => [n.id, { col: Number(n.col ?? 0), row: Number(n.row ?? 0) }]));
+  // Resolve edge routing (including auto-bypass around intermediate nodes in same row, honoring colSpan)
+  const occupiedCell = new Set();
+  for (const n of spec.nodes) {
+    const nc = Number(n.col ?? 0);
+    const nr = Number(n.row ?? 0);
+    const cs = Math.max(1, Number(n.colSpan ?? 1));
+    const rs = Math.max(1, Number(n.rowSpan ?? 1));
+    for (let dc = 0; dc < cs; dc++) {
+      for (let dr = 0; dr < rs; dr++) {
+        occupiedCell.add(`${nc + dc}:${nr + dr}`);
+      }
+    }
+  }
+  const nodeCoord = new Map(spec.nodes.map(n => [n.id, {
+    col: Number(n.col ?? 0),
+    colSpan: Math.max(1, Number(n.colSpan ?? 1)),
+    rowSpan: Math.max(1, Number(n.rowSpan ?? 1)),
+    row: Number(n.row ?? 0),
+  }]));
 
   const resolvedEdges = edges.map(e => {
     const fc = nodeCoord.get(e.from);
@@ -533,8 +579,8 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     if (!fc || !tc) throw Error(`Edge references unknown node: ${e.from} -> ${e.to}`);
 
     if (e.from === e.to) {
-      const rightBlocked = occupiedCell.has(`${fc.col + 1}:${fc.row}`);
-      const bottomBlocked = occupiedCell.has(`${fc.col}:${fc.row + 1}`);
+      const rightBlocked = occupiedCell.has(`${fc.col + fc.colSpan}:${fc.row}`);
+      const bottomBlocked = occupiedCell.has(`${fc.col}:${fc.row + fc.rowSpan}`);
       const loopSide = !rightBlocked ? 'right' : !bottomBlocked ? 'bottom' : 'top';
       return { ...e, channel: undefined, isSelfLoop: true, loopSide, fSide: loopSide, tSide: loopSide };
     }
@@ -543,11 +589,13 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     const isHorizEndpoint = (!e.fromSide || e.fromSide === 'right' || e.fromSide === 'left') &&
       (!e.toSide || e.toSide === 'left' || e.toSide === 'right');
     let midRowBypass = false;
-    if (!channel && isHorizEndpoint && fc.row === tc.row && Math.abs(fc.col - tc.col) > 1) {
-      const minC = Math.min(fc.col, tc.col);
-      const maxC = Math.max(fc.col, tc.col);
+    const leftCoord = fc.col <= tc.col ? fc : tc;
+    const rightCoord = fc.col <= tc.col ? tc : fc;
+    const gapStart = leftCoord.col + leftCoord.colSpan;
+    const gapEnd = rightCoord.col;
+    if (!channel && isHorizEndpoint && fc.row === tc.row && gapEnd > gapStart) {
       let blocked = false;
-      for (let c = minC + 1; c < maxC; c++) {
+      for (let c = gapStart; c < gapEnd; c++) {
         if (occupiedCell.has(`${c}:${fc.row}`)) { blocked = true; break; }
       }
       if (blocked) {
@@ -766,13 +814,13 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
       const p2 = nextPort(e.to, tSide, toBox);
 
       if (e.channel === 'bottom' || e.channel === 'bottom-inner') {
-        const idx = e.channel === 'bottom-inner' ? 0 : Math.max(orderedBottom.some(x => x.channel === 'bottom-inner') ? 1 : 0, orderedBottom.indexOf(e));
+        const idx = orderedBottom.indexOf(e);
         const laneY = contentBottom + 20 + idx * 34;
         const startBlocker = allBoxes.find(b => b !== fromBox && p1[0] >= b.x - 4 && p1[0] <= b.x + b.w + 4 && b.y < laneY && b.y + b.h > p1[1]);
         const endBlocker = allBoxes.find(b => b !== toBox && p2[0] >= b.x - 4 && p2[0] <= b.x + b.w + 4 && b.y < laneY && b.y + b.h > p2[1]);
         if (startBlocker) {
           const fc = nodeCoord.get(e.from);
-          const detourX = (fc.col === numCols - 1 || !occupiedCell.has(`${fc.col + 1}:${fc.row}`))
+          const detourX = (fc.col + fc.colSpan - 1 >= numCols - 1 || !occupiedCell.has(`${fc.col + fc.colSpan}:${fc.row}`))
             ? Math.max(fromBox.x + fromBox.w, startBlocker.x + startBlocker.w) + 18
             : Math.min(fromBox.x, startBlocker.x) - 18;
           extraCanvasRight = Math.max(extraCanvasRight, detourX + 20 - totalW);
@@ -793,7 +841,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
           }
         } else if (endBlocker) {
           const tc = nodeCoord.get(e.to);
-          const detourX = (tc.col === numCols - 1 || !occupiedCell.has(`${tc.col + 1}:${tc.row}`))
+          const detourX = (tc.col + tc.colSpan - 1 >= numCols - 1 || !occupiedCell.has(`${tc.col + tc.colSpan}:${tc.row}`))
             ? Math.max(toBox.x + toBox.w, endBlocker.x + endBlocker.w) + 18
             : Math.min(toBox.x, endBlocker.x) - 18;
           extraCanvasRight = Math.max(extraCanvasRight, detourX + 20 - totalW);
@@ -861,7 +909,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     }
   }
 
-  const placedPills = resolvePillPositions(pendingPills, allBoxes);
+  const placedPills = resolvePillPositions(pendingPills, allBoxes, totalW);
   const edgeLabelsSvg = placedPills.map(p => {
     extraCanvasRight = Math.max(extraCanvasRight, (p.x + p.pw / 2 + 12) - totalW);
     extraCanvasBottom = Math.max(extraCanvasBottom, (p.y + p.ph / 2 + 12) - totalH);

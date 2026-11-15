@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.9.0 — 2026-11-15
+
+Hardening completo de acessibilidade mobile, renderização 2D/Mermaid no tema Vermelho, auditoria de integridade de artefatos e descoberta JS/TS/dotenv/`.docignore`.
+
+### Adicionado
+
+- **Verificação de artefatos, `sourceDrift` e `--mark-reviewed` (`scripts/verify.mjs`, `scripts/renderer-hash.mjs`)**:
+  - `renderer-hash.mjs` inclui `schemas/document.schema.json` e `package.json` no fingerprint `rendererSha256`.
+  - `verify.mjs` verifica hashes dos artefatos de autoria (`manifestSha256`, `inputSha256` e `.html` irmão via `htmlSha256`), diferencia commits que alteram apenas documentação via `revision.sourceDrift` (`--strict` não falha em doc-only commits), limita listagem a 25 novos arquivos core com contador excedente no `update-plan.md`, e adiciona `--mark-reviewed` para gravar `browserReviewed: true` + `browserReviewedAt` no recibo após revisão real no navegador.
+- **Descoberta JS/TS, `.docignore` completo e redação ampliada (`scripts/inspect_repo.py`)**:
+  - Remove `data`, `env`, `build` e `site` do bloqueio incondicional para não perder subdiretórios legítimos como `src/data/` ou `src/env/`.
+  - Suporte completo a `.docignore` (comentários inline, negações `!` com descida seletiva em diretórios pai, âncoras `/` na raiz).
+  - Extração JS/TS de `arrow functions`, `interface`/`type`/`enum` (linha única e multilinhas) para `dataContracts` e `process.env`/`import.meta.env` (inclusive optional chaining `?.`) para `envAndCliParams`, além de redação de tokens (`ghp_`, `github_pat_`, `sk-`, `Bearer`, `AIza`, `AKIA`) em previews e comandos de workflows GitHub Actions.
+- **Testes**: suíte ampliada de 35 para **40 testes** cobrindo todos os fluxos de integridade, SVG 2D, AST/regex JS/TS, validação LaTeX/H4, ergonomia mobile e validação AJV das receitas da landing page.
+
+### Corrigido & Melhorado
+
+- **Acessibilidade e Ergonomia (`assets/document.css`, `assets/document.js`)**:
+  - Isolamento de foco no drawer mobile (`main.inert = active`, *focus trap* por `Tab`/`Shift+Tab`), guarda de teclado quando `<dialog>` está aberto (sem disparo de `/` ou `Ctrl+K` por trás do modal), responsividade do modal movida para `@media (max-width: 960px)`, e `body.nav-open { overflow: visible !important; }` na impressão.
+  - Destaque de pesquisa agora marca **todas** as ocorrências em cada nó de texto; tema inicial respeita `localStorage` sem sobrescrevê-lo no carregamento passivo; sincronização de item ativo na sidebar rola apenas o contêiner `.sidebar nav` sem saltar a viewport nem atuar com drawer fechado.
+  - Harmonização de diagramas Mermaid no tema **Vermelho** via variáveis CSS em `.diagram-scroll svg:not(.sol-svg)` e subgraphs neutros; gradiente dinâmico `--figure-bg-fade` e remoção de `border-radius: 20px`/`999px`.
+- **Motor 2D, Builder & Validador (`scripts/diagrams.mjs`, `scripts/build.mjs`, `scripts/validate.mjs`, `docs/landing-i18n.mjs`)**:
+  - Correção de substituição segura em `build.mjs` (`() => value` contra `$&`/`$$`/`$1`) e aviso não bloqueante quando `companionDoc.href` local ainda não existe.
+  - `.card h3` não satisfaz mais hierarquia para `<h4>` fora do card; detecção ampliada de LaTeX inline (`$x_i$`, `$n^2$`, `$O(n^2)$`, `$a + b = c$`) preservando moeda.
+  - `diagrams.mjs`: faixas Y exclusivas para múltiplas arestas `bottom-inner`, suporte fiel a `colSpan`/`rowSpan` em células ocupadas e desvios, e busca ampliada na resolução de colisão de pílulas mantendo rótulos dentro do canvas.
+  - Correção das receitas CLI e `document.json` (100% válido no schema AJV) em `docs/landing-i18n.mjs`.
+
 ## 1.8.0 — 2026-11-15
 
 Responsividade mobile com barra lateral recolhível e detecção automática de atualizações no renderer/template da própria skill.

@@ -19,10 +19,21 @@ async function readJson(file) {
   return JSON.parse(await fs.readFile(file, 'utf8'));
 }
 
+async function checkOptionalFileHash(filePath, expectedSha256) {
+  if (!expectedSha256) return null;
+  try {
+    const raw = await fs.readFile(filePath);
+    return hash(raw) === expectedSha256;
+  } catch {
+    return false;
+  }
+}
+
 export async function verify(manifestFile, receiptFile) {
   const manifestPath = path.resolve(manifestFile);
   const receiptPath = path.resolve(receiptFile);
-  const manifest = await readJson(manifestPath);
+  const manifestRaw = await fs.readFile(manifestPath, 'utf8');
+  const manifest = JSON.parse(manifestRaw);
   const receipt = await readJson(receiptPath);
   const base = path.dirname(manifestPath);
   const repo = path.resolve(base, manifest.repoRoot || '.');
@@ -58,8 +69,34 @@ export async function verify(manifestFile, receiptFile) {
   const currentRevision = git(repo, 'rev-parse', 'HEAD');
   const dirty = git(repo, 'status', '--short');
   const revisionMatches = !receipt.revision || !currentRevision ? null : receipt.revision === currentRevision;
+  let sourceDriftBetweenRevisions = null;
+  if (revisionMatches === false) {
+    const diffNames = git(repo, 'diff', '--name-only', `${receipt.revision}..${currentRevision}`);
+    if (diffNames !== null) {
+      const changedSet = new Set(
+        diffNames.split(/\r?\n/).map(s => s.trim().replace(/\\/g, '/')).filter(Boolean),
+      );
+      const declaredPaths = [...declared.values()].map(s => s.path.replace(/\\/g, '/'));
+      sourceDriftBetweenRevisions = declaredPaths.some(p => changedSet.has(p));
+    }
+  } else if (revisionMatches === true) {
+    sourceDriftBetweenRevisions = false;
+  }
+
+  const contentPath = manifest.content ? path.resolve(base, manifest.content) : null;
+  const htmlPath = /\.validation\.json$/i.test(receiptPath)
+    ? receiptPath.replace(/\.validation\.json$/i, '.html')
+    : null;
+  const [manifestMatches, contentMatches, htmlMatches] = await Promise.all([
+    receipt.manifestSha256 ? Promise.resolve(receipt.manifestSha256 === hash(manifestRaw)) : Promise.resolve(null),
+    contentPath ? checkOptionalFileHash(contentPath, receipt.inputSha256) : Promise.resolve(null),
+    htmlPath ? checkOptionalFileHash(htmlPath, receipt.htmlSha256) : Promise.resolve(null),
+  ]);
+
   const bad = results.filter(r => r.status !== 'ok');
-  const ok = bad.length === 0 && revisionMatches !== false;
+  const revisionOk = revisionMatches !== false || sourceDriftBetweenRevisions === false;
+  const artifactsOk = manifestMatches !== false && contentMatches !== false && htmlMatches !== false;
+  const ok = bad.length === 0 && revisionOk && artifactsOk;
 
   const [currentRendererSha256, currentSkillVersion] = await Promise.all([
     computeRendererHash(),
@@ -75,10 +112,17 @@ export async function verify(manifestFile, receiptFile) {
   return {
     ok,
     document: manifest.title,
+    browserReviewed: Boolean(receipt.browserReviewed),
     revision: {
       documented: receipt.revision || null,
       current: currentRevision,
       matches: revisionMatches,
+      sourceDrift: sourceDriftBetweenRevisions,
+    },
+    artifacts: {
+      manifestMatches,
+      contentMatches,
+      htmlMatches,
     },
     renderer: {
       documentedVersion: documentedSkillVersion,
@@ -235,13 +279,20 @@ export async function analyzeImpact(manifestFile, receiptFile, {dossierFile = nu
 }
 
 export function renderUpdatePlan(impact) {
+  const artifactsSynced = !impact.artifacts || (
+    impact.artifacts.manifestMatches !== false &&
+    impact.artifacts.contentMatches !== false &&
+    impact.artifacts.htmlMatches !== false
+  );
   const sourcesSynced = Boolean(impact.ok && !impact.untrackedCoreFiles.length);
   const rendererNeedsRebuild = Boolean(impact.renderer?.needsRebuild);
-  const overallStatus = !sourcesSynced
-    ? 'Desatualizado (revisão cirúrgica recomendada)'
-    : rendererNeedsRebuild
-      ? 'Código-fonte sincronizado · Template da skill atualizado (regere o HTML com build.mjs --force)'
-      : 'Sincronizado (nenhuma atualização necessária)';
+  const overallStatus = !artifactsSynced
+    ? 'Artefatos editados após o último build (execute build.mjs --force para recompilar o HTML)'
+    : !sourcesSynced
+      ? 'Desatualizado (revisão cirúrgica recomendada)'
+      : rendererNeedsRebuild
+        ? 'Código-fonte sincronizado · Template da skill atualizado (regere o HTML com build.mjs --force)'
+        : 'Sincronizado (nenhuma atualização necessária)';
 
   const lines = [
     '# Plano de Atualização Incremental (Drift & Impacto)',
@@ -251,6 +302,19 @@ export function renderUpdatePlan(impact) {
     `- **Status geral:** ${overallStatus}`,
     '',
   ];
+
+  if (!artifactsSynced) {
+    const drifted = [];
+    if (impact.artifacts.manifestMatches === false) drifted.push('`document.json`');
+    if (impact.artifacts.contentMatches === false) drifted.push('`content.md`');
+    if (impact.artifacts.htmlMatches === false) drifted.push('`.html` compilado');
+    lines.push(
+      '## 0. Artefatos de Autoria Divergentes do Recibo',
+      '',
+      `- Os seguintes artefatos divergem do hash registrado em \`validation.json\`: ${drifted.join(', ')}. Execute \`build.mjs --force\` para recompilar.`,
+      '',
+    );
+  }
 
   if (rendererNeedsRebuild) {
     const docVer = impact.renderer?.documentedVersion || 'n/d';
@@ -295,6 +359,9 @@ export function renderUpdatePlan(impact) {
     lines.push('### Novos Arquivos Core Não Rastreados no Manifesto');
     for (const f of impact.untrackedCoreFiles.slice(0, 25)) {
       lines.push(`- \`${f.path}\` (Onda ${f.wave} · \`${f.kind}\` · centralidade ${f.centrality})`);
+    }
+    if (impact.untrackedCoreFiles.length > 25) {
+      lines.push(`- ... e mais ${impact.untrackedCoreFiles.length - 25} arquivo(s) não listado(s).`);
     }
     lines.push('');
   }
@@ -341,6 +408,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
   const argv = process.argv.slice(2);
   const strict = argv.includes('--strict');
   const impactMode = argv.includes('--impact');
+  const markReviewed = argv.includes('--mark-reviewed');
   const dossierFile = getFlagValue(argv, '--dossier');
   const planOut = getFlagValue(argv, '--plan');
 
@@ -348,13 +416,28 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
   const positional = argv.filter(a => !a.startsWith('--') && !skipVals.has(a));
 
   if (positional.length < 2) {
-    console.error('Usage: node scripts/verify.mjs <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>]');
+    console.error('Usage: node scripts/verify.mjs <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>] [--mark-reviewed]');
     process.exitCode = 2;
   } else {
     try {
       const result = impactMode || dossierFile || planOut
         ? await analyzeImpact(positional[0], positional[1], {dossierFile})
         : await verify(positional[0], positional[1]);
+
+      if (markReviewed) {
+        if (!result.ok) {
+          console.error('Cannot mark browserReviewed=true because verification failed (resolve source or artifact drift first).');
+          process.exitCode = 1;
+        } else {
+          const receiptPath = path.resolve(positional[1]);
+          const receipt = await readJson(receiptPath);
+          receipt.browserReviewed = true;
+          receipt.browserReviewedAt = new Date().toISOString();
+          await fs.writeFile(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
+          result.browserReviewed = true;
+          result.browserReviewedAt = receipt.browserReviewedAt;
+        }
+      }
 
       if (planOut) {
         const resolvedPlan = path.resolve(planOut);

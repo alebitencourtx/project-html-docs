@@ -4,10 +4,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as cheerio from 'cheerio';
-import { TRANSLATIONS, VIDEO_CHAPTERS, resolveLang, getCopy } from '../docs/landing-i18n.mjs';
+import Ajv from 'ajv';
+import { TRANSLATIONS, VIDEO_CHAPTERS, RECIPES, resolveLang, getCopy } from '../docs/landing-i18n.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const docsDir = path.resolve(__dirname, '../docs');
+const rootDir = path.resolve(__dirname, '..');
+const docsDir = path.resolve(rootDir, 'docs');
 
 test('PT and EN translation dictionaries share identical non-empty keys', () => {
   const ptKeys = Object.keys(TRANSLATIONS.pt).sort();
@@ -67,3 +69,15 @@ test('docs/index.html references valid i18n keys, local assets, and chapter butt
     assert.ok(chap.time >= 0 && chap.time < 29, `Invalid video chapter timestamp for ${chap.id}`);
   }
 });
+
+test('landing RECIPES.manifest strictly validates against document.schema.json and RECIPES.cli uses valid verify flags', () => {
+  const schema = JSON.parse(fs.readFileSync(path.join(rootDir, 'schemas/document.schema.json'), 'utf8'));
+  const validate = new Ajv({ allErrors: true }).compile(schema);
+  const manifestObj = JSON.parse(RECIPES.manifest);
+  const valid = validate(manifestObj);
+  assert.equal(valid, true, `Schema errors: ${JSON.stringify(validate.errors)}`);
+
+  assert.match(RECIPES.cli, /npm ci --ignore-scripts/);
+  assert.match(RECIPES.cli, /--impact\s+--dossier\s+docs\/inventory\.json\s+--plan\s+docs\/update-plan\.md/);
+});
+

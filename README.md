@@ -4,8 +4,8 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-35%20passing-success.svg)](#testes-automatizados)
-[![Version](https://img.shields.io/badge/version-1.8.0-orange.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-40%20passing-success.svg)](#testes-automatizados)
+[![Version](https://img.shields.io/badge/version-1.9.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
@@ -40,9 +40,9 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
   - Pipelines JSON do Azure Data Factory e Azure Synapse.
   - Tecnologias de nuvem e streaming: Delta Lake, Cosmos DB, Event Hubs, ADLS Gen2, APIs (FastAPI/Flask) e código Scala.
   - Parâmetros de CLI (`argparse`, `click`, `typer`) e variáveis de ambiente (`os.getenv`).
-  - Suporte a arquivo `.docignore` na raiz do projeto para ignorar pastas temporárias ou artefatos gerados.
+  - Suporte a arquivo `.docignore` na raiz do projeto com globs, negações (`!`) e caminhos ancorados (`/`), extração JS/TS (`interface`, `type`, `enum`, *arrow functions*, `process.env`/`import.meta.env`) e redação automática de segredos em previews e workflows.
   - Montagem de um plano de leitura organizado em 4 etapas ordenadas (`reading-plan.md`).
-- **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 no código-fonte e nos templates/assets da própria skill (`rendererSha256`), apontando no `update-plan.md` (com resumo `git diff --stat`) quais seções precisam de revisão ou quando basta apenas regerar o HTML com `build.mjs --force`.
+- **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 nos códigos-fonte, nos artefatos de autoria (`manifestSha256`, `inputSha256`, `htmlSha256`) e nos templates/assets da própria skill (`rendererSha256`), diferenciando commits apenas de documentação (`sourceDrift`), suportando `--mark-reviewed` pós-inspeção visual e apontando no `update-plan.md` quais seções precisam de revisão ou quando basta regerar o HTML com `build.mjs --force`.
 - **Landing Page e Showcase Oficial**: Apresentação interativa em `docs/index.html` pronta para publicação no GitHub Pages (pasta `/docs`), com vídeo demonstrativo, alternador de idiomas e navegação direta para o Manual Completo e Guia Rápido.
 
 ---
@@ -284,7 +284,7 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios, análise de impacto e integridade da landing page:
 
 ```bash
-# Rodar todos os testes unitários (35 testes)
+# Rodar todos os testes unitários (40 testes)
 npm test
 
 # Compilar os exemplos disponíveis
@@ -296,6 +296,7 @@ npm run build:showcase
 
 ## Histórico de releases
 
+- **[v1.9.0](CHANGELOG.md#190--2026-11-15)**: Hardening de acessibilidade mobile (`inert`, focus trap, modal até 960 px), harmonização Mermaid no tema Vermelho, verificação de artefatos + `--mark-reviewed` + `sourceDrift` no `verify.mjs`, faixas múltiplas em diagramas 2D e extração JS/TS + `.docignore` completo no `inspect_repo.py`.
 - **[v1.8.0](CHANGELOG.md#180--2026-11-15)**: Visão mobile responsiva com menu lateral recolhível (drawer off-canvas até 960 px) e detecção de atualização exclusiva do renderer da skill (`rendererSha256`) no `verify.mjs --impact`.
 - **[v1.7.0](CHANGELOG.md#170--2026-11-15)**: Temas por cor (Vermelho padrão e Azul), remoção de retenção de rolagem sobre tabelas, nova landing page oficial em `docs/index.html` com vídeo demonstrativo, internacionalização e manual completo do gerador em `docs/`.
 - **[v1.6.0](CHANGELOG.md#160--2026-11-14)**: Modo Guia Rápido / Visão Resumida (`mode: "summary"`, `--mode summary`), badges de tempo de leitura (`~N min de leitura`), link seguro `companionDoc`, contagem de palavras e avisos de concisão no recibo de validação.

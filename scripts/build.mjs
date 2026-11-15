@@ -188,7 +188,7 @@ export async function build(manifestFile,output,{force=false,mode:cliMode}={}){
     const key=`GENERATEDVISUAL${generated.size}END`;generated.set(key,html);return `<div>${key}</div>`;
   }}});
   const subNavBySection=new Map();
-  const body=groups.map((g,i)=>{const section=spec.sections[i];const enhanced=enhanceSectionHtml(clean(mdParser.parser(g.tokens)),section.id,usedIds);let content=enhanced.html;subNavBySection.set(section.id,enhanced.subHeadings);for(const[key,value]of generated)content=content.replace(`<div>${key}</div>`,value);const refs=(section.sources||[]).map(id=>`<a href="#ref-${id}">${esc(sourceMap.get(id).path)}</a>`).join(' ');return `<details class="doc-section" id="${section.id}" data-audience="${section.audience}" open><summary class="section-heading"><span class="number">${String(i+1).padStart(2,'0')}</span><h2>${esc(section.title)}</h2><span class="audience ${section.audience}">${words[section.audience]}</span></summary><div class="section-body">${content}${refs?`<div class="section-sources">${words.sources}: ${refs}</div>`:''}</div></details>`;}).join('\n');
+  const body=groups.map((g,i)=>{const section=spec.sections[i];const enhanced=enhanceSectionHtml(clean(mdParser.parser(g.tokens)),section.id,usedIds);let content=enhanced.html;subNavBySection.set(section.id,enhanced.subHeadings);for(const[key,value]of generated)content=content.replace(`<div>${key}</div>`,()=>value);const refs=(section.sources||[]).map(id=>`<a href="#ref-${id}">${esc(sourceMap.get(id).path)}</a>`).join(' ');return `<details class="doc-section" id="${section.id}" data-audience="${section.audience}" open><summary class="section-heading"><span class="number">${String(i+1).padStart(2,'0')}</span><h2>${esc(section.title)}</h2><span class="audience ${section.audience}">${words[section.audience]}</span></summary><div class="section-body">${content}${refs?`<div class="section-sources">${words.sources}: ${refs}</div>`:''}</div></details>`;}).join('\n');
   const nav=spec.sections.map((s,i)=>{
     const subs=subNavBySection.get(s.id)||[];
     const subHtml=subs.length?`<div class="nav-sub" data-parent="${s.id}">${subs.map(sub=>`<a href="#${sub.id}">${esc(sub.title)}</a>`).join('')}</div>`:'';
@@ -222,6 +222,16 @@ export async function build(manifestFile,output,{force=false,mode:cliMode}={}){
   if(mode==='summary'){
     if(validated.contentSections>8)warnings.push(`Summary mode has ${validated.contentSections} sections; aim for 4-7 focused chapters to keep quick-guide scannability.`);
     if(validated.wordCount>3500)warnings.push(`Summary mode has ${validated.wordCount} words (~${validated.readingMinutes} min); trim encyclopedic details to keep under ~3,500 words.`);
+  }
+  if(spec.companionDoc){
+    const rawHref=String(spec.companionDoc.href||'').trim();
+    if(rawHref&&!/^(?:https?:|mailto:|#)/i.test(rawHref)){
+      const cleanRel=rawHref.split(/[?#]/)[0];
+      if(cleanRel){
+        const sibling=path.resolve(path.dirname(output),cleanRel);
+        try{await fs.access(sibling);}catch(e){if(e.code==='ENOENT')warnings.push(`Companion document "${cleanRel}" was not found at ${sibling}; remember to compile it alongside this file.`);}
+      }
+    }
   }
   const rendererSha256=await computeRendererHash(ROOT);
   const receipt={...validated,warnings,version:PKG.version,skillVersion:PKG.version,rendererSha256,builtAt:new Date().toISOString(),manifestSha256:hash(manifestRaw),document:spec.title,revision:spec.revision||null,inputSha256:hash(md),htmlSha256:hash(html),sources:evidence};if(!receipt.passed)throw Error(JSON.stringify(receipt.errors));

@@ -22,12 +22,20 @@
   const search = document.querySelector('#search');
   const searchClear = document.querySelector('#search-clear');
 
+  const mainEl = document.querySelector('main');
+  const navContainer = document.querySelector('.sidebar nav');
+
   function setDrawerOpen(open, { focusTarget = null, restoreFocus = false } = {}) {
     if (!sidebar) return;
     const active = Boolean(open && mobileMq.matches);
     sidebar.classList.toggle('is-open', active);
     document.body.classList.toggle('nav-open', active);
     if (backdrop) backdrop.hidden = !active;
+    if (mainEl) {
+      if ('inert' in mainEl) mainEl.inert = active;
+      else if (active) mainEl.setAttribute('aria-hidden', 'true');
+      else mainEl.removeAttribute('aria-hidden');
+    }
     if (navToggle) navToggle.setAttribute('aria-expanded', active ? 'true' : 'false');
     if (active) {
       const target = focusTarget === 'search' ? search : (navClose || search);
@@ -99,23 +107,36 @@
       const norm = normalize(orig);
       // Skip nodes whose length changes under NFD folding to avoid index drift
       if (norm.length !== orig.length) continue;
-      let matchIdx = -1;
-      let matchLen = 0;
+      const ranges = [];
       for (const term of terms) {
-        const i = norm.indexOf(term);
-        if (i !== -1 && (matchIdx === -1 || i < matchIdx)) {
-          matchIdx = i;
-          matchLen = term.length;
+        if (!term) continue;
+        let fromIndex = 0;
+        while (fromIndex <= norm.length - term.length) {
+          const i = norm.indexOf(term, fromIndex);
+          if (i === -1) break;
+          ranges.push([i, i + term.length]);
+          fromIndex = i + term.length;
         }
       }
-      if (matchIdx === -1 || matchLen === 0) continue;
+      if (!ranges.length) continue;
+      ranges.sort((a, b) => a[0] - b[0] || (b[1] - b[0]) - (a[1] - a[0]));
+      const nonOverlapping = [];
+      for (const r of ranges) {
+        if (!nonOverlapping.length || r[0] >= nonOverlapping[nonOverlapping.length - 1][1]) {
+          nonOverlapping.push(r);
+        }
+      }
       const frag = document.createDocumentFragment();
-      if (matchIdx > 0) frag.append(document.createTextNode(orig.slice(0, matchIdx)));
-      const mark = document.createElement('mark');
-      mark.className = 'search-hit';
-      mark.textContent = orig.slice(matchIdx, matchIdx + matchLen);
-      frag.append(mark);
-      if (matchIdx + matchLen < orig.length) frag.append(document.createTextNode(orig.slice(matchIdx + matchLen)));
+      let cursor = 0;
+      for (const [start, end] of nonOverlapping) {
+        if (start > cursor) frag.append(document.createTextNode(orig.slice(cursor, start)));
+        const mark = document.createElement('mark');
+        mark.className = 'search-hit';
+        mark.textContent = orig.slice(start, end);
+        frag.append(mark);
+        cursor = end;
+      }
+      if (cursor < orig.length) frag.append(document.createTextNode(orig.slice(cursor)));
       textNode.parentNode.replaceChild(frag, textNode);
     }
   }
@@ -162,8 +183,33 @@
     search.focus();
   });
 
-  // Atalho '/' ou Ctrl/Cmd+K para focar a pesquisa rapidamente
+  // Atalho '/' ou Ctrl/Cmd+K para focar a pesquisa rapidamente + focus trap no drawer mobile
   document.addEventListener('keydown', e => {
+    if (dialog?.open) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        dialog.close();
+      }
+      return;
+    }
+    if (e.key === 'Tab' && mobileMq.matches && sidebar?.classList.contains('is-open')) {
+      const focusable = [...sidebar.querySelectorAll('a[href]:not([hidden]), button:not([hidden]):not([disabled]), input:not([hidden]):not([disabled]), [tabindex]:not([tabindex="-1"])')]
+        .filter(el => el.offsetParent !== null);
+      if (focusable.length) {
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+          return;
+        }
+        if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+          return;
+        }
+      }
+    }
     const tag = document.activeElement?.tagName;
     const editable = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
     if ((e.key === '/' && !editable) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
@@ -244,7 +290,7 @@
       const saved = localStorage.getItem('project-docs-theme');
       if (saved) initialTheme = normalizeTheme(saved);
     } catch {}
-    applyTheme(initialTheme, true);
+    applyTheme(initialTheme, false);
     themeBtns.forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.themeSelect, true)));
   }
 
@@ -479,7 +525,6 @@
     });
   });
   document.querySelector('#dialog-close').addEventListener('click', () => dialog.close());
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && dialog.open) { e.preventDefault(); dialog.close(); } });
   dialog.addEventListener('close', () => setTimeout(() => trigger?.focus(), 60));
 
   const backToTop = document.querySelector('#back-to-top');
@@ -495,7 +540,16 @@
     const activeLink = document.querySelector(`nav a[href="#${id}"]`);
     if (activeLink) {
       activeLink.setAttribute('aria-current', 'location');
-      activeLink.scrollIntoView({ block: 'nearest' });
+      if (mobileMq.matches && !sidebar?.classList.contains('is-open')) return;
+      if (navContainer) {
+        const navRect = navContainer.getBoundingClientRect();
+        const linkRect = activeLink.getBoundingClientRect();
+        if (linkRect.top < navRect.top) {
+          navContainer.scrollTop -= navRect.top - linkRect.top + 8;
+        } else if (linkRect.bottom > navRect.bottom) {
+          navContainer.scrollTop += linkRect.bottom - navRect.bottom + 8;
+        }
+      }
     }
   }
 

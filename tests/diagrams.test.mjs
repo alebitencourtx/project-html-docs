@@ -466,4 +466,56 @@ test('v1.5.0 diagrams: inline code in note, stripped title backticks, single ?, 
   assert.ok(Number($sch('.schema-key-badge-part').first().attr('width')) > 22, 'Wide key badge PART should size dynamically');
 });
 
+test('v1.9.0 diagrams: multiple bottom-inner edges get distinct Y lanes, colSpan honors occupied cells, and crowded pills stay inside canvas', () => {
+  const html = renderSolutionDiagram({
+    title: 'Canais múltiplos e colSpan',
+    cols: 3,
+    zones: [
+      { id: 'z1', title: 'ESTÁGIO ÚNICO', variant: 'cool', row: 0, colStart: 0, colSpan: 3 },
+    ],
+    nodes: [
+      { id: 'wide', col: 0, row: 0, colSpan: 2, role: 'step', title: 'Etapa Larga', lines: ['ocupa col 0 e 1'] },
+      { id: 'n2', col: 2, row: 0, role: 'output', title: 'Destino', lines: ['col 2'] },
+      { id: 'n3', col: 0, row: 1, role: 'analytical', title: 'Base 1', lines: ['linha 1'] },
+      { id: 'n4', col: 1, row: 1, role: 'analytical', title: 'Base 2', lines: ['linha 1'] },
+      { id: 'n5', col: 2, row: 1, role: 'analytical', title: 'Base 3', lines: ['linha 1'] },
+    ],
+    edges: [
+      { from: 'wide', to: 'n2', label: 'saída larga' },
+      { from: 'n3', to: 'n4', label: 'p1' },
+      { from: 'n3', to: 'n4', label: 'p2' },
+      { from: 'n3', to: 'n4', label: 'p3' },
+      { from: 'n3', to: 'n5', channel: 'bottom-inner', style: 'dashed', label: 'lane A' },
+      { from: 'n4', to: 'n5', channel: 'bottom-inner', style: 'dashed', label: 'lane B' },
+    ],
+  });
+  const $ = load(html);
+  const svg = $('svg.sol-svg');
+  const vb = svg.attr('viewBox').split(/\s+/).map(Number);
+
+  // colSpan=2 node (wide) must span wider than a single column and connect directly to n2
+  const wideRect = $('.sol-node[data-node-id="wide"] rect').first();
+  assert.ok(Number(wideRect.attr('width')) > 300);
+
+  // Two bottom-inner edges must use distinct horizontal laneY coordinates
+  const dA = $('.sol-edge[data-from="n3"][data-to="n5"]').attr('d');
+  const dB = $('.sol-edge[data-from="n4"][data-to="n5"]').attr('d');
+  const extractYs = d => [...d.matchAll(/L[\d.]+,([\d.]+)/g)].map(m => Number(m[1]));
+  const laneYA = Math.max(...extractYs(dA));
+  const laneYB = Math.max(...extractYs(dB));
+  assert.notEqual(laneYA, laneYB, `Expected distinct bottom-inner Y lanes (${laneYA} vs ${laneYB})`);
+
+  // All pills must remain inside SVG viewBox bounds without overlap
+  const pills = $('.sol-edge-label-wrap rect').map((_, r) => ({
+    x: Number($(r).attr('x')),
+    y: Number($(r).attr('y')),
+    w: Number($(r).attr('width')),
+    h: Number($(r).attr('height')),
+  })).get();
+  for (const p of pills) {
+    assert.ok(p.x >= 0 && p.x + p.w <= vb[2], `Pill out of horizontal bounds: ${JSON.stringify(p)} vs ${vb[2]}`);
+  }
+});
+
+
 

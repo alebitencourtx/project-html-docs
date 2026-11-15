@@ -21,8 +21,8 @@ import subprocess
 from typing import Any
 
 SKIP = {
-    '.git', 'node_modules', '.venv', 'venv', 'env', '__pycache__', '.runtime',
-    'data', 'site', 'dist', 'build', '.mypy_cache', '.pytest_cache',
+    '.git', 'node_modules', '.venv', 'venv', '__pycache__', '.runtime',
+    'dist', '.mypy_cache', '.pytest_cache',
     'target', 'coverage', '.tox', '.ruff_cache', '.playwright-cli', '.next',
 }
 
@@ -103,6 +103,10 @@ SECRET_NAME_RE = re.compile(
     re.IGNORECASE,
 )
 
+SECRET_VALUE_RE = re.compile(
+    r'(?:ghp_[A-Za-z0-9]{10,}|github_pat_[A-Za-z0-9_]{15,}|gho_[A-Za-z0-9]{10,}|glpat-[A-Za-z0-9_-]{10,}|sk-(?:proj-|live-|test-)?[A-Za-z0-9]{16,}|xox[baprs]-[A-Za-z0-9-]{10,}|AIza[0-9A-Za-z_-]{20,}|AKIA[0-9A-Z]{16}|Bearer\s+[A-Za-z0-9._-]{12,}|https?://[^:@/\s]+:[^@/\s]+@)'
+)
+
 NOISE_DATA_EXTS = {'.csv', '.parquet'}
 GENERATED_ARTIFACT_PATTERNS = ('*.validation.json', 'reading-plan.md', 'update-plan.md', 'documentacao*.html')
 
@@ -111,15 +115,20 @@ def is_secret_name(name: str) -> bool:
     return bool(SECRET_NAME_RE.search(name or ''))
 
 
+def redact_inline_secrets(text: str) -> str:
+    return SECRET_VALUE_RE.sub('<redacted>', text)
+
+
 def safe_preview_value(name: str, raw_val: Any) -> Any:
     if is_secret_name(name):
         return '<redacted>'
     if isinstance(raw_val, str):
-        if len(raw_val) > 120:
-            return raw_val[:117] + '...'
         if 'AccountKey=' in raw_val or 'SharedAccessKey=' in raw_val or 'Endpoint=sb://' in raw_val:
             return '<redacted-connection-string>'
-        return raw_val
+        cleaned = redact_inline_secrets(raw_val)
+        if len(cleaned) > 120:
+            return cleaned[:117] + '...'
+        return cleaned
     if isinstance(raw_val, (int, float, bool)) or raw_val is None:
         return raw_val
     if isinstance(raw_val, list):
@@ -806,12 +815,52 @@ def extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]:
         imports.append({'module': m.group(1), 'names': [], 'level': 0})
 
     symbols = []
-    for m in re.finditer(r'^(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(([^)]*)\)', text, flags=re.MULTILINE):
+    seen_sym_names: set[tuple[str, int]] = set()
+    for m in re.finditer(r'^(?:export\s+(?:default\s+)?)?(?:async\s+)?function\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\(([^)]*)\)', text, flags=re.MULTILINE):
         line = text[:m.start()].count('\n') + 1
+        seen_sym_names.add((m.group(1), line))
         symbols.append({'name': m.group(1), 'kind': 'function', 'startLine': line, 'endLine': line, 'signature': f"{m.group(1)}({m.group(2)[:80]})"})
-    for m in re.finditer(r'^(?:export\s+)?class\s+([A-Za-z_$][A-Za-z0-9_$]*)', text, flags=re.MULTILINE):
+    for m in re.finditer(r'^(?:export\s+(?:default\s+)?)?(?:const|let)\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*=\s*(?:async\s*)?(?:\(([^)]*)\)|([A-Za-z_$][A-Za-z0-9_$]*))\s*=>', text, flags=re.MULTILINE):
+        line = text[:m.start()].count('\n') + 1
+        name = m.group(1)
+        params = m.group(2) if m.group(2) is not None else (m.group(3) or '')
+        if (name, line) not in seen_sym_names:
+            seen_sym_names.add((name, line))
+            symbols.append({'name': name, 'kind': 'function', 'startLine': line, 'endLine': line, 'signature': f"{name}({params[:80]})"})
+    for m in re.finditer(r'^(?:export\s+(?:default\s+)?)?class\s+([A-Za-z_$][A-Za-z0-9_$]*)', text, flags=re.MULTILINE):
         line = text[:m.start()].count('\n') + 1
         symbols.append({'name': m.group(1), 'kind': 'class', 'startLine': line, 'endLine': line})
+
+    schemas = []
+    if posix_path.endswith(('.ts', '.tsx', '.mts', '.cts')) and not is_test:
+        for m in re.finditer(r'^(?:export\s+)?(interface|type)\s+([A-Za-z_$][A-Za-z0-9_$]*)(?:\s+(?:extends\s+[^{=]+)?|\s*=)\s*\{([^}]{1,1500}?)\}', text, flags=re.MULTILINE):
+            line = text[:m.start()].count('\n') + 1
+            fields = []
+            for raw_ln in re.split(r'[;\n]', m.group(3)):
+                fm = re.match(r'^\s*(?:readonly\s+)?([A-Za-z_$][A-Za-z0-9_$]*\??)\s*:\s*([^;/\n]+)', raw_ln)
+                if fm:
+                    fields.append({'name': fm.group(1), 'type': fm.group(2).strip().rstrip(';,')[:60]})
+            if fields:
+                schemas.append({'name': m.group(2), 'kind': f'ts_{m.group(1)}', 'line': line, 'fields': fields[:40]})
+        for m in re.finditer(r'^(?:export\s+)?enum\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*\{([^}]{1,800}?)\}', text, flags=re.MULTILINE):
+            line = text[:m.start()].count('\n') + 1
+            members = []
+            for raw_ln in re.split(r'[,\n]', m.group(2)):
+                em = re.match(r'^\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*(?:=.*)?$', raw_ln)
+                if em:
+                    members.append({'name': em.group(1), 'type': 'enum_member'})
+            if members:
+                schemas.append({'name': m.group(1), 'kind': 'ts_enum', 'line': line, 'fields': members[:40]})
+
+    env_cli_params = []
+    seen_env: set[tuple[str, int]] = set()
+    if not is_test:
+        for m in re.finditer(r"""(?:process\.env(?:\?\.|\.)([A-Z][A-Z0-9_]*)|process\.env(?:\?\.)?\[['"]([A-Z][A-Z0-9_]*)['"]\]|import\.meta\.env(?:\?\.|\.)([A-Z][A-Z0-9_]*))""", text):
+            ename = m.group(1) or m.group(2) or m.group(3)
+            line = text[:m.start()].count('\n') + 1
+            if ename and (ename, line) not in seen_env:
+                seen_env.add((ename, line))
+                env_cli_params.append({'kind': 'env', 'name': ename, 'line': line})
 
     endpoints = []
     for m in re.finditer(r"""\b(?:app|router|fastify)\.(get|post|put|delete|patch)\(\s*['"]([^'"]+)['"]""", text):
@@ -827,6 +876,8 @@ def extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]:
     return {
         'imports': imports,
         'symbols': [] if is_test else symbols[:40],
+        'schemas': schemas[:30],
+        'envAndCliParams': env_cli_params[:40],
         'endpoints': endpoints,
         'testsIndex': tests_index[:50],
     }
@@ -873,7 +924,7 @@ def extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]:
             'name': name_m.group(1).strip().strip("'\"") if name_m else posix_path,
             'triggers': sorted(set(triggers)),
             'crons': crons,
-            'runCommands': [r.strip()[:120] for r in runs[:15]],
+            'runCommands': [redact_inline_secrets(r.strip())[:120] for r in runs[:15]],
         }
     elif lower.endswith('databricks.yml') or lower.endswith('databricks.yaml'):
         nb_paths = re.findall(r'notebook_path:\s*([^\s#]+)', text)
@@ -1009,25 +1060,49 @@ def inspect(
     excludes = [x for x in (excludes or []) if x]
     ignore_paths = ignore_paths or set()
 
-    docignore_patterns: list[str] = []
+    docignore_rules: list[dict[str, Any]] = []
     docignore_file = root / '.docignore'
     if docignore_file.is_file():
         for raw_ln in docignore_file.read_text(encoding='utf-8', errors='ignore').splitlines():
             ln = raw_ln.strip()
-            if ln and not ln.startswith('#'):
-                docignore_patterns.append(ln.rstrip('/'))
+            if not ln or ln.startswith('#'):
+                continue
+            ln = re.sub(r'\s+#.*$', '', ln).strip()
+            if not ln:
+                continue
+            negate = ln.startswith('!')
+            if negate:
+                ln = ln[1:].strip()
+            anchored = ln.startswith('/')
+            pat = ln.strip('/')
+            if pat:
+                docignore_rules.append({'negate': negate, 'anchored': anchored, 'pattern': pat})
 
     def git(*args: str) -> str | None:
         r = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True, encoding='utf-8', errors='replace')
         return r.stdout.strip() if r.returncode == 0 else None
 
+    def rule_matches(rule: dict[str, Any], posix: str, name: str) -> bool:
+        pat = rule['pattern']
+        if rule['anchored']:
+            return fnmatch.fnmatch(posix, pat) or posix == pat or posix.startswith(pat + '/')
+        if '/' in pat:
+            return fnmatch.fnmatch(posix, pat) or posix == pat or posix.startswith(pat + '/')
+        return fnmatch.fnmatch(posix, pat) or fnmatch.fnmatch(name, pat) or pat in posix.split('/')
+
     def matches_docignore(posix: str, name: str) -> bool:
-        for pat in docignore_patterns:
-            if fnmatch.fnmatch(posix, pat) or fnmatch.fnmatch(name, pat) or pat in posix.split('/'):
-                return True
-            if '/' in pat and (posix == pat or posix.startswith(pat + '/')):
-                return True
-        return False
+        ignored = False
+        for rule in docignore_rules:
+            if rule_matches(rule, posix, name):
+                ignored = not rule['negate']
+        return ignored
+
+    def may_have_unignored_descendant(dir_posix: str) -> bool:
+        prefix = dir_posix + '/'
+        return any(
+            rule['negate'] and (rule['pattern'].startswith(prefix) or fnmatch.fnmatch(prefix + 'x', rule['pattern']))
+            for rule in docignore_rules
+        )
 
     def selected(rel: Path, p_abs: Path) -> bool:
         posix = rel.as_posix()
@@ -1070,7 +1145,10 @@ def inspect(
             d for d in dirs
             if d not in SKIP
             and not (Path(directory) / d).is_symlink()
-            and not matches_docignore((d if rel_dir == '.' else f"{rel_dir}/{d}"), d)
+            and (
+                not matches_docignore((d if rel_dir == '.' else f"{rel_dir}/{d}"), d)
+                or may_have_unignored_descendant(d if rel_dir == '.' else f"{rel_dir}/{d}")
+            )
         )
         for name in sorted(names):
             p = Path(directory) / name
@@ -1163,6 +1241,10 @@ def inspect(
                 file_details[posix] = js_facts
                 for ep in js_facts['endpoints']:
                     endpoints.append({'file': posix, **ep})
+                for prm in js_facts.get('envAndCliParams', []):
+                    env_cli_params.append({'file': posix, **prm})
+                for sc in js_facts.get('schemas', []):
+                    data_contracts.append({'file': posix, **sc})
                 if js_facts['testsIndex']:
                     tests_index[posix] = js_facts['testsIndex']
 

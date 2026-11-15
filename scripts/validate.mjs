@@ -22,7 +22,12 @@ export function validateHtml(html) {
   $('a[href]').each((_,e)=>{if(/^javascript:/i.test($(e).attr('href')))errors.push('Unsafe link');if(!$(e).text().trim()&&!$(e).find('img').length)errors.push('Link without text');});
   let sawH2=false,sawH3=false;
   $('h1,h2,h3,h4').each((_,e)=>{
-    const tag=e.tagName.toLowerCase();const text=$(e).text().trim();
+    const $e=$(e);
+    const tag=e.tagName.toLowerCase();const text=$e.text().trim();
+    if($e.closest('.card').length){
+      if(tag==='h3'&&!sawH2)errors.push(`H3 without H2: ${text}`);
+      return;
+    }
     if(tag==='h2'){sawH2=true;sawH3=false;}
     if(tag==='h3'){if(!sawH2)errors.push(`H3 without H2: ${text}`);sawH3=true;}
     if(tag==='h4'&&!sawH3)errors.push(`H4 without H3: ${text}`);
@@ -59,7 +64,7 @@ export function validateHtml(html) {
   });
   const proseClone=$('main').clone();proseClone.find('pre,code,svg,script,style').remove();
   const proseText=proseClone.text();
-  if(/\$\$[\s\S]+?\$\$|\\(?:text|frac|sum|Delta|times|le|ge|approx|cdot)\s*(?:\{|\\|\b)|\$[^$\n]*\\(?:text|frac|sum|Delta|times|le|ge)|\$[0-9][0-9.,]*%?\$/m.test(proseText)){
+  if(/\$\$[\s\S]+?\$\$|\\(?:text|frac|sum|Delta|times|le|ge|approx|cdot)\s*(?:\{|\\|\b)|\$[^$\n]*\\(?:text|frac|sum|Delta|times|le|ge|approx|cdot)|\$[0-9][0-9.,]*%?\$|\$[A-Za-z][A-Za-z0-9\s(),.+\-*/]*[_^={}\\][A-Za-z0-9\s(),.+\-*/_{}\\]*\$|\$[A-Za-z]\([A-Za-z0-9\s,+\-*/]+\)\$/m.test(proseText)){
     errors.push('Unrendered LaTeX math in prose/tables (use Unicode/HTML instead of $...$)');
   }
   const mode=$('html').attr('data-mode')==='summary'?'summary':'full';

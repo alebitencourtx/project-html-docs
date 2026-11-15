@@ -31,6 +31,7 @@
   --th-bg: #edf3f6;
   --th-fg: #314c5e;
   --figure-bg: #f8fbfc;
+  --figure-bg-fade: rgba(248, 251, 252, 0);
   --figure-note: #3c5466;
   --toolbar-bg: #e9eff3;
   --toolbar-fg: #405868;
@@ -86,6 +87,7 @@
   --th-bg: #f1eded;
   --th-fg: #1f1f1f;
   --figure-bg: #fafafa;
+  --figure-bg-fade: rgba(250, 250, 250, 0);
   --figure-note: #404040;
   --toolbar-bg: #eaeaea;
   --toolbar-fg: #333333;
@@ -196,7 +198,7 @@ details[open] > .section-heading:after {
 .section-heading .number { font-size: 13px; color: var(--accent); font-weight: 700; }
 .section-heading h2 { font-size: 23px; line-height: 1.3; letter-spacing: -.02em; margin: 0; }
 
-.audience { font-size: 10px; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; background: var(--aud-business-bg); color: var(--aud-business-fg); padding: 4px 8px; border-radius: 20px; }
+.audience { font-size: 10px; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; background: var(--aud-business-bg); color: var(--aud-business-fg); padding: 4px 8px; border-radius: 6px; }
 .audience.technical { background: var(--aud-tech-bg); color: var(--aud-tech-fg); }
 .audience.operations { background: var(--aud-ops-bg); color: var(--aud-ops-fg); }
 .audience.all { background: var(--aud-all-bg); color: var(--aud-all-fg); }
@@ -282,8 +284,8 @@ figure { margin: 22px 0; border: 1px solid var(--line); border-radius: 12px; bac
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
   background:
-    linear-gradient(to right, var(--figure-bg) 30%, rgba(248, 251, 252, 0)),
-    linear-gradient(to right, rgba(248, 251, 252, 0), var(--figure-bg) 70%) 100% 0,
+    linear-gradient(to right, var(--figure-bg) 30%, var(--figure-bg-fade)),
+    linear-gradient(to right, var(--figure-bg-fade), var(--figure-bg) 70%) 100% 0,
     radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)),
     radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) 100% 0;
   background-repeat: no-repeat;
@@ -442,6 +444,44 @@ figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top
 :root[data-theme="vermelho"] .schema-tag-bg-json { fill: #404040; }
 :root[data-theme="vermelho"] .schema-sub-bg-json { fill: #f5f5f5; }
 :root[data-theme="vermelho"] .schema-sub-fg-json { fill: #262626; }
+:root[data-theme="vermelho"] .diagram-scroll svg:not(.sol-svg),
+:root[data-theme="vermelho"] .dialog-canvas svg:not(.sol-svg) {
+  --bg: #fafafa !important;
+  --fg: #111111 !important;
+  --line: #737373 !important;
+  --accent: #990000 !important;
+  --surface: #ffffff !important;
+  --border: #cfcfcf !important;
+}
+:root[data-theme="vermelho"] g.subgraph[data-id*="batch" i] > rect:nth-of-type(1),
+:root[data-theme="vermelho"] g.subgraph[data-id*="analytics" i] > rect:nth-of-type(1),
+:root[data-theme="vermelho"] g.subgraph[data-id*="dw" i] > rect:nth-of-type(1),
+:root[data-theme="vermelho"] g.subgraph[data-id*="serving" i] > rect:nth-of-type(1),
+:root[data-theme="vermelho"] g.subgraph[data-id*="transform" i] > rect:nth-of-type(1),
+:root[data-theme="vermelho"] g.subgraph[data-id*="sint" i] > rect:nth-of-type(1),
+:root[data-theme="vermelho"] g.subgraph[data-id*="data" i] > rect:nth-of-type(1) {
+  fill: #f5f5f5 !important;
+  stroke: #d4d4d4 !important;
+}
+:root[data-theme="vermelho"] g.subgraph[data-id*="batch" i] > rect:nth-of-type(2),
+:root[data-theme="vermelho"] g.subgraph[data-id*="analytics" i] > rect:nth-of-type(2),
+:root[data-theme="vermelho"] g.subgraph[data-id*="dw" i] > rect:nth-of-type(2),
+:root[data-theme="vermelho"] g.subgraph[data-id*="serving" i] > rect:nth-of-type(2),
+:root[data-theme="vermelho"] g.subgraph[data-id*="transform" i] > rect:nth-of-type(2),
+:root[data-theme="vermelho"] g.subgraph[data-id*="sint" i] > rect:nth-of-type(2),
+:root[data-theme="vermelho"] g.subgraph[data-id*="data" i] > rect:nth-of-type(2) {
+  fill: #e8e8e8 !important;
+  stroke: #d4d4d4 !important;
+}
+:root[data-theme="vermelho"] g.subgraph[data-id*="batch" i] > text.subgraph-title,
+:root[data-theme="vermelho"] g.subgraph[data-id*="analytics" i] > text.subgraph-title,
+:root[data-theme="vermelho"] g.subgraph[data-id*="dw" i] > text.subgraph-title,
+:root[data-theme="vermelho"] g.subgraph[data-id*="serving" i] > text.subgraph-title,
+:root[data-theme="vermelho"] g.subgraph[data-id*="transform" i] > text.subgraph-title,
+:root[data-theme="vermelho"] g.subgraph[data-id*="sint" i] > text.subgraph-title,
+:root[data-theme="vermelho"] g.subgraph[data-id*="data" i] > text.subgraph-title {
+  fill: #262626 !important;
+}
 
 
 /* Semantic Subgraphs & Architectural Styling (Mermaid fallback) */
@@ -593,7 +633,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
 .dialog-canvas.is-fit svg { width: auto !important; max-width: 100% !important; max-height: 70vh !important; height: auto !important; }
 .dialog-canvas.is-actual svg { max-width: none !important; }
 #no-results { padding: 20px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; }
-#back-to-top { position: fixed; right: 24px; bottom: 24px; z-index: 10; background: var(--nav); color: var(--nav-text); border: 1px solid var(--nav-input-border); border-radius: 999px; padding: 9px 14px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); transition: opacity 0.18s ease, transform 0.18s ease; }
+#back-to-top { position: fixed; right: 24px; bottom: 24px; z-index: 10; background: var(--nav); color: var(--nav-text); border: 1px solid var(--nav-input-border); border-radius: 8px; padding: 9px 14px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); transition: opacity 0.18s ease, transform 0.18s ease; }
 #back-to-top:hover { background: var(--accent); border-color: var(--accent); color: #ffffff; transform: translateY(-1px); }
 .hidden, [hidden] { display: none !important; }
 .revision { overflow-wrap: anywhere; }
@@ -728,6 +768,30 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   }
   .section-body {
     padding: 0 20px 22px;
+  }
+  dialog {
+    width: calc(100vw - 16px);
+    max-width: none;
+    max-height: 92dvh;
+    padding: 14px;
+  }
+  .dialog-head {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .dialog-controls {
+    width: 100%;
+    margin-left: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  .dialog-controls button {
+    min-height: 36px;
+    padding: 5px 10px;
+  }
+  .dialog-canvas {
+    max-height: 68dvh;
   }
 }
 
@@ -938,30 +1002,6 @@ dialog::backdrop { background: var(--dialog-backdrop); }
     padding: 4px 10px;
     font-size: 11.5px;
   }
-  dialog {
-    width: calc(100vw - 16px);
-    max-width: none;
-    max-height: 92dvh;
-    padding: 14px;
-  }
-  .dialog-head {
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  .dialog-controls {
-    width: 100%;
-    margin-left: 0;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 6px;
-  }
-  .dialog-controls button {
-    min-height: 36px;
-    padding: 5px 10px;
-  }
-  .dialog-canvas {
-    max-height: 68dvh;
-  }
   #back-to-top {
     right: 14px;
     bottom: 14px;
@@ -993,6 +1033,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .section-body { padding: 0; }
   .section-body > p:first-child { font-size: 12px; }
   body { background: white; font-size: 11px; }
+  body.nav-open { overflow: visible !important; }
   h2, h3, h4 { break-after: avoid; }
   h3 { font-size: 15px; }
   table { font-size: 9px; }

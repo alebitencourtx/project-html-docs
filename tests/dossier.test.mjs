@@ -389,4 +389,109 @@ test('verify.mjs detects skill renderer updates independently of source drift an
     assert.match(renderUpdatePlan(legacyImpact), /recibo legado/);
   }));
 
+test('inspect_repo.py v1.9.0 discovers src/data & src/env, parses JS/TS interfaces & arrow functions, redacts workflow tokens, and supports .docignore negations', () =>
+  withTempDir(async (dir) => {
+    await fs.mkdir(path.join(dir, 'src/data'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'src/env'), { recursive: true });
+    await fs.mkdir(path.join(dir, '.github/workflows'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'gen'), { recursive: true });
+
+    await fs.writeFile(path.join(dir, '.docignore'), 'gen/*\n!gen/keep.ts\n/root_only.tmp\n');
+    await fs.writeFile(path.join(dir, 'gen/drop.ts'), 'export const drop = true;\n');
+    await fs.writeFile(path.join(dir, 'gen/keep.ts'), 'export interface KeptContract { id: string; }\nexport const loadConfig = () => process.env.SERVICE_MODE || "prod";\n');
+    await fs.writeFile(path.join(dir, 'root_only.tmp'), 'ignored');
+    await fs.writeFile(path.join(dir, 'src/data/repo.ts'), 'export type RecordId = string;\nexport const fetchItem = async (id: string) => id;\n');
+    await fs.writeFile(path.join(dir, 'src/env/config.mjs'), 'export const mode = import.meta.env?.VITE_MODE || "live";\n');
+    await fs.writeFile(
+      path.join(dir, '.github/workflows/deploy.yml'),
+      'name: Deploy\non: [push]\njobs:\n  push:\n    runs-on: ubuntu-latest\n    steps:\n      - run: curl -H "Authorization: Bearer ghp_1234567890abcdefghijklmnop" https://api.github.com\n',
+    );
+
+    const outJson = path.join(dir, 'inv.json');
+    execFileSync('python3', [path.join(root, 'scripts/inspect_repo.py'), dir, '--out', outJson]);
+    const inv = JSON.parse(await fs.readFile(outJson, 'utf8'));
+    const paths = inv.files.map((f) => f.path);
+
+    assert.ok(paths.includes('src/data/repo.ts'));
+    assert.ok(paths.includes('src/env/config.mjs'));
+    assert.ok(paths.includes('gen/keep.ts'));
+    assert.ok(!paths.includes('gen/drop.ts'));
+    assert.ok(!paths.includes('root_only.tmp'));
+
+    assert.ok(inv.dataContracts.some((c) => c.name === 'KeptContract'));
+    assert.ok(inv.symbolIndex['src/data/repo.ts'].symbols.some((fn) => fn.name === 'fetchItem'));
+    assert.ok(inv.envAndCliParams.some((p) => p.name === 'SERVICE_MODE'));
+    assert.ok(inv.envAndCliParams.some((p) => p.name === 'VITE_MODE'));
+
+    const invText = await fs.readFile(outJson, 'utf8');
+    assert.ok(!invText.includes('ghp_1234567890abcdefghijklmnop'), 'Token literal must never survive redaction');
+  }));
+
+test('verify.mjs v1.9.0 detects artifact drift, accepts doc-only git advances, truncates >25 untracked files, and supports --mark-reviewed', () =>
+  withTempDir(async (dir) => {
+    const repo = path.join(dir, 'repo');
+    const docs = path.join(dir, 'docs');
+    await fs.mkdir(path.join(repo, 'src'), { recursive: true });
+    await fs.mkdir(docs, { recursive: true });
+
+    execFileSync('git', ['-C', repo, 'init']);
+    execFileSync('git', ['-C', repo, 'config', 'user.email', 'test@example.com']);
+    execFileSync('git', ['-C', repo, 'config', 'user.name', 'Test User']);
+    await fs.writeFile(path.join(repo, 'src/app.py'), 'print("v1")\n');
+    execFileSync('git', ['-C', repo, 'add', '.']);
+    execFileSync('git', ['-C', repo, 'commit', '-m', 'init code']);
+    const codeRev = execFileSync('git', ['-C', repo, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+
+    await fs.writeFile(path.join(docs, 'document.json'), JSON.stringify({
+      title: 'Doc Only Test', subtitle: 'Verify v1.9.0', version: '1.0.0', updated: '2026-11-15',
+      repoRoot: '../repo', revision: codeRev, content: 'content.md',
+      sections: [{ id: 'overview', title: 'Overview', audience: 'all', sources: ['app'] }],
+      sources: [{ id: 'app', path: 'src/app.py', description: 'App' }],
+    }, null, 2));
+    await fs.writeFile(path.join(docs, 'content.md'), '## Overview\n\nImplemented behavior.\n');
+
+    const htmlOut = path.join(docs, 'manual.html');
+    await build(path.join(docs, 'document.json'), htmlOut);
+    const receiptPath = path.join(docs, 'manual.validation.json');
+
+    // Add a non-source README commit so git HEAD advances without changing src/app.py
+    await fs.writeFile(path.join(repo, 'README.md'), '# Docs commit\n');
+    execFileSync('git', ['-C', repo, 'add', 'README.md']);
+    execFileSync('git', ['-C', repo, 'commit', '-m', 'docs only commit']);
+
+    const docOnlyOut = execFileSync('node', [
+      path.join(root, 'scripts/verify.mjs'),
+      path.join(docs, 'document.json'),
+      receiptPath,
+      '--strict',
+      '--mark-reviewed',
+    ], { encoding: 'utf8' });
+    const parsedDocOnly = JSON.parse(docOnlyOut);
+    assert.equal(parsedDocOnly.ok, true);
+    assert.equal(parsedDocOnly.revision.matches, false);
+    assert.equal(parsedDocOnly.revision.sourceDrift, false);
+    assert.equal(parsedDocOnly.browserReviewed, true);
+
+    const updatedReceipt = JSON.parse(await fs.readFile(receiptPath, 'utf8'));
+    assert.equal(updatedReceipt.browserReviewed, true);
+    assert.ok(updatedReceipt.browserReviewedAt);
+
+    // Editing content.md without rebuilding must trigger artifact drift detection
+    await fs.writeFile(path.join(docs, 'content.md'), '## Overview\n\nEdited without rebuild.\n');
+    const impact = await analyzeImpact(path.join(docs, 'document.json'), receiptPath);
+    assert.equal(impact.ok, false);
+    assert.equal(impact.artifacts.contentMatches, false);
+    assert.match(renderUpdatePlan(impact), /Artefatos de Autoria Divergentes do Recibo/);
+
+    // >25 untracked files summary truncation check
+    const fakeImpact = {
+      ...impact,
+      ok: true,
+      artifacts: { manifestMatches: true, contentMatches: true, htmlMatches: true },
+      untrackedCoreFiles: Array.from({ length: 30 }, (_, i) => ({ path: `src/f${i}.py`, wave: 2, kind: 'python', centrality: 0 })),
+    };
+    assert.match(renderUpdatePlan(fakeImpact), /\.\.\. e mais 5 arquivo\(s\) não listado\(s\)\./);
+  }));
+
+
 

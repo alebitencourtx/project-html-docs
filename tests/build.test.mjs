@@ -342,5 +342,58 @@ test('responsive mobile drawer: builds collapsible sidebar controls, reserves dr
   await assert.rejects(()=>build(path.join(dir,'reserved.json'),path.join(dir,'reserved.html')),/Reserved section id "sidebar"/);
 }));
 
+test('v1.9.0 build & validate: $-safe diagram notes, companionDoc missing warning, H4 after .card h3 guard, inline LaTeX patterns, and Vermelho Mermaid/CSS/JS ergonomics',()=>fixture(async dir=>{
+  await fs.writeFile(path.join(dir,'sec.md'),[
+    '## Overview','','<div class="cards"><div class="card"><h3>Card Heading</h3><p>Ok</p></div></div>','',
+    '```solution','{','  "title": "Custos com $1 e valor",','  "nodes": [{"id": "a", "col": 0, "row": 0, "title": "Step $1", "lines": ["valor $$"]}],','  "note": "Preserva $&, $$ e $1 na nota."','}','```','',
+    '## Architecture','','Subseção.',
+  ].join('\n'));
+  await fs.writeFile(path.join(dir,'sec.json'),JSON.stringify({
+    title:'Dollar & Companion Test',subtitle:'Test',version:'1.9.0',updated:'2026-11-15',
+    companionDoc:{href:'missing-companion.html',label:'Companheiro'},
+    content:'sec.md',
+    sections:[
+      {id:'overview',title:'Overview',audience:'business'},
+      {id:'architecture',title:'Architecture',audience:'technical'},
+    ]
+  }));
+  const out=path.join(dir,'doc.html');
+  const receipt=await build(path.join(dir,'sec.json'),out);
+  assert.equal(receipt.passed,true);
+  assert.ok(receipt.warnings.some(w=>w.includes('Companion document')&&w.includes('missing-companion.html')));
+  const html=await fs.readFile(out,'utf8');
+  assert.ok(html.includes('Preserva $&amp;, $$ e $1 na nota.'));
+
+  // CSS checks: Vermelho Mermaid overrides, 960px dialog responsive rule, nav-open print rule, zero pill radii
+  assert.match(html,/:root\[data-theme="vermelho"\] \.diagram-scroll svg:not\(\.sol-svg\)/);
+  assert.match(html,/--figure-bg-fade:/);
+  assert.match(html,/body\.nav-open\s*\{\s*overflow:\s*visible !important;\s*\}/);
+  const idx960=html.indexOf('@media (max-width: 960px)');
+  const idx760=html.indexOf('@media (max-width: 760px)');
+  const dialogRuleIdx=html.indexOf('max-height: 92dvh;',idx960);
+  assert.ok(dialogRuleIdx>idx960&&dialogRuleIdx<idx760,'Expected responsive dialog rule inside 960px breakpoint');
+
+  // JS ergonomics: no passive theme overwrite, inert isolation, Tab focus trap, multi-hit search highlight, internal nav scroll
+  assert.match(html,/applyTheme\(initialTheme,\s*false\)/);
+  assert.match(html,/mainEl\.inert\s*=\s*active/);
+  assert.match(html,/e\.key\s*===\s*'Tab'/);
+  assert.match(html,/navContainer\.scrollTop/);
+  assert.doesNotMatch(html,/document\.addEventListener\('keydown',\s*e\s*=>\s*\{\s*if\s*\(e\.key\s*===\s*'Escape'\s*&&\s*dialog\.open\)/);
+
+  // .card h3 must not satisfy H4 hierarchy outside cards
+  const cardH4=validateHtml('<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><main><details class="doc-section" open><summary><h2>S</h2></summary><div class="section-body"><div class="card"><h3>Card</h3></div><h4>Orphan H4</h4></div></details></main></body></html>');
+  assert.equal(cardH4.passed,false);
+  assert.ok(cardH4.errors.some(e=>e.includes('H4 without H3')));
+
+  // Expanded inline LaTeX checks ($x_i$, $O(n^2)$, $a + b = c$) while preserving currency
+  for (const mathSnippet of ['<p>Valor $x_i$ e $n^2$.</p>','<p>Complexidade $O(n^2)$.</p>','<p>Soma $a + b = c$.</p>']) {
+    const res=validateHtml(`<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><main><details class="doc-section" open><summary><h2>S</h2></summary><div class="section-body">${mathSnippet}</div></details></main></body></html>`);
+    assert.equal(res.passed,false,`Expected LaTeX failure for ${mathSnippet}`);
+  }
+  const currencyOk=validateHtml('<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><main><details class="doc-section" open><summary><h2>S</h2></summary><div class="section-body"><p>De $10 e $20 até R$ 500.</p></div></details></main></body></html>');
+  assert.equal(currencyOk.passed,true);
+}));
+
+
 
 

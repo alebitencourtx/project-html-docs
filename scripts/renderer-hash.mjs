@@ -12,6 +12,8 @@ export const RENDERER_FILES = [
   'scripts/diagrams.mjs',
   'scripts/validate.mjs',
   'scripts/renderer-hash.mjs',
+  'schemas/document.schema.json',
+  'package.json',
 ];
 
 export async function computeRendererHash(skillRoot = ROOT) {
