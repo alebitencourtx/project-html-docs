@@ -227,3 +227,103 @@ test('verify.mjs --impact propagates drift through dependency graph and marks on
     assert.match(planText, /Reabrir e revisar apenas estas seções/);
     assert.match(planText, /src\/new_job\.py/);
   }));
+
+test('inspect_repo.py v1.5.0 extracts chained PySpark I/O, %run/notebook.run, env/CLI params, ADF pipelines, Scala, and respects .docignore', () =>
+  withTempDir(async (dir) => {
+    await fs.mkdir(path.join(dir, 'notebooks'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'adf'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'scala'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'ignored_dir'), { recursive: true });
+
+    await fs.writeFile(path.join(dir, '.docignore'), 'ignored_dir\n*.tmp.py\n');
+    await fs.writeFile(path.join(dir, 'ignored_dir/skip.py'), 'SECRET = "abc"\n');
+    await fs.writeFile(path.join(dir, 'reading-plan.md'), '# stale plan\n');
+    await fs.writeFile(path.join(dir, 'doc.validation.json'), '{"passed":true}\n');
+
+    await fs.writeFile(
+      path.join(dir, 'notebooks/child_lib.py'),
+      '# Databricks notebook source\nprint("helper")\n',
+    );
+    await fs.writeFile(
+      path.join(dir, 'notebooks/main_etl.py'),
+      [
+        '# Databricks notebook source',
+        '# MAGIC %run ./child_lib',
+        'import os, argparse',
+        '',
+        'CATALOG = os.getenv("UNITY_CATALOG", "prod_lake")',
+        'TOKEN = os.environ["API_TOKEN"]',
+        'COSMOS_CFG = {"spark.cosmos.accountEndpoint": "https://acct.documents.azure.com", "spark.cosmos.masterKey": "secret-123"}',
+        '',
+        'def parse_args():',
+        '    p = argparse.ArgumentParser()',
+        '    p.add_argument("--dt-ref", default="2026-11-14", help="Reference date")',
+        '    return p.parse_args()',
+        '',
+        'def run():',
+        '    dbutils.notebook.run("/notebooks/child_lib", 60)',
+        '    df = spark.readStream.format("cloudFiles").option("checkpointLocation", "abfss://chk@acct.dfs.core.windows.net/c1").load("abfss://raw@acct.dfs.core.windows.net/in")',
+        '    df.writeStream.format("delta").mode("append").partitionBy("dt_ref").trigger(availableNow=True).saveAsTable("prod.silver.events")',
+      ].join('\n'),
+    );
+    await fs.writeFile(
+      path.join(dir, 'adf/pl_daily.json'),
+      JSON.stringify({
+        name: 'pl_daily_ingest',
+        properties: {
+          activities: [
+            {
+              name: 'RunMainEtl',
+              type: 'DatabricksNotebook',
+              dependsOn: [],
+              typeProperties: { notebookPath: '/notebooks/main_etl' },
+            },
+          ],
+        },
+      }),
+    );
+    await fs.writeFile(
+      path.join(dir, 'scala/StreamJob.scala'),
+      [
+        'package com.lake.jobs',
+        'import org.apache.spark.sql.SparkSession',
+        'object StreamJob extends App {',
+        '  val df = spark.read.format("delta").table("prod.bronze.events")',
+        '}',
+      ].join('\n'),
+    );
+
+    const outJson = path.join(dir, 'inventory.json');
+    const outPlan = path.join(dir, 'reading-plan.md');
+    execFileSync('python3', [path.join(root, 'scripts/inspect_repo.py'), dir, '--out', outJson, '--plan', outPlan]);
+    const dossier = JSON.parse(await fs.readFile(outJson, 'utf8'));
+    const planMd = await fs.readFile(outPlan, 'utf8');
+
+    assert.equal(dossier.dossierVersion, '1.5.0');
+    assert.ok(!dossier.files.some((f) => f.path.includes('ignored_dir') || f.path === 'reading-plan.md' || f.path === 'doc.validation.json'));
+    assert.ok(dossier.stackSignals.scala >= 1);
+    assert.ok(dossier.stackSignals.orchestration >= 1);
+    assert.equal(dossier.entrypoints.adfPipelines.length, 1);
+
+    // Chained PySpark metadata
+    const mainIo = dossier.symbolIndex['notebooks/main_etl.py'].dataIO;
+    const writeNode = mainIo.find((io) => io.op === 'spark_write_stream');
+    assert.equal(writeNode.format, 'delta');
+    assert.equal(writeNode.mode, 'append');
+    assert.deepEqual(writeNode.partitionBy, ['dt_ref']);
+    assert.deepEqual(writeNode.trigger, { availableNow: true });
+
+    const cosmosDict = mainIo.find((io) => io.op === 'spark_config_dict');
+    assert.equal(cosmosDict.options['spark.cosmos.masterKey'], '<redacted>');
+
+    // Dependency graph edges: ADF -> main_etl & main_etl -> child_lib
+    assert.ok(dossier.dependencyGraph.edges.some((e) => e.from === 'adf/pl_daily.json' && e.to === 'notebooks/main_etl.py' && e.kind === 'adf_activity'));
+    assert.ok(dossier.dependencyGraph.edges.some((e) => e.from === 'notebooks/main_etl.py' && e.to === 'notebooks/child_lib.py' && e.kind === 'notebook_run'));
+
+    // Env / CLI params
+    assert.ok(dossier.envAndCliParams.some((p) => p.name === 'UNITY_CATALOG' && p.default === 'prod_lake'));
+    assert.ok(dossier.envAndCliParams.some((p) => p.name === '--dt-ref' && p.default === '2026-11-14'));
+    assert.ok(planMd.includes('Azure Data Factory / Synapse Pipelines'));
+    assert.ok(planMd.includes('UNITY_CATALOG'));
+  }));
+

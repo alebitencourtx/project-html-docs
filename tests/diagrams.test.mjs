@@ -402,4 +402,68 @@ test('renderSchemaDiagram routes cross-row bottom->right relations through inter
   assert.ok(topPillBottom < runsTop, `Expected runs->probes top pill (${topPillBottom}) above runs top (${runsTop})`);
 });
 
+test('v1.5.0 diagrams: inline code in note, stripped title backticks, single ?, dynamic key badge width, theme classes and pill collision avoidance', () => {
+  const solHtml = renderSolutionDiagram({
+    title: 'Pipeline `bronze_events` v1.5',
+    zones: [
+      { id: 'z1', title: 'CAMADA STREAM', variant: 'warm', row: 0, colStart: 0, colSpan: 2 },
+    ],
+    nodes: [
+      { id: 'a', col: 0, row: 0, role: 'analytical', title: 'Origem', lines: ['leitura'] },
+      { id: 'b', col: 1, row: 0, role: 'output', title: 'Destino', lines: ['escrita'] },
+    ],
+    edges: [
+      { from: 'a', to: 'b', role: 'analytical', label: 'fluxo 1' },
+      { from: 'a', to: 'b', role: 'output', label: 'fluxo 2' },
+    ],
+    note: 'Usa `checkpointLocation` e `mergeSchema`.',
+  });
+  const $s = load(solHtml);
+  assert.ok(!$s('.figure-tag').text().includes('`'));
+  assert.ok(!$s('figcaption').text().includes('`'));
+  assert.equal($s('.diagram-note code').length, 2);
+  assert.equal($s('.sol-zone-warm').length, 1);
+  assert.equal($s('.sol-node-role-analytical').length, 1);
+  assert.equal($s('.sol-node-role-output').length, 1);
+  assert.equal($s('.sol-arrow-head-analytical').length, 1);
+  assert.equal($s('.sol-arrow-head-output').length, 1);
+
+  // Two parallel edge pills between a -> b must not collide vertically
+  const pillRects = $s('.sol-edge-label-wrap rect').map((_, r) => ({
+    x: Number($s(r).attr('x')),
+    y: Number($s(r).attr('y')),
+    w: Number($s(r).attr('width')),
+    h: Number($s(r).attr('height')),
+  })).get();
+  assert.equal(pillRects.length, 2);
+  const overlapX = pillRects[0].x < pillRects[1].x + pillRects[1].w && pillRects[0].x + pillRects[0].w > pillRects[1].x;
+  const overlapY = pillRects[0].y < pillRects[1].y + pillRects[1].h && pillRects[0].y + pillRects[0].h > pillRects[1].y;
+  assert.equal(overlapX && overlapY, false, 'Parallel edge label pills must resolve non-overlapping positions');
+
+  const schHtml = renderSchemaDiagram({
+    title: 'Contrato `delta.gold`',
+    entities: [
+      {
+        id: 'e1',
+        name: 'gold_tbl',
+        kind: 'mart',
+        grain: '1 linha = evento',
+        col: 0,
+        row: 0,
+        columns: [
+          { key: 'PART', name: 'dt_ref', type: 'date' },
+          { name: 'payload', type: 'string?', nullable: true },
+        ],
+      },
+    ],
+    note: 'Grava via `MERGE INTO`.',
+  });
+  const $sch = load(schHtml);
+  assert.ok(!schHtml.includes('string??'));
+  assert.ok(schHtml.includes('string?'));
+  assert.equal($sch('.schema-header-mart').length, 1);
+  assert.equal($sch('.diagram-note code').length, 1);
+  assert.ok(Number($sch('.schema-key-badge-part').first().attr('width')) > 22, 'Wide key badge PART should size dynamically');
+});
+
 

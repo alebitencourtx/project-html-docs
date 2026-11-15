@@ -27,7 +27,36 @@ export function validateHtml(html) {
     if(tag==='h3'){if(!sawH2)errors.push(`H3 without H2: ${text}`);sawH3=true;}
     if(tag==='h4'&&!sawH3)errors.push(`H4 without H3: ${text}`);
   });
-  $('figure svg').each((_,e)=>{if(!$(e).attr('aria-label')&&!$(e).attr('aria-labelledby'))errors.push('SVG missing accessible name');});
+  $('figure svg').each((_,e)=>{
+    const $svg=$(e);
+    if(!$svg.attr('aria-label')&&!$svg.attr('aria-labelledby'))errors.push('SVG missing accessible name');
+    const vb=$svg.attr('viewBox');
+    if(!vb||!/^\s*-?\d+(?:\.\d+)?(?:\s+|,)-?\d+(?:\.\d+)?(?:\s+|,)\d+(?:\.\d+)?(?:\s+|,)\d+(?:\.\d+)?\s*$/.test(vb)){
+      errors.push('SVG missing valid numeric viewBox');
+    }else{
+      const parts=vb.trim().split(/[\s,]+/).map(Number);
+      if(parts.some(n=>!Number.isFinite(n))||parts[2]<=0||parts[3]<=0)errors.push(`Invalid SVG viewBox dimensions: ${vb}`);
+    }
+  });
+  $('svg, svg *').each((_,e)=>{
+    const tag=e.tagName?.toLowerCase();
+    for(const attr of ['x','y','width','height','x1','y1','x2','y2','cx','cy','r','rx','ry','d','viewBox']){
+      const val=$(e).attr(attr);
+      if(val!==undefined&&/\b(?:NaN|Infinity|undefined)\b/.test(val)){
+        errors.push(`Invalid SVG geometry attribute ${attr}="${val}" on <${tag}>`);
+      }
+      if(tag==='rect'&&(attr==='width'||attr==='height')&&val!==undefined){
+        const num=Number(val);
+        if(Number.isFinite(num)&&num<0)errors.push(`Negative SVG rect ${attr}="${val}"`);
+      }
+    }
+  });
+  $('.diagram figcaption, .diagram-note, .figure-tag').each((_,e)=>{
+    if($(e).text().includes('`'))errors.push(`Literal backtick in diagram caption/note: ${$(e).text().slice(0,80)}`);
+  });
+  $('.schema-svg text').each((_,e)=>{
+    if($(e).text().includes('??'))errors.push(`Double nullable marker "??" in schema SVG: ${$(e).text()}`);
+  });
   const proseClone=$('main').clone();proseClone.find('pre,code,svg,script,style').remove();
   const proseText=proseClone.text();
   if(/\$\$[\s\S]+?\$\$|\\(?:text|frac|sum|Delta|times|le|ge|approx|cdot)\s*(?:\{|\\|\b)|\$[^$\n]*\\(?:text|frac|sum|Delta|times|le|ge)|\$[0-9][0-9.,]*%?\$/m.test(proseText)){

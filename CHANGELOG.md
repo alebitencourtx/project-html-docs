@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.5.0 — 2026-11-14
+
+Endurecimento visual dos diagramas 2D e tema Santander, ergonomia de navegação (`H3`, `#back-to-top`, sidebar flex sem sobreposição), validação geométrica de SVGs e ampliação dos extratores de Engenharia de Dados (PySpark encadeado, `%run`/`dbutils.notebook.run`, Azure Data Factory JSON, Scala, env/CLI e `.docignore`).
+
+### Corrigido & Melhorado
+
+- **Sidebar sem sobreposição & Ergonomia Desktop (`assets/document.css`, `assets/document.js`, `scripts/build.mjs`)**:
+  - Conversão de `.sidebar` em coluna flex (`nav` com scroll independente acima do rodapé `<small>`), eliminando definitivamente a sobreposição do banner `"HTML único · leitura offline"` sobre os últimos itens do menu.
+  - Remoção do bloco CSS legado `@media (max-width: 760px)`, alinhando o shell exclusivamente à experiência desktop (~1440 px), e substituição de `background: white` literais por `var(--surface)`.
+  - Geração automática de âncoras `H3` com IDs únicos e subnavegação recuada (`.nav-sub`) na barra lateral (respeitando busca e filtro de audiência), além do botão flutuante `#back-to-top`.
+  - Suporte a acentos em caixa alta (`ÁÀÂÃÉÊÍÓÔÕÚÇ`) no cálculo de largura de rótulos de `barChart`.
+- **Harmonização Completa do Tema Santander & Blindagem SVG (`scripts/diagrams.mjs`, `assets/document.css`)**:
+  - Classes semânticas em zonas (`.sol-zone-*`), nós (`.sol-node-role-*`), cabeçalhos/setas (`.sol-arrow-head-*`), linhagens (`.sol-edge-lineage`) e cartões ER (`.schema-header-*`), permitindo harmonização visual completa do modo `Santander` nos diagramas 2D sem perda das cores semânticas de sucesso/erro/alerta.
+  - Prevenção automática de sobreposição entre *pills* de rótulos e caixas de nós/entidades (`resolvePillPositions`).
+  - Renderização de `` `código` `` em notas técnicas (`.diagram-note`), remoção de crases soltas em títulos/`figcaption`, eliminação de marcação dupla `??` em tipos nullable no `schema`, e largura dinâmica de badges chave (`PK`/`PART`/`UK,FK`).
+- **Validação Estrutural e Guardrails (`scripts/build.mjs`, `scripts/validate.mjs`)**:
+  - Rejeição explícita de `<h1>` dentro do Markdown de seções (Markdown ou HTML) e reserva do ID `back-to-top`.
+  - Auditoria SVG em `validateHtml`: exige `viewBox` numérico válido, proíbe `NaN`/`Infinity`/`undefined` em atributos geométricos, `<rect>` negativos, crases literais em legendas/notas de diagramas e `??` no `.schema-svg`.
+  - Avisos não bloqueantes (`warnings`) no recibo quando há excesso de `"audience": "all"` ou omissão majoritária de `sections[].sources`.
+- **Dossiê Estático 1.5.0 & Limpeza do Pacote (`scripts/inspect_repo.py`, `scripts/verify.mjs`)**:
+  - Parser completo de cadeias PySpark (captura `.format`, `.mode`, `.partitionBy`, `.trigger`, `checkpointLocation` e opções em AST) + dicionários `spark.cosmos.*` / `eventhubs.*` / `fs.azure.*` / `kafka.*`.
+  - Extração de `%run` e `dbutils.notebook.run(...)` com arestas `'notebook_run'`, pipelines Azure Data Factory / Synapse JSON (`'adf_activity'`), arquivos Scala (`.scala`), variáveis `os.getenv`/`os.environ`/CLI (`argparse`/`click`/`typer`) em `envAndCliParams`.
+  - Exclusão automática de artefatos gerados (`*.validation.json`, `reading-plan.md`, `update-plan.md`, `documentacao*.html`), suporte a `.docignore` na raiz, `git diff --stat` no `--impact`, e remoção do diretório transitório `outputs/`.
+
 ## 1.4.0 — 2026-11-14
 
 Descoberta determinística de repositórios (0 tokens de LLM), extração profunda para Engenharia de Dados em nuvem/streaming e atualização incremental orientada a impacto.

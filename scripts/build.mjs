@@ -18,15 +18,17 @@ const textTags=[...sanitizeHtml.defaults.allowedTags,'details','summary','div','
 const clean=v=>sanitizeHtml(v,{allowedTags:textTags,allowedAttributes:{...sanitizeHtml.defaults.allowedAttributes,'*':['class'],a:['href','title'],details:['open']},allowedSchemes:['https','http','mailto'],allowProtocolRelative:false});
 
 const RESERVED_IDS=new Set([
-  'main','search','search-clear','search-count','expand','collapse','print','no-results',
+  'main','search','search-clear','search-count','expand','collapse','print','no-results','back-to-top',
   'document-references','diagram-dialog','dialog-title','dialog-zoom-in','dialog-zoom-out',
   'dialog-zoom-label','dialog-fit','dialog-actual','dialog-close','dialog-canvas'
 ]);
 
 const VARIANTS={accent:'#087f8c',success:'#16a34a',warning:'#d97706',danger:'#dc2626',neutral:'#64748b'};
+const slugify=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'sub';
 
-function enhanceSectionHtml(rawHtml){
+function enhanceSectionHtml(rawHtml,sectionId=null,usedIds=new Set()){
   const $=load(rawHtml,null,false);
+  const subHeadings=[];
   $('table').each((_,tbl)=>{
     const $tbl=$(tbl);
     if(!$tbl.parent().hasClass('table-wrap'))$tbl.wrap('<div class="table-wrap"></div>');
@@ -49,14 +51,28 @@ function enhanceSectionHtml(rawHtml){
     else if(t==='PII'||t==='SENSÍVEL'||t==='SENSIVEL')$el.addClass('col-badge col-badge-pii');
     else if(t==='NOT NULL'||t==='OBRIGATÓRIO'||t==='OBRIGATORIO')$el.addClass('col-badge col-badge-notnull');
   });
-  return $.html();
+  if(sectionId){
+    $('h3').each((_,el)=>{
+      const $el=$(el);
+      if($el.closest('.card').length)return;
+      const title=$el.text().trim();
+      if(!title)return;
+      const base=`${sectionId}-${slugify(title)}`;
+      let id=base,n=2;
+      while(usedIds.has(id))id=`${base}-${n++}`;
+      usedIds.add(id);
+      $el.attr('id',id);
+      subHeadings.push({id,title});
+    });
+  }
+  return {html:$.html(),subHeadings};
 }
 
 export function barChart(spec,locale='pt-BR'){
   if(spec.type!=='bar'||!spec.title||!spec.unit||!spec.source||!Array.isArray(spec.data)||!spec.data.length||spec.data.length>40)throw Error('chart requires type=bar, title, unit, source, and 1–40 data items');
   const seen=new Set();for(const d of spec.data){if(typeof d.label!=='string'||!d.label.trim()||d.label.length>45||!Number.isFinite(d.value)||d.value<0||seen.has(d.label))throw Error('chart labels must be unique (max 45 chars); values must be finite and nonnegative');if(d.variant!==undefined&&!VARIANTS[d.variant])throw Error('chart variant must be warning, danger, success, neutral, or accent');seen.add(d.label);}
   const max=Math.max(1,...spec.data.map(d=>d.value)),row=42;
-  const widthOf=c=>c===' '?4.2:'MW@%'.includes(c)?14:/[A-Z]/.test(c)?10.5:/[0-9]/.test(c)?8.4:/[il.,:;!|'`]/.test(c)?3.5:7.6;
+  const widthOf=c=>c===' '?4.2:'MW@%'.includes(c)?14:/[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ]/.test(c)?10.5:/[0-9]/.test(c)?8.4:/[il.,:;!|'`]/.test(c)?3.5:7.6;
   const labelWidth=Math.max(...spec.data.map(d=>[...d.label].reduce((sum,c)=>sum+widthOf(c),0)));
   const left=Math.max(220,Math.round(labelWidth+24)),plot=540,w=left+plot+80;
   const plotTop=10,plotBottom=spec.data.length*row+10,h=plotBottom+52;
@@ -103,20 +119,29 @@ export async function build(manifestFile,output,{force=false}={}){
     none:'No sections found.',offline:'Single HTML · offline reading',sources:'Sources',updated:'Updated',code:'Code',
     diagram:'Expand',close:'Close',fit:'Fit to view',actual:'100%',hint:'Choose a section or filter by reading profile.',
     data:'Data as of',reference:'Document references',defaultEyebrow:'Functional & technical documentation',
-    filterAll:'All',filterBusiness:'Business view',filterTechnical:'Technical view',filterOps:'Operations'
+    filterAll:'All',filterBusiness:'Business view',filterTechnical:'Technical view',filterOps:'Operations',backToTop:'Back to top'
   }:{
     all:'Para todos',business:'Funcional',technical:'Técnico',operations:'Operação',
     search:'Pesquisar documentação',clearSearch:'Limpar busca',expand:'Expandir tudo',collapse:'Recolher tudo',print:'Imprimir / PDF',
     none:'Nenhuma seção encontrada.',offline:'HTML único · leitura offline',sources:'Referências',updated:'Atualizado',code:'Código',
     diagram:'Ampliar',close:'Fechar',fit:'Ajustar à tela',actual:'Tamanho real',hint:'Navegue por assunto ou filtre por perfil de leitura.',
     data:'Dados observados em',reference:'Referências do documento',defaultEyebrow:'Documentação funcional e técnica',
-    filterAll:'Todas',filterBusiness:'Visão de negócio',filterTechnical:'Visão técnica',filterOps:'Operação'
+    filterAll:'Todas',filterBusiness:'Visão de negócio',filterTechnical:'Visão técnica',filterOps:'Operação',backToTop:'Topo'
   };
   const sourceMap=new Map(),evidence=[];
   for(const source of spec.sources||[]){if(sourceMap.has(source.id))throw Error(`Duplicate source: ${source.id}`);if(!spec.repoRoot)throw Error('repoRoot is required for local sources');const repo=path.resolve(base,spec.repoRoot);const p=path.resolve(repo,source.path);const rel=path.relative(repo,p);if(rel.startsWith('..')||path.isAbsolute(rel))throw Error('Source outside repository');const raw=await fs.readFile(p);const item={...source,sha256:hash(raw)};sourceMap.set(source.id,item);evidence.push(item);}
-  const ids=new Set();for(const section of spec.sections){if(RESERVED_IDS.has(section.id))throw Error(`Reserved section id "${section.id}" cannot be used`);if(ids.has(section.id))throw Error(`Duplicate section: ${section.id}`);ids.add(section.id);for(const s of section.sources||[])if(!sourceMap.has(s))throw Error(`Unknown source: ${s}`);}
+  const ids=new Set();const usedIds=new Set([...RESERVED_IDS,...evidence.map(s=>`ref-${s.id}`)]);
+  for(const section of spec.sections){if(RESERVED_IDS.has(section.id))throw Error(`Reserved section id "${section.id}" cannot be used`);if(ids.has(section.id))throw Error(`Duplicate section: ${section.id}`);ids.add(section.id);usedIds.add(section.id);for(const s of section.sources||[])if(!sourceMap.has(s))throw Error(`Unknown source: ${s}`);}
   const mdParser=new Marked({gfm:true});const tokens=mdParser.lexer(md);const groups=[];let current;
-  for(const token of tokens){if(token.type==='heading'&&token.depth===2){current={title:token.text,tokens:[]};groups.push(current);}else if(current)current.tokens.push(token);else if(token.type!=='space')throw Error('Start content with a level-two heading listed in document.json');}
+  for(const token of tokens){
+    if(token.type==='heading'&&token.depth===1)throw Error(`H1 heading is reserved for document title; found "${token.text}" in ${current?`section "${current.title}"`:'document top'}`);
+    if(token.type==='heading'&&token.depth===2){current={title:token.text,tokens:[]};groups.push(current);}
+    else if(current){
+      if(token.type==='html'&&/<h1(?:\s|>)/i.test(token.text||''))throw Error(`H1 heading is reserved for document title; found HTML <h1> in section "${current.title}"`);
+      current.tokens.push(token);
+    }
+    else if(token.type!=='space')throw Error('Start content with a level-two heading listed in document.json');
+  }
   if(groups.length!==spec.sections.length)throw Error(`Markdown H2 headings must match sections[].title in order (found ${groups.length}, expected ${spec.sections.length})`);
   for(let i=0;i<groups.length;i++){if(groups[i].title!==spec.sections[i].title)throw Error(`Markdown H2 headings must match sections[].title in order (index ${i}: expected "${spec.sections[i].title}", found "${groups[i].title}")`);}
   let diagramIndex=0;const generated=new Map();
@@ -146,15 +171,29 @@ export async function build(manifestFile,output,{force=false}={}){
     }else{return `<pre><code${type?` class="language-${esc(type)}"`:''}>${esc(text)}</code></pre>`;}
     const key=`GENERATEDVISUAL${generated.size}END`;generated.set(key,html);return `<div>${key}</div>`;
   }}});
-  const body=groups.map((g,i)=>{const section=spec.sections[i];let content=enhanceSectionHtml(clean(mdParser.parser(g.tokens)));for(const[key,value]of generated)content=content.replace(`<div>${key}</div>`,value);const refs=(section.sources||[]).map(id=>`<a href="#ref-${id}">${esc(sourceMap.get(id).path)}</a>`).join(' ');return `<details class="doc-section" id="${section.id}" data-audience="${section.audience}" open><summary class="section-heading"><span class="number">${String(i+1).padStart(2,'0')}</span><h2>${esc(section.title)}</h2><span class="audience ${section.audience}">${words[section.audience]}</span></summary><div class="section-body">${content}${refs?`<div class="section-sources">${words.sources}: ${refs}</div>`:''}</div></details>`;}).join('\n');
-  const nav=spec.sections.map((s,i)=>`<a href="#${s.id}" data-audience="${s.audience}"><span>${String(i+1).padStart(2,'0')}</span>${esc(s.title)}</a>`).join('');
+  const subNavBySection=new Map();
+  const body=groups.map((g,i)=>{const section=spec.sections[i];const enhanced=enhanceSectionHtml(clean(mdParser.parser(g.tokens)),section.id,usedIds);let content=enhanced.html;subNavBySection.set(section.id,enhanced.subHeadings);for(const[key,value]of generated)content=content.replace(`<div>${key}</div>`,value);const refs=(section.sources||[]).map(id=>`<a href="#ref-${id}">${esc(sourceMap.get(id).path)}</a>`).join(' ');return `<details class="doc-section" id="${section.id}" data-audience="${section.audience}" open><summary class="section-heading"><span class="number">${String(i+1).padStart(2,'0')}</span><h2>${esc(section.title)}</h2><span class="audience ${section.audience}">${words[section.audience]}</span></summary><div class="section-body">${content}${refs?`<div class="section-sources">${words.sources}: ${refs}</div>`:''}</div></details>`;}).join('\n');
+  const nav=spec.sections.map((s,i)=>{
+    const subs=subNavBySection.get(s.id)||[];
+    const subHtml=subs.length?`<div class="nav-sub" data-parent="${s.id}">${subs.map(sub=>`<a href="#${sub.id}">${esc(sub.title)}</a>`).join('')}</div>`:'';
+    return `<a href="#${s.id}" data-audience="${s.audience}"><span>${String(i+1).padStart(2,'0')}</span>${esc(s.title)}</a>${subHtml}`;
+  }).join('');
   const refs=evidence.length?`<details class="doc-section" id="document-references" data-audience="technical"><summary class="section-heading"><h2>${words.reference}</h2></summary><div class="section-body"><p>${en?'Local files used to describe this revision.':'Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.'}</p><div class="table-wrap"><table><thead><tr><th>${en?'File':'Arquivo'}</th><th>${en?'Purpose':'Conteúdo'}</th></tr></thead><tbody>${evidence.map(s=>`<tr id="ref-${s.id}"><td class="source-path">${esc(s.path)}</td><td>${esc(s.description)}</td></tr>`).join('')}</tbody></table></div><p class="revision">${words.code}: ${esc(spec.revision||'—')}</p></div></details>`:'';
   const cards=(spec.cards||[]).map(c=>`<article class="metric"><span class="label">${esc(c.label)}</span><strong>${esc(c.value)}</strong><p>${esc(c.description)}</p></article>`).join('');
   const initialTheme=spec.theme==='santander'?'santander':'default';
   const css=await fs.readFile(path.join(ROOT,'assets/document.css'),'utf8');const js=await fs.readFile(path.join(ROOT,'assets/document.js'),'utf8');
-  const html=`<!DOCTYPE html>\n<html lang="${locale}"${initialTheme==='santander'?' data-theme="santander"':''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${esc(spec.subtitle)}"><meta name="generator" content="project-html-docs ${PKG.version}"><title>${esc(spec.title)} · ${esc(spec.version)}</title><style>${css}</style></head><body><a class="skip" href="#main">${en?'Skip to content':'Ir para o conteúdo'}</a><aside class="sidebar"><p class="brand">${en?'Project documentation':'Documentação de projeto'}</p><strong>${esc(spec.title)}</strong><label for="search">${words.search}</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="${en?'Search docs… (/)':'Buscar tópicos… (/)'}"><button id="search-clear" type="button" hidden aria-label="${words.clearSearch}">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="${en?'Contents':'Conteúdo'}">${nav}${refs?`<a href="#document-references" data-audience="technical">${words.sources}</a>`:''}</nav><small>${words.offline}<br>${esc(spec.version)} · ${esc(spec.updated)}</small></aside><main id="main"><header class="hero"><p class="eyebrow">${esc(spec.eyebrow||words.defaultEyebrow)}</p><h1>${esc(spec.title)}</h1><p class="subtitle">${esc(spec.subtitle)}</p><div class="badges"><span>${esc(spec.version)}</span><span>${words.updated}: ${esc(spec.updated)}</span><span>${words.offline}</span>${spec.dataAsOf?`<span>${words.data}: ${esc(spec.dataAsOf)}</span>`:''}</div></header><div class="content">${cards?`<div class="hero-cards">${cards}</div>`:''}<div class="toolbar"><span class="hint">${words.hint}</span><div class="audience-filter" role="group" aria-label="${en?'Reading profile':'Perfil de leitura'}"><button type="button" data-audience-filter="all" class="is-active">${words.filterAll}</button><button type="button" data-audience-filter="business">${words.filterBusiness}</button><button type="button" data-audience-filter="technical">${words.filterTechnical}</button><button type="button" data-audience-filter="operations">${words.filterOps}</button></div><div class="theme-filter" role="group" aria-label="${en?'Color theme':'Tema de cores'}"><button type="button" data-theme-select="default" class="${initialTheme==='default'?'is-active':''}" aria-pressed="${initialTheme==='default'}"><span class="theme-swatch theme-swatch-default" aria-hidden="true"></span>${en?'Default':'Atual'}</button><button type="button" data-theme-select="santander" class="${initialTheme==='santander'?'is-active':''}" aria-pressed="${initialTheme==='santander'}"><span class="theme-swatch theme-swatch-santander" aria-hidden="true"></span>Santander</button></div><div class="toolbar-actions"><button id="expand" type="button">${words.expand}</button><button id="collapse" type="button">${words.collapse}</button><button id="print" type="button">${words.print}</button></div></div><p id="no-results" hidden>${words.none}</p>${body}${refs}<footer>${esc(spec.title)} · ${esc(spec.version)} · ${words.offline}</footer></div></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-zoom-out" type="button" aria-label="${en?'Zoom out':'Reduzir zoom'}">−</button><span id="dialog-zoom-label" class="dialog-zoom-label" aria-live="polite">100%</span><button id="dialog-zoom-in" type="button" aria-label="${en?'Zoom in':'Aumentar zoom'}">+</button><button id="dialog-fit" type="button">${words.fit}</button><button id="dialog-actual" type="button" class="is-active">${words.actual}</button><button id="dialog-close" type="button">${words.close}</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>${js}</script></body></html>`;
-  const receipt={...validateHtml(html),version:PKG.version,skillVersion:PKG.version,builtAt:new Date().toISOString(),manifestSha256:hash(manifestRaw),document:spec.title,revision:spec.revision||null,inputSha256:hash(md),htmlSha256:hash(html),sources:evidence};if(!receipt.passed)throw Error(JSON.stringify(receipt.errors));
+  const html=`<!DOCTYPE html>\n<html lang="${locale}"${initialTheme==='santander'?' data-theme="santander"':''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${esc(spec.subtitle)}"><meta name="generator" content="project-html-docs ${PKG.version}"><title>${esc(spec.title)} · ${esc(spec.version)}</title><style>${css}</style></head><body><a class="skip" href="#main">${en?'Skip to content':'Ir para o conteúdo'}</a><aside class="sidebar"><p class="brand">${en?'Project documentation':'Documentação de projeto'}</p><strong>${esc(spec.title)}</strong><label for="search">${words.search}</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="${en?'Search docs… (/)':'Buscar tópicos… (/)'}"><button id="search-clear" type="button" hidden aria-label="${words.clearSearch}">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="${en?'Contents':'Conteúdo'}">${nav}${refs?`<a href="#document-references" data-audience="technical">${words.sources}</a>`:''}</nav><small>${words.offline}<br>${esc(spec.version)} · ${esc(spec.updated)}</small></aside><main id="main"><header class="hero"><p class="eyebrow">${esc(spec.eyebrow||words.defaultEyebrow)}</p><h1>${esc(spec.title)}</h1><p class="subtitle">${esc(spec.subtitle)}</p><div class="badges"><span>${esc(spec.version)}</span><span>${words.updated}: ${esc(spec.updated)}</span><span>${words.offline}</span>${spec.dataAsOf?`<span>${words.data}: ${esc(spec.dataAsOf)}</span>`:''}</div></header><div class="content">${cards?`<div class="hero-cards">${cards}</div>`:''}<div class="toolbar"><span class="hint">${words.hint}</span><div class="audience-filter" role="group" aria-label="${en?'Reading profile':'Perfil de leitura'}"><button type="button" data-audience-filter="all" class="is-active">${words.filterAll}</button><button type="button" data-audience-filter="business">${words.filterBusiness}</button><button type="button" data-audience-filter="technical">${words.filterTechnical}</button><button type="button" data-audience-filter="operations">${words.filterOps}</button></div><div class="theme-filter" role="group" aria-label="${en?'Color theme':'Tema de cores'}"><button type="button" data-theme-select="default" class="${initialTheme==='default'?'is-active':''}" aria-pressed="${initialTheme==='default'}"><span class="theme-swatch theme-swatch-default" aria-hidden="true"></span>${en?'Default':'Atual'}</button><button type="button" data-theme-select="santander" class="${initialTheme==='santander'?'is-active':''}" aria-pressed="${initialTheme==='santander'}"><span class="theme-swatch theme-swatch-santander" aria-hidden="true"></span>Santander</button></div><div class="toolbar-actions"><button id="expand" type="button">${words.expand}</button><button id="collapse" type="button">${words.collapse}</button><button id="print" type="button">${words.print}</button></div></div><p id="no-results" hidden>${words.none}</p>${body}${refs}<footer>${esc(spec.title)} · ${esc(spec.version)} · ${words.offline}</footer></div><button id="back-to-top" type="button" hidden aria-label="${words.backToTop}">↑ ${words.backToTop}</button></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-zoom-out" type="button" aria-label="${en?'Zoom out':'Reduzir zoom'}">−</button><span id="dialog-zoom-label" class="dialog-zoom-label" aria-live="polite">100%</span><button id="dialog-zoom-in" type="button" aria-label="${en?'Zoom in':'Aumentar zoom'}">+</button><button id="dialog-fit" type="button">${words.fit}</button><button id="dialog-actual" type="button" class="is-active">${words.actual}</button><button id="dialog-close" type="button">${words.close}</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>${js}</script></body></html>`;
+  const warnings=[];
+  if(spec.sections.length>=4){
+    const allCount=spec.sections.filter(s=>s.audience==='all').length;
+    if(allCount/spec.sections.length>0.7)warnings.push(`High proportion of sections tagged "audience": "all" (${allCount}/${spec.sections.length}); distribute business/technical/operations for effective filtering.`);
+  }
+  if((spec.sources||[]).length>0&&spec.sections.length>=3){
+    const unlinked=spec.sections.filter(s=>!(s.sources&&s.sources.length)).length;
+    if(unlinked/spec.sections.length>0.5)warnings.push(`${unlinked}/${spec.sections.length} sections omit "sources"; populate sections[].sources for incremental --impact tracking.`);
+  }
+  const receipt={...validateHtml(html),warnings,version:PKG.version,skillVersion:PKG.version,builtAt:new Date().toISOString(),manifestSha256:hash(manifestRaw),document:spec.title,revision:spec.revision||null,inputSha256:hash(md),htmlSha256:hash(html),sources:evidence};if(!receipt.passed)throw Error(JSON.stringify(receipt.errors));
   await fs.mkdir(path.dirname(output),{recursive:true});const temporary=output+'.tmp';await fs.writeFile(temporary,html);await fs.rename(temporary,output);await fs.writeFile(output.replace(/\.html$/i,'')+'.validation.json',JSON.stringify(receipt,null,2)+'\n');return receipt;
 }
 
-if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){try{const args=process.argv.slice(2);const i=args.indexOf('--out');const receipt=await build(args[0],i>=0?args[i+1]:null,{force:args.includes('--force')});console.log(JSON.stringify({passed:receipt.passed,sections:receipt.sections,contentSections:receipt.contentSections,referenceBlocks:receipt.referenceBlocks,diagrams:receipt.diagrams,charts:receipt.charts,bytes:receipt.bytes,browserReviewed:false},null,2));}catch(e){console.error(e.stack||e.message);process.exitCode=1;}}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){try{const args=process.argv.slice(2);const i=args.indexOf('--out');const receipt=await build(args[0],i>=0?args[i+1]:null,{force:args.includes('--force')});console.log(JSON.stringify({passed:receipt.passed,warnings:receipt.warnings,sections:receipt.sections,contentSections:receipt.contentSections,referenceBlocks:receipt.referenceBlocks,diagrams:receipt.diagrams,charts:receipt.charts,bytes:receipt.bytes,browserReviewed:false},null,2));}catch(e){console.error(e.stack||e.message);process.exitCode=1;}}

@@ -11,6 +11,7 @@ import argparse
 import ast
 from collections import Counter, defaultdict, deque
 from datetime import datetime, timezone
+import fnmatch
 import hashlib
 import json
 import os
@@ -94,14 +95,16 @@ STACK_PATTERNS: dict[str, tuple[str, ...]] = {
     ),
     'data_quality': ('great_expectations', 'pandera', 'soda', 'dbt-expectations', 'deequ'),
     'terraform_iac': ('.tf', '.hcl', '.bicep', 'azurerm_', 'databricks_'),
+    'scala': ('org.apache.spark', 'case class ', 'object ', ' extends app'),
 }
 
 SECRET_NAME_RE = re.compile(
-    r'(?:secret|token|password|passwd|pwd|api_?key|access_?key|private_?key|sas|conn(?:ection)?_?str(?:ing)?|credential|client_secret)',
+    r'(?:secret|token|password|passwd|pwd|api_?key|access_?key|private_?key|master_?key|account_?key|sas|conn(?:ection)?_?str(?:ing)?|credential|client_secret)',
     re.IGNORECASE,
 )
 
 NOISE_DATA_EXTS = {'.csv', '.parquet'}
+GENERATED_ARTIFACT_PATTERNS = ('*.validation.json', 'reading-plan.md', 'update-plan.md', 'documentacao*.html')
 
 
 def is_secret_name(name: str) -> bool:
@@ -132,11 +135,15 @@ def detect_stack_signals(posix_path: str, text: str) -> list[str]:
     hits: set[str] = set()
     if lower_path.endswith(('.tf', '.hcl', '.bicep')):
         hits.add('terraform_iac')
+    if lower_path.endswith('.scala'):
+        hits.add('scala')
     if lower_path.endswith(('dbt_project.yml', 'profiles.yml')):
         hits.add('dbt')
     if lower_path.endswith('databricks.yml'):
         hits.add('databricks')
     if '.github/workflows/' in lower_path:
+        hits.add('orchestration')
+    if lower_path.endswith('.json') and '"activities"' in lower_text and ('"linkedservicename"' in lower_text or '"databricksnotebook"' in lower_text or '"microsoft.datafactory"' in lower_text or '"microsoft.synapse"' in lower_text):
         hits.add('orchestration')
     for stack, tokens in STACK_PATTERNS.items():
         if any(tok in lower_text or tok in lower_path for tok in tokens):
@@ -172,6 +179,49 @@ def _call_chain(node: ast.AST) -> list[str]:
     elif isinstance(cur, ast.Call):
         parts.extend(_call_chain(cur.func))
     return list(reversed(parts))
+
+
+def _spark_chain_details(call_node: ast.Call) -> dict[str, Any]:
+    details: dict[str, Any] = {}
+    options: dict[str, Any] = {}
+    cur: ast.AST = call_node
+    while isinstance(cur, (ast.Call, ast.Attribute)):
+        if isinstance(cur, ast.Call):
+            if isinstance(cur.func, ast.Attribute):
+                mname = cur.func.attr
+                if mname == 'format' and cur.args:
+                    fmt = _const_value(cur.args[0])
+                    if fmt is not None:
+                        details['format'] = str(fmt)
+                elif mname == 'mode' and cur.args:
+                    md = _const_value(cur.args[0])
+                    if md is not None:
+                        details['mode'] = str(md)
+                elif mname == 'partitionBy' and cur.args:
+                    details['partitionBy'] = [str(_const_value(a) or _unparse(a) or '') for a in cur.args if _const_value(a) or _unparse(a)]
+                elif mname == 'trigger':
+                    trig = {kw.arg: _const_value(kw.value) for kw in cur.keywords if kw.arg}
+                    if trig:
+                        details['trigger'] = trig
+                elif mname == 'option' and len(cur.args) >= 2:
+                    ok = str(_const_value(cur.args[0]) or '')
+                    ov = _const_value(cur.args[1])
+                    if ok:
+                        if ok == 'checkpointLocation':
+                            details['checkpointLocation'] = safe_preview_value(ok, ov)
+                        options[ok] = safe_preview_value(ok, ov)
+                elif mname == 'options':
+                    for kw in cur.keywords:
+                        if kw.arg:
+                            options[kw.arg] = safe_preview_value(kw.arg, _const_value(kw.value))
+                cur = cur.func.value
+            else:
+                break
+        else:
+            cur = cur.value
+    if options:
+        details['options'] = options
+    return details
 
 
 def _strip_databricks_cells(text: str) -> tuple[bool, list[dict[str, Any]], str]:
@@ -352,8 +402,10 @@ def extract_python_facts(posix_path: str, text: str) -> dict[str, Any]:
     result: dict[str, Any] = {
         'isDatabricksNotebook': is_db,
         'notebookCells': [{'cell': c['cell'], 'lang': c['lang'], 'startLine': c['startLine'], 'endLine': c['endLine']} for c in db_cells] if is_db else [],
+        'notebookCalls': [],
         'imports': [],
         'constants': [],
+        'envAndCliParams': [],
         'symbols': [],
         'schemas': [],
         'dataIO': [],
@@ -362,6 +414,14 @@ def extract_python_facts(posix_path: str, text: str) -> dict[str, Any]:
         'hasMainGuard': "__name__ == '__main__'" in text or '__name__ == "__main__"' in text,
         'sqlBlocks': [],
     }
+
+    # Capture Databricks %run notebook inclusions
+    for m in re.finditer(r'^(?:#\s*MAGIC\s+)?%run\s+([^\s#]+)', text, flags=re.MULTILINE):
+        nb_target = m.group(1).strip('\'"')
+        line = text[:m.start()].count('\n') + 1
+        if nb_target:
+            result['notebookCalls'].append(nb_target)
+            result['dataIO'].append({'op': 'notebook_run', 'method': '%run', 'target': nb_target, 'line': line})
 
     # Extract SQL cells from Databricks notebook
     if is_db:
@@ -510,35 +570,107 @@ def extract_python_facts(posix_path: str, text: str) -> dict[str, Any]:
                     'fields': schema_fields[:40],
                 })
 
-    # Walk all AST Call nodes for Data Engineering & Cloud I/O patterns (outside test files to avoid mock noise)
+    # Walk all AST Call / Subscript / Dict nodes for Data Engineering, Env/CLI & Cloud I/O patterns (outside test files to avoid mock noise)
     if not is_test_file:
         seen_io: set[tuple[int, str]] = set()
+        seen_params: set[tuple[str, str, int]] = set()
+        ast_spark_lines: set[int] = set()
+
+        def add_param(p_kind: str, p_name: str, p_line: int, default_val: Any = None, help_txt: str | None = None) -> None:
+            if not p_name or (p_kind, p_name, p_line) in seen_params:
+                return
+            seen_params.add((p_kind, p_name, p_line))
+            entry: dict[str, Any] = {'kind': p_kind, 'name': p_name, 'line': p_line}
+            if default_val is not None:
+                entry['default'] = safe_preview_value(p_name, default_val)
+            if help_txt:
+                entry['help'] = str(help_txt)[:120]
+            result['envAndCliParams'].append(entry)
+
+        # Capture Click / Typer decorator options
+        for fn_node in ast.walk(tree):
+            if isinstance(fn_node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                for dec in fn_node.decorator_list:
+                    if isinstance(dec, ast.Call):
+                        dchain = _call_chain(dec.func)
+                        if dchain[-1:] in (['option'], ['argument']) and any('click' in c.lower() or 'typer' in c.lower() for c in dchain):
+                            flags = [str(_const_value(a)) for a in dec.args if isinstance(_const_value(a), str)]
+                            if flags:
+                                kw_map = {kw.arg: _const_value(kw.value) for kw in dec.keywords if kw.arg}
+                                add_param('cli_option', ', '.join(flags), getattr(dec, 'lineno', fn_node.lineno), kw_map.get('default'), kw_map.get('help'))
+
         for sub in ast.walk(tree):
+            if isinstance(sub, ast.Subscript):
+                val_txt = _unparse(sub.value) or ''
+                if val_txt.endswith('os.environ') or val_txt == 'environ':
+                    env_name = _const_value(sub.slice)
+                    if isinstance(env_name, str):
+                        add_param('env', env_name, getattr(sub, 'lineno', 0))
+                continue
+
+            if isinstance(sub, ast.Dict):
+                raw_keys = [_const_value(k) for k in sub.keys if k is not None]
+                str_keys = [k for k in raw_keys if isinstance(k, str)]
+                if any(k.startswith(('spark.cosmos.', 'eventhubs.', 'fs.azure.', 'kafka.')) for k in str_keys):
+                    line = getattr(sub, 'lineno', 0)
+                    preview: dict[str, Any] = {}
+                    for k, v in zip(sub.keys, sub.values):
+                        k_val = _const_value(k)
+                        if isinstance(k_val, str):
+                            preview[k_val] = safe_preview_value(k_val, _const_value(v))
+                    key = (line, f"config_dict:{','.join(sorted(preview.keys())[:3])}")
+                    if key not in seen_io:
+                        seen_io.add(key)
+                        result['dataIO'].append({'op': 'spark_config_dict', 'keys': sorted(preview.keys())[:12], 'options': preview, 'line': line})
+                continue
+
             if not isinstance(sub, ast.Call):
                 continue
             chain = _call_chain(sub.func)
             joined = '.'.join(chain)
             line = getattr(sub, 'lineno', 0)
 
+            # 0. Env & CLI params
+            arg0 = _const_value(sub.args[0]) if sub.args else None
+            if joined in {'os.getenv', 'os.environ.get'} and isinstance(arg0, str):
+                def_val = _const_value(sub.args[1]) if len(sub.args) > 1 else None
+                for kw in sub.keywords:
+                    if kw.arg == 'default':
+                        def_val = _const_value(kw.value)
+                add_param('env', arg0, line, def_val)
+            elif chain[-1:] == ['add_argument'] and isinstance(arg0, str):
+                flags = [str(_const_value(a)) for a in sub.args if isinstance(_const_value(a), str)]
+                kw_map = {kw.arg: _const_value(kw.value) for kw in sub.keywords if kw.arg}
+                add_param('cli_arg', ', '.join(flags) or arg0, line, kw_map.get('default'), kw_map.get('help'))
+            elif chain[-1:] == ['Option'] and any('typer' in c.lower() for c in chain):
+                kw_map = {kw.arg: _const_value(kw.value) for kw in sub.keywords if kw.arg}
+                opt_flags = [str(_const_value(a)) for a in sub.args[1:] if isinstance(_const_value(a), str)]
+                add_param('cli_option', ', '.join(opt_flags) or f'Option@L{line}', line, arg0, kw_map.get('help'))
+
             # 1. PySpark / Delta / Auto Loader / Event Hubs / Cosmos Spark read & write chains
             io_entry: dict[str, Any] | None = None
-            arg0 = _const_value(sub.args[0]) if sub.args else None
 
             if 'spark' in chain and ('readStream' in chain or 'read' in chain) and chain[-1] in {'load', 'table', 'parquet', 'delta', 'json', 'csv', 'orc', 'text'}:
                 is_stream = 'readStream' in chain
+                chain_meta = _spark_chain_details(sub)
+                ast_spark_lines.add(line)
                 io_entry = {
                     'op': 'spark_read_stream' if is_stream else 'spark_read',
                     'method': chain[-1],
                     'target': safe_preview_value('target', arg0) if isinstance(arg0, str) else _unparse(sub.args[0]) if sub.args else None,
                     'line': line,
+                    **chain_meta,
                 }
             elif ('writeStream' in chain or 'write' in chain) and chain[-1] in {'save', 'saveAsTable', 'start', 'parquet', 'delta', 'json', 'csv'}:
                 is_stream = 'writeStream' in chain
+                chain_meta = _spark_chain_details(sub)
+                ast_spark_lines.add(line)
                 io_entry = {
                     'op': 'spark_write_stream' if is_stream else 'spark_write',
                     'method': chain[-1],
                     'target': safe_preview_value('target', arg0) if isinstance(arg0, str) else _unparse(sub.args[0]) if sub.args else None,
                     'line': line,
+                    **chain_meta,
                 }
             elif joined.endswith(('spark.sql', 'duckdb.execute', 'con.execute', 'conn.execute')) and isinstance(arg0, str):
                 sql_info = extract_sql_facts(arg0, origin=f"line:{line}")
@@ -557,8 +689,12 @@ def extract_python_facts(posix_path: str, text: str) -> dict[str, Any]:
                     'target': safe_preview_value('target', _const_value(sub.args[1]) if len(sub.args) > 1 else arg0),
                     'line': line,
                 }
+            elif 'dbutils' in chain and chain[-2:] == ['notebook', 'run'] and isinstance(arg0, str):
+                result['notebookCalls'].append(arg0)
+                io_entry = {'op': 'notebook_run', 'method': 'dbutils.notebook.run', 'target': arg0, 'line': line}
             elif 'dbutils' in chain and chain[-2:] == ['widgets', 'get'] and isinstance(arg0, str):
                 io_entry = {'op': 'databricks_widget', 'name': arg0, 'line': line}
+                add_param('databricks_widget', arg0, line)
             elif 'dbutils' in chain and chain[-2:] == ['secrets', 'get']:
                 scope = _const_value(sub.args[0]) if len(sub.args) >= 1 else None
                 key = _const_value(sub.args[1]) if len(sub.args) >= 2 else None
@@ -597,7 +733,7 @@ def extract_python_facts(posix_path: str, text: str) -> dict[str, Any]:
                     seen_io.add(key)
                     result['dataIO'].append(io_entry)
 
-        # Also catch explicit cloud storage URIs and Spark .format(...) / .option("checkpointLocation", ...)
+        # Also catch explicit cloud storage URIs and standalone .format(...) / .option(...) fallback
         for m in re.finditer(r"""['"]((?:abfss?|wasbs?|dbfs|s3a?|gs)://[^'"\s]{3,120})['"]""", py_source):
             line = py_source[:m.start()].count('\n') + 1
             uri = m.group(1)
@@ -609,12 +745,20 @@ def extract_python_facts(posix_path: str, text: str) -> dict[str, Any]:
 
         for m in re.finditer(r"""\.format\(\s*['"]([^'"]+)['"]\s*\)|\.option\(\s*['"](checkpointLocation|path|dbtable|spark\.cosmos\.accountEndpoint|spark\.cosmos\.database|spark\.cosmos\.container|eventhubs\.name)['"]\s*,\s*([^)]+)\)""", py_source):
             line = py_source[:m.start()].count('\n') + 1
+            if line in ast_spark_lines:
+                continue
             if m.group(1):
-                result['dataIO'].append({'op': 'spark_format', 'format': m.group(1), 'line': line})
+                key = (line, f"spark_format:{m.group(1)}")
+                if key not in seen_io:
+                    seen_io.add(key)
+                    result['dataIO'].append({'op': 'spark_format', 'format': m.group(1), 'line': line})
             else:
                 opt_k = m.group(2)
                 opt_v = m.group(3).strip()[:80]
-                result['dataIO'].append({'op': 'spark_option', 'key': opt_k, 'value': safe_preview_value(opt_k, opt_v), 'line': line})
+                key = (line, f"spark_option:{opt_k}")
+                if key not in seen_io:
+                    seen_io.add(key)
+                    result['dataIO'].append({'op': 'spark_option', 'key': opt_k, 'value': safe_preview_value(opt_k, opt_v), 'line': line})
 
     return result
 
@@ -688,6 +832,34 @@ def extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]:
     }
 
 
+def extract_scala_facts(posix_path: str, text: str) -> dict[str, Any]:
+    imports = [{'module': m.group(1).strip(), 'names': [], 'level': 0} for m in re.finditer(r'^\s*import\s+([^\s;]+)', text, flags=re.MULTILINE)]
+    symbols: list[dict[str, Any]] = []
+    for m in re.finditer(r'^\s*(?:sealed\s+|abstract\s+|final\s+|case\s+)*(class|object|trait|def)\s+([A-Za-z_][A-Za-z0-9_]*)', text, flags=re.MULTILINE):
+        line = text[:m.start()].count('\n') + 1
+        symbols.append({'name': m.group(2), 'kind': m.group(1), 'startLine': line, 'endLine': line})
+
+    data_io: list[dict[str, Any]] = []
+    for m in re.finditer(r'\bspark\.(readStream|read)\b[\s\S]{0,180}?\.(load|table|parquet|delta|json|csv)\s*\(\s*(?:[\'"]([^\'"]*)[\'"])?', text):
+        line = text[:m.start()].count('\n') + 1
+        op = 'spark_read_stream' if m.group(1) == 'readStream' else 'spark_read'
+        data_io.append({'op': op, 'method': m.group(2), 'target': safe_preview_value('target', m.group(3) or None), 'line': line})
+    for m in re.finditer(r'\.(writeStream|write)\b[\s\S]{0,180}?\.(save|saveAsTable|start)\s*\(\s*(?:[\'"]([^\'"]*)[\'"])?', text):
+        line = text[:m.start()].count('\n') + 1
+        op = 'spark_write_stream' if m.group(1) == 'writeStream' else 'spark_write'
+        data_io.append({'op': op, 'method': m.group(2), 'target': safe_preview_value('target', m.group(3) or None), 'line': line})
+    for m in re.finditer(r'\.format\(\s*[\'"]([^\'"]+)[\'"]\s*\)', text):
+        line = text[:m.start()].count('\n') + 1
+        data_io.append({'op': 'spark_format', 'format': m.group(1), 'line': line})
+
+    return {
+        'imports': imports[:40],
+        'symbols': symbols[:50],
+        'dataIO': data_io[:40],
+        'hasMainGuard': bool(re.search(r'\bdef\s+main\s*\(|\bextends\s+App\b', text)),
+    }
+
+
 def extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]:
     lower = posix_path.lower()
     info: dict[str, Any] = {}
@@ -714,19 +886,42 @@ def extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]:
             'crons': crons,
             'blocks': jobs[:20],
         }
-    elif lower.endswith('.json') and len(text.encode('utf-8')) <= 8192:
+    elif lower.endswith('.json') and len(text.encode('utf-8')) <= 262_144:
         try:
             obj = json.loads(text)
             if isinstance(obj, dict):
-                if posix_path == 'package.json' or lower.endswith('/package.json'):
-                    info['inlineSummary'] = {
-                        'name': obj.get('name'),
-                        'version': obj.get('version'),
-                        'scripts': obj.get('scripts', {}),
-                        'dependencies': list((obj.get('dependencies') or {}).keys())[:25],
+                props = obj.get('properties') if isinstance(obj.get('properties'), dict) else {}
+                if isinstance(props.get('activities'), list):
+                    acts = []
+                    for act in props['activities'][:40]:
+                        if not isinstance(act, dict):
+                            continue
+                        tp = act.get('typeProperties') if isinstance(act.get('typeProperties'), dict) else {}
+                        nb_path = tp.get('notebookPath')
+                        if isinstance(nb_path, dict):
+                            nb_path = nb_path.get('value')
+                        acts.append({
+                            'name': act.get('name'),
+                            'type': act.get('type'),
+                            'dependsOn': [d.get('activity') for d in (act.get('dependsOn') or []) if isinstance(d, dict) and d.get('activity')],
+                            'notebookPath': str(nb_path) if nb_path else None,
+                            'inputs': [i.get('referenceName') for i in (act.get('inputs') or []) if isinstance(i, dict) and i.get('referenceName')],
+                            'outputs': [o.get('referenceName') for o in (act.get('outputs') or []) if isinstance(o, dict) and o.get('referenceName')],
+                        })
+                    info['adfPipeline'] = {
+                        'name': obj.get('name') or Path(posix_path).stem,
+                        'activities': acts,
                     }
-                else:
-                    info['inlineSummary'] = safe_preview_value('config', obj)
+                elif len(text.encode('utf-8')) <= 8192:
+                    if posix_path == 'package.json' or lower.endswith('/package.json'):
+                        info['inlineSummary'] = {
+                            'name': obj.get('name'),
+                            'version': obj.get('version'),
+                            'scripts': obj.get('scripts', {}),
+                            'dependencies': list((obj.get('dependencies') or {}).keys())[:25],
+                        }
+                    else:
+                        info['inlineSummary'] = safe_preview_value('config', obj)
         except Exception:
             pass
     elif lower.endswith('.toml') and len(text.encode('utf-8')) <= 8192:
@@ -783,17 +978,66 @@ def _resolve_js_import(specifier: str, from_file: str, all_paths: set[str]) -> s
     return None
 
 
-def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] | None = None) -> dict[str, Any]:
+def _resolve_notebook_target(raw_ref: str, from_file: str, all_paths: set[str]) -> str | None:
+    clean_ref = str(raw_ref or '').strip().lstrip('/')
+    if not clean_ref:
+        return None
+    if not clean_ref.startswith(('.', '/')) and '/' in clean_ref:
+        for cand in all_paths:
+            if cand == clean_ref or cand.endswith('/' + clean_ref) or cand.rsplit('.', 1)[0].endswith(clean_ref.rsplit('.', 1)[0]):
+                return cand
+    rel_base = Path(os.path.normpath((Path(from_file).parent / clean_ref).as_posix())).as_posix()
+    for ext in ('', '.py', '.ipynb', '.sql', '.scala'):
+        cand = rel_base + ext
+        if cand in all_paths and cand != from_file:
+            return cand
+    tail = clean_ref.lstrip('./')
+    for cand in all_paths:
+        if cand != from_file and (cand.endswith(tail) or cand.rsplit('.', 1)[0].endswith(tail)):
+            return cand
+    return None
+
+
+def inspect(
+    root: Path,
+    includes: list[str] | None = None,
+    excludes: list[str] | None = None,
+    ignore_paths: set[str] | None = None,
+) -> dict[str, Any]:
     root = root.resolve()
     includes = [x for x in (includes or []) if x]
     excludes = [x for x in (excludes or []) if x]
+    ignore_paths = ignore_paths or set()
+
+    docignore_patterns: list[str] = []
+    docignore_file = root / '.docignore'
+    if docignore_file.is_file():
+        for raw_ln in docignore_file.read_text(encoding='utf-8', errors='ignore').splitlines():
+            ln = raw_ln.strip()
+            if ln and not ln.startswith('#'):
+                docignore_patterns.append(ln.rstrip('/'))
 
     def git(*args: str) -> str | None:
         r = subprocess.run(['git', '-C', str(root), *args], capture_output=True, text=True, encoding='utf-8', errors='replace')
         return r.stdout.strip() if r.returncode == 0 else None
 
-    def selected(rel: Path) -> bool:
+    def matches_docignore(posix: str, name: str) -> bool:
+        for pat in docignore_patterns:
+            if fnmatch.fnmatch(posix, pat) or fnmatch.fnmatch(name, pat) or pat in posix.split('/'):
+                return True
+            if '/' in pat and (posix == pat or posix.startswith(pat + '/')):
+                return True
+        return False
+
+    def selected(rel: Path, p_abs: Path) -> bool:
         posix = rel.as_posix()
+        name = rel.name
+        if str(p_abs) in ignore_paths:
+            return False
+        if any(fnmatch.fnmatch(name, pat) or fnmatch.fnmatch(posix, pat) for pat in GENERATED_ARTIFACT_PATTERNS):
+            return False
+        if matches_docignore(posix, name):
+            return False
         if includes and not any(token in posix for token in includes):
             return False
         if any(token in posix for token in excludes):
@@ -813,13 +1057,21 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
     iac_resources: list[dict[str, Any]] = []
     workflows: list[dict[str, Any]] = []
     databricks_bundles: list[dict[str, Any]] = []
+    adf_pipelines: list[dict[str, Any]] = []
+    env_cli_params: list[dict[str, Any]] = []
     inline_configs: dict[str, Any] = {}
     tests_index: dict[str, list[dict[str, Any]]] = {}
 
     total_code_lines = 0
 
     for directory, dirs, names in os.walk(root, followlinks=False):
-        dirs[:] = sorted(d for d in dirs if d not in SKIP and not (Path(directory) / d).is_symlink())
+        rel_dir = Path(directory).relative_to(root).as_posix()
+        dirs[:] = sorted(
+            d for d in dirs
+            if d not in SKIP
+            and not (Path(directory) / d).is_symlink()
+            and not matches_docignore((d if rel_dir == '.' else f"{rel_dir}/{d}"), d)
+        )
         for name in sorted(names):
             p = Path(directory) / name
             if p.is_symlink() or name.startswith('.env') and name != '.env.example':
@@ -827,7 +1079,7 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
             if p.suffix.lower() not in EXTENSIONS and name not in SPECIAL_NAMES:
                 continue
             rel = p.relative_to(root)
-            if not selected(rel):
+            if not selected(rel, p.resolve()):
                 continue
             size = p.stat().st_size
             if size > 2_000_000:
@@ -875,6 +1127,8 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
                     })
                 for ep in py_facts['endpoints']:
                     endpoints.append({'file': posix, **ep})
+                for prm in py_facts['envAndCliParams']:
+                    env_cli_params.append({'file': posix, **prm})
                 for sc in py_facts['schemas']:
                     data_contracts.append({'file': posix, **sc})
                 for sb in py_facts['sqlBlocks']:
@@ -890,6 +1144,8 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
                     'format': 'ipynb',
                     'cells': nb_facts.get('notebookCellCount', 0),
                 })
+                for prm in nb_facts.get('envAndCliParams', []):
+                    env_cli_params.append({'file': posix, **prm})
                 for sc in nb_facts.get('schemas', []):
                     data_contracts.append({'file': posix, **sc})
                 for sb in nb_facts.get('sqlBlocks', []):
@@ -910,6 +1166,10 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
                 if js_facts['testsIndex']:
                     tests_index[posix] = js_facts['testsIndex']
 
+            elif ext == '.scala':
+                sc_facts = extract_scala_facts(posix, text)
+                file_details[posix] = sc_facts
+
             elif ext in {'.tf', '.hcl', '.bicep'}:
                 res = extract_iac_resources(posix, text)
                 if res:
@@ -924,6 +1184,8 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
                         workflows.append({'file': posix, **cfg['workflow']})
                     if 'databricksBundle' in cfg:
                         databricks_bundles.append({'file': posix, **cfg['databricksBundle']})
+                    if 'adfPipeline' in cfg:
+                        adf_pipelines.append({'file': posix, **cfg['adfPipeline']})
                     if 'inlineSummary' in cfg:
                         inline_configs[posix] = cfg['inlineSummary']
 
@@ -973,6 +1235,15 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
             for imp in det.get('imports', []):
                 for target in _resolve_python_import(imp, p, module_index):
                     add_edge(p, target, 'import')
+            for nb_call in det.get('notebookCalls', []):
+                target = _resolve_notebook_target(nb_call, p, all_paths)
+                if target:
+                    add_edge(p, target, 'notebook_run')
+        elif p.endswith('.ipynb'):
+            for nb_call in det.get('notebookCalls', []):
+                target = _resolve_notebook_target(nb_call, p, all_paths)
+                if target:
+                    add_edge(p, target, 'notebook_run')
         elif p.endswith(('.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx')):
             for imp in det.get('imports', []):
                 target = _resolve_js_import(imp['module'], p, all_paths)
@@ -984,6 +1255,12 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
                 for cand in all_paths:
                     if cand.endswith(clean_nb):
                         add_edge(p, cand, 'bundle_task')
+        elif 'adfPipeline' in det:
+            for act in det['adfPipeline'].get('activities', []):
+                if act.get('notebookPath'):
+                    target = _resolve_notebook_target(act['notebookPath'], p, all_paths)
+                    if target:
+                        add_edge(p, target, 'adf_activity')
         elif 'workflow' in det:
             joined_cmd = ' '.join(det['workflow'].get('runCommands', []))
             for cand in all_paths:
@@ -1008,7 +1285,7 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
         is_test = bool(re.search(r'(?:^|/)tests?/|test_[^/]+\.py$|_test\.py$|\.(?:test|spec)\.', lower))
 
         score = (in_degree[p] * 2) + out_degree[p]
-        if det.get('hasMainGuard') or det.get('endpoints'):
+        if det.get('hasMainGuard') or det.get('endpoints') or det.get('adfPipeline'):
             score += 4
         if det.get('dataIO'):
             score += 3
@@ -1027,6 +1304,7 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
             or '.github/workflows/' in lower
             or det.get('hasMainGuard')
             or det.get('endpoints')
+            or det.get('adfPipeline')
             or Path(lower).name in {'cli.py', 'main.py', 'app.py', 'pipeline.py', 'server.ts', 'databricks.yml'}
         ):
             wave_num = 1
@@ -1073,7 +1351,7 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
     }
 
     return {
-        'dossierVersion': '1.4.0',
+        'dossierVersion': '1.5.0',
         'generatedAt': datetime.now(timezone.utc).isoformat(),
         'repository': str(root),
         'revision': git('rev-parse', 'HEAD'),
@@ -1093,9 +1371,11 @@ def inspect(root: Path, includes: list[str] | None = None, excludes: list[str] |
         'entrypoints': {
             'workflows': workflows,
             'databricksBundles': databricks_bundles,
+            'adfPipelines': adf_pipelines,
             'endpoints': endpoints,
             'cliOrMainFiles': [p for p, d in file_details.items() if d.get('hasMainGuard')],
         },
+        'envAndCliParams': env_cli_params,
         'notebooks': notebooks,
         'dataContracts': data_contracts,
         'sqlLineage': sql_lineage,
@@ -1145,12 +1425,29 @@ def render_reading_plan(dossier: dict[str, Any]) -> str:
             lines.append(f"- `{db['file']}` — notebooks: {', '.join(f'`{x}`' for x in db.get('notebookPaths', [])[:8]) or 'n/d'} · crons: `{', '.join(db.get('crons', [])) or 'n/d'}`")
         lines.append('')
 
+    if ep.get('adfPipelines'):
+        lines.append('### Azure Data Factory / Synapse Pipelines')
+        for adf in ep['adfPipelines'][:20]:
+            acts = ', '.join(f"`{a['name']}` ({a['type']})" for a in adf.get('activities', [])[:6] if a.get('name'))
+            lines.append(f"- `{adf['file']}` — **{adf['name']}**: {acts or 'sem atividades listadas'}")
+        lines.append('')
+
     if ep['endpoints']:
         lines.append('### Rotas API Detectadas')
         lines.append('| Método | Rota | Handler | Arquivo |')
         lines.append('|---|---|---|---|')
         for route in ep['endpoints'][:30]:
             lines.append(f"| `{route['method']}` | `{route['path']}` | `{route.get('handler', '—')}` | `{route['file']}:L{route['line']}` |")
+        lines.append('')
+
+    if dossier.get('envAndCliParams'):
+        lines.append('### Variáveis de Ambiente, Widgets & Parâmetros CLI')
+        lines.append('| Tipo | Parâmetro | Default | Arquivo |')
+        lines.append('|---|---|---|---|')
+        for prm in dossier['envAndCliParams'][:40]:
+            dval = prm.get('default')
+            dstr = f"`{dval}`" if dval is not None else '—'
+            lines.append(f"| `{prm['kind']}` | `{prm['name']}` | {dstr} | `{prm['file']}:L{prm['line']}` |")
         lines.append('')
 
     if dossier['iacResources']:
@@ -1164,7 +1461,19 @@ def render_reading_plan(dossier: dict[str, Any]) -> str:
     io_rows: list[tuple[str, str, str, int]] = []
     for path_str, info in sorted(dossier['symbolIndex'].items()):
         for io in info.get('dataIO', []):
-            tgt = io.get('target') or io.get('format') or io.get('name') or io.get('value') or io.get('key') or io.get('decorator') or '—'
+            base_tgt = io.get('target') or io.get('format') or io.get('name') or io.get('value') or io.get('key') or io.get('decorator') or '—'
+            extras: list[str] = []
+            if io.get('format') and io.get('format') != base_tgt:
+                extras.append(f"format={io['format']}")
+            if io.get('mode'):
+                extras.append(f"mode={io['mode']}")
+            if io.get('partitionBy'):
+                extras.append(f"partitionBy={','.join(io['partitionBy'])}")
+            if io.get('trigger'):
+                extras.append(f"trigger={json.dumps(io['trigger'], ensure_ascii=False)}")
+            if io.get('checkpointLocation'):
+                extras.append(f"checkpoint={io['checkpointLocation']}")
+            tgt = f"{base_tgt}" + (f" ({'; '.join(extras)})" if extras else '')
             op_label = f"{io.get('op', '')} ({io['method']})" if io.get('method') else str(io.get('op', ''))
             io_rows.append((path_str, op_label, str(tgt), int(io.get('line', 0))))
 
@@ -1245,7 +1554,10 @@ if __name__ == '__main__':
 
     includes = [x.strip() for x in args.include.split(',') if x.strip()]
     excludes = [x.strip() for x in args.exclude.split(',') if x.strip()]
-    result = inspect(args.repository, includes, excludes)
+    ignore_set = {str(args.out.resolve())}
+    if args.plan is not None:
+        ignore_set.add(str(args.plan.resolve()))
+    result = inspect(args.repository, includes, excludes, ignore_paths=ignore_set)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

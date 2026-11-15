@@ -230,8 +230,18 @@ function renderLegendHtml(legend, locale = 'pt-BR') {
   return `<div class="figure-legend" aria-label="${locale === 'pt-BR' ? 'Legenda do diagrama' : 'Diagram legend'}">${items}</div>`;
 }
 
+function renderInlineCodeHtml(text) {
+  const escaped = esc(text);
+  return escaped.replace(/`([^`]+)`/g, (_, code) => `<code>${code}</code>`);
+}
+
+function cleanDiagramTitle(title) {
+  return String(title ?? '').replace(/`/g, '');
+}
+
 function wrapFigure(svg, title, { legendHtml = '', noteHtml = '', diagramLabel = 'Ampliar' } = {}) {
-  return `<figure class="diagram"><div class="figure-tools"><span class="figure-tag">${esc(title)}</span><button type="button" data-expand-diagram aria-label="${esc(diagramLabel)}: ${esc(title)}">${esc(diagramLabel)}</button></div><div class="diagram-scroll">${svg}</div>${legendHtml}<figcaption>${esc(title)}</figcaption>${noteHtml}</figure>`;
+  const cleanTitle = cleanDiagramTitle(title);
+  return `<figure class="diagram"><div class="figure-tools"><span class="figure-tag">${esc(cleanTitle)}</span><button type="button" data-expand-diagram aria-label="${esc(diagramLabel)}: ${esc(cleanTitle)}">${esc(diagramLabel)}</button></div><div class="diagram-scroll">${svg}</div>${legendHtml}<figcaption>${esc(cleanTitle)}</figcaption>${noteHtml}</figure>`;
 }
 
 function wrapEdgeLabelText(text, maxW, fontSize = 10.5) {
@@ -258,16 +268,49 @@ function wrapEdgeLabelText(text, maxW, fontSize = 10.5) {
   return out.join('\n');
 }
 
-function renderPillLabel(x, y, text, { bg = '#ffffff', stroke = '#cbd5e1', fg = '#334155', fontSize = 10.5 } = {}) {
+function pillMetrics(text, fontSize = 10.5) {
+  const lines = String(text || '').split('\n');
+  const maxW = Math.max(...lines.map(l => measureText(l, fontSize, false)));
+  return { pw: Math.round(maxW + 18), ph: Math.round(lines.length * 14 + 8) };
+}
+
+function resolvePillPositions(pills, boxObstacles) {
+  const placed = [];
+  const offsets = [[0, 0], [0, -18], [0, 18], [0, -34], [0, 34], [-26, 0], [26, 0], [-26, -18], [26, -18], [-26, 18], [26, 18]];
+  const overlapsRect = (ax, ay, aw, ah, bx, by, bw, bh, pad = 4) =>
+    ax < bx + bw + pad && ax + aw + pad > bx && ay < by + bh + pad && ay + ah + pad > by;
+
+  return pills.map(p => {
+    let bestX = p.x;
+    let bestY = p.y;
+    for (const [dx, dy] of offsets) {
+      const cx = p.x + dx;
+      const cy = p.y + dy;
+      const rx = cx - p.pw / 2;
+      const ry = cy - p.ph / 2;
+      if (rx < 4 || ry < 4) continue;
+      const hitBox = boxObstacles.some(b => overlapsRect(rx, ry, p.pw, p.ph, b.x, b.y, b.w, b.h, 3));
+      const hitPill = placed.some(q => overlapsRect(rx, ry, p.pw, p.ph, q.rx, q.ry, q.pw, q.ph, 3));
+      if (!hitBox && !hitPill) {
+        bestX = cx;
+        bestY = cy;
+        break;
+      }
+    }
+    placed.push({ rx: bestX - p.pw / 2, ry: bestY - p.ph / 2, pw: p.pw, ph: p.ph });
+    return { ...p, x: bestX, y: bestY };
+  });
+}
+
+function renderPillLabel(x, y, text, { bg = '#ffffff', stroke = '#cbd5e1', fg = '#334155', fontSize = 10.5, extraClass = '' } = {}) {
   if (!text) return '';
   const lines = String(text).split('\n');
-  const maxW = Math.max(...lines.map(l => measureText(l, fontSize, false)));
-  const pw = Math.round(maxW + 18);
-  const ph = Math.round(lines.length * 14 + 8);
+  const { pw, ph } = pillMetrics(text, fontSize);
   const rx = x - pw / 2;
   const ry = y - ph / 2;
   const tspans = lines.map((l, idx) => `<tspan x="${x.toFixed(1)}" dy="${idx === 0 ? 0 : 14}">${esc(l)}</tspan>`).join('');
-  return `<g class="sol-edge-label"><rect x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" width="${pw}" height="${ph}" rx="4" fill="${bg}" stroke="${stroke}" stroke-width="0.9"/><text x="${x.toFixed(1)}" y="${(ry + 15).toFixed(1)}" text-anchor="middle" font-size="${fontSize}" font-weight="500" fill="${fg}">${tspans}</text></g>`;
+  const cls = extraClass ? `sol-edge-label ${extraClass}` : 'sol-edge-label';
+  return `<g class="${cls}"><rect x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" width="${pw}" height="${ph}" rx="4" fill="${bg}" stroke="${stroke}" stroke-width="0.9"/><text x="${x.toFixed(1)}" y="${(ry + 15).toFixed(1)}" text-anchor="middle" font-size="${fontSize}" font-weight="500" fill="${fg}">${tspans}</text></g>`;
 }
 
 function renderNodeCard(node, x, y, w, h, layout) {
@@ -290,11 +333,11 @@ function renderNodeCard(node, x, y, w, h, layout) {
   if (hasStep) {
     const cx = x + padX + 9;
     const cy = curY + 7;
-    bodySvg += `<circle cx="${cx}" cy="${cy}" r="9.5" fill="${role.accent}"/><text x="${cx}" y="${cy + 3.8}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">${esc(stepStr)}</text>`;
+    bodySvg += `<circle class="sol-node-step-circle" cx="${cx}" cy="${cy}" r="9.5" fill="${role.accent}"/><text x="${cx}" y="${cy + 3.8}" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">${esc(stepStr)}</text>`;
   }
 
   bodySvg += titleLines.map((tl, idx) =>
-    `<text x="${titleX}" y="${(curY + 11 + idx * 16).toFixed(1)}" font-size="12.5" font-weight="700" fill="${role.title}">${esc(tl)}</text>`
+    `<text class="sol-node-title" x="${titleX}" y="${(curY + 11 + idx * 16).toFixed(1)}" font-size="12.5" font-weight="700" fill="${role.title}">${esc(tl)}</text>`
   ).join('');
   curY += titleLines.length * 16 + 6;
 
@@ -312,7 +355,7 @@ function renderNodeCard(node, x, y, w, h, layout) {
     }
     const pillW = Math.min(innerW, Math.round(rawW));
     const pillBottomOffset = shape === 'cylinder' ? 32 : 26;
-    bodySvg += `<rect x="${x + padX}" y="${(y + h - pillBottomOffset).toFixed(1)}" width="${pillW}" height="18" rx="4" fill="${role.badgeBg}"/><text x="${x + padX + 7}" y="${(y + h - pillBottomOffset + 12.5).toFixed(1)}" font-size="${metaFont}" font-weight="600" fill="${role.badgeFg}">${esc(metaText)}</text>`;
+    bodySvg += `<rect class="sol-node-meta-bg" x="${x + padX}" y="${(y + h - pillBottomOffset).toFixed(1)}" width="${pillW}" height="18" rx="4" fill="${role.badgeBg}"/><text class="sol-node-meta-fg" x="${x + padX + 7}" y="${(y + h - pillBottomOffset + 12.5).toFixed(1)}" font-size="${metaFont}" font-weight="600" fill="${role.badgeFg}">${esc(metaText)}</text>`;
   }
 
   let frameSvg = '';
@@ -322,20 +365,20 @@ function renderNodeCard(node, x, y, w, h, layout) {
     const topY = y + ry;
     const botY = y + h - ry;
     frameSvg =
-      `<path d="M${x},${topY} L${x},${botY} A${w / 2},${ry} 0 0,0 ${x + w},${botY} L${x + w},${topY} Z" fill="${role.fill}" stroke="${role.border}" stroke-width="1.5"/>` +
-      `<ellipse cx="${cx}" cy="${topY}" rx="${w / 2}" ry="${ry}" fill="${role.header}" stroke="${role.border}" stroke-width="1.5"/>`;
+      `<path class="sol-node-frame" d="M${x},${topY} L${x},${botY} A${w / 2},${ry} 0 0,0 ${x + w},${botY} L${x + w},${topY} Z" fill="${role.fill}" stroke="${role.border}" stroke-width="1.5"/>` +
+      `<ellipse class="sol-node-header" cx="${cx}" cy="${topY}" rx="${w / 2}" ry="${ry}" fill="${role.header}" stroke="${role.border}" stroke-width="1.5"/>`;
   } else if (shape === 'decision') {
     frameSvg =
-      `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${role.header}" stroke="${role.border}" stroke-width="1.6"/>` +
-      `<rect x="${x + w - 26}" y="${y + 7}" width="18" height="18" rx="4" fill="${role.accent}"/><text x="${x + w - 17}" y="${y + 20}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">?</text>`;
+      `<rect class="sol-node-frame" x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${role.header}" stroke="${role.border}" stroke-width="1.6"/>` +
+      `<rect class="sol-node-accent" x="${x + w - 26}" y="${y + 7}" width="18" height="18" rx="4" fill="${role.accent}"/><text x="${x + w - 17}" y="${y + 20}" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">?</text>`;
   } else {
     const dash = node.dashed ? ' stroke-dasharray="5,3"' : '';
     frameSvg =
-      `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${role.fill}" stroke="${role.border}" stroke-width="1.4"${dash}/>` +
-      `<path d="M${x + 1},${y + 8} Q${x + 1},${y + 1} ${x + 8},${y + 1} L${x + w - 8},${y + 1} Q${x + w - 1},${y + 1} ${x + w - 1},${y + 8} L${x + w - 1},${y + 5} L${x + 1},${y + 5} Z" fill="${role.accent}" opacity="0.88"/>`;
+      `<rect class="sol-node-frame" x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${role.fill}" stroke="${role.border}" stroke-width="1.4"${dash}/>` +
+      `<path class="sol-node-accent" d="M${x + 1},${y + 8} Q${x + 1},${y + 1} ${x + 8},${y + 1} L${x + w - 8},${y + 1} Q${x + w - 1},${y + 1} ${x + w - 1},${y + 8} L${x + w - 1},${y + 5} L${x + 1},${y + 5} Z" fill="${role.accent}" opacity="0.88"/>`;
   }
 
-  return `<g class="sol-node" data-node-id="${esc(node.id)}" tabindex="0" role="group" aria-label="${esc(node.title)}">${frameSvg}${bodySvg}</g>`;
+  return `<g class="sol-node sol-node-role-${esc(node.role || 'step')}" data-node-id="${esc(node.id)}" tabindex="0" role="group" aria-label="${esc(node.title)}">${frameSvg}${bodySvg}</g>`;
 }
 
 /**
@@ -607,15 +650,16 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     const zy = rowY[r0] - 4;
     const bottomRow = r0 + rSpan - 1;
     const zh = (rowY[bottomRow] + rowHeights[bottomRow] + rowZoneHeaderExtra[bottomRow]) - zy + 8;
-    const pal = ZONE_PALETTE[z.variant || 'neutral'] || ZONE_PALETTE.neutral;
+    const zoneVar = z.variant || 'neutral';
+    const pal = ZONE_PALETTE[zoneVar] || ZONE_PALETTE.neutral;
 
-    zonesSvg += `<g class="sol-zone"><rect x="${zx}" y="${zy}" width="${zw}" height="${zh}" rx="10" fill="${pal.fill}" stroke="${pal.stroke}" stroke-width="1.2"/>`;
+    zonesSvg += `<g class="sol-zone sol-zone-${esc(zoneVar)}"><rect class="sol-zone-bg" x="${zx}" y="${zy}" width="${zw}" height="${zh}" rx="10" fill="${pal.fill}" stroke="${pal.stroke}" stroke-width="1.2"/>`;
     if (z.title) {
-      zonesSvg += `<text x="${zx + 16}" y="${zy + 21}" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="${pal.title}">${esc(z.title)}</text>`;
+      zonesSvg += `<text class="sol-zone-title" x="${zx + 16}" y="${zy + 21}" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="${pal.title}">${esc(z.title)}</text>`;
     }
     const subLines = zoneSubtitleLines.get(z) || [];
     subLines.forEach((sl, sIdx) => {
-      zonesSvg += `<text x="${zx + 16}" y="${zy + 36 + sIdx * 14}" font-size="11" font-weight="500" fill="${pal.subtitle}">${esc(sl)}</text>`;
+      zonesSvg += `<text class="sol-zone-subtitle" x="${zx + 16}" y="${zy + 36 + sIdx * 14}" font-size="11" font-weight="500" fill="${pal.subtitle}">${esc(sl)}</text>`;
     });
     // Render callouts inside this zone
     const calloutRenderCount = new Map();
@@ -668,12 +712,12 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   }
   const defsSvg = [...markerIds].map(m => {
     const color = m === 'yes' ? '#16a34a' : m === 'no' ? '#dc2626' : m === 'default' ? '#334155' : ROLE_PALETTE[m].accent;
-    return `<marker id="__PREFIX__arrow-${m}" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0.5, 8 3, 0 5.5" fill="${color}"/></marker>`;
+    return `<marker id="__PREFIX__arrow-${m}" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="sol-arrow-head sol-arrow-head-${esc(m)}" points="0 0.5, 8 3, 0 5.5" fill="${color}"/></marker>`;
   }).join('');
 
-  // Render edges
+  // Render edges + queue pills for collision-safe placement
   let edgesSvg = '';
-  let edgeLabelsSvg = '';
+  const pendingPills = [];
   let topIdx = 0;
   let extraCanvasRight = 0;
   let extraCanvasBottom = 0;
@@ -800,21 +844,29 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     const strokeW = e.style === 'thick' ? '2.1' : '1.5';
     const pathD = roundedOrthogonalPath(pts, 7);
 
-    edgesSvg += `<path class="sol-edge" data-from="${esc(e.from)}" data-to="${esc(e.to)}" d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeW}"${dashAttr} marker-end="url(#__PREFIX__arrow-${markerKey})"/>`;
+    edgesSvg += `<path class="sol-edge sol-edge-role-${esc(markerKey)}" data-from="${esc(e.from)}" data-to="${esc(e.to)}" d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="${strokeW}"${dashAttr} marker-end="url(#__PREFIX__arrow-${markerKey})"/>`;
 
-    if (e.label) {
-      let pillStyle = { bg: '#ffffff', stroke: '#cbd5e1', fg: '#334155' };
-      if (e.branch === 'yes') pillStyle = { bg: '#dcfce7', stroke: '#86efac', fg: '#166534' };
-      else if (e.branch === 'no') pillStyle = { bg: '#fee2e2', stroke: '#fca5a5', fg: '#991b1b' };
+    if (e.label && labelPos) {
+      let pillStyle = { bg: '#ffffff', stroke: '#cbd5e1', fg: '#334155', extraClass: `sol-edge-label-${markerKey}` };
+      if (e.branch === 'yes') pillStyle = { bg: '#dcfce7', stroke: '#86efac', fg: '#166534', extraClass: 'sol-edge-label-yes' };
+      else if (e.branch === 'no') pillStyle = { bg: '#fee2e2', stroke: '#fca5a5', fg: '#991b1b', extraClass: 'sol-edge-label-no' };
       else if (e.role && ROLE_PALETTE[e.role]) {
-        pillStyle = { bg: ROLE_PALETTE[e.role].header, stroke: ROLE_PALETTE[e.role].border, fg: ROLE_PALETTE[e.role].title };
+        pillStyle = { bg: ROLE_PALETTE[e.role].header, stroke: ROLE_PALETTE[e.role].border, fg: ROLE_PALETTE[e.role].title, extraClass: `sol-edge-label-${markerKey}` };
       }
       const isHorizGap = !e.isSelfLoop && !e.channel && (fSide === 'right' && tSide === 'left');
       const maxLblW = e.isSelfLoop ? 120 : isHorizGap ? Math.max(40, colGap - 26) : e.channel ? 140 : 136;
       const labelText = wrapEdgeLabelText(e.label, maxLblW, 10.5);
-      edgeLabelsSvg += `<g class="sol-edge-label-wrap" data-from="${esc(e.from)}" data-to="${esc(e.to)}">${renderPillLabel(labelPos[0], labelPos[1], labelText, pillStyle)}</g>`;
+      const { pw, ph } = pillMetrics(labelText, 10.5);
+      pendingPills.push({ from: e.from, to: e.to, x: labelPos[0], y: labelPos[1], pw, ph, labelText, pillStyle });
     }
   }
+
+  const placedPills = resolvePillPositions(pendingPills, allBoxes);
+  const edgeLabelsSvg = placedPills.map(p => {
+    extraCanvasRight = Math.max(extraCanvasRight, (p.x + p.pw / 2 + 12) - totalW);
+    extraCanvasBottom = Math.max(extraCanvasBottom, (p.y + p.ph / 2 + 12) - totalH);
+    return `<g class="sol-edge-label-wrap" data-from="${esc(p.from)}" data-to="${esc(p.to)}">${renderPillLabel(p.x, p.y, p.labelText, p.pillStyle)}</g>`;
+  }).join('');
 
   const finalW = Math.ceil(totalW + Math.max(0, extraCanvasRight));
   const finalH = Math.ceil(totalH + Math.max(0, extraCanvasBottom));
@@ -822,11 +874,12 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
   // Render nodes
   const nodesSvg = [...nodeBoxes.values()].map(b => renderNodeCard(b.node, b.x, b.y, b.w, b.h, b.layout)).join('');
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${finalW} ${finalH}" width="${finalW}" height="${finalH}" class="sol-svg" role="img" aria-label="${esc(spec.title)}" data-natural-width="${finalW}" style="width:${finalW}px;max-width:100%;height:auto"><defs>${defsSvg}</defs>${zonesSvg}${edgesSvg}${nodesSvg}${edgeLabelsSvg}</svg>`;
+  const cleanTitle = cleanDiagramTitle(spec.title);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${finalW} ${finalH}" width="${finalW}" height="${finalH}" class="sol-svg" role="img" aria-label="${esc(cleanTitle)}" data-natural-width="${finalW}" style="width:${finalW}px;max-width:100%;height:auto"><defs>${defsSvg}</defs>${zonesSvg}${edgesSvg}${nodesSvg}${edgeLabelsSvg}</svg>`;
 
   const legendHtml = renderLegendHtml(spec.legend, locale);
-  const noteHtml = spec.note ? `<p class="diagram-note">${esc(spec.note)}</p>` : '';
-  return wrapFigure(svg, spec.title, { legendHtml, noteHtml, diagramLabel });
+  const noteHtml = spec.note ? `<p class="diagram-note">${renderInlineCodeHtml(spec.note)}</p>` : '';
+  return wrapFigure(svg, cleanTitle, { legendHtml, noteHtml, diagramLabel });
 }
 
 /**
@@ -854,16 +907,19 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
   const padX = 28;
   const padY = 24;
 
+  const badgeWidthOf = k => Math.max(22, Math.round(measureText(k, 8.8, false) + 10));
+  const formatColType = c => String(c.type || '').replace(/\?+$/, '') + (c.nullable ? '?' : '');
+
   // Measure each entity width and height naturally (wrapping long grain lines)
   const entLayouts = new Map();
   for (const ent of spec.entities) {
     const cols = Array.isArray(ent.columns) ? ent.columns : [];
     const headerW = measureText(ent.name, 13, false) * 1.07 + 110;
     const rowWidths = cols.map(c => {
-      const keyList = c.key ? String(c.key).split(',').map(k => k.trim()).filter(Boolean) : [];
-      const badgeW = keyList.length ? keyList.length * 26 + 6 : 12;
+      const keyList = c.key ? String(c.key).split(',').map(k => k.trim().toUpperCase()).filter(Boolean) : [];
+      const badgeW = keyList.length ? keyList.reduce((acc, k) => acc + badgeWidthOf(k) + 4, 0) + 4 : 12;
       const nameW = measureText(c.name || '', 11.5, true);
-      const typeStr = (c.type || '') + (c.nullable ? '?' : '');
+      const typeStr = formatColType(c);
       const typeW = measureText(typeStr, 10.5, true);
       return badgeW + nameW + typeW + 46;
     });
@@ -961,7 +1017,7 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     entBoxes.set(ent.id, { x: ex, y: ey, w: l.w, h: l.h, cx: ex + l.w / 2, cy: ey + l.h / 2, ent, l });
   }
 
-  const defsSvg = `<marker id="__PREFIX__lineage-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0.5, 8 3, 0 5.5" fill="#087f8c"/></marker>`;
+  const defsSvg = `<marker id="__PREFIX__lineage-arrow" class="schema-lineage-marker" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="lineage-arrow-head" points="0 0.5, 8 3, 0 5.5" fill="#087f8c"/></marker>`;
 
   function crowsFootGlyph(x, y, side, card) {
     const dir = side === 'left' ? -1 : side === 'right' ? 1 : side === 'top' ? -1 : 1;
@@ -1039,9 +1095,9 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     return false;
   }
 
-  // Render relations
+  // Render relations + queue pills for collision-safe placement
   let relsSvg = '';
-  let relLabelsSvg = '';
+  const pendingRelPills = [];
   let bIdx = 0;
   let tIdx = 0;
 
@@ -1115,38 +1171,52 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     const card1 = !isLineage && rel.fromCard ? crowsFootGlyph(p1[0], p1[1], fSide, rel.fromCard) : '';
     const card2 = !isLineage && rel.toCard ? crowsFootGlyph(p2[0], p2[1], tSide, rel.toCard) : '';
 
-    relsSvg += `<g class="sol-edge" data-from="${esc(rel.from)}" data-to="${esc(rel.to)}"><path d="${pathD}" fill="none" stroke="${stroke}" stroke-width="1.4"${dash}${marker}/>${card1}${card2}</g>`;
+    relsSvg += `<g class="sol-edge${isLineage ? ' sol-edge-lineage' : ''}" data-from="${esc(rel.from)}" data-to="${esc(rel.to)}"><path d="${pathD}" fill="none" stroke="${stroke}" stroke-width="1.4"${dash}${marker}/>${card1}${card2}</g>`;
 
     if (rel.label) {
       const isHorizGap = !rel.channel && (fSide === 'right' && tSide === 'left');
       const maxRelLblW = isHorizGap ? Math.max(84, colGap - 18) : 150;
       const labelText = wrapEdgeLabelText(rel.label, maxRelLblW, 10);
-      relLabelsSvg += `<g class="sol-edge-label-wrap" data-from="${esc(rel.from)}" data-to="${esc(rel.to)}">${renderPillLabel(lblPos[0], lblPos[1], labelText, isLineage ? { bg: '#ecfeff', stroke: '#99f6e4', fg: '#115e59', fontSize: 10 } : { bg: '#ffffff', stroke: '#cbd5e1', fg: '#334155', fontSize: 10 })}</g>`;
+      const { pw, ph } = pillMetrics(labelText, 10);
+      const pillStyle = isLineage
+        ? { bg: '#ecfeff', stroke: '#99f6e4', fg: '#115e59', fontSize: 10, extraClass: 'sol-edge-label-lineage' }
+        : { bg: '#ffffff', stroke: '#cbd5e1', fg: '#334155', fontSize: 10 };
+      pendingRelPills.push({ from: rel.from, to: rel.to, x: lblPos[0], y: lblPos[1], pw, ph, labelText, pillStyle });
     }
   }
 
+  let extraSchemaW = 0;
+  let extraSchemaH = 0;
+  const placedRelPills = resolvePillPositions(pendingRelPills, allEntBoxes);
+  const relLabelsSvg = placedRelPills.map(p => {
+    extraSchemaW = Math.max(extraSchemaW, (p.x + p.pw / 2 + 12) - totalW);
+    extraSchemaH = Math.max(extraSchemaH, (p.y + p.ph / 2 + 12) - totalH);
+    return `<g class="sol-edge-label-wrap" data-from="${esc(p.from)}" data-to="${esc(p.to)}">${renderPillLabel(p.x, p.y, p.labelText, p.pillStyle)}</g>`;
+  }).join('');
+
+  const finalSchemaW = Math.ceil(totalW + Math.max(0, extraSchemaW));
+  const finalSchemaH = Math.ceil(totalH + Math.max(0, extraSchemaH));
+
   // Render entity cards
   const entitiesSvg = [...entBoxes.values()].map(({ x, y, w, h, ent, l }) => {
-    const pal = ENTITY_PALETTE[ent.kind || 'table'] || ENTITY_PALETTE.table;
+    const entKind = ent.kind || 'table';
+    const pal = ENTITY_PALETTE[entKind] || ENTITY_PALETTE.table;
     const dash = pal.dashed ? ' stroke-dasharray="5,3"' : '';
     const cols = Array.isArray(ent.columns) ? ent.columns : [];
 
     let inner = '';
-    // Outer card
-    inner += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#ffffff" stroke="${pal.border}" stroke-width="1.4"${dash}/>`;
-    // Header
-    inner += `<path d="M${x},${y + 8} Q${x},${y} ${x + 8},${y} L${x + w - 8},${y} Q${x + w},${y} ${x + w},${y + 8} L${x + w},${y + l.headerH} L${x},${y + l.headerH} Z" fill="${pal.headerBg}"/>`;
+    inner += `<rect class="schema-card-border schema-border-${esc(entKind)}" x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#ffffff" stroke="${pal.border}" stroke-width="1.4"${dash}/>`;
+    inner += `<path class="schema-header schema-header-${esc(entKind)}" d="M${x},${y + 8} Q${x},${y} ${x + 8},${y} L${x + w - 8},${y} Q${x + w},${y} ${x + w},${y + 8} L${x + w},${y + l.headerH} L${x},${y + l.headerH} Z" fill="${pal.headerBg}"/>`;
     inner += `<text x="${x + 12}" y="${y + 21.5}" font-size="12.5" font-weight="700" fill="${pal.headerFg}">${esc(ent.name)}</text>`;
 
-    // Kind tag pill in header
     const tagW = Math.round(measureText(pal.tag, 9, false) + 12);
-    inner += `<rect x="${x + w - tagW - 10}" y="${y + 8}" width="${tagW}" height="17" rx="4" fill="${pal.tagBg}"/><text x="${x + w - tagW / 2 - 10}" y="${y + 19.5}" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="${pal.tagFg}">${esc(pal.tag)}</text>`;
+    inner += `<rect class="schema-tag-bg schema-tag-bg-${esc(entKind)}" x="${x + w - tagW - 10}" y="${y + 8}" width="${tagW}" height="17" rx="4" fill="${pal.tagBg}"/><text x="${x + w - tagW / 2 - 10}" y="${y + 19.5}" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="${pal.tagFg}">${esc(pal.tag)}</text>`;
 
     let rowTop = y + l.headerH;
     if (l.grainLines.length) {
-      inner += `<rect x="${x + 1}" y="${rowTop}" width="${w - 2}" height="${l.grainH}" fill="${pal.subBg}"/><line x1="${x}" y1="${rowTop + l.grainH}" x2="${x + w}" y2="${rowTop + l.grainH}" stroke="${pal.border}" stroke-width="0.75"/>`;
+      inner += `<rect class="schema-sub-bg schema-sub-bg-${esc(entKind)}" x="${x + 1}" y="${rowTop}" width="${w - 2}" height="${l.grainH}" fill="${pal.subBg}"/><line x1="${x}" y1="${rowTop + l.grainH}" x2="${x + w}" y2="${rowTop + l.grainH}" stroke="${pal.border}" stroke-width="0.75"/>`;
       l.grainLines.forEach((gl, gIdx) => {
-        inner += `<text x="${x + 12}" y="${rowTop + 15.5 + gIdx * 14}" font-size="10.2" font-weight="500" fill="${pal.subFg}">${esc(gl)}</text>`;
+        inner += `<text class="schema-sub-fg schema-sub-fg-${esc(entKind)}" x="${x + 12}" y="${rowTop + 15.5 + gIdx * 14}" font-size="10.2" font-weight="500" fill="${pal.subFg}">${esc(gl)}</text>`;
       });
       rowTop += l.grainH;
     }
@@ -1165,24 +1235,26 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
 
       let nameX = x + 12;
       for (const k of keyList) {
+        const bw = badgeWidthOf(k);
         const badgeStyle = k === 'PK'
           ? { bg: '#fef3c7', fg: '#92400e', bd: '#f59e0b' }
           : k === 'FK'
             ? { bg: '#dbeafe', fg: '#1e40af', bd: '#60a5fa' }
             : { bg: '#ede9fe', fg: '#5b21b6', bd: '#a78bfa' };
-        inner += `<rect x="${nameX}" y="${cy + 4.5}" width="22" height="15" rx="3" fill="${badgeStyle.bg}" stroke="${badgeStyle.bd}" stroke-width="0.8"/><text x="${nameX + 11}" y="${cy + 15}" text-anchor="middle" font-size="8.8" font-weight="700" fill="${badgeStyle.fg}">${esc(k)}</text>`;
-        nameX += 26;
+        inner += `<rect class="schema-key-badge schema-key-badge-${esc(k.toLowerCase())}" x="${nameX}" y="${cy + 4.5}" width="${bw}" height="15" rx="3" fill="${badgeStyle.bg}" stroke="${badgeStyle.bd}" stroke-width="0.8"/><text x="${nameX + bw / 2}" y="${cy + 15}" text-anchor="middle" font-size="8.8" font-weight="700" fill="${badgeStyle.fg}">${esc(k)}</text>`;
+        nameX += bw + 4;
       }
 
       inner += `<text x="${nameX}" y="${cy + 15.5}" class="mono" font-size="11.2" font-weight="${isKey ? '600' : '400'}" fill="#0f172a">${esc(c.name)}</text>`;
-      const typeLabel = (c.type || '') + (c.nullable ? '?' : '');
+      const typeLabel = formatColType(c);
       inner += `<text x="${x + w - 12}" y="${cy + 15.5}" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">${esc(typeLabel)}</text>`;
     });
 
-    return `<g class="sol-node schema-entity" data-node-id="${esc(ent.id)}" tabindex="0" role="group" aria-label="${esc(ent.name)}">${inner}</g>`;
+    return `<g class="sol-node schema-entity schema-entity-${esc(entKind)}" data-node-id="${esc(ent.id)}" tabindex="0" role="group" aria-label="${esc(ent.name)}">${inner}</g>`;
   }).join('');
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${totalW} ${totalH}" width="${totalW}" height="${totalH}" class="sol-svg schema-svg" role="img" aria-label="${esc(spec.title)}" data-natural-width="${totalW}" style="width:${totalW}px;max-width:100%;height:auto"><defs>${defsSvg}</defs>${relsSvg}${entitiesSvg}${relLabelsSvg}</svg>`;
+  const cleanTitle = cleanDiagramTitle(spec.title);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${finalSchemaW} ${finalSchemaH}" width="${finalSchemaW}" height="${finalSchemaH}" class="sol-svg schema-svg" role="img" aria-label="${esc(cleanTitle)}" data-natural-width="${finalSchemaW}" style="width:${finalSchemaW}px;max-width:100%;height:auto"><defs>${defsSvg}</defs>${relsSvg}${entitiesSvg}${relLabelsSvg}</svg>`;
 
   const defaultLegend = [
     { type: 'box', role: 'step', label: locale === 'pt-BR' ? 'Entidade física / tabela' : 'Physical table' },
@@ -1191,8 +1263,8 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     { type: 'dashed', role: 'output', label: locale === 'pt-BR' ? 'Derivação / linhagem (não é FK)' : 'Lineage / aggregation (not FK)' },
   ];
   const legendHtml = renderLegendHtml(spec.legend || defaultLegend, locale);
-  const noteHtml = spec.note ? `<p class="diagram-note">${esc(spec.note)}</p>` : '';
-  return wrapFigure(svg, spec.title, { legendHtml, noteHtml, diagramLabel });
+  const noteHtml = spec.note ? `<p class="diagram-note">${renderInlineCodeHtml(spec.note)}</p>` : '';
+  return wrapFigure(svg, cleanTitle, { legendHtml, noteHtml, diagramLabel });
 }
 
 /**

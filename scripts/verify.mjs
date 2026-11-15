@@ -194,9 +194,15 @@ export async function analyzeImpact(manifestFile, receiptFile, {dossierFile = nu
   }
 
   const unmappedImpactedSources = [...directChangedIds, ...transitiveIds].filter(id => !mappedImpactedIds.has(id));
+  const repoForDiff = path.resolve(path.dirname(manifestPath), manifest.repoRoot || '.');
+  let gitDiffStat = null;
+  if (baseReport.revision?.documented && baseReport.revision?.current && baseReport.revision.documented !== baseReport.revision.current) {
+    gitDiffStat = git(repoForDiff, 'diff', '--stat', `${baseReport.revision.documented}..${baseReport.revision.current}`);
+  }
 
   return {
     ...baseReport,
+    gitDiffStat,
     impactedPaths: {
       direct: [...directChangedPaths].sort(),
       transitive: [...transitivelyImpactedPaths].sort(),
@@ -247,6 +253,10 @@ export function renderUpdatePlan(impact) {
       lines.push(`- \`${f.path}\` (Onda ${f.wave} · \`${f.kind}\` · centralidade ${f.centrality})`);
     }
     lines.push('');
+  }
+
+  if (impact.gitDiffStat) {
+    lines.push('### Resumo Git (`git diff --stat`)', '', '```text', impact.gitDiffStat, '```', '');
   }
 
   lines.push('## 2. Seções Impactadas vs Preservadas (`content.md`)', '');

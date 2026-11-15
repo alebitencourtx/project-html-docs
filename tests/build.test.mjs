@@ -189,6 +189,56 @@ test('generated HTML includes theme switcher (Default/Atual vs Santander) and su
   assert.equal($('[data-theme-select="santander"].is-active').length,1);
   assert.match(html,/:root\[data-theme="santander"\]/);
   assert.match(html,/--accent:\s*#990000/);
+  assert.match(html,/\.sol-zone-warm \.sol-zone-bg/);
+  assert.match(html,/\.sol-edge-lineage path/);
+}));
+
+test('v1.5.0 build & validate: H3 subnav, back-to-top, H1 guard, authoring warnings, and SVG structural audit',()=>fixture(async dir=>{
+  // 1. H1 in Markdown must fail clearly
+  await fs.writeFile(path.join(dir,'h1.md'),'## Sec\n\n# Proibido H1\n\nTexto.\n');
+  await fs.writeFile(path.join(dir,'h1.json'),JSON.stringify({title:'T',subtitle:'S',version:'1',updated:'2026-11-14',content:'h1.md',sections:[{id:'sec',title:'Sec',audience:'all'}]}));
+  await assert.rejects(()=>build(path.join(dir,'h1.json'),path.join(dir,'h1.html')),/H1 heading is reserved/);
+
+  // 2. H3 subnav (excluding .card h3), back-to-top, reserved back-to-top ID, and non-blocking warnings
+  await fs.writeFile(path.join(dir,'sub.md'),[
+    '## Overview','','<div class="cards"><div class="card"><h3>Card Title</h3><p>X</p></div></div>','',
+    '### Architecture Basics','','Texto.','','### Cost Model','','Mais texto.','',
+    '## Processing','','### Overview','','Mesmo titulo H3 deve gerar ID unico.','',
+    '## Rules','','Regra.','',
+    '## Operation','','Operacao.',
+  ].join('\n'));
+  await fs.writeFile(path.join(dir,'src.txt'),'v1');
+  await fs.writeFile(path.join(dir,'sub.json'),JSON.stringify({
+    title:'Subnav Test',subtitle:'Test',version:'1.5.0',updated:'2026-11-14',repoRoot:'.',
+    content:'sub.md',
+    sources:[{id:'s1',path:'src.txt',description:'src'}],
+    sections:[
+      {id:'overview',title:'Overview',audience:'all',sources:['s1']},
+      {id:'processing',title:'Processing',audience:'all'},
+      {id:'rules',title:'Rules',audience:'all'},
+      {id:'operation',title:'Operation',audience:'all'},
+    ]
+  }));
+  const out=path.join(dir,'sub.html');
+  const receipt=await build(path.join(dir,'sub.json'),out);
+  assert.equal(receipt.passed,true);
+  assert.ok(receipt.warnings.length>=2,'Expected non-blocking warnings for >70% audience:all and omitted section sources');
+  const $=load(await fs.readFile(out,'utf8'));
+  assert.equal($('#back-to-top').length,1);
+  assert.equal($('.sidebar nav .nav-sub[data-parent="overview"] a').length,2);
+  assert.equal($('.sidebar nav .nav-sub[data-parent="overview"] a[href="#overview-card-title"]').length,0);
+  const subHref=$('.sidebar nav .nav-sub[data-parent="processing"] a').attr('href');
+  assert.ok(subHref&&$(subHref).length===1,'H3 subnav link must point to valid DOM anchor');
+
+  // 3. validateHtml catches NaN geometry, negative rect, raw backtick in caption, and ?? in schema SVG
+  const badSvg=validateHtml('<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><figure class="diagram"><svg aria-label="X" viewBox="0 0 NaN 100"><rect x="0" y="0" width="-5" height="20"/></svg><figcaption>Com `crase`</figcaption></figure><figure class="diagram"><svg class="schema-svg" aria-label="S" viewBox="0 0 100 100"><text>string??</text></svg><figcaption>Ok</figcaption></figure></body></html>');
+  assert.equal(badSvg.passed,false);
+  const msg=badSvg.errors.join(' | ');
+  assert.match(msg,/viewBox/);
+  assert.match(msg,/Invalid SVG geometry attribute/);
+  assert.match(msg,/Negative SVG rect/);
+  assert.match(msg,/Literal backtick/);
+  assert.match(msg,/Double nullable marker/);
 }));
 
 

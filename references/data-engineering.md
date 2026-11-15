@@ -69,10 +69,10 @@ Operation explains trigger, configuration, parameters, prerequisite state, outpu
 
 ## Engenharia de Dados em Nuvem, Streaming e APIs (PySpark, Databricks, Cosmos DB, Event Hubs, Blob/ADLS, APIs)
 
-Ao analisar repositórios baseados em nuvem ou streaming (com apoio de `--plan <work>/reading-plan.md` gerado pelo `inspect_repo.py`), documente explicitamente os contratos específicos de cada tecnologia conforme implementado no código:
+Ao analisar repositórios baseados em nuvem, pipelines ou streaming (com apoio de `--plan <work>/reading-plan.md` gerado pelo `inspect_repo.py`, incluindo cadeias PySpark, chamadas `%run`/`dbutils.notebook.run`, pipelines Azure Data Factory/Synapse, código Scala e parâmetros `os.getenv`/CLI/`dbutils.widgets`), documente explicitamente os contratos específicos de cada tecnologia conforme implementado no código:
 
-1. **PySpark & Databricks (Notebooks, Workflows / Asset Bundles & Delta Lake)**:
-   - **Execução & Orquestração**: identifique jobs em `databricks.yml`, células `# COMMAND ----------` / `%sql` / `%python`, parâmetros via `dbutils.widgets.get(...)` e referências a segredos (`dbutils.secrets.get(scope, key)` — nunca exponha valores).
+1. **PySpark, Scala & Databricks / ADF (Notebooks, Workflows / Asset Bundles & Delta Lake)**:
+   - **Execução & Orquestração**: identifique jobs em `databricks.yml`, pipelines JSON do Azure Data Factory (`DatabricksNotebook`, dependências entre atividades), encadeamentos `%run` / `dbutils.notebook.run`, células `# COMMAND ----------` / `%sql` / `%python`, parâmetros via `dbutils.widgets.get(...)` / CLI / variáveis de ambiente e referências a segredos (`dbutils.secrets.get(scope, key)` — nunca exponha valores).
    - **Leitura e Escrita**: registre se o job é batch (`spark.read`) ou Structured Streaming (`spark.readStream` / Auto Loader `cloudFiles`), qual o `trigger` (`availableNow=True`, `processingTime`, contínuo), o `checkpointLocation`, o modo de escrita (`append`, `overwrite` com `partitionOverwriteMode`, `MERGE INTO` com chaves de match) e a estratégia de particionamento (`partitionBy` / `CLUSTER BY` / `ZORDER`).
    - **Catálogo**: diferencie caminhos físicos (`abfss://...`, `dbfs:/...`) de tabelas gerenciadas/externas no Unity Catalog (`catalog.schema.table`).
 2. **Azure Event Hubs & Streaming**:

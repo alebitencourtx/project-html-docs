@@ -4,8 +4,8 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-25%20passing-success.svg)](#testes-automatizados)
-[![Version](https://img.shields.io/badge/version-1.4.0-orange.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-28%20passing-success.svg)](#testes-automatizados)
+[![Version](https://img.shields.io/badge/version-1.5.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
@@ -21,15 +21,25 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 ## Principais recursos
 
 - **Arquivo único e offline**: CSS, JavaScript e imagens vetoriais (SVG) são incorporados no próprio HTML.
-- **Temas integrados**: Alternância entre o tema padrão e o tema corporativo Santander diretamente pela barra de ferramentas, salvando a preferência no navegador.
-- **Motor próprio de diagramas 2D em SVG**: Suporte nativo a diagramas de arquitetura (`solution`) e modelagem de tabelas com linhagem (`schema`), sem depender de bibliotecas externas no navegador.
-- **Navegação focada em diferentes públicos**:
+- **Temas integrados**: Alternância entre o tema padrão e o tema corporativo Santander diretamente pela barra de ferramentas, salvando a preferência no navegador e harmonizando tanto o visual da página quanto as cores dos diagramas SVG 2D.
+- **Motor próprio de diagramas 2D em SVG**: Suporte nativo a diagramas de arquitetura (`solution`) e modelagem de tabelas com linhagem (`schema`), com desvio inteligente de sobreposição de rótulos (*pill collision avoidance*) e sem depender de bibliotecas externas no navegador.
+- **Navegação focada na leitura em desktop**:
+  - Barra lateral flexível com rolagem independente que nunca sobrepõe o rodapé de leitura offline.
+  - Subnavegação automática para títulos `H3` recuados sob cada capítulo principal.
+  - Botão flutuante para voltar ao topo da página com rolagem suave.
   - Filtro por perfil de leitor (*Todas*, *Visão de negócio*, *Visão técnica*, *Operação*), permitindo que áreas de negócio e times técnicos foquem no que interessa sem perder seções do documento.
   - Busca instantânea com realce de termos encontrados e atalhos rápidos (`/` ou `Ctrl+K`).
   - Campo de filtro automático em tabelas com 8 ou mais linhas (dicionários de dados), inclusive dentro de seções expansíveis.
   - Formatação visual automática para regras de negócio, exemplos práticos e avisos em citações Markdown.
-- **Mapeador de código sem consumo de tokens**: Script Python que inspeciona o repositório via AST e extrai estruturas de pipelines (PySpark, Databricks, Delta Lake, Cosmos DB, Event Hubs, ADLS Gen2, APIs e SQL), montando um plano de leitura organizado em 4 etapas ordenadas.
-- **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 no código-fonte, apontando exatamente quais seções da documentação precisam ser atualizadas quando o código mudar.
+- **Mapeador estático de código sem consumo de tokens**: Script Python que inspeciona o repositório via AST e extrai estruturas completas:
+  - Pipelines PySpark (incluindo chamadas encadeadas de leitura/escrita, opções e particionamento).
+  - Databricks notebooks, comandos mágicos `%run` e chamadas `dbutils.notebook.run`.
+  - Pipelines JSON do Azure Data Factory e Azure Synapse.
+  - Tecnologias de nuvem e streaming: Delta Lake, Cosmos DB, Event Hubs, ADLS Gen2, APIs (FastAPI/Flask) e código Scala.
+  - Parâmetros de CLI (`argparse`, `click`, `typer`) e variáveis de ambiente (`os.getenv`).
+  - Suporte a arquivo `.docignore` na raiz do projeto para ignorar pastas temporárias ou artefatos gerados.
+  - Montagem de um plano de leitura organizado em 4 etapas ordenadas (`reading-plan.md`).
+- **Verificação de integridade e impacto incremental**: Checagem de alterações por hash SHA-256 no código-fonte, apontando no `update-plan.md` (com resumo `git diff --stat`) exatamente quais seções da documentação precisam ser atualizadas quando o código mudar.
 
 ---
 
@@ -38,29 +48,30 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 ```text
 project-html-docs/
 ├── assets/
-│   ├── document.css            # Estilos visuais, temas (Padrão e Santander) e layout
-│   └── document.js             # Lógica de busca, temas, filtros e controles do modal
+│   ├── document.css            # Estilos visuais, layout flexível e temas (Padrão e Santander)
+│   └── document.js             # Lógica de busca, temas, subnavegação H3 e controles
 ├── examples/
 │   ├── minimal/                # Exemplo simples de documentação funcional
 │   └── showcase/               # Exemplo completo com as 11 seções e diagramas avançados
 ├── references/
-│   ├── authoring.md            # Guia prático de redação e sintaxe
-│   ├── data-engineering.md     # Boas práticas para esteiras de dados e nuvem
+│   ├── authoring.md            # Guia prático de redação, sintaxe e validações
+│   ├── data-engineering.md     # Boas práticas para esteiras de dados, nuvem e streaming
 │   └── tools.md                # Descrição das dependências do gerador
 ├── schemas/
 │   └── document.schema.json    # Validação estrutural do arquivo document.json
 ├── scripts/
 │   ├── build.mjs               # Compila os arquivos fonte no HTML final
-│   ├── diagrams.mjs            # Motor de renderização de diagramas em SVG
+│   ├── diagrams.mjs            # Motor de renderização de diagramas em SVG 2D
 │   ├── inspect_repo.py         # Análise estática do repositório e geração do plano de leitura
-│   ├── validate.mjs            # Validador de integridade e qualidade do HTML
+│   ├── validate.mjs            # Validador de integridade, geometria SVG e qualidade do HTML
 │   └── verify.mjs              # Checagem de hashes SHA-256 e cálculo de impacto incremental
 ├── tests/
 │   ├── build.test.mjs          # Testes do compilador e validador HTML
-│   ├── diagrams.test.mjs       # Testes unitários do motor de diagramas
-│   └── dossier.test.mjs        # Testes de mapeamento estático e impacto
+│   ├── diagrams.test.mjs       # Testes unitários do motor de diagramas e temas
+│   └── dossier.test.mjs        # Testes de mapeamento estático, AST e análise de impacto
 ├── CHANGELOG.md                # Registro de novidades de cada versão
 ├── package.json                # Dependências fixadas e scripts de execução
+├── README.md                   # Guia introdutório do projeto
 └── SKILL.md                    # Instruções operacionais para execução guiada por agentes
 ```
 
@@ -94,10 +105,12 @@ Isso gera:
 - `inventory.json`: Inventário técnico com arquivos, tecnologias identificadas e grafo de dependências.
 - `reading-plan.md`: Roteiro sugerido de leitura em 4 ondas ordenadas (configurações centrais → esteira principal → esquemas e consultas → testes), indicando os trechos de linhas mais relevantes.
 
+Caso precise ignorar pastas ou arquivos específicos, crie um `.docignore` na raiz do repositório inspecionado com os padrões a excluir.
+
 ### 2. Escrever o manifesto e o conteúdo
 Crie uma pasta com os arquivos da sua documentação:
 - **`document.json`**: Informações básicas (título, versão, cartões de destaque, idioma, tema e lista de seções com suas respectivas fontes de código).
-- **`content.md`**: O texto em si, estruturado com títulos `## H2` que correspondem exatamente aos títulos declarados no `document.json`.
+- **`content.md`**: O texto em si, estruturado com títulos `## H2` que correspondem exatamente aos títulos declarados no `document.json`. Títulos `### H3` geram links automáticos de subnavegação na barra lateral.
 
 Você pode usar como base os exemplos em `examples/minimal/` ou `examples/showcase/`.
 
@@ -108,7 +121,7 @@ Para compilar o documento em arquivo único:
 node scripts/build.mjs docs/document.json --out docs/documentacao.html --force
 ```
 
-O comando valida a estrutura contra o esquema JSON, processa o Markdown, renderiza os diagramas em SVG inline e salva o resultado final pronto para visualização.
+O comando valida a estrutura contra o esquema JSON, processa o Markdown, audita as dimensões e geometrias dos diagramas SVG e salva o resultado final pronto para visualização.
 
 ### 4. Validar e auditar
 Para conferir se o documento reflete fielmente os arquivos referenciados e salvar o recibo de validação:
@@ -132,6 +145,7 @@ node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --i
 ```
 
 O arquivo `update-plan.md` gerado listará:
+- Resumo estatístico do Git (`git diff --stat`) entre as versões.
 - Quais arquivos de código sofreram alteração direta de hash.
 - Quais módulos do sistema dependem deles e foram impactados indiretamente.
 - Exatamente quais seções do documento estão desatualizadas (`stale`) e precisam de revisão.
@@ -233,16 +247,25 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 
 ## Testes automatizados
 
-A suíte de testes cobre a validação estrutural do HTML, renderização de diagramas SVG, desvios de rota, mapeamento AST de repositórios e análise de impacto:
+A suíte de testes cobre a validação estrutural do HTML, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios e análise de impacto:
 
 ```bash
-# Rodar todos os testes unitários
+# Rodar todos os testes unitários (28 testes)
 npm test
 
 # Compilar os exemplos disponíveis
 npm run build:example
 npm run build:showcase
 ```
+
+---
+
+## Histórico de releases
+
+- **[v1.5.0](CHANGELOG.md#150--2026-11-14)**: Sidebar flex com scroll independente, subnavegação H3, botão voltar ao topo, harmonização cromática do tema Santander nos diagramas SVG, prevenção de colisão de rótulos, validação geométrica de SVGs, extração de cadeias PySpark, pipelines ADF, Scala e suporte a `.docignore`.
+- **[v1.4.0](CHANGELOG.md#140--2026-11-14)**: Mapeamento estático profundo (AST Python, Databricks notebooks, PySpark, Event Hubs, Cosmos DB, ADLS Gen2, APIs), reading waves e análise incremental de impacto (`verify.mjs --impact`).
+- **[v1.3.0](CHANGELOG.md#130--2026-11-14)**: Motor SVG 2D determinístico (`diagrams.mjs`), filtro de perfil de leitor, busca com highlight, tema Santander, controles de zoom e filtro local dinâmico em tabelas.
+- **[v1.2.0](CHANGELOG.md#120--2026-11-14)**: Reengenharia de gráficos de barra SVG, ergonomia de leitura (76ch) e cabeçalhos fixos em tabelas.
 
 ---
 

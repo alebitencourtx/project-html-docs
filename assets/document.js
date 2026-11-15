@@ -107,6 +107,8 @@
       }
       const a = document.querySelector(`nav a[href="#${s.id}"]`);
       if (a) a.hidden = s.hidden;
+      const subNav = document.querySelector(`nav .nav-sub[data-parent="${s.id}"]`);
+      if (subNav) subNav.hidden = s.hidden;
     }
 
     if (!terms.length && searchActive) { restoreOpenState(); searchActive = false; }
@@ -159,14 +161,17 @@
       sections.forEach(s => {
         const aud = s.dataset.audience || 'all';
         const navLink = document.querySelector(`nav a[href="#${s.id}"]`);
+        const subNav = document.querySelector(`nav .nav-sub[data-parent="${s.id}"]`);
         if (target === 'all') {
           s.classList.remove('is-audience-secondary');
           navLink?.classList.remove('is-audience-secondary');
+          subNav?.classList.remove('is-audience-secondary');
           s.open = s.id !== 'document-references';
         } else {
           const primary = aud === 'all' || aud === target;
           s.classList.toggle('is-audience-secondary', !primary);
           navLink?.classList.toggle('is-audience-secondary', !primary);
+          subNav?.classList.toggle('is-audience-secondary', !primary);
           if (!searchActive) s.open = primary;
         }
       });
@@ -431,12 +436,20 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && dialog.open) { e.preventDefault(); dialog.close(); } });
   dialog.addEventListener('close', () => setTimeout(() => trigger?.focus(), 60));
 
+  const backToTop = document.querySelector('#back-to-top');
+  if (backToTop) {
+    const syncTopBtn = () => { backToTop.hidden = window.scrollY < 420; };
+    syncTopBtn();
+    window.addEventListener('scroll', syncTopBtn, { passive: true });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+
   function setActiveNav(id) {
     document.querySelectorAll('nav a[aria-current]').forEach(a => a.removeAttribute('aria-current'));
     const activeLink = document.querySelector(`nav a[href="#${id}"]`);
     if (activeLink) {
       activeLink.setAttribute('aria-current', 'location');
-      if (window.innerWidth > 760) activeLink.scrollIntoView({ block: 'nearest' });
+      activeLink.scrollIntoView({ block: 'nearest' });
     }
   }
 
