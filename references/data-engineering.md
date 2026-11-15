@@ -67,6 +67,24 @@ Operation explains trigger, configuration, parameters, prerequisite state, outpu
 |---|---|---|
 | Execução interrompida no meio do mês | Falha transitória de cluster/rede durante um lote | Reexecutar sem alterar parâmetros; lotes anteriores já gravados são reaproveitados automaticamente |
 
+## Engenharia de Dados em Nuvem, Streaming e APIs (PySpark, Databricks, Cosmos DB, Event Hubs, Blob/ADLS, APIs)
+
+Ao analisar repositórios baseados em nuvem ou streaming (com apoio de `--plan <work>/reading-plan.md` gerado pelo `inspect_repo.py`), documente explicitamente os contratos específicos de cada tecnologia conforme implementado no código:
+
+1. **PySpark & Databricks (Notebooks, Workflows / Asset Bundles & Delta Lake)**:
+   - **Execução & Orquestração**: identifique jobs em `databricks.yml`, células `# COMMAND ----------` / `%sql` / `%python`, parâmetros via `dbutils.widgets.get(...)` e referências a segredos (`dbutils.secrets.get(scope, key)` — nunca exponha valores).
+   - **Leitura e Escrita**: registre se o job é batch (`spark.read`) ou Structured Streaming (`spark.readStream` / Auto Loader `cloudFiles`), qual o `trigger` (`availableNow=True`, `processingTime`, contínuo), o `checkpointLocation`, o modo de escrita (`append`, `overwrite` com `partitionOverwriteMode`, `MERGE INTO` com chaves de match) e a estratégia de particionamento (`partitionBy` / `CLUSTER BY` / `ZORDER`).
+   - **Catálogo**: diferencie caminhos físicos (`abfss://...`, `dbfs:/...`) de tabelas gerenciadas/externas no Unity Catalog (`catalog.schema.table`).
+2. **Azure Event Hubs & Streaming**:
+   - Documente tópico/`eventhub_name`, `$Default` ou `consumer_group` dedicado, `startingOffsets`, estratégia de checkpoint para retomada sem duplicidade, tratamento de schema inválido/JSON malformado (*dead-letter* / quarentena) e janela de *watermark* para dados atrasados (`withWatermark`).
+3. **Azure Blob Storage / ADLS Gen2**:
+   - Documente contêineres/diretórios (`abfss://<container>@<account>.dfs.core.windows.net/...`), padrão de prefixo/partição (`ano=.../mes=.../dia=...`), política de retenção/lifecycle ou movimentação pós-processamento (*archive* vs reprocessamento).
+4. **Azure Cosmos DB & APIs de Serviço (FastAPI / Flask / Express / REST)**:
+   - **Cosmos DB**: identifique banco, contêiner, **chave de partição (`partition_key` / `PartitionKey`)**, padrão de gravação (`upsert_item` vs `create_item` vs conector `cosmos.oltp`), TTL configurado no contêiner e eventuais limites de throughput/RU ou retries `429`.
+   - **APIs (quando presentes)**: separe claramente **APIs consumidas pelo pipeline** (origens HTTP, paginação, timeout, retry, auth) de **APIs expostas para consumo/operação** (rotas `@app.get`/`@router.post`, contrato JSON de entrada/saída, códigos HTTP e autenticação). Use blocos `<details>` ou tabela de endpoints resumida sem virar especificação Swagger redundante.
+
+## Evidências e Limites de Análise
+
 Use snapshots only when supplied or locally available within scope. Identify run/date/source and distinguish clearly between a local repository/implementation snapshot (`snapshot local de implementação`) and live runtime telemetry; do not call them live. Retention or threshold charts can explain implementation without running a pipeline. Never fabricate records to populate executive cards.
 
 This is an as-is guide. Document constraints affecting use. Do not invent owners, SLAs, classifications, optimization plans or historical rationale. An implemented choice can be described even when its original rationale is unknown.

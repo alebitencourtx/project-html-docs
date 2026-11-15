@@ -147,6 +147,11 @@ The receipt verifies IDs, anchors, resource closure, accessible diagram names an
 
 After building or updating a document, run `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json`. It recomputes source hashes and the Git revision and reports changed, missing or unexpected sources. Use `--strict` to fail when the document no longer matches its sources.
 
+When updating an existing documented repository, avoid re-reading untouched code:
+1. Run `python <skill>/scripts/inspect_repo.py <repo> --out <work>/inventory.json --plan <work>/reading-plan.md`.
+2. Run `node <skill>/scripts/verify.mjs <work>/document.json <work>/documentacao.validation.json --impact --dossier <work>/inventory.json --plan <work>/update-plan.md`.
+3. Because `sections[].sources` links each H2 section to its backing source IDs and `inventory.json` carries the internal dependency graph, `update-plan.md` identifies directly changed sources, transitively impacted modules, untracked new core files and only the `stale` sections that require review.
+
 Inspect on **desktop** (~1440 px; do not worry about or optimize for mobile/narrow viewports): global overflow, labels, local table/diagram scroll, accent-insensitive search, no-result search, links into collapsed sections, expand/collapse, copy/fallback, modal close/Escape and print with all sections. Check reading with network unavailable. Report actual verification rather than inferring browser success from structural validation.
 
 On update compare source changes and revisit dependent sections. A changed hash alone is not proof of changed meaning. Render to the requested version and preserve the previous document unless replacement was requested.

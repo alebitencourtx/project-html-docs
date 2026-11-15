@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.4.0 — 2026-11-14
+
+Descoberta determinística de repositórios (0 tokens de LLM), extração profunda para Engenharia de Dados em nuvem/streaming e atualização incremental orientada a impacto.
+
+### Adicionado
+
+- **Dossiê Estático e Plano de Leitura Cirúrgica (`scripts/inspect_repo.py`)**:
+  - Extração AST para Python (`.py`, notebooks Databricks `# COMMAND ----------` / `%sql` / `%python` e `.ipynb` ignorando outputs), além de parsers determinísticos para SQL/DDL/CTEs/dbt, JS/TS, Workflows GitHub Actions, `databricks.yml`, configurações JSON/TOML e IaC Terraform/Bicep.
+  - Detecção especializada de sinais e E/S para **PySpark**, **Databricks** (`dbutils.widgets`, `dbutils.secrets` sem valores, `@dlt.table`, `cloudFiles`), **Delta Lake**, **Azure Cosmos DB**, **Azure Event Hubs**, **Azure Blob Storage / ADLS Gen2** (`abfss://`, `wasbs://`), **SQL/DuckDB/Snowflake/BigQuery**, e **APIs** (FastAPI/Flask/Express rotas e modelos Pydantic/dataclass/StructType/PyArrow).
+  - Construção automática de grafo de dependências (`import`, `bundle_task`, `workflow_run`, `sql_lineage`), cálculo de centralidade, classificação em **4 Ondas de Leitura** (`readingWaves`), índice de testes (`testsIndex`), `scaleProfile` (`small` / `medium` / `large` para divisão paralela por domínios) e geração opcional de `reading-plan.md` (`--plan`).
+  - Higiene automática de segredos em constantes, configurações inline e referências `dbutils.secrets.get`.
+- **Análise Incremental de Impacto e Drift (`scripts/verify.mjs`)**:
+  - Flags `--impact`, `--dossier <inventory.json>` e `--plan <update-plan.md>` que cruzam alterações de SHA-256 com o grafo de dependências e `sections[].sources` do `document.json`, apontando fontes diretas, dependentes transitivos, novos arquivos core não rastreados e apenas as seções `stale` a revisar.
+- **Guias de Nuvem & APIs (`SKILL.md`, `references/data-engineering.md`, `references/authoring.md`)**:
+  - Diretrizes de leitura seletiva por ondas/intervalos de linhas e checklists específicos para PySpark, Databricks, Delta Lake, Cosmos DB, Event Hubs, Blob/ADLS Gen2 e APIs.
+
 ## 1.3.0 — 2026-11-14
 
 Reengenharia visual e funcional para projetos de engenharia de dados (público técnico e não técnico), mantendo 100% de compatibilidade offline e preservação integral de todas as 11 categorias existentes.
