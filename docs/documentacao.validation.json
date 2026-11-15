@@ -17,12 +17,12 @@
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao.html",
   "rendererSha256": "86afd2e6a96ec02fe80621080fa7c1ced18b5cca81e28af0c188355a8b380eda",
-  "builtAt": "2026-11-15T22:48:52.836Z",
-  "manifestSha256": "538381b3dd7e6ba4f2c7a86b872e4069c488fa6ce6ba4ecd43a3b872dcf69258",
+  "builtAt": "2026-11-15T22:52:42.524Z",
+  "manifestSha256": "6c23a11d627fb6c7f28b558e183f7b37cb129a5cb026e3b53cdbe2b14a802070",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "0bd28610dc21a44172a1a52389be089b68247948",
+  "revision": "1ec16feb419dfc24ac92cd95b3585b6e56705b6f",
   "inputSha256": "0be495d5afa224e67003578870cb55b58518ecea84c5b3b797d8da02a2fd8262",
-  "htmlSha256": "dc57eed849feadb3586e4bcb9bd3579f8e0682e415c882280ed4d733e2252200",
+  "htmlSha256": "9ced960e19a0da3f82ff39865c955dceb9dd8c1a8dca5877bb072490caddad38",
   "sources": [
     {
       "id": "skill",
@@ -277,5 +277,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T22:49:03.693Z"
+  "browserReviewedAt": "2026-11-15T22:52:47.034Z"
 }
