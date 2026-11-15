@@ -90,6 +90,7 @@ export async function verify(manifestFile, receiptFile, { strict = false, htmlFi
     if (!declared.has(id)) results.push({ id, path: source.path, status: 'unexpected' });
   }
 
+  const bad = results.filter(r => r.status !== 'ok');
   const currentRevision = git(repo, 'rev-parse', 'HEAD');
   const dirty = git(repo, 'status', '--short');
   const revisionMatches = !receipt?.revision || !currentRevision ? null : receipt.revision === currentRevision;
@@ -102,6 +103,11 @@ export async function verify(manifestFile, receiptFile, { strict = false, htmlFi
       );
       const declaredPaths = [...declared.values()].map(s => s.path.replace(/\\/g, '/'));
       sourceDriftBetweenRevisions = declaredPaths.some(p => changedSet.has(p));
+    } else if (bad.length === 0) {
+      // In shallow clones (e.g. CI default fetch-depth: 1), git diff across distant revisions
+      // cannot resolve the commit object. Since all declared sources match their content hash,
+      // no source drift occurred for the documented files.
+      sourceDriftBetweenRevisions = false;
     }
   } else if (revisionMatches === true) {
     sourceDriftBetweenRevisions = false;
@@ -147,7 +153,6 @@ export async function verify(manifestFile, receiptFile, { strict = false, htmlFi
   }
   const receiptValid = receiptStatus !== 'invalid';
 
-  const bad = results.filter(r => r.status !== 'ok');
   const revisionOk = revisionMatches !== false || sourceDriftBetweenRevisions === false;
   const artifactsOk = strict
     ? (receiptStatus === 'complete' && manifestMatches === true && contentMatches === true && htmlMatches === true)

@@ -183,7 +183,9 @@ test('slim release ZIP packager produces deterministic skill bundle with identic
   const { stdout } = await execFileAsync(py.cmd, [...py.baseArgs, packager, '--out', zipPath], { encoding: 'utf8' });
   const packResult = JSON.parse(stdout);
   assert.equal(packResult.ok, true);
-  assert.equal(packResult.archivePath, zipPath);
+  const normActual = await fs.realpath(packResult.archivePath);
+  const normExpected = await fs.realpath(zipPath);
+  assert.equal(normActual.toLowerCase(), normExpected.toLowerCase());
   const firstArchive = await fs.readFile(zipPath);
   await execFileAsync(py.cmd, [...py.baseArgs, packager, '--out', zipPath], { encoding: 'utf8' });
   assert.deepEqual(await fs.readFile(zipPath), firstArchive, 'Packaging unchanged inputs must be byte-reproducible');

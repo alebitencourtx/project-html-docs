@@ -17,7 +17,7 @@
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao-resumida.html",
   "rendererSha256": "8e059010cffca2b743f53aab5a9b722a17b801bfb62574860f0129f54d88e83f",
-  "builtAt": "2026-11-15T21:49:16.899Z",
+  "builtAt": "2026-11-15T22:22:27.126Z",
   "manifestSha256": "90db5c627347fe5001d382c67f69623cd992cc16069f1c75f8644b68ea69b0f5",
   "document": "project-html-docs · Guia Rápido",
   "revision": "cd943234b153f91a9183b69916806faa7e5e6772",
@@ -82,7 +82,7 @@
       "id": "verify",
       "path": "scripts/verify.mjs",
       "description": "Hashes canônicos LF, completeness do recibo, revisão Git e impacto.",
-      "sha256": "9b0434298eabaa8e4afded5fca705e330c6f51ddad664e69821245961fc6da9c"
+      "sha256": "6109ec12de097c4f16cbf0c4dc1af5b5290b8631e99c22b5a3ed0ecfceb4cf22"
     },
     {
       "id": "renderer-hash",
@@ -178,13 +178,13 @@
       "id": "release",
       "path": ".github/workflows/release.yml",
       "description": "Validação e distribuição do ZIP em releases.",
-      "sha256": "eb3a8a93518b5482fd27b9778247982e6ea2e77a7f432a86673112dcb258e025"
+      "sha256": "026f36f30176c2020f36e4e4709c44a54a55964a86bbc8766bf7ded76b09b4b4"
     },
     {
       "id": "tests-cli",
       "path": "tests/cli.test.mjs",
       "description": "CLI fora da raiz e execução do ZIP extraído.",
-      "sha256": "b02b834e47ba7d1ad443cf352db7f82cc97577f6be0a7ad6b14763cf8d8163e1"
+      "sha256": "359548a01b4905a91219ece629dd731bd9ea195aeadb6e4af4a71c04619c2ec5"
     },
     {
       "id": "diagram-guide",
@@ -193,5 +193,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T21:49:29.488Z"
+  "browserReviewedAt": "2026-11-15T22:22:30.994Z"
 }
