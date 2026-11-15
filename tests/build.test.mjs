@@ -241,5 +241,38 @@ test('v1.5.0 build & validate: H3 subnav, back-to-top, H1 guard, authoring warni
   assert.match(msg,/Double nullable marker/);
 }));
 
+test('v1.6.0 summary mode: data-mode, quick-guide badges, companionDoc link, readingMinutes, and length warnings',()=>fixture(async dir=>{
+  await fs.writeFile(path.join(dir,'app.py'),'print("ok")\n');
+  const sections=Array.from({length:9},(_,i)=>({id:`sec-${i+1}`,title:`Sec ${i+1}`,audience:i%2===0?'business':'technical',sources:['app']}));
+  await fs.writeFile(path.join(dir,'manifest.json'),JSON.stringify({
+    title:'Quick Repo',subtitle:'Brief overview',version:'1.0.0',updated:'2026-11-14',
+    mode:'summary',companionDoc:{href:'manual-full.html',label:'Manual completo'},
+    content:'summary.md',repoRoot:'.',sections,sources:[{id:'app',path:'app.py',description:'App'}]
+  }));
+  await fs.writeFile(path.join(dir,'summary.md'),sections.map(s=>`## ${s.title}\n\nResumo objetivo.\n`).join('\n'));
+  const outHtml=path.join(dir,'summary.html');
+  const receipt=await build(path.join(dir,'manifest.json'),outHtml,{force:true});
+  assert.equal(receipt.passed,true);
+  assert.equal(receipt.mode,'summary');
+  assert.ok(receipt.readingMinutes>=1);
+  assert.ok(receipt.wordCount>0);
+  assert.ok(receipt.warnings.some(w=>w.includes('Summary mode has 9 sections')));
+  const html=await fs.readFile(outHtml,'utf8');
+  const $=load(html);
+  assert.equal($('html').attr('data-mode'),'summary');
+  assert.equal($('.badge-mode').text(),'Guia rápido');
+  assert.equal($('a.hero-companion').attr('href'),'manual-full.html');
+  assert.ok($('.hero-companion').text().includes('Manual completo'));
+
+  // Unsafe companionDoc href must be rejected
+  await fs.writeFile(path.join(dir,'bad.md'),'## Sec 1\n\nOk.\n');
+  await fs.writeFile(path.join(dir,'bad.json'),JSON.stringify({
+    title:'Bad',subtitle:'Bad',version:'1.0.0',updated:'2026-11-14',mode:'summary',
+    companionDoc:{href:'javascript:alert(1)',label:'Evil'},content:'bad.md',repoRoot:'.',
+    sections:[{id:'sec-1',title:'Sec 1',audience:'all'}]
+  }));
+  await assert.rejects(()=>build(path.join(dir,'bad.json'),path.join(dir,'bad.html'),{force:true}),/Unsafe companionDoc/);
+}));
+
 
 

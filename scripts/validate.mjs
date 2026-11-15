@@ -62,8 +62,13 @@ export function validateHtml(html) {
   if(/\$\$[\s\S]+?\$\$|\\(?:text|frac|sum|Delta|times|le|ge|approx|cdot)\s*(?:\{|\\|\b)|\$[^$\n]*\\(?:text|frac|sum|Delta|times|le|ge)|\$[0-9][0-9.,]*%?\$/m.test(proseText)){
     errors.push('Unrendered LaTeX math in prose/tables (use Unicode/HTML instead of $...$)');
   }
+  const mode=$('html').attr('data-mode')==='summary'?'summary':'full';
+  const metricClone=$('.doc-section .section-body').clone();metricClone.find('svg,script,style').remove();
+  const rawWords=metricClone.text().trim().split(/\s+/).filter(Boolean);
+  const wordCount=rawWords.length;
+  const readingMinutes=Math.max(1,Math.round(wordCount/190));
   const totalSections=$('.doc-section').length;const referenceBlocks=$('#document-references').length;const sections=totalSections-referenceBlocks;
-  return {passed:errors.length===0,errors,sections,contentSections:sections,referenceBlocks,diagrams:$('figure.diagram').length,charts:$('figure.chart').length,bytes:Buffer.byteLength(html),browserReviewed:false};
+  return {passed:errors.length===0,errors,mode,wordCount,readingMinutes,sections,contentSections:sections,referenceBlocks,diagrams:$('figure.diagram').length,charts:$('figure.chart').length,bytes:Buffer.byteLength(html),browserReviewed:false};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){

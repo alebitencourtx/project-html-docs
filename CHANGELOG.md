@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.6.0 — 2026-11-14
+
+Adição do **Modo Guia Rápido / Visão Resumida (`mode: "summary"` e `--mode summary`)** para gerar documentação panorâmica objetiva (~5 minutos de leitura) lado a lado com o manual completo.
+
+### Adicionado
+
+- **Modo Resumido no Schema, Builder e Validador (`schemas/document.schema.json`, `scripts/build.mjs`, `scripts/validate.mjs`, `assets/document.css`)**:
+  - Novo campo opcional `"mode": "full" | "summary"` no manifesto e flag CLI `--mode summary|full`.
+  - Selos dedicados no Hero em modo resumido (`Guia rápido` / `~N min de leitura`), eyebrow específico (`Guia rápido · Visão resumida`), suporte opcional a `"companionDoc": { "href", "label" }` (com validação contra URLs inseguras `javascript:`/`data:`) para linkar o Guia Rápido ao Manual Completo, e métricas `mode`, `wordCount` e `readingMinutes` no recibo `validation.json`.
+  - Avisos não bloqueantes quando um guia `summary` ultrapassa 8 seções ou 3.500 palavras, incentivando objetividade.
+
 ## 1.5.0 — 2026-11-14
 
 Endurecimento visual dos diagramas 2D e tema Santander, ergonomia de navegação (`H3`, `#back-to-top`, sidebar flex sem sobreposição), validação geométrica de SVGs e ampliação dos extratores de Engenharia de Dados (PySpark encadeado, `%run`/`dbutils.notebook.run`, Azure Data Factory JSON, Scala, env/CLI e `.docignore`).
