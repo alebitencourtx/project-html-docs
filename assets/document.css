@@ -204,6 +204,111 @@ figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top
   vertical-align: middle;
 }
 
+/* Semantic Subgraphs & Reference Architecture Styling */
+g.subgraph[data-id*="STAGE1"] > rect:nth-of-type(1),
+g.subgraph[data-id*="ESTAGIO1"] > rect:nth-of-type(1),
+g.subgraph[data-id*="STREAMING"] > rect:nth-of-type(1) {
+  fill: #fff5f5 !important;
+  stroke: #fca5a5 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="STAGE1"] > rect:nth-of-type(2),
+g.subgraph[data-id*="ESTAGIO1"] > rect:nth-of-type(2),
+g.subgraph[data-id*="STREAMING"] > rect:nth-of-type(2) {
+  fill: #fee2e2 !important;
+  stroke: #fca5a5 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="STAGE1"] text,
+g.subgraph[data-id*="ESTAGIO1"] text,
+g.subgraph[data-id*="STREAMING"] text {
+  fill: #b91c1c !important;
+}
+g.subgraph[data-id*="STAGE1"] text tspan:first-child,
+g.subgraph[data-id*="ESTAGIO1"] text tspan:first-child {
+  font-weight: 700 !important;
+  fill: #991b1b !important;
+}
+g.subgraph[data-id*="STAGE1"] text tspan:last-child,
+g.subgraph[data-id*="ESTAGIO1"] text tspan:last-child {
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  fill: #dc2626 !important;
+}
+
+g.subgraph[data-id*="STAGE2"] > rect:nth-of-type(1),
+g.subgraph[data-id*="ESTAGIO2"] > rect:nth-of-type(1),
+g.subgraph[data-id*="BATCH"] > rect:nth-of-type(1) {
+  fill: #f0f9ff !important;
+  stroke: #93c5fd !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="STAGE2"] > rect:nth-of-type(2),
+g.subgraph[data-id*="ESTAGIO2"] > rect:nth-of-type(2),
+g.subgraph[data-id*="BATCH"] > rect:nth-of-type(2) {
+  fill: #e0f2fe !important;
+  stroke: #93c5fd !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="STAGE2"] text,
+g.subgraph[data-id*="ESTAGIO2"] text,
+g.subgraph[data-id*="BATCH"] text {
+  fill: #0369a1 !important;
+}
+g.subgraph[data-id*="STAGE2"] text tspan:first-child,
+g.subgraph[data-id*="ESTAGIO2"] text tspan:first-child {
+  font-weight: 700 !important;
+  fill: #0c4a6e !important;
+}
+g.subgraph[data-id*="STAGE2"] text tspan:last-child,
+g.subgraph[data-id*="ESTAGIO2"] text tspan:last-child {
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  fill: #0284c7 !important;
+}
+
+g.subgraph[data-id*="ENTRADAS"] > rect:nth-of-type(1),
+g.subgraph[data-id*="INPUTS"] > rect:nth-of-type(1) {
+  fill: #f8fafc !important;
+  stroke: #94a3b8 !important;
+  stroke-dasharray: 4 4 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="ENTRADAS"] > rect:nth-of-type(2),
+g.subgraph[data-id*="INPUTS"] > rect:nth-of-type(2) {
+  fill: #f1f5f9 !important;
+  stroke: #94a3b8 !important;
+  stroke-dasharray: 4 4 !important;
+  stroke-width: 1.5px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="ENTRADAS"] text,
+g.subgraph[data-id*="INPUTS"] text {
+  fill: #475569 !important;
+  font-weight: 700 !important;
+}
+
+.diagram-scroll g.node > rect,
+.diagram-scroll g.node > path,
+.diagram-scroll g.node > polygon {
+  fill: #ffffff !important;
+  stroke: #cbd5e1 !important;
+  stroke-width: 1.2px !important;
+  rx: 6px !important;
+  ry: 6px !important;
+}
+
 .chart { overflow-x: auto; }
 .chart svg { width: 100%; min-width: 720px; height: auto; display: block; }
 .chart .table-wrap { margin-bottom: 0; }

@@ -12,24 +12,25 @@ Separate execution order, lineage and association. List all composite-key compon
    - É **terminantemente proibido** documentar pipelines e esteiras de dados como uma cadeia horizontal contínua e plana (`flowchart LR` contínuo com mais de 3 nós).
    - Fluxos horizontais extensos quebram a responsividade em telas desktop e mobile, forçando rolagem lateral excessiva e ocultando estágios finais do processamento.
 
-2. **Diretriz Obrigatória de Estágios Funcionais Empilhados (2D)**:
-   - Toda esteira de engenharia de dados deve ser decomposta em **estágios empilhados verticalmente** (`flowchart TD` ou fluxo em camadas estruturadas).
-   - **`subgraph` Temáticos**: Agrupe as etapas por responsabilidades claras do ciclo de vida dos dados, tais como:
-     - `① Origem & Extração` (APIs, logs, transacional)
-     - `② Ingestão & Stage` (Landing zone, validação de schema, desduplicação)
-     - `③ Transformação & Enriquecimento` (Regras de negócio, agregações, joins)
-     - `④ Camada de Armazenamento / Contratos` (Curated, Delta/Iceberg/Parquet, RDBMS)
-     - `⑤ Publicação & Consumo` (Métricas, APIs analíticas, visualizações)
-   - **Passos Numerados Sequenciais**: Prefixar títulos de nós com marcadores circulares ①..⑤ para destacar o fluxo causal dos dados.
-   - **Subtítulos Técnicos com `<small>`**: Identificar em cada nó o formato, particionamento e tecnologia envolvida (ex.: `node["③ Agregação Diária<br><small>Delta Lake / Particionado por dt_referencia</small>"]`).
+2. **Diretriz Obrigatória: Matriz Arquitetural 2D (Entradas + Andares Empilhados)**:
+   - Toda esteira de engenharia de dados deve ser modelada como uma matriz funcional:
+     - `ENTRADAS`: Fontes de dados, eventos externos, arquivos brutos ou cadastros auxiliares à esquerda.
+     - `ESTÁGIO 1`: Ingestão contínua / streaming / micro-lotes / data lake em tempo real (bloco superior).
+     - `ESTÁGIO 2`: Carga em lote / orquestração / modelagem dimensional dbt / DW e BI (bloco inferior).
+     - Setas verticais interligando partições do lake ao staging do armazém e feedback operacional.
+   - **Passos Numerados Sequenciais**: Prefixar títulos de nós com marcadores circulares ①..⑦ para explicitar o fluxo causal dos dados.
+   - **Subtítulos Técnicos com `<small>`**: Identificar em cada nó o formato, particionamento e tecnologia envolvida (ex.: `node["③ Data Lake GCS<br><small>Parquet particionado por month/day/hour</small>"]`).
    - **Legendas Semânticas (`.figure-legend`)**: Incluir logo abaixo do diagrama legenda identificando convenções de armazenamento, lote vs streaming, e caminhos de exceção:
      ```html
      <div class="figure-legend">
-       <span class="legend-item"><span class="legend-badge legend-sync"></span> Ingestão em Lote</span>
-       <span class="legend-item"><span class="legend-badge legend-async"></span> Eventos Streaming</span>
-       <span class="legend-item"><span class="legend-badge legend-storage"></span> Lakehouse / Tabela Otimizada</span>
+       <span class="legend-item"><span class="badge badge-danger"></span> Ingestão Streaming Contínua</span>
+       <span class="legend-item"><span class="badge badge-info"></span> Camada Analítica / DW / Lote</span>
+       <span class="legend-item"><span class="badge badge-neutral"></span> Fontes de Entrada</span>
+       <span class="legend-item"><span class="line-dashed"></span> Leitura de Metadados / Gatilhos</span>
+       <span class="legend-item"><span class="line-solid"></span> Fluxo Físico de Dados</span>
      </div>
      ```
+   - **Nota Técnica de Rodapé**: Incluir parágrafo conciso detalhando janelas operacionais, frequência da orquestração e idempotência.
 
 ## Regras de Negócio e Métricas em Gráficos
 

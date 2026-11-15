@@ -68,19 +68,26 @@ Use a descriptive title after `mermaid`. Supported by the pinned Beautiful Merma
    - É **estritamente proibido** construir diagramas de arquitetura, fluxo de processamento ou esteiras em linha reta horizontal longa (`flowchart LR` contínuo com mais de 3 nós).
    - Linhas horizontais longas causam transbordamento severo da viewport em telas padrão (desktop 1080p e mobile), obrigando rolagem horizontal cansativa e quebrando o rastreamento visual do leitor.
 
-2. **Padrão Obrigatório: Estágios Funcionais Empilhados (2D)**:
-   - Diagramas de solução e fluxo devem ser organizados em **estágios funcionais empilhados verticalmente** (`flowchart TD` ou fluxo em camadas estruturadas).
-   - **`subgraph` Temáticos**: Agrupe nós por domínios ou etapas lógicas claras (ex.: `Origem & Ingestão`, `Validação & Stage`, `Processamento & Negócio`, `Persistência & Contratos`, `Consumo & Analytics`).
+2. **Padrão Obrigatório: Matriz Arquitetural 2D (Entradas + Estágios Empilhados)**:
+   - Diagramas de solução e fluxo devem ser organizados como uma **matriz bidimensional estruturada**:
+     - **Coluna Lateral Esquerda (`ENTRADAS`)**: Fontes de dados, eventos externos, arquivos brutos ou cadastros auxiliares (`subgraph ENTRADAS ["ENTRADAS"] direction TB`).
+     - **Estágio Superior (`STAGE1` ou `ESTAGIO1`)**: Processamento contínuo / tempo real / validação rápida (`direction LR` com 3 a 4 nós compactos).
+     - **Estágio Inferior (`STAGE2` ou `ESTAGIO2`)**: Processamento em lote / modelagem dimensional / serving e analytics (`direction LR` com 3 a 4 nós compactos).
+     - **Conexões Inter-estágios Verticais**: Setas verticais unindo os dois andares (ex.: Data Lake persistido no Estágio 1 lido pelo Staging do Estágio 2, e notificações/confirmações em linha tracejada).
+   - **Aspect Ratio Ideal**: O diagrama 2D atinge proporção retangular equilibrada (~2:1 a ~3:1), eliminando a "torre vertical infinita" (`flowchart TD` ingênuo) e o "transbordamento horizontal infinito" (`flowchart LR` contínuo).
    - **Passos Numerados**: Identifique cada estágio ou nó sequencial com marcadores circulares Unicode (①, ②, ③, ④, ⑤...) no título para explicitar sem ambiguidade a ordem temporal ou de dependência.
    - **Subtítulos Descritivos com `<small>`**: Cada nó de arquitetura deve apresentar rótulo estruturado com título conciso e papel técnico em linha secundária (ex.: `node["② Ingestão Batch<br><small>Workers assíncronos e idempotentes</small>"]`).
-   - **Legendas Semânticas Padronizadas (`.figure-legend`)**: Logo abaixo de diagramas com múltiplas classes de nós ou tipos de conexões, insira um contêiner `.figure-legend` para orientar o leitor:
+   - **Legendas Semânticas Padronizadas (`.figure-legend`)**: Logo abaixo de diagramas com múltiplas classes de nós ou tipos de conexões, insira um contêiner `.figure-legend` com badges de cores e linhas:
      ```html
      <div class="figure-legend">
-       <span class="legend-item"><span class="legend-badge legend-sync"></span> Chamada Síncrona / RPC</span>
-       <span class="legend-item"><span class="legend-badge legend-async"></span> Fila / Evento Assíncrono</span>
-       <span class="legend-item"><span class="legend-badge legend-storage"></span> Persistência Transacional</span>
+       <span class="legend-item"><span class="badge badge-danger"></span> Dados em Tempo Real / Streaming</span>
+       <span class="legend-item"><span class="badge badge-info"></span> Camada Analítica / DW / Lote</span>
+       <span class="legend-item"><span class="badge badge-neutral"></span> Fontes de Entrada</span>
+       <span class="legend-item"><span class="line-dashed"></span> Leitura de Metadados / Gatilhos</span>
+       <span class="legend-item"><span class="line-solid"></span> Fluxo Contínuo de Dados</span>
      </div>
      ```
+   - **Nota Técnica de Rodapé**: Logo abaixo da legenda, adicione um parágrafo conciso com métricas reais de execução (ex.: janelas de micro-lote, horários de DAG, volumes e particionamento).
 
 Architecture names components and boundaries; flow names actions and decisions; ER names entities, keys and established cardinalities; lineage describes transformations. Never invent foreign keys for aggregation or view derivation. Identify logical vs physical models. An overview can show essential attributes; full dictionaries belong below.
 
