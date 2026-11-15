@@ -1,0 +1,2580 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-mode="full" data-theme="vermelho"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável."><meta name="generator" content="project-html-docs 1.7.0"><title>project-html-docs · Manual do Gerador · 1.7.0</title><style>:root {
+  --ink: #172b3c;
+  --muted: #526778;
+  --paper: #f4f6f8;
+  --surface: #fff;
+  --line: #dce4ea;
+  --accent: #087f8c;
+  --accent-hover: #086a83;
+  --nav: #102b3d;
+  --nav-text: #e7f0f5;
+  --nav-brand: #8ed5d8;
+  --nav-label: #bed0da;
+  --nav-input-bg: #1c394b;
+  --nav-input-border: #496373;
+  --nav-link: #d4e1e8;
+  --nav-num: #8cadbd;
+  --nav-active: #254858;
+  --nav-meta: #abc2ce;
+  --nav-count: #b3d5de;
+  --nav-clear-hover: #2c4f63;
+  --nav-divider: rgba(255, 255, 255, 0.12);
+  --hero-bg: linear-gradient(120deg, #102f43, #155368);
+  --hero-eyebrow: #a6e0df;
+  --hero-subtitle: #dcecf3;
+  --soft: #e9f5f5;
+  --code: #122b3b;
+  --code-inline-bg: #edf2f6;
+  --code-btn: #284657;
+  --code-btn-border: #496373;
+  --card-bg: #fafcfd;
+  --th-bg: #edf3f6;
+  --th-fg: #314c5e;
+  --figure-bg: #f8fbfc;
+  --figure-note: #3c5466;
+  --toolbar-bg: #e9eff3;
+  --toolbar-fg: #405868;
+  --aud-business-bg: #e9f5f5;
+  --aud-business-fg: #126d72;
+  --aud-tech-bg: #f0edfa;
+  --aud-tech-fg: #69509a;
+  --aud-ops-bg: #fff3df;
+  --aud-ops-fg: #805c20;
+  --aud-all-bg: #eef1f4;
+  --aud-all-fg: #4a6373;
+  --focus-ring: #f1ad35;
+  --dialog-backdrop: #102b3dbb;
+  --radius: 14px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.65;
+  color-scheme: light;
+}
+
+:root[data-theme="vermelho"] {
+  --ink: #111111;
+  --muted: #525252;
+  --paper: #f4f4f4;
+  --surface: #ffffff;
+  --line: #dedede;
+  --accent: #990000;
+  --accent-hover: #cc0000;
+  --nav: #0e0e0e;
+  --nav-text: #f5f5f5;
+  --nav-brand: #fca5a5;
+  --nav-label: #d4d4d4;
+  --nav-input-bg: #1b1b1b;
+  --nav-input-border: #424242;
+  --nav-link: #e5e5e5;
+  --nav-num: #f87171;
+  --nav-active: #990000;
+  --nav-meta: #a3a3a3;
+  --nav-count: #fca5a5;
+  --nav-clear-hover: #2c2c2c;
+  --nav-divider: rgba(255, 255, 255, 0.14);
+  --hero-bg: linear-gradient(125deg, #0b0b0b 0%, #3f0000 54%, #990000 100%);
+  --hero-eyebrow: #fecaca;
+  --hero-subtitle: #f2e8e8;
+  --soft: #fdf2f2;
+  --code: #141414;
+  --code-inline-bg: #f3efef;
+  --code-btn: #2b2b2b;
+  --code-btn-border: #525252;
+  --card-bg: #fafafa;
+  --th-bg: #f1eded;
+  --th-fg: #1f1f1f;
+  --figure-bg: #fafafa;
+  --figure-note: #404040;
+  --toolbar-bg: #eaeaea;
+  --toolbar-fg: #333333;
+  --aud-business-bg: #fde8e8;
+  --aud-business-fg: #990000;
+  --aud-tech-bg: #f1eded;
+  --aud-tech-fg: #2b2b2b;
+  --aud-ops-bg: #fff1ed;
+  --aud-ops-fg: #7f1d1d;
+  --aud-all-bg: #ededed;
+  --aud-all-fg: #262626;
+  --focus-ring: #ec0000;
+  --dialog-backdrop: #0e0e0ecc;
+}
+
+:root[data-theme="verde"] {
+  --ink: #122c22;
+  --muted: #4c6b5b;
+  --paper: #f3f7f5;
+  --surface: #ffffff;
+  --line: #d5e5dc;
+  --accent: #0f7a52;
+  --accent-hover: #0a5f3f;
+  --nav: #0b2a20;
+  --nav-text: #e8f5ee;
+  --nav-brand: #8fe3b8;
+  --nav-label: #bcd9cb;
+  --nav-input-bg: #143e2f;
+  --nav-input-border: #3c6654;
+  --nav-link: #d5e9df;
+  --nav-num: #86b9a0;
+  --nav-active: #1c5a43;
+  --nav-meta: #a6c9b9;
+  --nav-count: #b7e6cd;
+  --nav-clear-hover: #225c47;
+  --nav-divider: rgba(255, 255, 255, 0.12);
+  --hero-bg: linear-gradient(120deg, #0b2f24, #0f6046);
+  --hero-eyebrow: #a7f3d0;
+  --hero-subtitle: #dcefe5;
+  --soft: #e8f6ee;
+  --code: #0e2b20;
+  --code-inline-bg: #edf5f1;
+  --code-btn: #24513e;
+  --code-btn-border: #3c6654;
+  --card-bg: #f8fcfa;
+  --th-bg: #e9f4ee;
+  --th-fg: #2a5340;
+  --figure-bg: #f7fcf9;
+  --figure-note: #365a49;
+  --toolbar-bg: #e7f0ea;
+  --toolbar-fg: #3d5c4c;
+  --aud-business-bg: #e8f6ee;
+  --aud-business-fg: #0d6b46;
+  --aud-tech-bg: #eef0fa;
+  --aud-tech-fg: #5f4f96;
+  --aud-ops-bg: #fff3df;
+  --aud-ops-fg: #805c20;
+  --aud-all-bg: #eef1f4;
+  --aud-all-fg: #4a6373;
+  --focus-ring: #f1ad35;
+  --dialog-backdrop: #0b2a20bb;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); }
+a { color: var(--accent-hover); text-underline-offset: 3px; }
+button, input { font: inherit; }
+button { cursor: pointer; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; color: var(--ink); background: var(--surface); }
+button:hover { border-color: var(--accent); background: var(--soft); }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+
+.skip { position: absolute; left: -9999px; }
+.skip:focus { left: 20px; top: 15px; z-index: 20; background: white; padding: 12px; }
+
+.sidebar { position: fixed; inset: 0 auto 0 0; width: 268px; background: var(--nav); color: var(--nav-text); padding: 24px 18px 16px; display: flex; flex-direction: column; overflow: hidden; z-index: 5; }
+.brand { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--nav-brand); margin: 0 10px 8px; flex-shrink: 0; }
+.sidebar strong { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 22px; margin: 0 10px 18px; line-height: 1.3; flex-shrink: 0; }
+.sidebar label { font-size: 12px; color: var(--nav-label); display: block; margin: 0 8px 5px; flex-shrink: 0; }
+.search-box { position: relative; flex-shrink: 0; }
+.sidebar input { width: 100%; padding: 10px 30px 10px 10px; border: 1px solid var(--nav-input-border); background: var(--nav-input-bg); color: white; border-radius: 8px; }
+#search-clear { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); background: transparent; border: 0; color: var(--nav-label); font-size: 16px; line-height: 1; padding: 3px 6px; border-radius: 4px; }
+#search-clear:hover { background: var(--nav-clear-hover); color: #ffffff; }
+mark.search-hit { background: #fef08a; color: #0f172a; padding: 0 2px; border-radius: 3px; }
+.sidebar nav { flex: 1; min-height: 0; overflow-y: auto; margin-top: 14px; padding: 3px 4px 6px 2px; scrollbar-width: thin; scrollbar-color: var(--nav-input-border) transparent; }
+.sidebar nav a { display: flex; gap: 12px; color: var(--nav-link); text-decoration: none; padding: 9px 10px; border-radius: 7px; font-size: 13px; line-height: 1.4; transition: opacity 0.15s ease; }
+.sidebar nav a.is-audience-secondary { opacity: 0.55; }
+.sidebar nav a span { color: var(--nav-num); min-width: 18px; font-variant-numeric: tabular-nums; }
+.sidebar nav a:hover, .sidebar nav a[aria-current] { background: var(--nav-active); color: white; opacity: 1; }
+.sidebar nav .nav-sub { display: flex; flex-direction: column; gap: 2px; margin: 2px 0 6px 26px; padding-left: 10px; border-left: 1px solid var(--nav-divider); }
+.sidebar nav .nav-sub a { padding: 4px 8px; font-size: 11.5px; color: var(--nav-label); line-height: 1.35; }
+.sidebar nav .nav-sub.is-audience-secondary { opacity: 0.55; }
+.sidebar small { flex-shrink: 0; background: var(--nav); border-top: 1px solid var(--nav-divider); padding: 12px 0 2px; margin: 12px 10px 0; color: var(--nav-meta); font-size: 12px; display: block; }
+.sidebar .search-count { min-height: 20px; margin: 6px 4px 0; font-size: 12px; color: var(--nav-count); flex-shrink: 0; }
+
+main { margin-left: 268px; }
+.hero { background: var(--hero-bg); color: white; padding: 56px clamp(28px, 5vw, 80px) 44px; position: relative; overflow: hidden; }
+.hero:after { content: ""; position: absolute; right: -60px; top: -120px; width: 370px; height: 370px; border: 55px solid #ffffff06; border-radius: 50%; pointer-events: none; }
+.eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: 12px; font-weight: 700; color: var(--hero-eyebrow); margin: 0 0 16px; }
+.hero h1 { font-size: clamp(32px, 3.4vw, 48px); letter-spacing: -.035em; line-height: 1.12; margin: 0 0 20px; max-width: 950px; }
+.hero .subtitle { max-width: 880px; font-size: 18px; color: var(--hero-subtitle); margin: 0 0 24px; }
+.badges { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+.badges span, .badges a.hero-companion { font-size: 12px; padding: 5px 11px; border: 1px solid #ffffff30; border-radius: 8px; background: #ffffff08; line-height: 1.4; }
+.badges span.badge-mode { background: #ffffff20; border-color: #ffffff66; color: #ffffff; font-weight: 600; }
+.badges a.hero-companion { color: #ffffff; text-decoration: none; font-weight: 600; background: #ffffff14; border-color: #ffffff4d; transition: background 0.15s ease, border-color 0.15s ease; }
+.badges a.hero-companion:hover { background: #ffffff28; border-color: #ffffff88; }
+html[data-mode="summary"] .hero { padding: 44px clamp(28px, 5vw, 80px) 36px; }
+html[data-mode="summary"] .content { padding: 24px clamp(24px, 4vw, 64px) 56px; }
+
+.content { max-width: 1350px; padding: 30px clamp(24px, 4vw, 64px) 70px; margin: auto; }
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 0 0 26px; }
+.metric { border: 1px solid var(--line); border-top: 3px solid var(--accent); background: var(--surface); padding: 20px; border-radius: 10px; }
+.metric .label { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
+.metric strong { display: block; font-size: 25px; line-height: 1.25; margin: 8px 0; }
+.metric p { font-size: 13px; color: var(--muted); margin: 0; }
+.toolbar { display: flex; gap: 10px 14px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin-bottom: 22px; font-size: 12px; }
+.toolbar .hint { margin-right: auto; color: var(--muted); }
+.audience-filter,
+.theme-filter { display: inline-flex; flex-wrap: wrap; gap: 4px; background: var(--toolbar-bg); padding: 3px; border-radius: 9px; border: 1px solid var(--line); }
+.audience-filter button,
+.theme-filter button { border: 0; background: transparent; padding: 4px 10px; font-size: 11.5px; color: var(--toolbar-fg); border-radius: 6px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+.audience-filter button:hover,
+.theme-filter button:hover { background: #ffffff80; color: var(--ink); }
+.audience-filter button.is-active,
+.theme-filter button.is-active { background: #ffffff; color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(16, 43, 61, 0.08); }
+.theme-swatch { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.theme-swatch-verde { background: #0f7a52; }
+.theme-swatch-azul { background: #087f8c; }
+.theme-swatch-vermelho { background: #990000; }
+.toolbar-actions { display: inline-flex; gap: 8px; flex-wrap: wrap; }
+
+.doc-section { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin: 0 0 22px; scroll-margin-top: 20px; overflow: clip; transition: opacity 0.18s ease; }
+.doc-section.is-audience-secondary { opacity: 0.72; border-style: dashed; }
+.doc-section.is-audience-secondary[open] { opacity: 1; border-style: solid; }
+.section-heading { list-style: none; display: flex; gap: 14px; align-items: center; padding: 24px 28px; cursor: pointer; }
+.section-heading::-webkit-details-marker { display: none; }
+.section-heading:after {
+  content: "";
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-left: auto;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+details[open] > .section-heading:after {
+  transform: rotate(-135deg);
+}
+.section-heading .number { font-size: 13px; color: var(--accent); font-weight: 700; }
+.section-heading h2 { font-size: 23px; line-height: 1.3; letter-spacing: -.02em; margin: 0; }
+
+.audience { font-size: 10px; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; background: var(--aud-business-bg); color: var(--aud-business-fg); padding: 4px 8px; border-radius: 20px; }
+.audience.technical { background: var(--aud-tech-bg); color: var(--aud-tech-fg); }
+.audience.operations { background: var(--aud-ops-bg); color: var(--aud-ops-fg); }
+.audience.all { background: var(--aud-all-bg); color: var(--aud-all-fg); }
+
+.section-body { padding: 0 28px 28px; }
+.section-body > p:first-child { font-size: 16.5px; color: var(--ink); margin-top: 0; }
+.section-body p,
+.section-body ul,
+.section-body ol,
+.section-body blockquote {
+  max-width: none;
+  overflow-wrap: break-word;
+}
+.section-body hr { border: 0; border-top: 1px solid var(--line); margin: 24px 0 0; }
+.table-wrap, figure, .chart { width: 100%; }
+
+h3 { font-size: 19px; line-height: 1.35; margin: 30px 0 14px; }
+h4 { font-size: 16px; margin: 24px 0 8px; }
+p { margin: 12px 0; }
+li { margin: 6px 0; }
+blockquote { margin: 20px 0; padding: 12px 18px; background: var(--soft); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; }
+blockquote p { margin: 4px 0; }
+blockquote.callout-rule { background: #eef6ff; border-left-color: #2563eb; }
+blockquote.callout-example { background: #f0fdf4; border-left-color: #16a34a; }
+blockquote.callout-warning { background: #fffbeb; border-left-color: #d97706; }
+blockquote.callout-limit { background: #fef2f2; border-left-color: #dc2626; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; background: var(--card-bg); }
+.card h3 { margin: 0 0 10px; font-size: 16px; }
+.card p { font-size: 14px; margin: 8px 0; }
+
+.table-wrap {
+  /* Sem contenção de encadeamento: tabelas curtas não devem capturar a roda e travar a página. */
+  overflow: auto;
+  max-height: min(72vh, 680px);
+  margin: 18px 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.table-wrap table { min-width: 32rem; }
+.chart details table { min-width: auto !important; width: 100%; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; line-height: 1.55; }
+th, td { padding: 12px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--th-bg);
+  font-weight: 600;
+  color: var(--th-fg);
+  box-shadow: inset 0 -1px 0 var(--line);
+}
+tr:last-child td { border-bottom: 0; }
+tbody tr:nth-child(even) { background: var(--card-bg); }
+td code { overflow-wrap: break-word; word-break: normal; }
+td code.col-badge { font-family: system-ui, -apple-system, sans-serif; font-size: 10.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.03em; display: inline-block; border: 1px solid transparent; margin: 1px 2px 1px 0; }
+td code.col-badge-pk { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
+td code.col-badge-fk { background: #dbeafe; color: #1e40af; border-color: #60a5fa; }
+td code.col-badge-uk { background: #ede9fe; color: #5b21b6; border-color: #a78bfa; }
+td code.col-badge-partition { background: #ecfeff; color: #0f5f68; border-color: #67e8f9; }
+td code.col-badge-pii { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+td code.col-badge-notnull { background: #f1f5f9; color: #334155; border-color: #cbd5e1; }
+.table-filter { display: flex; align-items: center; gap: 10px; margin: 14px 0 -10px; }
+.table-filter input { flex: 1; max-width: 320px; padding: 6px 10px; font-size: 12.5px; border: 1px solid var(--line); border-radius: 7px; background: var(--card-bg); color: var(--ink); }
+.table-filter-count { font-size: 12px; color: var(--muted); }
+code { font-family: Consolas, Cascadia Code, monospace; font-size: .88em; background: var(--code-inline-bg); padding: 2px 4px; border-radius: 4px; }
+pre { position: relative; background: var(--code); color: #e3edf4; border-radius: 10px; padding: 40px 18px 18px; overflow: auto; line-height: 1.65; font-size: 13px; }
+pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+.copy { position: absolute; right: 9px; top: 8px; font-size: 11px; padding: 3px 9px; background: var(--code-btn); color: white; border-color: var(--code-btn-border); }
+.section-body details { border: 1px solid var(--line); border-radius: 9px; padding: 12px 16px; margin: 16px 0; }
+.section-body details summary { font-weight: 600; cursor: pointer; }
+.section-body details[open] > summary { margin-bottom: 10px; }
+.section-body details > .table-wrap:last-child { margin-bottom: 4px; }
+.section-sources { font-size: 11px; color: var(--muted); margin-top: 24px; border-top: 1px solid var(--line); padding-top: 12px; }
+.section-sources a { margin-right: 10px; }
+
+figure { margin: 22px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--figure-bg); padding: 16px; }
+.diagram-scroll {
+  overflow: auto;
+  text-align: center;
+  padding: 10px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  background:
+    linear-gradient(to right, var(--figure-bg) 30%, rgba(248, 251, 252, 0)),
+    linear-gradient(to right, rgba(248, 251, 252, 0), var(--figure-bg) 70%) 100% 0,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)),
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0)) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-attachment: local, local, scroll, scroll;
+}
+.diagram-scroll::-webkit-scrollbar { height: 6px; }
+.diagram-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.diagram-scroll::-webkit-scrollbar-track { background: transparent; }
+.diagram-scroll svg { display: block; max-width: none; height: auto; margin: auto; }
+.figure-tools { display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+.figure-tools button { margin-left: auto; font-size: 11px; }
+figcaption { font-size: 12px; color: var(--muted); line-height: 1.55; margin-top: 10px; }
+
+.figure-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+}
+.figure-legend .legend-item { display: inline-flex; align-items: center; gap: 7px; }
+.figure-legend .badge, .figure-legend .legend-badge {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.figure-legend .legend-outline-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 11px;
+  border-radius: 3px;
+  border: 1.5px solid var(--muted);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+.figure-legend .badge-accent, .figure-legend .badge.accent { background: var(--accent); }
+.figure-legend .badge-warning, .figure-legend .badge.warning { background: #d97706; }
+.figure-legend .badge-danger, .figure-legend .badge.danger { background: #dc2626; }
+.figure-legend .badge-success, .figure-legend .badge.success { background: #16a34a; }
+.figure-legend .badge-neutral, .figure-legend .badge.neutral { background: #64748b; }
+.figure-legend .badge-info, .figure-legend .badge.info { background: #0284c7; }
+.figure-legend .badge-soft, .figure-legend .badge.soft { background: #8ed5d8; }
+.figure-legend .legend-line, .figure-legend .line-dashed {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 2px dashed var(--muted);
+  vertical-align: middle;
+}
+.figure-legend .line-solid {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 2px solid var(--muted);
+  vertical-align: middle;
+}
+.diagram-note {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--figure-note);
+  max-width: none !important;
+}
+
+/* Deterministic 2D Solution / Flow / Schema SVGs */
+.sol-svg { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+.sol-svg .mono { font-family: Consolas, "Cascadia Code", "JetBrains Mono", ui-monospace, monospace; }
+.sol-svg .sol-node { cursor: default; transition: opacity 0.16s ease, filter 0.16s ease; }
+.sol-svg .sol-edge,
+.sol-svg .sol-edge-label-wrap { transition: opacity 0.16s ease; }
+.sol-svg.has-focus .sol-node.is-dimmed,
+.sol-svg.has-focus .sol-edge.is-dimmed,
+.sol-svg.has-focus .sol-edge-label-wrap.is-dimmed { opacity: 0.25; }
+.sol-svg.has-focus .sol-node.is-highlighted { filter: drop-shadow(0 3px 8px rgba(16, 43, 61, 0.14)); }
+.sol-svg.has-focus .sol-edge.is-highlighted path,
+.sol-svg.has-focus path.sol-edge.is-highlighted { stroke-width: 2.3px; }
+.sol-node:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Red theme SVG & badge palette harmonization (colors only) */
+:root[data-theme="vermelho"] .chart .chart-bar[fill="#087f8c"] { fill: #990000; }
+:root[data-theme="vermelho"] .chart .chart-track { fill: #ececec; }
+:root[data-theme="vermelho"] .chart .chart-label { fill: #1f1f1f; }
+:root[data-theme="vermelho"] .chart .chart-value-outside { fill: #111111; }
+:root[data-theme="vermelho"] .schema-svg path[fill="#102b3d"],
+:root[data-theme="vermelho"] g.entity rect.er-card-header { fill: #141414 !important; stroke: #141414 !important; }
+:root[data-theme="vermelho"] .schema-svg rect[fill="#1d4b68"] { fill: #990000; }
+:root[data-theme="vermelho"] .schema-svg rect[stroke="#9fb6c5"] { stroke: #cfcfcf; }
+:root[data-theme="vermelho"] .schema-svg rect[fill="#edf3f6"] { fill: #f5f5f5; }
+:root[data-theme="vermelho"] .schema-svg path[fill="#0f5f68"] { fill: #990000; }
+:root[data-theme="vermelho"] .schema-svg rect[fill="#187d88"] { fill: #660000; }
+:root[data-theme="vermelho"] .schema-svg rect[stroke="#8ec7cd"] { stroke: #d8a3a3; }
+:root[data-theme="vermelho"] .schema-svg rect[fill="#eef8f8"] { fill: #fdf2f2; }
+:root[data-theme="vermelho"] td code.col-badge-partition { background: #fde8e8; color: #990000; border-color: #fca5a5; }
+:root[data-theme="vermelho"] .callout-rule { background: #fdf2f2; border-left-color: #990000; }
+:root[data-theme="vermelho"] .sol-zone-warm .sol-zone-bg { fill: #fdf2f2; stroke: #e5b8b8; }
+:root[data-theme="vermelho"] .sol-zone-warm .sol-zone-title { fill: #990000; }
+:root[data-theme="vermelho"] .sol-zone-warm .sol-zone-subtitle { fill: #7f1d1d; }
+:root[data-theme="vermelho"] .sol-zone-cool .sol-zone-bg { fill: #f5f5f5; stroke: #d4d4d4; }
+:root[data-theme="vermelho"] .sol-zone-cool .sol-zone-title { fill: #171717; }
+:root[data-theme="vermelho"] .sol-zone-cool .sol-zone-subtitle { fill: #525252; }
+:root[data-theme="vermelho"] .sol-zone-teal .sol-zone-bg { fill: #faf5f5; stroke: #dec9c9; }
+:root[data-theme="vermelho"] .sol-zone-teal .sol-zone-title { fill: #7f1d1d; }
+:root[data-theme="vermelho"] .sol-zone-teal .sol-zone-subtitle { fill: #525252; }
+:root[data-theme="vermelho"] .sol-node-role-step .sol-node-frame { stroke: #404040; }
+:root[data-theme="vermelho"] .sol-node-role-step .sol-node-accent,
+:root[data-theme="vermelho"] .sol-node-role-step .sol-node-step-circle { fill: #141414; }
+:root[data-theme="vermelho"] .sol-node-role-step .sol-node-title { fill: #111111; }
+:root[data-theme="vermelho"] .sol-node-role-step .sol-node-meta-bg { fill: #ededed; }
+:root[data-theme="vermelho"] .sol-node-role-step .sol-node-meta-fg { fill: #1f1f1f; }
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-frame { stroke: #525252; }
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-header { fill: #f5f5f5; stroke: #525252; }
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-accent,
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-step-circle { fill: #262626; }
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-title { fill: #171717; }
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-meta-bg { fill: #ebebeb; }
+:root[data-theme="vermelho"] .sol-node-role-analytical .sol-node-meta-fg { fill: #262626; }
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-frame { stroke: #990000; }
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-header { fill: #fdf2f2; stroke: #990000; }
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-accent,
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-step-circle { fill: #990000; }
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-title { fill: #7f1d1d; }
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-meta-bg { fill: #fde8e8; }
+:root[data-theme="vermelho"] .sol-node-role-output .sol-node-meta-fg { fill: #7f1d1d; }
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-frame { stroke: #737373; }
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-header { fill: #f5f5f5; stroke: #737373; }
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-accent,
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-step-circle { fill: #404040; }
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-title { fill: #262626; }
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-meta-bg { fill: #ededed; }
+:root[data-theme="vermelho"] .sol-node-role-info .sol-node-meta-fg { fill: #262626; }
+:root[data-theme="vermelho"] .sol-edge-role-analytical { stroke: #404040; }
+:root[data-theme="vermelho"] .sol-arrow-head-analytical { fill: #404040; }
+:root[data-theme="vermelho"] .sol-edge-label-analytical rect { fill: #f5f5f5; stroke: #a3a3a3; }
+:root[data-theme="vermelho"] .sol-edge-label-analytical text { fill: #171717; }
+:root[data-theme="vermelho"] .sol-edge-role-output,
+:root[data-theme="vermelho"] .sol-edge-lineage path { stroke: #990000; }
+:root[data-theme="vermelho"] .sol-arrow-head-output,
+:root[data-theme="vermelho"] .lineage-arrow-head { fill: #990000; }
+:root[data-theme="vermelho"] .sol-edge-label-output rect,
+:root[data-theme="vermelho"] .sol-edge-label-lineage rect { fill: #fdf2f2; stroke: #fca5a5; }
+:root[data-theme="vermelho"] .sol-edge-label-output text,
+:root[data-theme="vermelho"] .sol-edge-label-lineage text { fill: #7f1d1d; }
+:root[data-theme="vermelho"] .schema-header-mart { fill: #990000; }
+:root[data-theme="vermelho"] .schema-tag-bg-mart { fill: #660000; }
+:root[data-theme="vermelho"] .schema-sub-bg-mart { fill: #fdf2f2; }
+:root[data-theme="vermelho"] .schema-sub-fg-mart { fill: #7f1d1d; }
+:root[data-theme="vermelho"] .schema-header-json { fill: #262626; }
+:root[data-theme="vermelho"] .schema-tag-bg-json { fill: #404040; }
+:root[data-theme="vermelho"] .schema-sub-bg-json { fill: #f5f5f5; }
+:root[data-theme="vermelho"] .schema-sub-fg-json { fill: #262626; }
+
+/* Green theme SVG & badge palette harmonization (colors only) */
+:root[data-theme="verde"] .chart .chart-bar[fill="#087f8c"] { fill: #0f7a52; }
+:root[data-theme="verde"] .chart .chart-track { fill: #e7f0ea; }
+:root[data-theme="verde"] .chart .chart-label { fill: #1b3a2c; }
+:root[data-theme="verde"] .chart .chart-value-outside { fill: #122c22; }
+:root[data-theme="verde"] .schema-svg path[fill="#102b3d"],
+:root[data-theme="verde"] g.entity rect.er-card-header { fill: #0b2a20 !important; stroke: #0b2a20 !important; }
+:root[data-theme="verde"] .schema-svg rect[fill="#1d4b68"] { fill: #0f7a52; }
+:root[data-theme="verde"] .schema-svg rect[stroke="#9fb6c5"] { stroke: #a9c9b7; }
+:root[data-theme="verde"] .schema-svg rect[fill="#edf3f6"] { fill: #edf6f1; }
+:root[data-theme="verde"] .schema-svg path[fill="#0f5f68"] { fill: #0f7a52; }
+:root[data-theme="verde"] .schema-svg rect[fill="#187d88"] { fill: #0a5f3f; }
+:root[data-theme="verde"] .schema-svg rect[stroke="#8ec7cd"] { stroke: #8fc9ae; }
+:root[data-theme="verde"] .schema-svg rect[fill="#eef8f8"] { fill: #e8f6ee; }
+:root[data-theme="verde"] td code.col-badge-partition { background: #e8f6ee; color: #0f7a52; border-color: #86d3ae; }
+:root[data-theme="verde"] .sol-zone-warm .sol-zone-bg { fill: #eaf7f0; stroke: #b9ddc9; }
+:root[data-theme="verde"] .sol-zone-warm .sol-zone-title { fill: #0f6b46; }
+:root[data-theme="verde"] .sol-zone-warm .sol-zone-subtitle { fill: #0a5f3f; }
+:root[data-theme="verde"] .sol-zone-cool .sol-zone-bg { fill: #f1f5f2; stroke: #d5e5dc; }
+:root[data-theme="verde"] .sol-zone-cool .sol-zone-title { fill: #1b3a2c; }
+:root[data-theme="verde"] .sol-zone-cool .sol-zone-subtitle { fill: #4c6b5b; }
+:root[data-theme="verde"] .sol-zone-teal .sol-zone-bg { fill: #e8f6ee; stroke: #b9ddc9; }
+:root[data-theme="verde"] .sol-zone-teal .sol-zone-title { fill: #0a5f3f; }
+:root[data-theme="verde"] .sol-zone-teal .sol-zone-subtitle { fill: #4c6b5b; }
+:root[data-theme="verde"] .sol-node-role-step .sol-node-frame { stroke: #2f5b47; }
+:root[data-theme="verde"] .sol-node-role-step .sol-node-accent,
+:root[data-theme="verde"] .sol-node-role-step .sol-node-step-circle { fill: #0b2a20; }
+:root[data-theme="verde"] .sol-node-role-step .sol-node-title { fill: #122c22; }
+:root[data-theme="verde"] .sol-node-role-step .sol-node-meta-bg { fill: #e9f4ee; }
+:root[data-theme="verde"] .sol-node-role-step .sol-node-meta-fg { fill: #2a5340; }
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-frame { stroke: #0f7a52; }
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-header { fill: #e8f6ee; stroke: #0f7a52; }
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-accent,
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-step-circle { fill: #0f7a52; }
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-title { fill: #0a5f3f; }
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-meta-bg { fill: #e8f6ee; }
+:root[data-theme="verde"] .sol-node-role-analytical .sol-node-meta-fg { fill: #0a5f3f; }
+:root[data-theme="verde"] .sol-node-role-output .sol-node-frame { stroke: #0a5f3f; }
+:root[data-theme="verde"] .sol-node-role-output .sol-node-header { fill: #e8f6ee; stroke: #0a5f3f; }
+:root[data-theme="verde"] .sol-node-role-output .sol-node-accent,
+:root[data-theme="verde"] .sol-node-role-output .sol-node-step-circle { fill: #0a5f3f; }
+:root[data-theme="verde"] .sol-node-role-output .sol-node-title { fill: #0a4a33; }
+:root[data-theme="verde"] .sol-node-role-output .sol-node-meta-bg { fill: #dff2e7; }
+:root[data-theme="verde"] .sol-node-role-output .sol-node-meta-fg { fill: #0a5f3f; }
+:root[data-theme="verde"] .sol-node-role-info .sol-node-frame { stroke: #5b7a6a; }
+:root[data-theme="verde"] .sol-node-role-info .sol-node-header { fill: #f1f5f2; stroke: #5b7a6a; }
+:root[data-theme="verde"] .sol-node-role-info .sol-node-accent,
+:root[data-theme="verde"] .sol-node-role-info .sol-node-step-circle { fill: #3d5c4c; }
+:root[data-theme="verde"] .sol-node-role-info .sol-node-title { fill: #1b3a2c; }
+:root[data-theme="verde"] .sol-node-role-info .sol-node-meta-bg { fill: #e9f4ee; }
+:root[data-theme="verde"] .sol-node-role-info .sol-node-meta-fg { fill: #2a5340; }
+:root[data-theme="verde"] .sol-edge-role-analytical { stroke: #3f6b58; }
+:root[data-theme="verde"] .sol-arrow-head-analytical { fill: #3f6b58; }
+:root[data-theme="verde"] .sol-edge-label-analytical rect { fill: #f1f5f2; stroke: #a9c9b7; }
+:root[data-theme="verde"] .sol-edge-label-analytical text { fill: #1b3a2c; }
+:root[data-theme="verde"] .sol-edge-role-output,
+:root[data-theme="verde"] .sol-edge-lineage path { stroke: #0f7a52; }
+:root[data-theme="verde"] .sol-arrow-head-output,
+:root[data-theme="verde"] .lineage-arrow-head { fill: #0f7a52; }
+:root[data-theme="verde"] .sol-edge-label-output rect,
+:root[data-theme="verde"] .sol-edge-label-lineage rect { fill: #e8f6ee; stroke: #86d3ae; }
+:root[data-theme="verde"] .sol-edge-label-output text,
+:root[data-theme="verde"] .sol-edge-label-lineage text { fill: #0a5f3f; }
+:root[data-theme="verde"] .schema-header-mart { fill: #0f7a52; }
+:root[data-theme="verde"] .schema-tag-bg-mart { fill: #0a5f3f; }
+:root[data-theme="verde"] .schema-sub-bg-mart { fill: #e8f6ee; }
+:root[data-theme="verde"] .schema-sub-fg-mart { fill: #0a5f3f; }
+:root[data-theme="verde"] .schema-header-json { fill: #2a5340; }
+:root[data-theme="verde"] .schema-tag-bg-json { fill: #3f6b58; }
+:root[data-theme="verde"] .schema-sub-bg-json { fill: #edf6f1; }
+:root[data-theme="verde"] .schema-sub-fg-json { fill: #1b3a2c; }
+
+/* Semantic Subgraphs & Architectural Styling (Mermaid fallback) */
+g.subgraph[data-id*="stream" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="realtime" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="ingest" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="comp" i] > rect:nth-of-type(1) {
+  fill: #fdf3f3 !important;
+  stroke: #e8c4c4 !important;
+  stroke-width: 1.4px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="stream" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="realtime" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="ingest" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="comp" i] > rect:nth-of-type(2) {
+  fill: #fbe6e6 !important;
+  stroke: #e8c4c4 !important;
+  stroke-width: 1.4px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="stream" i] > text.subgraph-title,
+g.subgraph[data-id*="realtime" i] > text.subgraph-title,
+g.subgraph[data-id*="ingest" i] > text.subgraph-title,
+g.subgraph[data-id*="comp" i] > text.subgraph-title {
+  fill: #b91c1c !important;
+  font-weight: 700 !important;
+}
+
+g.subgraph[data-id*="batch" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="analytics" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="dw" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="serving" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="transform" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="sint" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="data" i] > rect:nth-of-type(1) {
+  fill: #ecf2f8 !important;
+  stroke: #c1d2e6 !important;
+  stroke-width: 1.4px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="batch" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="analytics" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="dw" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="serving" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="transform" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="sint" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="data" i] > rect:nth-of-type(2) {
+  fill: #dce8f5 !important;
+  stroke: #c1d2e6 !important;
+  stroke-width: 1.4px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="batch" i] > text.subgraph-title,
+g.subgraph[data-id*="analytics" i] > text.subgraph-title,
+g.subgraph[data-id*="dw" i] > text.subgraph-title,
+g.subgraph[data-id*="serving" i] > text.subgraph-title,
+g.subgraph[data-id*="transform" i] > text.subgraph-title,
+g.subgraph[data-id*="sint" i] > text.subgraph-title,
+g.subgraph[data-id*="data" i] > text.subgraph-title {
+  fill: #1e40af !important;
+  font-weight: 700 !important;
+}
+
+g.subgraph[data-id*="input" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="source" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="entrada" i] > rect:nth-of-type(1),
+g.subgraph[data-id*="origem" i] > rect:nth-of-type(1) {
+  fill: #f8fafc !important;
+  stroke: #94a3b8 !important;
+  stroke-dasharray: 4 4 !important;
+  stroke-width: 1.4px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="input" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="source" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="entrada" i] > rect:nth-of-type(2),
+g.subgraph[data-id*="origem" i] > rect:nth-of-type(2) {
+  fill: #f1f5f9 !important;
+  stroke: #94a3b8 !important;
+  stroke-dasharray: 4 4 !important;
+  stroke-width: 1.4px !important;
+  rx: 8px !important;
+  ry: 8px !important;
+}
+g.subgraph[data-id*="input" i] > text.subgraph-title,
+g.subgraph[data-id*="source" i] > text.subgraph-title,
+g.subgraph[data-id*="entrada" i] > text.subgraph-title,
+g.subgraph[data-id*="origem" i] > text.subgraph-title {
+  fill: #475569 !important;
+  font-weight: 700 !important;
+}
+
+/* Node cards, branch badges, state nodes & ER cards inside Mermaid diagrams */
+.diagram-scroll g.node > rect,
+.diagram-scroll g.node > polygon {
+  rx: 7px !important;
+  ry: 7px !important;
+}
+.diagram-scroll tspan.node-title { font-weight: 600 !important; }
+.diagram-scroll tspan.node-subtitle { font-size: 11px !important; fill: var(--muted) !important; font-weight: 400 !important; }
+
+g.edge-label-yes rect { fill: #dcfce7 !important; stroke: #86efac !important; rx: 4px !important; ry: 4px !important; }
+g.edge-label-yes text { fill: #166534 !important; font-weight: 600 !important; }
+g.edge-label-no rect { fill: #fee2e2 !important; stroke: #fca5a5 !important; rx: 4px !important; ry: 4px !important; }
+g.edge-label-no text { fill: #991b1b !important; font-weight: 600 !important; }
+
+g.node.state-open > rect { fill: #fef2f2 !important; stroke: #dc2626 !important; stroke-width: 1.4px !important; }
+g.node.state-open text { fill: #991b1b !important; font-weight: 600 !important; }
+g.node.state-recovering > rect { fill: #fffbeb !important; stroke: #d97706 !important; stroke-width: 1.4px !important; }
+g.node.state-recovering text { fill: #92400e !important; font-weight: 600 !important; }
+g.node.state-resolved > rect { fill: #f0fdf4 !important; stroke: #16a34a !important; stroke-width: 1.4px !important; }
+g.node.state-resolved text { fill: #166534 !important; font-weight: 600 !important; }
+
+g.entity rect.er-card-bg { fill: #ffffff !important; stroke: #9fb6c5 !important; stroke-width: 1.3px !important; }
+g.entity rect.er-card-header { fill: #102b3d !important; stroke: #102b3d !important; }
+g.entity > text:first-of-type { fill: #ffffff !important; }
+g.entity rect.er-badge-pk { fill: #fef3c7 !important; stroke: #f59e0b !important; stroke-width: 0.8px !important; }
+g.entity text.er-badge-text-pk { fill: #92400e !important; font-weight: 700 !important; }
+g.entity rect.er-badge-fk { fill: #dbeafe !important; stroke: #60a5fa !important; stroke-width: 0.8px !important; }
+g.entity text.er-badge-text-fk { fill: #1e40af !important; font-weight: 700 !important; }
+g.entity rect.er-badge-uk { fill: #ede9fe !important; stroke: #a78bfa !important; stroke-width: 0.8px !important; }
+g.entity text.er-badge-text-uk { fill: #5b21b6 !important; font-weight: 700 !important; }
+g.entity text.er-col-name tspan { fill: #0f172a !important; }
+g.entity text.er-col-type tspan { fill: #64748b !important; }
+
+.chart { overflow-x: auto; }
+.chart svg { width: 100%; min-width: 720px; height: auto; display: block; }
+.chart figcaption { margin-bottom: 10px; }
+.chart details { margin-top: 10px; margin-bottom: 0; }
+.chart .table-wrap { margin-bottom: 0; }
+.source-path { font-family: Consolas, monospace; font-size: 12px; overflow-wrap: anywhere; }
+footer { font-size: 12px; color: var(--muted); padding: 15px 0; }
+
+dialog { width: 96vw; max-width: 1600px; max-height: 94vh; border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+dialog::backdrop { background: var(--dialog-backdrop); }
+.dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
+.dialog-controls { display: inline-flex; gap: 8px; align-items: center; margin-left: auto; }
+.dialog-zoom-label { font-size: 12px; font-weight: 600; color: var(--muted); min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
+.dialog-controls button { padding: 5px 12px; font-size: 12px; border-radius: 6px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.dialog-controls button.is-active { background: var(--accent); color: white; border-color: var(--accent); }
+.dialog-canvas { overflow: auto; max-height: 75vh; }
+.dialog-canvas svg { max-width: none; display: block; margin: auto; }
+.dialog-canvas.is-fit svg { width: auto !important; max-width: 100% !important; max-height: 70vh !important; height: auto !important; }
+.dialog-canvas.is-actual svg { max-width: none !important; }
+#no-results { padding: 20px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; }
+#back-to-top { position: fixed; right: 24px; bottom: 24px; z-index: 10; background: var(--nav); color: var(--nav-text); border: 1px solid var(--nav-input-border); border-radius: 999px; padding: 9px 14px; font-size: 12px; font-weight: 600; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16); transition: opacity 0.18s ease, transform 0.18s ease; }
+#back-to-top:hover { background: var(--accent); border-color: var(--accent); color: #ffffff; transform: translateY(-1px); }
+.hidden, [hidden] { display: none !important; }
+.revision { overflow-wrap: anywhere; }
+
+@media (min-width: 1700px) {
+  .content { max-width: 1450px; }
+  .hero h1 { font-size: 50px; }
+}
+
+@media (max-width: 1000px) {
+  .sidebar { width: 220px; padding: 22px 12px; }
+  main { margin-left: 220px; }
+  .content { padding: 24px; }
+  .section-heading { padding: 20px; }
+  .section-body { padding: 0 20px 20px; }
+  .hero { padding: 36px 24px; }
+  .audience { font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-heading:after { transition: none; }
+}
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+  .sidebar, .toolbar, .audience-filter, .theme-filter, .table-filter, .figure-tools, .copy, .skip, #back-to-top, dialog { display: none !important; }
+  main { margin: 0; }
+  .hero { background: white; color: var(--ink); padding: 0 0 20px; border-bottom: 2px solid var(--accent); }
+  .hero .subtitle, .eyebrow { color: var(--th-fg); }
+  .hero:after { display: none; }
+  .badges span { border-color: var(--line); }
+  .content { padding: 20px 0; }
+  .doc-section { overflow: visible; break-inside: auto; border: 0; border-top: 1px solid var(--line); border-radius: 0; opacity: 1 !important; }
+  .section-heading { padding: 20px 0 12px; }
+  .section-heading:after { display: none; }
+  .section-body { padding: 0; }
+  .section-body > p:first-child { font-size: 12px; }
+  body { background: white; font-size: 11px; }
+  h2, h3, h4 { break-after: avoid; }
+  h3 { font-size: 15px; }
+  table { font-size: 9px; }
+  tr { break-inside: avoid; }
+  .table-wrap { max-height: none; overflow: visible; }
+  .diagram-scroll { overflow: visible; }
+  .diagram-scroll svg { width: auto !important; min-width: 0 !important; max-width: 100% !important; max-height: 220mm !important; }
+  .chart svg { min-width: 0 !important; width: 100% !important; }
+  figure { break-inside: avoid; }
+  .cards, .hero-cards { break-inside: avoid; }
+  pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--code-inline-bg); color: var(--ink); font-size: 9px; padding: 12px; }
+  .doc-section[hidden] { display: block !important; }
+  details::details-content { display: block !important; content-visibility: visible !important; }
+  .section-heading h2 { font-size: 19px; }
+  .hero h1 { font-size: 30px; }
+  th { position: static; box-shadow: none; }
+}
+</style></head><body><a class="skip" href="#main">Ir para o conteúdo</a><aside class="sidebar"><p class="brand">Documentação de projeto</p><strong>project-html-docs · Manual do Gerador</strong><label for="search">Pesquisar documentação</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="Buscar tópicos… (/)"><button id="search-clear" type="button" hidden aria-label="Limpar busca">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="Conteúdo"><a href="#resumo" data-audience="all"><span>01</span>Resumo executivo</a><a href="#escopo" data-audience="all"><span>02</span>Visão funcional e escopo</a><a href="#estado" data-audience="all"><span>03</span>Estado atual da solução</a><a href="#uso" data-audience="operations"><span>04</span>Como usar</a><a href="#solucao" data-audience="all"><span>05</span>Desenho da solução</a><a href="#fluxo" data-audience="technical"><span>06</span>Fluxo e processamento</a><a href="#regras" data-audience="technical"><span>07</span>Regras funcionais e validações</a><div class="nav-sub" data-parent="regras"><a href="#regras-contrato-de-conteudo-e-de-build">Contrato de conteúdo e de build</a><a href="#regras-modo-guia-rapido">Modo Guia Rápido</a><a href="#regras-impacto-e-propagacao">Impacto e propagação</a><a href="#regras-graficos-e-diagramas">Gráficos e diagramas</a></div><a href="#modelo" data-audience="technical"><span>08</span>Modelo e relacionamento dos artefatos</a><div class="nav-sub" data-parent="modelo"><a href="#modelo-dicionario-do-manifesto">Dicionário do manifesto</a><a href="#modelo-dicionario-do-recibo">Dicionário do recibo</a><a href="#modelo-dicionario-do-dossie">Dicionário do dossiê</a></div><a href="#operacao" data-audience="operations"><span>09</span>Operação e recuperação</a><a href="#decisoes" data-audience="all"><span>10</span>Decisões e limites</a><div class="nav-sub" data-parent="decisoes"><a href="#decisoes-limitacoes-conhecidas">Limitações conhecidas</a></div><a href="#glossario" data-audience="all"><span>11</span>Glossário e referências</a><div class="nav-sub" data-parent="glossario"><a href="#glossario-arquivos-de-referencia">Arquivos de referência</a></div><a href="#document-references" data-audience="technical">Referências</a></nav><small>HTML único · leitura offline<br>1.7.0 · 2026-11-15</small></aside><main id="main"><header class="hero"><p class="eyebrow">project-html-docs · manual do próprio gerador</p><h1>project-html-docs · Manual do Gerador</h1><p class="subtitle">Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.</p><div class="badges"><span>1.7.0</span><span>Atualizado: 2026-11-15</span><span>HTML único · leitura offline</span><span>Dados observados em: 2026-11-15 · snapshot local de implementação; sem telemetria de produção</span><a class="hero-companion" href="documentacao-resumida.html">Guia rápido ↗</a></div></header><div class="content"><div class="hero-cards"><article class="metric"><span class="label">Entrega</span><strong>1 HTML offline</strong><p>CSS, JavaScript e SVG embutidos; nenhum servidor, CDN ou runtime externo na leitura.</p></article><article class="metric"><span class="label">Descoberta</span><strong>0 tokens de LLM</strong><p>O inspect_repo.py varre o repositório com AST e regex, sem executar o código analisado.</p></article><article class="metric"><span class="label">Integridade</span><strong>SHA-256 + Git</strong><p>Cada fonte entra no recibo; o verify.mjs detecta drift e calcula as seções afetadas.</p></article><article class="metric"><span class="label">Versão atual</span><strong>1.7.0 · 30 testes</strong><p>Manual completo e Guia Rápido; suíte passando em 15/11/2026.</p></article></div><div class="toolbar"><span class="hint">Navegue por assunto ou filtre por perfil de leitura.</span><div class="audience-filter" role="group" aria-label="Perfil de leitura"><button type="button" data-audience-filter="all" class="is-active">Todas</button><button type="button" data-audience-filter="business">Visão de negócio</button><button type="button" data-audience-filter="technical">Visão técnica</button><button type="button" data-audience-filter="operations">Operação</button></div><div class="theme-filter" role="group" aria-label="Tema de cores"><button type="button" data-theme-select="verde" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-verde" aria-hidden="true"></span>Verde</button><button type="button" data-theme-select="azul" class="" aria-pressed="false"><span class="theme-swatch theme-swatch-azul" aria-hidden="true"></span>Azul</button><button type="button" data-theme-select="vermelho" class="is-active" aria-pressed="true"><span class="theme-swatch theme-swatch-vermelho" aria-hidden="true"></span>Vermelho</button></div><div class="toolbar-actions"><button id="expand" type="button">Expandir tudo</button><button id="collapse" type="button">Recolher tudo</button><button id="print" type="button">Imprimir / PDF</button></div></div><p id="no-results" hidden>Nenhuma seção encontrada.</p><details class="doc-section" id="resumo" data-audience="all" open><summary class="section-heading"><span class="number">01</span><h2>Resumo executivo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O <code>project-html-docs</code> é uma skill operacional e um conjunto de scripts que transforma o <strong>estado implementado</strong> de um repositório de software ou de engenharia de dados em um manual técnico e funcional, entregue como <strong>um único arquivo HTML offline</strong>. A proposta não é auditar, modernizar ou redesenhar o projeto: é explicar o que existe, como se conecta, quais regras aplica e como é operado.</p>
+<p>O resultado é pensado para dois públicos que normalmente recebem documentos separados: leitores de negócio, que precisam entender propósito, entradas, saídas e limites; e leitores técnicos, que precisam de arquitetura, fluxos, contratos de dados, regras e receitas de execução. A mesma página oferece filtro por perfil de leitura, busca local, dicionários pesquisáveis, diagramas vetoriais e impressão, sem exigir servidor, CDN ou acesso à internet.</p>
+<div class="cards">
+<div class="card"><h3>Para negócio</h3><p>O que o projeto entrega, quem consome, qual o grão dos dados, quais regras mudam o resultado e quais limites impedem uma leitura incorreta.</p></div>
+<div class="card"><h3>Para técnico</h3><p>Componentes, fronteiras, ordem de processamento, decisões, contratos de arquivos, dependências e rastreabilidade entre fonte e afirmação.</p></div>
+<div class="card"><h3>Para operação</h3><p>Pré-requisitos, comandos, parâmetros, saídas esperadas, verificação de integridade e recuperação diante de falhas previsíveis.</p></div>
+</div><p>O fluxo da skill é deliberadamente separado em duas camadas. A primeira é <strong>determinística</strong>: o <code>inspect_repo.py</code> varre o repositório, extrai estruturas e monta um dossiê com plano de leitura, sem executar o código e sem consumir tokens de LLM. A segunda é <strong>autoral</strong>: um agente lê as fontes priorizadas, escreve o manifesto e o Markdown, e aciona os renderizadores. O build consolida tudo e o <code>verify.mjs</code> confere se as fontes ainda correspondem ao que foi documentado.</p>
+<blockquote class="callout-rule">
+<p>Regra de negócio: documentar significa descrever o comportamento atual e comprovável do projeto. Planos históricos, intenções e metas não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.</p>
+</blockquote>
+<p>A versão atual é a <strong>1.7.0</strong>, com <strong>30 testes automatizados</strong> passando em 15/11/2026. Ela consolida o <strong>Guia Rápido</strong> (<code>mode: "summary"</code>) ao lado do manual completo, os temas <strong>Verde</strong>, <strong>Azul</strong> e <strong>Vermelho</strong> (vermelho padrão) e a correção da roda sobre tabelas curtas, mantendo a mesma base de renderização e o mesmo recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.</p>
+<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-package">package.json</a></div></div></details>
+<details class="doc-section" id="escopo" data-audience="all" open><summary class="section-heading"><span class="number">02</span><h2>Visão funcional e escopo</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A skill resolve um problema recorrente: a documentação de um projeto envelhece mais rápido que o código, e os documentos costumam ser escritos em formatos que não sobrevivem a ambientes corporativos fechados. Aqui, as entradas permanecem editáveis em texto e o produto final é um artefato portátil, sem dependências de runtime.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Formato</th>
+<th>Papel</th>
+<th>Obrigatória</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Repositório documentado</td>
+<td>diretório local</td>
+<td>Fonte da verdade sobre o comportamento implementado</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td><code>document.json</code></td>
+<td>JSON validado por schema</td>
+<td>Título, versão, cartões, seções, fontes, modo e tema</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td><code>content.md</code></td>
+<td>Markdown com GFM</td>
+<td>Prosa, tabelas, callouts, diagramas e gráficos</td>
+<td>Sim</td>
+</tr>
+<tr>
+<td>Diagramas 2D</td>
+<td>blocos <code>solution</code>, <code>flow</code>, <code>schema</code> ou <code>erd</code></td>
+<td>Arquitetura, processamento e entidades</td>
+<td>Opcional</td>
+</tr>
+<tr>
+<td>Gráficos</td>
+<td>bloco <code>chart</code></td>
+<td>Comparação numérica com unidade e fonte</td>
+<td>Opcional</td>
+</tr>
+<tr>
+<td>Dossiê estático</td>
+<td><code>inventory.json</code> e <code>reading-plan.md</code></td>
+<td>Priorização de leitura e base da análise de impacto</td>
+<td>Recomendado</td>
+</tr>
+<tr>
+<td>HTML final</td>
+<td><code>documentacao.html</code></td>
+<td>Manual único, interativo e offline</td>
+<td>Saída</td>
+</tr>
+<tr>
+<td>Recibo</td>
+<td><code>documentacao.validation.json</code></td>
+<td>Prova de integridade e métricas do build</td>
+<td>Saída</td>
+</tr>
+</tbody></table></div>
+<p><strong>Está no escopo:</strong> explicar o propósito do projeto, o desenho da solução, os fluxos, as regras de negócio, o modelo de dados, a operação e os limites que afetam a interpretação. <strong>Não está no escopo:</strong> produzir backlog de defeitos, maturidade, matriz de severidade, plano de modernização ou auditoria de segurança. A skill também não executa jobs, não altera produção e não consulta serviços externos para preencher lacunas.</p>
+<p>O manual completo preserva as categorias da jornada do leitor: resumo executivo, escopo funcional, estado atual, uso, desenho da solução, processamento, regras, modelo de dados, operação, decisões e glossário. O <strong>Guia Rápido</strong> destila a mesma história em 4 a 7 capítulos de alto sinal, com estimativa de leitura e um link seguro para o manual completo via <code>companionDoc</code>.</p>
+<p>Quando o repositório documentado é uma esteira de dados, a skill incorpora o perfil de engenharia de dados: PySpark, Databricks, Delta Lake, Cosmos DB, Event Hubs, Blob/ADLS Gen2, APIs e contratos de qualidade. Esse perfil acrescenta perguntas específicas sobre modos de escrita, partições, checkpoints, watermark, catálogo, rotas e limites de consumo, sem transformar o manual em uma auditoria de segurança ou de desempenho.</p>
+<div class="cards">
+<div class="card"><h3>Entradas editáveis</h3><p>Markdown, JSON e texto de diagrama permanecem versionáveis; o HTML é sempre regenerável a partir deles.</p></div>
+<div class="card"><h3>Saída autossuficiente</h3><p>CSS, JavaScript e SVG entram no arquivo final. Nenhuma requisição de rede é necessária para ler, buscar ou imprimir.</p></div>
+<div class="card"><h3>Rastreabilidade</h3><p>Cada seção declara suas fontes; o recibo registra hashes e revisão Git; o impacto aponta o que revisar.</p></div>
+</div><blockquote class="callout-warning">
+<p>Atenção: não copie fatos de outro repositório para um documento novo. Nomes de tabelas, volumes, SLAs e comportamentos só podem entrar se estiverem sustentados pelas fontes daquele projeto.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: quando o repositório não estabelece propósito de negócio, ownership, status de deploy ou justificativa histórica, a skill orienta consultar contexto de produto ou perguntar o fato específico. O código pode provar a implementação, não a intenção original.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-authoring">references/authoring.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-data-engineering">references/data-engineering.md</a></div></div></details>
+<details class="doc-section" id="estado" data-audience="all" open><summary class="section-heading"><span class="number">03</span><h2>Estado atual da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A versão 1.7.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é <strong>Node 22 ou superior</strong> e <strong>Python 3.10 ou superior</strong>; o leitor final precisa apenas de um navegador moderno. A suíte executa com <code>npm test</code> e cobre compilação, validação, diagramas, gráficos, temas, modos e análise de impacto.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Linhas</th>
+<th>Papel</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>scripts/inspect_repo.py</code></td>
+<td>1.574</td>
+<td>Varredura estática, extração de fatos, grafo, ondas de leitura e plano</td>
+</tr>
+<tr>
+<td><code>scripts/diagrams.mjs</code></td>
+<td>1.367</td>
+<td>Diagramas 2D determinísticos e enriquecimento de Mermaid</td>
+</tr>
+<tr>
+<td><code>assets/document.css</code></td>
+<td>768</td>
+<td>Design system, layout desktop, temas e impressão</td>
+</tr>
+<tr>
+<td><code>assets/document.js</code></td>
+<td>472</td>
+<td>Busca, filtros, temas, modal de diagramas e navegação</td>
+</tr>
+<tr>
+<td><code>scripts/verify.mjs</code></td>
+<td>329</td>
+<td>Hashes, drift, impacto e plano de atualização</td>
+</tr>
+<tr>
+<td><code>scripts/build.mjs</code></td>
+<td>226</td>
+<td>Manifesto, Markdown, sanitização, shell e recibo</td>
+</tr>
+<tr>
+<td><code>scripts/validate.mjs</code></td>
+<td>77</td>
+<td>Auditoria estrutural do HTML e dos SVGs</td>
+</tr>
+</tbody></table></div>
+<p>A contagem acima vem do <code>inventory.json</code> gerado em 15/11/2026, exceto <code>document.css</code>, medido diretamente porque a lista de extensões do inspetor não inclui <code>.css</code>. O dossiê classificou o repositório como <strong>small</strong>: 23 arquivos totais, 13 arquivos core e 5.156 linhas de código ou schema.</p>
+<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 188" role="img" aria-label="Testes automatizados por arquivo" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:840px"><g class="chart-gridlines" aria-hidden="true"><line class="chart-gridline" x1="355" y1="10" x2="355" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="490" y1="10" x2="490" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="625" y1="10" x2="625" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/><line class="chart-gridline" x1="760" y1="10" x2="760" y2="136" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/></g><g class="chart-row" tabindex="0"><title>tests/build.test.mjs: 16 testes</title><text class="chart-label" x="206" y="32" text-anchor="end" fill="#314c5e">tests/build.test.mjs</text><rect class="chart-track" x="220" y="16" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="16" width="540" height="23" rx="4" fill="#16a34a"/><text class="chart-value chart-value-inside" x="750" y="32" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">16</text></g><g class="chart-row" tabindex="0"><title>tests/diagrams.test.mjs: 11 testes</title><text class="chart-label" x="206" y="74" text-anchor="end" fill="#314c5e">tests/diagrams.test.mjs</text><rect class="chart-track" x="220" y="58" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="58" width="371" height="23" rx="4" fill="#087f8c"/><text class="chart-value chart-value-inside" x="581" y="74" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">11</text></g><g class="chart-row" tabindex="0"><title>tests/dossier.test.mjs: 3 testes</title><text class="chart-label" x="206" y="116" text-anchor="end" fill="#314c5e">tests/dossier.test.mjs</text><rect class="chart-track" x="220" y="100" width="540" height="23" rx="4" fill="#e8eff3"/><rect class="chart-bar" x="220" y="100" width="101" height="23" rx="4" fill="#64748b"/><text class="chart-value chart-value-inside" x="311" y="116" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">3</text></g><g class="chart-axis" aria-hidden="true"><line class="chart-axis-line" x1="220" y1="136" x2="760" y2="136" stroke="#cbd5e1" stroke-width="1"/><line class="chart-axis-tick" x1="220" y1="136" x2="220" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="220" y="152" text-anchor="start" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">0</text><line class="chart-axis-tick" x1="355" y1="136" x2="355" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="355" y="152" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">4</text><line class="chart-axis-tick" x1="490" y1="136" x2="490" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="490" y="152" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">8</text><line class="chart-axis-tick" x1="625" y1="136" x2="625" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="625" y="152" text-anchor="middle" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">12</text><line class="chart-axis-tick" x1="760" y1="136" x2="760" y2="140" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="760" y="152" text-anchor="end" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">16</text></g><text x="220" y="182" fill="#526778" font-size="12">0 · testes · escala linear</text></svg><figcaption><strong>Testes automatizados por arquivo</strong> · npm test · execução local · 2026-11-15</figcaption><details><summary>Dados do gráfico</summary><div class="table-wrap"><table><thead><tr><th>Categoria</th><th>testes</th></tr></thead><tbody><tr><td>tests/build.test.mjs</td><td>16</td></tr><tr><td>tests/diagrams.test.mjs</td><td>11</td></tr><tr><td>tests/dossier.test.mjs</td><td>3</td></tr></tbody></table></div></details></figure><p>O histórico recente mostra a evolução do produto em camadas. A versão 1.2.0 reformulou os gráficos de barra e ergonomia de leitura; a 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho (então chamado Santander); a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu a geometria dos diagramas, a subnavegação H3, o botão de topo e os extratores de engenharia de dados; a 1.6.0 trouxe o modo resumido; a 1.7.0 renomeou os temas para <strong>Verde</strong>, <strong>Azul</strong> e <strong>Vermelho</strong>, tornou o vermelho o padrão e corrigiu a rolagem sobre tabelas curtas.</p>
+<p>Na interface, o seletor oferece <strong>Verde</strong>, <strong>Azul</strong> e <strong>Vermelho</strong>; o vermelho é o padrão, a escolha é persistida em <code>localStorage</code> e valores antigos são migrados (<code>default</code> → azul, <code>santander</code> → vermelho). O tema verde harmoniza shell, sidebar, hero e os diagramas 2D, sem apagar as cores semânticas de sucesso, atenção e erro.</p>
+<div class="cards">
+<div class="card"><h3>Núcleo determinístico</h3><p>Inspeção sem execução, renderização em tempo de build, validação estrutural e receipt com hashes.</p></div>
+<div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive, filtro por audiência, temas, filtro local de tabelas, cópia e modal com zoom.</p></div>
+<div class="card"><h3>Qualidade verificável</h3><p>30 testes, exemplos mínimo e showcase, guardas de segurança e avisos de autoria no recibo.</p></div>
+</div><blockquote class="callout-warning">
+<p>Atenção: a suíte prova o comportamento dos geradores e do HTML produzido; ela não prova que o conteúdo semântico de um manual específico está correto. Essa verificação continua sendo responsabilidade da autoria e da revisão.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-package">package.json</a> <a href="#ref-changelog">CHANGELOG.md</a> <a href="#ref-tests-build">tests/build.test.mjs</a> <a href="#ref-tests-diagrams">tests/diagrams.test.mjs</a> <a href="#ref-tests-dossier">tests/dossier.test.mjs</a></div></div></details>
+<details class="doc-section" id="uso" data-audience="operations" open><summary class="section-heading"><span class="number">04</span><h2>Como usar</h2><span class="audience operations">Operação</span></summary><div class="section-body"><p>O uso típico tem cinco passos: instalar uma vez, mapear o repositório, escrever os inputs, compilar e verificar. Os comandos abaixo assumem que a skill está neste repositório e que o diretório de trabalho da documentação é <code>docs/</code>.</p>
+<p>Para distribuição como skill, <code>SKILL.md</code> é o entrypoint legível por agentes que não têm descoberta automática. O arquivo <code>agents/openai.yaml</code> declara o nome de exibição, a descrição curta e o prompt padrão que aciona a skill. O conteúdo do projeto documentado nunca fica embutido nesses metadados: eles apenas descrevem como executar o fluxo.</p>
+<pre><code class="language-bash"># 1. Instalar dependências (uma vez)
+npm ci --ignore-scripts
+
+# 2. Mapear o repositório e gerar o dossiê + plano de leitura
+python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
+
+# 3. Compilar o manual completo
+node scripts/build.mjs docs/document.json --out docs/documentacao.html
+
+# 4. Conferir hashes, fontes e revisão
+node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
+
+# 5. Rodar a suíte quando o gerador for alterado
+npm test</code></pre><p>O manifesto é o contrato do documento. Ele exige <code>title</code>, <code>subtitle</code>, <code>version</code>, <code>updated</code>, <code>content</code> e <code>sections</code>; aceita <code>language</code> (<code>pt-BR</code> ou <code>en</code>), <code>theme</code> (<code>verde</code>, <code>azul</code> ou <code>vermelho</code>, com vermelho como padrão), <code>mode</code> (<code>full</code> ou <code>summary</code>), <code>cards</code>, <code>companionDoc</code>, <code>repoRoot</code>, <code>revision</code>, <code>dataAsOf</code> e <code>sources</code>. Cada seção tem <code>id</code>, <code>title</code>, <code>audience</code> e, idealmente, <code>sources</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Comando</th>
+<th>Efeito</th>
+<th>Saída</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm ci --ignore-scripts</code></td>
+<td>Instala as versões do <code>package-lock.json</code></td>
+<td><code>node_modules/</code></td>
+</tr>
+<tr>
+<td><code>python scripts/inspect_repo.py &lt;repo&gt; --out &lt;json&gt; --plan &lt;md&gt;</code></td>
+<td>Varredura estática, sem executar o projeto</td>
+<td>Dossiê e plano de leitura</td>
+</tr>
+<tr>
+<td><code>node scripts/build.mjs &lt;manifest&gt; --out &lt;html&gt;</code></td>
+<td>Compila, valida e grava o manual</td>
+<td>HTML + recibo</td>
+</tr>
+<tr>
+<td><code>node scripts/build.mjs &lt;manifest&gt; --out &lt;html&gt; --force</code></td>
+<td>Atualiza um HTML existente de forma deliberada</td>
+<td>HTML + recibo</td>
+</tr>
+<tr>
+<td><code>node scripts/build.mjs &lt;manifest&gt; --out &lt;html&gt; --mode summary</code></td>
+<td>Força o modo Guia Rápido</td>
+<td>HTML + recibo</td>
+</tr>
+<tr>
+<td><code>node scripts/verify.mjs &lt;manifest&gt; &lt;receipt&gt;</code></td>
+<td>Compara fontes e revisão com o recibo</td>
+<td>Relatório JSON</td>
+</tr>
+<tr>
+<td><code>node scripts/verify.mjs &lt;manifest&gt; &lt;receipt&gt; --strict</code></td>
+<td>Falha com código 1 quando há drift</td>
+<td>Relatório JSON</td>
+</tr>
+<tr>
+<td><code>node scripts/verify.mjs &lt;manifest&gt; &lt;receipt&gt; --impact --dossier &lt;json&gt; --plan &lt;md&gt;</code></td>
+<td>Calcula seções afetadas e grava o plano</td>
+<td>Relatório + <code>update-plan.md</code></td>
+</tr>
+<tr>
+<td><code>npm test</code></td>
+<td>Executa os 30 testes</td>
+<td>Resultado da suíte</td>
+</tr>
+</tbody></table></div>
+<p>O conteúdo começa obrigatoriamente com um <code>##</code> cujo texto coincida, na ordem, com <code>sections[].title</code>. Cada <code>###</code> vira subnavegação lateral. Um <code>#</code> dentro do Markdown é reservado ao título do documento e provoca erro de build. Tabelas ganham cabeçalho fixo, rolagem local e filtro automático a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas. Diagramas são declarados em fences próprios.</p>
+<pre><code class="language-json">{
+  "title": "Meu projeto",
+  "subtitle": "O que ele faz e para quem.",
+  "version": "1.0",
+  "updated": "2026-11-15",
+  "content": "content.md",
+  "repoRoot": "..",
+  "sections": [
+    { "id": "resumo", "title": "Resumo executivo", "audience": "all" }
+  ],
+  "sources": [
+    { "id": "readme", "path": "README.md", "description": "Visão geral do projeto." }
+  ]
+}</code></pre><pre><code class="language-markdown">## Resumo executivo
+
+Texto introdutório da seção.
+
+### Um subtítulo navegável
+
+Mais detalhe.</code></pre><p>Para um Guia Rápido, use um manifesto separado com <code>"mode": "summary"</code> e, opcionalmente, um link para o manual completo:</p>
+<pre><code class="language-json">{
+  "mode": "summary",
+  "companionDoc": { "href": "documentacao.html", "label": "Manual completo" }
+}</code></pre><blockquote class="callout-rule">
+<p>Regra de negócio: o build nunca sobrescreve um HTML existente sem <code>--force</code>, nunca aceita que a saída seja o próprio manifesto ou o Markdown de entrada e só grava depois que a validação estrutural passa.</p>
+</blockquote>
+<blockquote class="callout-warning">
+<p>Atenção: o leitor final não precisa de Node, Python ou servidor. Essas ferramentas são necessárias apenas para gerar e verificar o documento. O HTML pode ser copiado para um compartilhamento, anexado a um processo ou aberto localmente.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, revise o documento em uma janela desktop de aproximadamente 1440 px, exercite busca, filtros, modal e impressão, e declare o que não foi verificado.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-readme">README.md</a> <a href="#ref-authoring">references/authoring.md</a> <a href="#ref-agent">agents/openai.yaml</a></div></div></details>
+<details class="doc-section" id="solucao" data-audience="all" open><summary class="section-heading"><span class="number">05</span><h2>Desenho da solução</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>A solução separa <strong>descoberta</strong>, <strong>compilação</strong> e <strong>verificação</strong>. A descoberta é opcional para compilar, mas alimenta a leitura cirúrgica e a análise de impacto. A compilação é inteiramente local e resolve todos os visuais em tempo de build. A verificação compara o que foi documentado com o estado atual das fontes e produz um plano de revisão.</p>
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Arquitetura do gerador e do ciclo de verificação</span><button type="button" data-expand-diagram aria-label="Ampliar: Arquitetura do gerador e do ciclo de verificação">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 939" width="1000" height="939" class="sol-svg" role="img" aria-label="Arquitetura do gerador e do ciclo de verificação" data-natural-width="1000" style="width:1000px;max-width:100%;height:auto"><defs><marker id="diagram-1-arrow-default" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="sol-arrow-head sol-arrow-head-default" points="0 0.5, 8 3, 0 5.5" fill="#334155"/></marker></defs><text x="26" y="26" font-size="11" font-weight="700" letter-spacing="0.08em" fill="#475569">ENTRADAS E FONTES</text><g class="sol-zone sol-zone-warm"><rect class="sol-zone-bg" x="368" y="30" width="622" height="227" rx="10" fill="#fdf3f3" stroke="#e8c4c4" stroke-width="1.2"/><text class="sol-zone-title" x="384" y="51" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="#b91c1c">1 · DESCOBERTA DETERMINÍSTICA</text><text class="sol-zone-subtitle" x="384" y="66" font-size="11" font-weight="500" fill="#c2414b">opcional, zero LLM e zero execução</text></g><g class="sol-zone sol-zone-cool"><rect class="sol-zone-bg" x="368" y="303" width="622" height="288" rx="10" fill="#ecf2f8" stroke="#c1d2e6" stroke-width="1.2"/><text class="sol-zone-title" x="384" y="324" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="#1e40af">2 · COMPILAÇÃO OFFLINE</text><text class="sol-zone-subtitle" x="384" y="339" font-size="11" font-weight="500" fill="#2563eb">tudo resolvido em tempo de build</text></g><g class="sol-zone sol-zone-teal"><rect class="sol-zone-bg" x="368" y="637" width="622" height="288" rx="10" fill="#eef8f8" stroke="#bae0e3" stroke-width="1.2"/><text class="sol-zone-title" x="384" y="658" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="#0f5f68">3 · VERIFICAÇÃO E MANUTENÇÃO</text><text class="sol-zone-subtitle" x="384" y="673" font-size="11" font-weight="500" fill="#087f8c">hashes, grafo de dependências e plano de atualização</text></g><path class="sol-edge sol-edge-role-default" data-from="repo" data-to="inspect" d="M260.0,154.5 L314.0,154.5 Q321.0,154.5 321.0,147.5 L321.0,133.5 Q321.0,126.5 328.0,126.5 L382.0,126.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="manifest" data-to="build" d="M260.0,399.5 L315.0,399.5 Q321.0,399.5 321.0,393.5 L321.0,393.5 Q321.0,387.5 327.0,387.5 L382.0,387.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="content" data-to="build" d="M260.0,494.5 L314.0,494.5 Q321.0,494.5 321.0,487.5 L321.0,418.5 Q321.0,411.5 328.0,411.5 L382.0,411.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="inspect" data-to="dossier" d="M618.0,126.5 L672.0,126.5 Q679.0,126.5 679.0,133.5 L679.0,147.5 Q679.0,154.5 686.0,154.5 L740.0,154.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="build" data-to="renderers" d="M618.0,399.5 L740.0,399.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="renderers" data-to="html" d="M858.0,440.0 L858.0,454.0" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="build" data-to="receipt" d="M500.0,440.0 L500.0,693.0" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="receipt" data-to="verify" d="M500.0,796.0 L500.0,810.0" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><path class="sol-edge sol-edge-role-default" data-from="verify" data-to="plan" d="M618.0,850.5 L672.0,850.5 Q679.0,850.5 679.0,843.5 L679.0,740.5 Q679.0,733.5 686.0,733.5 L740.0,733.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-1-arrow-default)"/><g class="sol-node sol-node-role-regulator" data-node-id="repo" tabindex="0" role="group" aria-label="Repositório"><path class="sol-node-frame" d="M24,94 L24,215 A118,8 0 0,0 260,215 L260,94 Z" fill="#ffffff" stroke="#c2414b" stroke-width="1.5"/><ellipse class="sol-node-header" cx="142" cy="94" rx="118" ry="8" fill="#fef2f2" stroke="#c2414b" stroke-width="1.5"/><text class="sol-node-title" x="38" y="119.0" font-size="12.5" font-weight="700" fill="#991b1b">Repositório</text><text x="38.0" y="138.0" font-size="11.2" fill="#334155">código, configuração e testes</text><text x="38.0" y="153.5" font-size="11.2" fill="#334155">revisão Git e status</text><rect class="sol-node-meta-bg" x="38" y="191.0" width="98" height="18" rx="4" fill="#fee2e2"/><text class="sol-node-meta-fg" x="45" y="203.5" font-size="9.8" font-weight="600" fill="#991b1b">fonte da verdade</text></g><g class="sol-node sol-node-role-step" data-node-id="inspect" tabindex="0" role="group" aria-label="inspect_repo.py"><rect class="sol-node-frame" x="382" y="86" width="236" height="81" rx="8" fill="#ffffff" stroke="#475569" stroke-width="1.4"/><path class="sol-node-accent" d="M383,94 Q383,87 390,87 L610,87 Q617,87 617,94 L617,91 L383,91 Z" fill="#0f172a" opacity="0.88"/><circle class="sol-node-step-circle" cx="405" cy="107" r="9.5" fill="#0f172a"/><text x="405" y="110.8" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">1</text><text class="sol-node-title" x="420" y="111.0" font-size="12.5" font-weight="700" fill="#0f172a">inspect_repo.py</text><text x="396.0" y="130.0" font-size="11.2" fill="#334155">AST, regex e grafo</text><text x="396.0" y="145.5" font-size="11.2" fill="#334155">zero execução do código</text></g><g class="sol-node sol-node-role-analytical" data-node-id="dossier" tabindex="0" role="group" aria-label="Dossiê + plano"><path class="sol-node-frame" d="M740,94 L740,215 A118,8 0 0,0 976,215 L976,94 Z" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/><ellipse class="sol-node-header" cx="858" cy="94" rx="118" ry="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/><text class="sol-node-title" x="754" y="119.0" font-size="12.5" font-weight="700" fill="#1e40af">Dossiê + plano</text><text x="754.0" y="138.0" font-size="11.2" fill="#334155">inventory.json</text><text x="754.0" y="153.5" font-size="11.2" fill="#334155">reading-plan.md</text><rect class="sol-node-meta-bg" x="754" y="191.0" width="118" height="18" rx="4" fill="#dbeafe"/><text class="sol-node-meta-fg" x="761" y="203.5" font-size="9.8" font-weight="600" fill="#1e40af">evidência com file:line</text></g><g class="sol-node sol-node-role-neutral" data-node-id="manifest" tabindex="0" role="group" aria-label="document.json"><rect class="sol-node-frame" x="24" y="359" width="236" height="81" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.4"/><path class="sol-node-accent" d="M25,367 Q25,360 32,360 L252,360 Q259,360 259,367 L259,364 L25,364 Z" fill="#475569" opacity="0.88"/><text class="sol-node-title" x="38" y="384.0" font-size="12.5" font-weight="700" fill="#1e293b">document.json</text><text x="38.0" y="403.0" font-size="11.2" fill="#334155">seções, fontes e cartões</text><text x="38.0" y="418.5" font-size="11.2" fill="#334155">modo, tema e idioma</text></g><g class="sol-node sol-node-role-neutral" data-node-id="content" tabindex="0" role="group" aria-label="content.md"><rect class="sol-node-frame" x="24" y="454" width="236" height="81" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.4"/><path class="sol-node-accent" d="M25,462 Q25,455 32,455 L252,455 Q259,455 259,462 L259,459 L25,459 Z" fill="#475569" opacity="0.88"/><text class="sol-node-title" x="38" y="479.0" font-size="12.5" font-weight="700" fill="#1e293b">content.md</text><text x="38.0" y="498.0" font-size="11.2" fill="#334155">H2 = seções, na ordem</text><text x="38.0" y="513.5" font-size="11.2" fill="#334155">fences 2D, chart e Mermaid</text></g><g class="sol-node sol-node-role-step" data-node-id="build" tabindex="0" role="group" aria-label="build.mjs"><rect class="sol-node-frame" x="382" y="359" width="236" height="81" rx="8" fill="#ffffff" stroke="#475569" stroke-width="1.4"/><path class="sol-node-accent" d="M383,367 Q383,360 390,360 L610,360 Q617,360 617,367 L617,364 L383,364 Z" fill="#0f172a" opacity="0.88"/><circle class="sol-node-step-circle" cx="405" cy="380" r="9.5" fill="#0f172a"/><text x="405" y="383.8" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">2</text><text class="sol-node-title" x="420" y="384.0" font-size="12.5" font-weight="700" fill="#0f172a">build.mjs</text><text x="396.0" y="403.0" font-size="11.2" fill="#334155">AJV + Marked + sanitize</text><text x="396.0" y="418.5" font-size="11.2" fill="#334155">shell e subnavegação</text></g><g class="sol-node sol-node-role-step" data-node-id="renderers" tabindex="0" role="group" aria-label="Renderizadores"><rect class="sol-node-frame" x="740" y="359" width="236" height="81" rx="8" fill="#ffffff" stroke="#475569" stroke-width="1.4"/><path class="sol-node-accent" d="M741,367 Q741,360 748,360 L968,360 Q975,360 975,367 L975,364 L741,364 Z" fill="#0f172a" opacity="0.88"/><circle class="sol-node-step-circle" cx="763" cy="380" r="9.5" fill="#0f172a"/><text x="763" y="383.8" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">3</text><text class="sol-node-title" x="778" y="384.0" font-size="12.5" font-weight="700" fill="#0f172a">Renderizadores</text><text x="754.0" y="403.0" font-size="11.2" fill="#334155">solution / flow / schema</text><text x="754.0" y="418.5" font-size="11.2" fill="#334155">chart + Mermaid</text></g><g class="sol-node sol-node-role-output" data-node-id="html" tabindex="0" role="group" aria-label="documentacao.html"><path class="sol-node-frame" d="M740,462 L740,549 A118,8 0 0,0 976,549 L976,462 Z" fill="#ffffff" stroke="#087f8c" stroke-width="1.5"/><ellipse class="sol-node-header" cx="858" cy="462" rx="118" ry="8" fill="#ecfeff" stroke="#087f8c" stroke-width="1.5"/><text class="sol-node-title" x="754" y="487.0" font-size="12.5" font-weight="700" fill="#115e59">documentacao.html</text><text x="754.0" y="506.0" font-size="11.2" fill="#334155">CSS, JS e SVG inline</text><text x="754.0" y="521.5" font-size="11.2" fill="#334155">1 arquivo, leitura offline</text></g><g class="sol-node sol-node-role-info" data-node-id="receipt" tabindex="0" role="group" aria-label="validation.json"><path class="sol-node-frame" d="M382,701 L382,788 A118,8 0 0,0 618,788 L618,701 Z" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/><ellipse class="sol-node-header" cx="500" cy="701" rx="118" ry="8" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.5"/><text class="sol-node-title" x="396" y="726.0" font-size="12.5" font-weight="700" fill="#0369a1">validation.json</text><text x="396.0" y="745.0" font-size="11.2" fill="#334155">hashes SHA-256 das fontes</text><text x="396.0" y="760.5" font-size="11.2" fill="#334155">métricas e avisos</text></g><g class="sol-node sol-node-role-step" data-node-id="verify" tabindex="0" role="group" aria-label="verify.mjs"><rect class="sol-node-frame" x="382" y="810" width="236" height="81" rx="8" fill="#ffffff" stroke="#475569" stroke-width="1.4"/><path class="sol-node-accent" d="M383,818 Q383,811 390,811 L610,811 Q617,811 617,818 L617,815 L383,815 Z" fill="#0f172a" opacity="0.88"/><circle class="sol-node-step-circle" cx="405" cy="831" r="9.5" fill="#0f172a"/><text x="405" y="834.8" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">4</text><text class="sol-node-title" x="420" y="835.0" font-size="12.5" font-weight="700" fill="#0f172a">verify.mjs</text><text x="396.0" y="854.0" font-size="11.2" fill="#334155">drift de fontes + revisão</text><text x="396.0" y="869.5" font-size="11.2" fill="#334155">impacto por grafo</text></g><g class="sol-node sol-node-role-output" data-node-id="plan" tabindex="0" role="group" aria-label="update-plan.md"><rect class="sol-node-frame" x="740" y="693" width="236" height="81" rx="8" fill="#ffffff" stroke="#087f8c" stroke-width="1.4"/><path class="sol-node-accent" d="M741,701 Q741,694 748,694 L968,694 Q975,694 975,701 L975,698 L741,698 Z" fill="#087f8c" opacity="0.88"/><text class="sol-node-title" x="754" y="718.0" font-size="12.5" font-weight="700" fill="#115e59">update-plan.md</text><text x="754.0" y="737.0" font-size="11.2" fill="#334155">fontes alteradas</text><text x="754.0" y="752.5" font-size="11.2" fill="#334155">seções marcadas como stale</text></g><g class="sol-edge-label-wrap" data-from="repo" data-to="inspect"><g class="sol-edge-label sol-edge-label-default"><rect x="265.5" y="129.5" width="111" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="321.0" y="144.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="321.0" dy="0">varredura estática</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="manifest" data-to="build"><g class="sol-edge-label sol-edge-label-default"><rect x="274.0" y="382.5" width="94" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="321.0" y="397.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="321.0" dy="0">schema + fontes</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="content" data-to="build"><g class="sol-edge-label sol-edge-label-default"><rect x="288.5" y="442.0" width="65" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="321.0" y="457.0" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="321.0" dy="0">Markdown</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="inspect" data-to="dossier"><g class="sol-edge-label sol-edge-label-default"><rect x="637.0" y="129.5" width="84" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="679.0" y="144.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="679.0" dy="0">fatos e grafo</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="build" data-to="renderers"><g class="sol-edge-label sol-edge-label-default"><rect x="634.0" y="375.5" width="90" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="679.0" y="390.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="679.0" dy="0">tokens + JSON</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="renderers" data-to="html"><g class="sol-edge-label sol-edge-label-default"><rect x="824.5" y="436.0" width="67" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="858.0" y="451.0" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="858.0" dy="0">SVG inline</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="build" data-to="receipt"><g class="sol-edge-label sol-edge-label-default"><rect x="477.5" y="555.5" width="45" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="500.0" y="570.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="500.0" dy="0">grava</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="receipt" data-to="verify"><g class="sol-edge-label sol-edge-label-default"><rect x="472.0" y="792.0" width="56" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="500.0" y="807.0" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="500.0" dy="0">compara</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="verify" data-to="plan"><g class="sol-edge-label sol-edge-label-default"><rect x="659.0" y="781.0" width="40" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="679.0" y="796.0" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="679.0" dy="0">gera</tspan></text></g></g></svg></div><div class="figure-legend" aria-label="Legenda do diagrama"><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#c2414b;background:#fef2f2"></span> Fonte e revisão</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#475569;background:#f8fafc"></span> Etapa executável</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#2563eb;background:#eff6ff"></span> Dossiê estático</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#087f8c;background:#ecfeff"></span> Artefato entregue</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#0284c7;background:#f0f9ff"></span> Recibo de build</span></div><figcaption>Arquitetura do gerador e do ciclo de verificação</figcaption><p class="diagram-note">O inspect_repo.py é opcional para compilar; ele alimenta a leitura e, com --impact, o verify.mjs. O build grava HTML e recibo de forma atômica.</p></figure><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Objeto</th>
+<th>Papel</th>
+<th>Lido / gravado</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>document.json</code></td>
+<td>Contrato do manual: seções, fontes, cartões e modo</td>
+<td>Lido pelo build e pelo verify</td>
+</tr>
+<tr>
+<td><code>content.md</code></td>
+<td>Texto, tabelas, callouts, diagramas e gráficos</td>
+<td>Lido pelo build</td>
+</tr>
+<tr>
+<td><code>sources[]</code></td>
+<td>Arquivos locais que sustentam as afirmações</td>
+<td>Lidos e hasheados pelo build</td>
+</tr>
+<tr>
+<td><code>inventory.json</code></td>
+<td>Dossiê estático do repositório</td>
+<td>Produzido pelo inspect; usado pelo impacto</td>
+</tr>
+<tr>
+<td><code>documentacao.html</code></td>
+<td>Manual único com CSS, JS e SVG embutidos</td>
+<td>Gravado pelo build; aberto no navegador</td>
+</tr>
+<tr>
+<td><code>documentacao.validation.json</code></td>
+<td>Recibo com métricas, avisos e fingerprints</td>
+<td>Gravado pelo build; lido pelo verify</td>
+</tr>
+<tr>
+<td><code>update-plan.md</code></td>
+<td>Diagnóstico de drift e seções a revisar</td>
+<td>Gravado pelo verify em modo impacto</td>
+</tr>
+</tbody></table></div>
+<p>A arquitetura tem quatro propriedades que explicam quase todas as decisões do projeto. <strong>Primeiro</strong>, o produto é offline: não há CDN, endpoint de gráfico, iframe ou script remoto; o validador rejeita qualquer dependência externa. <strong>Segundo</strong>, tudo que é visual é resolvido antes da entrega: diagramas 2D, Mermaid e gráficos viram SVG inline no build. <strong>Terceiro</strong>, a interface é mantida localmente em <code>assets/document.css</code> e <code>assets/document.js</code>, compartilhada por todos os documentos. <strong>Quarto</strong>, a autoria é separada da renderização: o agente entende o domínio e escreve; os scripts apenas transformam e auditam.</p>
+<blockquote class="callout-rule">
+<p>Regra de negócio: o HTML é a entrega, mas os inputs continuam sendo a fonte editável. Nenhum fato deve existir apenas dentro do HTML, porque o próximo build precisa reproduzi-lo a partir de Markdown e JSON.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: o dossiê é uma ajuda de descoberta, não uma prova de arquitetura. A leitura das fontes e a interpretação semântica continuam sendo trabalhos humanos ou de agente, com citações <code>arquivo:linha</code> quando a afirmação for específica.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-build">scripts/build.mjs</a> <a href="#ref-diagrams">scripts/diagrams.mjs</a> <a href="#ref-ui">assets/document.js</a> <a href="#ref-styles">assets/document.css</a></div></div></details>
+<details class="doc-section" id="fluxo" data-audience="technical" open><summary class="section-heading"><span class="number">06</span><h2>Fluxo e processamento</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>O caminho de compilação é curto e cheio de guardas. O objetivo é falhar cedo, com mensagem contextual, antes de criar um arquivo parcial ou um HTML que pareça válido mas esteja estruturalmente quebrado.</p>
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Caminho de build e falha segura</span><button type="button" data-expand-diagram aria-label="Ampliar: Caminho de build e falha segura">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 736" width="930" height="736" class="sol-svg" role="img" aria-label="Caminho de build e falha segura" data-natural-width="930" style="width:930px;max-width:100%;height:auto"><defs><marker id="diagram-2-arrow-default" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="sol-arrow-head sol-arrow-head-default" points="0 0.5, 8 3, 0 5.5" fill="#334155"/></marker><marker id="diagram-2-arrow-yes" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="sol-arrow-head sol-arrow-head-yes" points="0 0.5, 8 3, 0 5.5" fill="#16a34a"/></marker><marker id="diagram-2-arrow-no" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="sol-arrow-head sol-arrow-head-no" points="0 0.5, 8 3, 0 5.5" fill="#dc2626"/></marker></defs><text x="26" y="26" font-size="11" font-weight="700" letter-spacing="0.08em" fill="#475569">ENTRADA</text><g class="sol-zone sol-zone-warm"><rect class="sol-zone-bg" x="333" y="30" width="587" height="200" rx="10" fill="#fdf3f3" stroke="#e8c4c4" stroke-width="1.2"/><text class="sol-zone-title" x="349" y="51" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="#b91c1c">CONTRATO</text><text class="sol-zone-subtitle" x="349" y="66" font-size="11" font-weight="500" fill="#c2414b">validação antes de renderizar</text></g><g class="sol-zone sol-zone-cool"><rect class="sol-zone-bg" x="333" y="276" width="587" height="200" rx="10" fill="#ecf2f8" stroke="#c1d2e6" stroke-width="1.2"/><text class="sol-zone-title" x="349" y="297" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="#1e40af">RENDER</text><text class="sol-zone-subtitle" x="349" y="312" font-size="11" font-weight="500" fill="#2563eb">Markdown, SVG e sanitização</text></g><g class="sol-zone sol-zone-teal"><rect class="sol-zone-bg" x="333" y="522" width="587" height="200" rx="10" fill="#eef8f8" stroke="#bae0e3" stroke-width="1.2"/><text class="sol-zone-title" x="349" y="543" font-size="11.5" font-weight="700" letter-spacing="0.04em" fill="#0f5f68">ENTREGA</text><text class="sol-zone-subtitle" x="349" y="558" font-size="11" font-weight="500" fill="#087f8c">gravação atômica e recibo</text></g><path class="sol-edge sol-edge-role-default" data-from="entry" data-to="guard1" d="M260.0,126.5 L347.0,126.5" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-2-arrow-default)"/><path class="sol-edge sol-edge-role-yes" data-from="guard1" data-to="render" d="M465.0,167.0 L465.0,332.0" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#diagram-2-arrow-yes)"/><path class="sol-edge sol-edge-role-no" data-from="guard1" data-to="fail" d="M583.0,126.5 L619.5,126.5 Q626.5,126.5 626.5,133.5 L626.5,353.5 Q626.5,360.5 633.5,360.5 L670.0,360.5" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#diagram-2-arrow-no)"/><path class="sol-edge sol-edge-role-default" data-from="render" data-to="guard2" d="M465.0,413.0 L465.0,578.0" fill="none" stroke="#334155" stroke-width="1.5" marker-end="url(#diagram-2-arrow-default)"/><path class="sol-edge sol-edge-role-yes" data-from="guard2" data-to="write" d="M583.0,606.5 L620.5,606.5 Q626.5,606.5 626.5,612.5 L626.5,612.5 Q626.5,618.5 632.5,618.5 L670.0,618.5" fill="none" stroke="#16a34a" stroke-width="1.5" marker-end="url(#diagram-2-arrow-yes)"/><path class="sol-edge sol-edge-role-no" data-from="guard2" data-to="fail" d="M583.0,630.5 L619.5,630.5 Q626.5,630.5 626.5,623.5 L626.5,391.5 Q626.5,384.5 633.5,384.5 L670.0,384.5" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#diagram-2-arrow-no)"/><g class="sol-node sol-node-role-neutral" data-node-id="entry" tabindex="0" role="group" aria-label="Manifesto + Markdown"><rect class="sol-node-frame" x="24" y="86" width="236" height="81" rx="8" fill="#ffffff" stroke="#64748b" stroke-width="1.4"/><path class="sol-node-accent" d="M25,94 Q25,87 32,87 L252,87 Q259,87 259,94 L259,91 L25,91 Z" fill="#475569" opacity="0.88"/><text class="sol-node-title" x="38" y="111.0" font-size="12.5" font-weight="700" fill="#1e293b">Manifesto + Markdown</text><text x="38.0" y="130.0" font-size="11.2" fill="#334155">document.json</text><text x="38.0" y="145.5" font-size="11.2" fill="#334155">content.md</text></g><g class="sol-node sol-node-role-warning" data-node-id="guard1" tabindex="0" role="group" aria-label="Contrato válido?"><rect class="sol-node-frame" x="347" y="86" width="236" height="81" rx="12" fill="#fffbeb" stroke="#d97706" stroke-width="1.6"/><rect class="sol-node-accent" x="557" y="93" width="18" height="18" rx="4" fill="#d97706"/><text x="566" y="106" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">?</text><text class="sol-node-title" x="361" y="111.0" font-size="12.5" font-weight="700" fill="#92400e">Contrato válido?</text><text x="361.0" y="130.0" font-size="11.2" fill="#334155">schema, H2, IDs</text><text x="361.0" y="145.5" font-size="11.2" fill="#334155">fontes e saída</text></g><g class="sol-node sol-node-role-step" data-node-id="render" tabindex="0" role="group" aria-label="Renderiza fences"><rect class="sol-node-frame" x="347" y="332" width="236" height="81" rx="8" fill="#ffffff" stroke="#475569" stroke-width="1.4"/><path class="sol-node-accent" d="M348,340 Q348,333 355,333 L575,333 Q582,333 582,340 L582,337 L348,337 Z" fill="#0f172a" opacity="0.88"/><circle class="sol-node-step-circle" cx="370" cy="353" r="9.5" fill="#0f172a"/><text x="370" y="356.8" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">1</text><text class="sol-node-title" x="385" y="357.0" font-size="12.5" font-weight="700" fill="#0f172a">Renderiza fences</text><text x="361.0" y="376.0" font-size="11.2" fill="#334155">2D, chart, Mermaid</text><text x="361.0" y="391.5" font-size="11.2" fill="#334155">sanitização</text></g><g class="sol-node sol-node-role-danger" data-node-id="fail" tabindex="0" role="group" aria-label="Aborta sem gravar"><rect class="sol-node-frame" x="670" y="332" width="236" height="81" rx="8" fill="#ffffff" stroke="#c2414b" stroke-width="1.4"/><path class="sol-node-accent" d="M671,340 Q671,333 678,333 L898,333 Q905,333 905,340 L905,337 L671,337 Z" fill="#dc2626" opacity="0.88"/><text class="sol-node-title" x="684" y="357.0" font-size="12.5" font-weight="700" fill="#991b1b">Aborta sem gravar</text><text x="684.0" y="376.0" font-size="11.2" fill="#334155">nenhum HTML parcial</text><text x="684.0" y="391.5" font-size="11.2" fill="#334155">erro com contexto</text></g><g class="sol-node sol-node-role-warning" data-node-id="guard2" tabindex="0" role="group" aria-label="HTML válido?"><rect class="sol-node-frame" x="347" y="578" width="236" height="81" rx="12" fill="#fffbeb" stroke="#d97706" stroke-width="1.6"/><rect class="sol-node-accent" x="557" y="585" width="18" height="18" rx="4" fill="#d97706"/><text x="566" y="598" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">?</text><text class="sol-node-title" x="361" y="603.0" font-size="12.5" font-weight="700" fill="#92400e">HTML válido?</text><text x="361.0" y="622.0" font-size="11.2" fill="#334155">validateHtml</text><text x="361.0" y="637.5" font-size="11.2" fill="#334155">âncoras e SVG</text></g><g class="sol-node sol-node-role-output" data-node-id="write" tabindex="0" role="group" aria-label="Grava HTML + recibo"><rect class="sol-node-frame" x="670" y="578" width="236" height="81" rx="8" fill="#ffffff" stroke="#087f8c" stroke-width="1.4"/><path class="sol-node-accent" d="M671,586 Q671,579 678,579 L898,579 Q905,579 905,586 L905,583 L671,583 Z" fill="#087f8c" opacity="0.88"/><circle class="sol-node-step-circle" cx="693" cy="599" r="9.5" fill="#087f8c"/><text x="693" y="602.8" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">2</text><text class="sol-node-title" x="708" y="603.0" font-size="12.5" font-weight="700" fill="#115e59">Grava HTML + recibo</text><text x="684.0" y="622.0" font-size="11.2" fill="#334155">write atômico</text><text x="684.0" y="637.5" font-size="11.2" fill="#334155">validation.json</text></g><g class="sol-edge-label-wrap" data-from="entry" data-to="guard1"><g class="sol-edge-label sol-edge-label-default"><rect x="274.0" y="102.5" width="59" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="303.5" y="117.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="303.5" dy="0">lê inputs</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="guard1" data-to="render"><g class="sol-edge-label sol-edge-label-yes"><rect x="448.5" y="238.5" width="33" height="22" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="0.9"/><text x="465.0" y="253.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#166534"><tspan x="465.0" dy="0">Sim</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="guard1" data-to="fail"><g class="sol-edge-label sol-edge-label-no"><rect x="593.5" y="232.5" width="66" height="22" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="0.9"/><text x="626.5" y="247.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#991b1b"><tspan x="626.5" dy="0">Não · erro</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="render" data-to="guard2"><g class="sol-edge-label sol-edge-label-default"><rect x="424.5" y="484.5" width="81" height="22" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="0.9"/><text x="465.0" y="499.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#334155"><tspan x="465.0" dy="0">HTML + SVG</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="guard2" data-to="write"><g class="sol-edge-label sol-edge-label-yes"><rect x="610.0" y="601.5" width="33" height="22" rx="4" fill="#dcfce7" stroke="#86efac" stroke-width="0.9"/><text x="626.5" y="616.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#166534"><tspan x="626.5" dy="0">Sim</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="guard2" data-to="fail"><g class="sol-edge-label sol-edge-label-no"><rect x="593.5" y="496.5" width="66" height="22" rx="4" fill="#fee2e2" stroke="#fca5a5" stroke-width="0.9"/><text x="626.5" y="511.5" text-anchor="middle" font-size="10.5" font-weight="500" fill="#991b1b"><tspan x="626.5" dy="0">Não · erro</tspan></text></g></g></svg></div><div class="figure-legend" aria-label="Legenda do diagrama"><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#64748b;background:#f8fafc"></span> Entrada editável</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#d97706;background:#fffbeb"></span> Decisão de contrato</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#475569;background:#f8fafc"></span> Etapa de renderização</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#c2414b;background:#fef2f2"></span> Saída de falha</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#087f8c;background:#ecfeff"></span> Entrega verificada</span></div><figcaption>Caminho de build e falha segura</figcaption><p class="diagram-note">As guardas rodam antes de qualquer gravação; o recibo só existe se validateHtml passar e o HTML for gravado por rename atômico.</p></figure><p><strong>Build (<code>scripts/build.mjs</code>).</strong> O compilador lê o manifesto e o valida contra o schema draft-07 com AJV. Em seguida, resolve <code>content</code> e <code>repoRoot</code>, recusa sobrescrever a saída sem <code>--force</code>, recusa que a saída seja um input e lê cada fonte declarada, calculando SHA-256 e verificando se o caminho permanece dentro do repositório. Só então o Markdown é tokenizado: cada H2 vira uma seção, H1 é rejeitado, títulos e ordem precisam coincidir com o manifesto e cada <code>sections[].sources</code> precisa existir no mapa.</p>
+<p>Na renderização, cada fence tem um caminho próprio. <code>solution</code> e <code>flow</code> chamam <code>renderSolutionDiagram</code>; <code>schema</code> e <code>erd</code> chamam <code>renderSchemaDiagram</code>; <code>chart</code> chama <code>barChart</code>; <code>mermaid</code> chama o renderer fixado e passa pelo <code>enhanceMermaidSvg</code>. Qualquer JSON inválido vira erro contextual, não HTML silenciosamente quebrado. O HTML de cada seção é sanitizado, tabelas e callouts recebem classes semânticas, H3 ganham IDs únicos e a navegação lateral é montada com subitens.</p>
+<p>O shell embute CSS e JavaScript, monta hero, cartões, toolbar, busca, filtros e diálogo de diagramas, e produz um HTML com um único H1. O validador então audita IDs duplicados, âncoras quebradas, ativos externos, SVG sem nome acessível, <code>viewBox</code> inválido, geometria com <code>NaN</code>/<code>Infinity</code>, detalhes sem <code>summary</code>, tabelas sem cabeçalho, links vazios ou inseguros e LaTeX não renderizado. Se algo falhar, o build lança erro e não grava; se passar, grava primeiro em <code>.tmp</code> e renomeia para o destino, junto com o recibo.</p>
+<p><strong>Inspeção (<code>scripts/inspect_repo.py</code>).</strong> A varredura percorre o repositório com exclusões padrão (<code>.git</code>, <code>node_modules</code>, ambientes virtuais, caches, <code>dist</code>, <code>build</code>, <code>data</code>), respeita <code>.docignore</code> e ignora artefatos gerados pela própria skill (<code>*.validation.json</code>, <code>reading-plan.md</code>, <code>update-plan.md</code>, <code>documentacao*.html</code>). Cada arquivo elegível recebe kind, linhas, bytes, hash e sinais de stack. Extratores especializados cobrem Python/AST, notebooks Databricks e <code>.ipynb</code>, SQL/DDL/dbt, JS/TS, Scala, Terraform/Bicep, workflows e configurações. O resultado inclui rotas, parâmetros de ambiente/CLI, contratos, linhagem SQL, recursos de IaC, símbolos, testes, grafo de dependências e ondas de leitura. Valores com nomes de segredo e connection strings são redigidos.</p>
+<p><strong>Verificação (<code>scripts/verify.mjs</code>).</strong> O verificador relê o manifesto e o recibo, confere cada fonte declarada (hash, caminho, existência), detecta fontes no recibo que não estão mais no manifesto, compara a revisão Git documentada com a atual e informa se a árvore está suja. No modo impacto, percorre o grafo do dossiê em busca de dependentes transitivos, cruza os caminhos afetados com <code>sections[].sources</code> e marca apenas as seções <code>stale</code>, preservando as <code>fresh</code>.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Entrada</th>
+<th>Saída</th>
+<th>Falha prevista</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Validar manifesto</td>
+<td><code>document.json</code></td>
+<td>Objeto validado</td>
+<td>Schema inválido ou campo extra</td>
+</tr>
+<tr>
+<td>Resolver fontes</td>
+<td><code>sources[]</code> e <code>repoRoot</code></td>
+<td>Mapa de hashes</td>
+<td>Fonte ausente, duplicada ou fora do repo</td>
+</tr>
+<tr>
+<td>Tokenizar Markdown</td>
+<td><code>content.md</code></td>
+<td>Grupos de seções</td>
+<td>H1, H2 fora de ordem ou texto antes do primeiro H2</td>
+</tr>
+<tr>
+<td>Renderizar visual</td>
+<td>Fences JSON</td>
+<td>SVG/chart inline</td>
+<td>JSON inválido, nó/entidade sem id ou valor de gráfico inválido</td>
+</tr>
+<tr>
+<td>Sanitizar e montar</td>
+<td>HTML das seções</td>
+<td>Shell completo</td>
+<td>HTML perigoso ou IDs reservados</td>
+</tr>
+<tr>
+<td>Validar HTML</td>
+<td>Shell</td>
+<td>Recibo</td>
+<td>Âncora, SVG, tabela, <code>details</code> ou ativo externo</td>
+</tr>
+<tr>
+<td>Gravar</td>
+<td>HTML + recibo</td>
+<td>Arquivos finais</td>
+<td>Falha de escrita ou validação</td>
+</tr>
+</tbody></table></div>
+<blockquote class="callout-example">
+<p>Exemplo prático: se <code>scripts/validate.mjs</code> mudar, o <code>verify.mjs</code> marca a fonte como <code>changed</code>. Como <code>build.mjs</code> importa <code>validate.mjs</code>, o build entra como dependente transitivo; qualquer seção que declare <code>build</code> em <code>sources</code> fica <code>stale</code>. Uma seção que declare apenas <code>readme</code> permanece <code>fresh</code> e não precisa ser relida.</p>
+</blockquote>
+<blockquote class="callout-warning">
+<p>Atenção: a análise de impacto só encontra o que está mapeado. Se uma fonte alterada não estiver vinculada a nenhuma seção em <code>sections[].sources</code>, o plano emite um aviso de fonte não mapeada; corrija o manifesto antes de confiar no plano.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-inspect">scripts/inspect_repo.py</a> <a href="#ref-build">scripts/build.mjs</a> <a href="#ref-verify">scripts/verify.mjs</a> <a href="#ref-validate">scripts/validate.mjs</a></div></div></details>
+<details class="doc-section" id="regras" data-audience="technical" open><summary class="section-heading"><span class="number">07</span><h2>Regras funcionais e validações</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>As regras do gerador são contractuais: algumas impedem o build, outras apenas alertam. A distinção é importante para operar a skill sem tratar todo aviso como defeito e sem publicar um documento que viola uma garantia estrutural.</p>
+<h3 id="regras-contrato-de-conteudo-e-de-build">Contrato de conteúdo e de build</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condição</th>
+<th>Resultado</th>
+<th>Leitura</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>H1 no Markdown ou <code>&lt;h1&gt;</code> em HTML</td>
+<td>Erro e nenhuma gravação</td>
+<td>O H1 é exclusivo do título do documento</td>
+</tr>
+<tr>
+<td>Texto antes do primeiro H2</td>
+<td>Erro</td>
+<td>O conteúdo precisa começar pela primeira seção declarada</td>
+</tr>
+<tr>
+<td>H2 fora de ordem ou com texto diferente de <code>sections[].title</code></td>
+<td>Erro</td>
+<td>Títulos são comparados exatamente, inclusive acentos</td>
+</tr>
+<tr>
+<td><code>id</code> de seção reservado, duplicado ou fora do padrão</td>
+<td>Erro</td>
+<td>IDs do shell não podem ser reutilizados; o padrão é <code>^[a-z][a-z0-9-]*$</code></td>
+</tr>
+<tr>
+<td>Fonte desconhecida em <code>sections[].sources</code></td>
+<td>Erro</td>
+<td>Toda referência precisa existir em <code>sources[]</code></td>
+</tr>
+<tr>
+<td>Fonte fora do <code>repoRoot</code></td>
+<td>Erro</td>
+<td>O build recusa path traversal e caminhos absolutos</td>
+</tr>
+<tr>
+<td>Saída já existente sem <code>--force</code></td>
+<td>Erro</td>
+<td>Atualização é deliberada, nunca acidental</td>
+</tr>
+<tr>
+<td>Saída igual ao manifesto ou ao Markdown</td>
+<td>Erro</td>
+<td>Inputs não podem ser sobrescritos</td>
+</tr>
+<tr>
+<td><code>details</code> sem um único <code>summary</code></td>
+<td>Erro de validação</td>
+<td>Acordeões precisam de rótulo acessível</td>
+</tr>
+<tr>
+<td>Tabela sem <code>thead</code>/<code>th</code></td>
+<td>Erro de validação</td>
+<td>Toda tabela precisa de cabeçalho</td>
+</tr>
+<tr>
+<td>Figura sem <code>figcaption</code></td>
+<td>Erro de validação</td>
+<td>Diagramas e gráficos precisam de legenda</td>
+</tr>
+<tr>
+<td>Script externo, iframe, <code>link</code> ou CSS remoto</td>
+<td>Erro de validação</td>
+<td>O produto é offline por contrato</td>
+</tr>
+<tr>
+<td>LaTeX não renderizado em prosa/tabela</td>
+<td>Erro de validação</td>
+<td>Use Unicode e HTML para fórmulas</td>
+</tr>
+<tr>
+<td>Mais de 70% das seções com <code>audience: "all"</code></td>
+<td>Aviso</td>
+<td>Distribua as audiências para o filtro ser útil</td>
+</tr>
+<tr>
+<td>Mais de 50% das seções sem <code>sources</code></td>
+<td>Aviso</td>
+<td>Sem vínculo, o impacto não consegue rotear a revisão</td>
+</tr>
+</tbody></table></div>
+<h3 id="regras-modo-guia-rapido">Modo Guia Rápido</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Condição</th>
+<th>Comportamento</th>
+<th>Leitura</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mode: "full"</code></td>
+<td>Sem limite de seções ou palavras</td>
+<td>Manual completo, com dicionários e detalhes</td>
+</tr>
+<tr>
+<td><code>mode: "summary"</code> com 4 a 7 seções</td>
+<td>Caminho esperado</td>
+<td>Panorama de ~5 a 7 minutos</td>
+</tr>
+<tr>
+<td><code>mode: "summary"</code> com mais de 8 seções</td>
+<td>Aviso não bloqueante</td>
+<td>O guia perdeu a característica de leitura rápida</td>
+</tr>
+<tr>
+<td><code>mode: "summary"</code> com mais de 3.500 palavras</td>
+<td>Aviso não bloqueante</td>
+<td>Reduza detalhe enciclopédico</td>
+</tr>
+<tr>
+<td><code>companionDoc.href</code> com esquema inseguro</td>
+<td>Erro</td>
+<td><code>javascript:</code>, <code>data:</code> e <code>vbscript:</code> são recusados</td>
+</tr>
+<tr>
+<td>Contagem de leitura</td>
+<td><code>max(1, round(palavras / 190))</code></td>
+<td>Estimativa exibida no hero do modo resumido</td>
+</tr>
+<tr>
+<td><code>--mode summary</code> na CLI</td>
+<td>Sobrepõe o campo do manifesto</td>
+<td>Útil para gerar as duas versões do mesmo conteúdo-base</td>
+</tr>
+</tbody></table></div>
+<h3 id="regras-impacto-e-propagacao">Impacto e propagação</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Tipo de aresta no dossiê</th>
+<th>Direção da propagação</th>
+<th>Exemplo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>import</code></td>
+<td>Módulo importado mudou → quem importa fica <code>stale</code></td>
+<td><code>build.mjs</code> importa <code>validate.mjs</code></td>
+</tr>
+<tr>
+<td><code>notebook_run</code></td>
+<td>Notebook chamado mudou → chamador fica <code>stale</code></td>
+<td><code>dbutils.notebook.run</code></td>
+</tr>
+<tr>
+<td><code>bundle_task</code></td>
+<td>Notebook/arquivo mudou → bundle fica <code>stale</code></td>
+<td><code>databricks.yml</code></td>
+</tr>
+<tr>
+<td><code>adf_activity</code></td>
+<td>Notebook mudou → pipeline ADF fica <code>stale</code></td>
+<td>Atividade <code>DatabricksNotebook</code></td>
+</tr>
+<tr>
+<td><code>workflow_run</code></td>
+<td>Script mudou → workflow fica <code>stale</code></td>
+<td>GitHub Actions</td>
+</tr>
+<tr>
+<td><code>sql_lineage</code></td>
+<td>Produtor mudou → consumidor SQL fica <code>stale</code></td>
+<td>Tabela de origem → consulta</td>
+</tr>
+<tr>
+<td>Sem grafo</td>
+<td>Apenas a fonte direta é marcada</td>
+<td>Uso mínimo do dossiê</td>
+</tr>
+</tbody></table></div>
+<p>A leitura correta é: <strong>hash diferente</strong> é sinal de drift, não prova de mudança semântica; <strong>seção <code>stale</code></strong> é convite à revisão, não conclusão de que o texto está errado; <strong>seção <code>fresh</code></strong> significa que as fontes declaradas não mudaram, não que o conteúdo seja verdadeiro para sempre.</p>
+<blockquote class="callout-rule">
+<p>Regra de negócio: uma seção sem <code>sources</code> não participa do roteamento de impacto. Declarar as fontes é parte do contrato de autoria, não um detalhe opcional, sempre que o manifesto tiver fontes e mais de duas seções.</p>
+</blockquote>
+<h3 id="regras-graficos-e-diagramas">Gráficos e diagramas</h3>
+<p>O componente <code>chart</code> aceita apenas barras horizontais com valores finitos e não negativos, de 1 a 40 categorias, rótulos únicos de até 45 caracteres, unidade e fonte obrigatórias. Cada gráfico embute uma tabela de dados acessível, uma escala linear com marcações em 25%, 50%, 75% e 100%, tratamento explícito de zero e variantes semânticas de cor (<code>accent</code>, <code>success</code>, <code>warning</code>, <code>danger</code>, <code>neutral</code>). A data de observação (<code>asOf</code>) é opcional e aparece na legenda.</p>
+<p>Diagramas 2D são validados pelo renderizador: <code>solution</code> e <code>flow</code> exigem título, lista não vazia de nós e IDs únicos; <code>schema</code> e <code>erd</code> exigem título, entidades com nome e IDs únicos. Arestas que apontam para nós inexistentes falham. O motor distribui portas, desvia de nós intermediários, evita colisão de rótulos e calcula a geometria antes de emitir o SVG. O <code>validate.mjs</code> complementa com checagens de acessibilidade e geometria, mas não certifica semântica, cardinalidade ou legibilidade visual.</p>
+<blockquote class="callout-example">
+<p>Exemplo prático: um gráfico com três valores <code>15</code>, <code>11</code> e <code>3</code> e unidade <code>testes</code> é válido; o maior valor ocupa a barra mais longa, o zero teria badge explícito e a tabela embutida repetiria os três pares. Um valor negativo ou um rótulo repetido interrompe o build com mensagem de erro.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: validação estrutural não substitui revisão visual. Sobreposição de rótulos, corte de texto, uma seta ambígua ou uma tabela apertada podem passar pelo HTML válido e ainda assim prejudicar a leitura; a inspeção desktop é obrigatória.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-authoring">references/authoring.md</a> <a href="#ref-build">scripts/build.mjs</a> <a href="#ref-validate">scripts/validate.mjs</a> <a href="#ref-verify">scripts/verify.mjs</a> <a href="#ref-inspect">scripts/inspect_repo.py</a></div></div></details>
+<details class="doc-section" id="modelo" data-audience="technical" open><summary class="section-heading"><span class="number">08</span><h2>Modelo e relacionamento dos artefatos</h2><span class="audience technical">Técnico</span></summary><div class="section-body"><p>O gerador não usa banco de dados. O modelo é um conjunto de arquivos com papéis bem definidos: dois inputs editáveis, um dossiê de descoberta, dois artefatos de build e um plano de manutenção. As relações são de <strong>derivação e responsabilidade</strong>, não de chave estrangeira.</p>
+<figure class="diagram"><div class="figure-tools"><span class="figure-tag">Artefatos do ciclo de documentação</span><button type="button" data-expand-diagram aria-label="Ampliar: Artefatos do ciclo de documentação">Ampliar</button></div><div class="diagram-scroll"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1076 576" width="1076" height="576" class="sol-svg schema-svg" role="img" aria-label="Artefatos do ciclo de documentação" data-natural-width="1076" style="width:1076px;max-width:100%;height:auto"><defs><marker id="diagram-3-lineage-arrow" class="schema-lineage-marker" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon class="lineage-arrow-head" points="0 0.5, 8 3, 0 5.5" fill="#087f8c"/></marker></defs><g class="sol-edge sol-edge-lineage" data-from="manifest" data-to="html"><path d="M156.0,74.0 L156.0,59.0 Q156.0,52.0 163.0,52.0 L913.0,52.0 Q920.0,52.0 920.0,59.0 L920.0,74.0" fill="none" stroke="#087f8c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#diagram-3-lineage-arrow)"/></g><g class="sol-edge sol-edge-lineage" data-from="content" data-to="html"><path d="M284.0,424.0 L531.0,424.0 Q538.0,424.0 538.0,417.0 L538.0,173.0 Q538.0,166.0 545.0,166.0 L792.0,166.0" fill="none" stroke="#087f8c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#diagram-3-lineage-arrow)"/></g><g class="sol-edge sol-edge-lineage" data-from="manifest" data-to="receipt"><path d="M284.0,178.0 L347.0,178.0 L347.0,178.0 L410.0,178.0" fill="none" stroke="#087f8c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#diagram-3-lineage-arrow)"/></g><g class="sol-edge sol-edge-lineage" data-from="inventory" data-to="plan"><path d="M666.0,448.0 L722.0,448.0 Q729.0,448.0 729.0,441.0 L729.0,418.0 Q729.0,411.0 736.0,411.0 L792.0,411.0" fill="none" stroke="#087f8c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#diagram-3-lineage-arrow)"/></g><g class="sol-edge sol-edge-lineage" data-from="receipt" data-to="plan"><path d="M666.0,178.0 L722.0,178.0 Q729.0,178.0 729.0,185.0 L729.0,430.0 Q729.0,437.0 736.0,437.0 L792.0,437.0" fill="none" stroke="#087f8c" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#diagram-3-lineage-arrow)"/></g><g class="sol-node schema-entity schema-entity-json" data-node-id="manifest" tabindex="0" role="group" aria-label="document.json"><rect class="schema-card-border schema-border-json" x="28" y="74" width="256" height="208" rx="8" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.4" stroke-dasharray="5,3"/><path class="schema-header schema-header-json" d="M28,82 Q28,74 36,74 L276,74 Q284,74 284,82 L284,108 L28,108 Z" fill="#3730a3"/><text x="40" y="95.5" font-size="12.5" font-weight="700" fill="#ffffff">document.json</text><rect class="schema-tag-bg schema-tag-bg-json" x="192" y="82" width="82" height="17" rx="4" fill="#4f46e5"/><text x="233" y="93.5" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="#e0e7ff">JSON / ESTADO</text><rect class="schema-sub-bg schema-sub-bg-json" x="29" y="108" width="254" height="24" fill="#eef2ff"/><line x1="28" y1="132" x2="284" y2="132" stroke="#a5b4fc" stroke-width="0.75"/><text class="schema-sub-fg schema-sub-fg-json" x="40" y="123.5" font-size="10.2" font-weight="500" fill="#3730a3">1 objeto = 1 manual</text><rect x="29" y="132" width="254" height="24" fill="#ffffff"/><text x="40" y="147.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">title</text><text x="272" y="147.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">STRING</text><rect x="29" y="156" width="254" height="24" fill="#f8fafc"/><text x="40" y="171.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">version</text><text x="272" y="171.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">STRING</text><rect x="29" y="180" width="254" height="24" fill="#ffffff"/><text x="40" y="195.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">updated</text><text x="272" y="195.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">STRING</text><rect x="29" y="204" width="254" height="24" fill="#f8fafc"/><text x="40" y="219.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">mode</text><text x="272" y="219.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ENUM</text><rect x="29" y="228" width="254" height="24" fill="#ffffff"/><text x="40" y="243.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">sections[]</text><text x="272" y="243.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ARRAY</text><rect x="29" y="252" width="254" height="24" fill="#f8fafc"/><text x="40" y="267.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">sources[]</text><text x="272" y="267.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ARRAY</text></g><g class="sol-node schema-entity schema-entity-external" data-node-id="content" tabindex="0" role="group" aria-label="content.md"><rect class="schema-card-border schema-border-external" x="28" y="344" width="256" height="160" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4" stroke-dasharray="5,3"/><path class="schema-header schema-header-external" d="M28,352 Q28,344 36,344 L276,344 Q284,344 284,352 L284,378 L28,378 Z" fill="#475569"/><text x="40" y="365.5" font-size="12.5" font-weight="700" fill="#ffffff">content.md</text><rect class="schema-tag-bg schema-tag-bg-external" x="220" y="352" width="54" height="17" rx="4" fill="#64748b"/><text x="247" y="363.5" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="#f1f5f9">EXTERNO</text><rect class="schema-sub-bg schema-sub-bg-external" x="29" y="378" width="254" height="24" fill="#f8fafc"/><line x1="28" y1="402" x2="284" y2="402" stroke="#cbd5e1" stroke-width="0.75"/><text class="schema-sub-fg schema-sub-fg-external" x="40" y="393.5" font-size="10.2" font-weight="500" fill="#475569">1 arquivo = 1 seção por H2</text><rect x="29" y="402" width="254" height="24" fill="#ffffff"/><text x="40" y="417.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">## seção</text><text x="272" y="417.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">MARKDOWN</text><rect x="29" y="426" width="254" height="24" fill="#f8fafc"/><text x="40" y="441.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">fences</text><text x="272" y="441.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">JSON</text><rect x="29" y="450" width="254" height="24" fill="#ffffff"/><text x="40" y="465.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">prosa</text><text x="272" y="465.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">MARKDOWN</text><rect x="29" y="474" width="254" height="24" fill="#f8fafc"/><text x="40" y="489.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">tabelas</text><text x="272" y="489.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">MARKDOWN</text></g><g class="sol-node schema-entity schema-entity-json" data-node-id="receipt" tabindex="0" role="group" aria-label="validation.json"><rect class="schema-card-border schema-border-json" x="410" y="74" width="256" height="208" rx="8" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.4" stroke-dasharray="5,3"/><path class="schema-header schema-header-json" d="M410,82 Q410,74 418,74 L658,74 Q666,74 666,82 L666,108 L410,108 Z" fill="#3730a3"/><text x="422" y="95.5" font-size="12.5" font-weight="700" fill="#ffffff">validation.json</text><rect class="schema-tag-bg schema-tag-bg-json" x="574" y="82" width="82" height="17" rx="4" fill="#4f46e5"/><text x="615" y="93.5" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="#e0e7ff">JSON / ESTADO</text><rect class="schema-sub-bg schema-sub-bg-json" x="411" y="108" width="254" height="24" fill="#eef2ff"/><line x1="410" y1="132" x2="666" y2="132" stroke="#a5b4fc" stroke-width="0.75"/><text class="schema-sub-fg schema-sub-fg-json" x="422" y="123.5" font-size="10.2" font-weight="500" fill="#3730a3">1 arquivo = 1 build verificado</text><rect x="411" y="132" width="254" height="24" fill="#ffffff"/><text x="422" y="147.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">passed</text><text x="654" y="147.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">BOOLEAN</text><rect x="411" y="156" width="254" height="24" fill="#f8fafc"/><text x="422" y="171.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">sources[]</text><text x="654" y="171.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ARRAY</text><rect x="411" y="180" width="254" height="24" fill="#ffffff"/><text x="422" y="195.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">revision</text><text x="654" y="195.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">STRING</text><rect x="411" y="204" width="254" height="24" fill="#f8fafc"/><text x="422" y="219.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">manifestSha256</text><text x="654" y="219.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">STRING</text><rect x="411" y="228" width="254" height="24" fill="#ffffff"/><text x="422" y="243.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">htmlSha256</text><text x="654" y="243.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">STRING</text><rect x="411" y="252" width="254" height="24" fill="#f8fafc"/><text x="422" y="267.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">warnings[]</text><text x="654" y="267.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ARRAY</text></g><g class="sol-node schema-entity schema-entity-json" data-node-id="inventory" tabindex="0" role="group" aria-label="inventory.json"><rect class="schema-card-border schema-border-json" x="410" y="344" width="256" height="208" rx="8" fill="#ffffff" stroke="#a5b4fc" stroke-width="1.4" stroke-dasharray="5,3"/><path class="schema-header schema-header-json" d="M410,352 Q410,344 418,344 L658,344 Q666,344 666,352 L666,378 L410,378 Z" fill="#3730a3"/><text x="422" y="365.5" font-size="12.5" font-weight="700" fill="#ffffff">inventory.json</text><rect class="schema-tag-bg schema-tag-bg-json" x="574" y="352" width="82" height="17" rx="4" fill="#4f46e5"/><text x="615" y="363.5" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="#e0e7ff">JSON / ESTADO</text><rect class="schema-sub-bg schema-sub-bg-json" x="411" y="378" width="254" height="24" fill="#eef2ff"/><line x1="410" y1="402" x2="666" y2="402" stroke="#a5b4fc" stroke-width="0.75"/><text class="schema-sub-fg schema-sub-fg-json" x="422" y="393.5" font-size="10.2" font-weight="500" fill="#3730a3">1 arquivo = 1 varredura do repositório</text><rect x="411" y="402" width="254" height="24" fill="#ffffff"/><text x="422" y="417.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">scaleProfile</text><text x="654" y="417.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">OBJECT</text><rect x="411" y="426" width="254" height="24" fill="#f8fafc"/><text x="422" y="441.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">files[]</text><text x="654" y="441.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ARRAY</text><rect x="411" y="450" width="254" height="24" fill="#ffffff"/><text x="422" y="465.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">dependencyGraph</text><text x="654" y="465.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">OBJECT</text><rect x="411" y="474" width="254" height="24" fill="#f8fafc"/><text x="422" y="489.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">readingWaves</text><text x="654" y="489.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">OBJECT</text><rect x="411" y="498" width="254" height="24" fill="#ffffff"/><text x="422" y="513.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">symbolIndex</text><text x="654" y="513.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">OBJECT</text><rect x="411" y="522" width="254" height="24" fill="#f8fafc"/><text x="422" y="537.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">testsIndex</text><text x="654" y="537.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">OBJECT</text></g><g class="sol-node schema-entity schema-entity-mart" data-node-id="html" tabindex="0" role="group" aria-label="documentacao.html"><rect class="schema-card-border schema-border-mart" x="792" y="74" width="256" height="184" rx="8" fill="#ffffff" stroke="#8ec7cd" stroke-width="1.4"/><path class="schema-header schema-header-mart" d="M792,82 Q792,74 800,74 L1040,74 Q1048,74 1048,82 L1048,108 L792,108 Z" fill="#0f5f68"/><text x="804" y="95.5" font-size="12.5" font-weight="700" fill="#ffffff">documentacao.html</text><rect class="schema-tag-bg schema-tag-bg-mart" x="964" y="82" width="74" height="17" rx="4" fill="#187d88"/><text x="1001" y="93.5" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="#e0f7f8">MART / VIEW</text><rect class="schema-sub-bg schema-sub-bg-mart" x="793" y="108" width="254" height="24" fill="#eef8f8"/><line x1="792" y1="132" x2="1048" y2="132" stroke="#8ec7cd" stroke-width="0.75"/><text class="schema-sub-fg schema-sub-fg-mart" x="804" y="123.5" font-size="10.2" font-weight="500" fill="#13535b">1 arquivo = 1 manual offline</text><rect x="793" y="132" width="254" height="24" fill="#ffffff"/><text x="804" y="147.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">seções</text><text x="1036" y="147.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">DETAILS</text><rect x="793" y="156" width="254" height="24" fill="#f8fafc"/><text x="804" y="171.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">SVG</text><text x="1036" y="171.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">INLINE</text><rect x="793" y="180" width="254" height="24" fill="#ffffff"/><text x="804" y="195.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">CSS</text><text x="1036" y="195.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">INLINE</text><rect x="793" y="204" width="254" height="24" fill="#f8fafc"/><text x="804" y="219.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">JS</text><text x="1036" y="219.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">INLINE</text><rect x="793" y="228" width="254" height="24" fill="#ffffff"/><text x="804" y="243.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">tema</text><text x="1036" y="243.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">ATTRIBUTE</text></g><g class="sol-node schema-entity schema-entity-external" data-node-id="plan" tabindex="0" role="group" aria-label="update-plan.md"><rect class="schema-card-border schema-border-external" x="792" y="344" width="256" height="160" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4" stroke-dasharray="5,3"/><path class="schema-header schema-header-external" d="M792,352 Q792,344 800,344 L1040,344 Q1048,344 1048,352 L1048,378 L792,378 Z" fill="#475569"/><text x="804" y="365.5" font-size="12.5" font-weight="700" fill="#ffffff">update-plan.md</text><rect class="schema-tag-bg schema-tag-bg-external" x="984" y="352" width="54" height="17" rx="4" fill="#64748b"/><text x="1011" y="363.5" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="#f1f5f9">EXTERNO</text><rect class="schema-sub-bg schema-sub-bg-external" x="793" y="378" width="254" height="24" fill="#f8fafc"/><line x1="792" y1="402" x2="1048" y2="402" stroke="#cbd5e1" stroke-width="0.75"/><text class="schema-sub-fg schema-sub-fg-external" x="804" y="393.5" font-size="10.2" font-weight="500" fill="#475569">1 arquivo = 1 diagnóstico de drift</text><rect x="793" y="402" width="254" height="24" fill="#ffffff"/><text x="804" y="417.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">fontes alteradas</text><text x="1036" y="417.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">TABLE</text><rect x="793" y="426" width="254" height="24" fill="#f8fafc"/><text x="804" y="441.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">dependentes</text><text x="1036" y="441.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">LIST</text><rect x="793" y="450" width="254" height="24" fill="#ffffff"/><text x="804" y="465.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">seções stale</text><text x="1036" y="465.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">LIST</text><rect x="793" y="474" width="254" height="24" fill="#f8fafc"/><text x="804" y="489.5" class="mono" font-size="11.2" font-weight="400" fill="#0f172a">git diff</text><text x="1036" y="489.5" text-anchor="end" class="mono" font-size="10.2" fill="#64748b">TEXT</text></g><g class="sol-edge-label-wrap" data-from="manifest" data-to="html"><g class="sol-edge-label sol-edge-label-lineage"><rect x="513.5" y="41.0" width="49" height="22" rx="4" fill="#ecfeff" stroke="#99f6e4" stroke-width="0.9"/><text x="538.0" y="56.0" text-anchor="middle" font-size="10" font-weight="500" fill="#115e59"><tspan x="538.0" dy="0">compila</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="content" data-to="html"><g class="sol-edge-label sol-edge-label-lineage"><rect x="513.5" y="302.0" width="49" height="22" rx="4" fill="#ecfeff" stroke="#99f6e4" stroke-width="0.9"/><text x="538.0" y="317.0" text-anchor="middle" font-size="10" font-weight="500" fill="#115e59"><tspan x="538.0" dy="0">compila</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="manifest" data-to="receipt"><g class="sol-edge-label sol-edge-label-lineage"><rect x="309.5" y="167.0" width="75" height="22" rx="4" fill="#ecfeff" stroke="#99f6e4" stroke-width="0.9"/><text x="347.0" y="182.0" text-anchor="middle" font-size="10" font-weight="500" fill="#115e59"><tspan x="347.0" dy="0">fingerprints</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="inventory" data-to="plan"><g class="sol-edge-label sol-edge-label-lineage"><rect x="683.5" y="418.5" width="91" height="22" rx="4" fill="#ecfeff" stroke="#99f6e4" stroke-width="0.9"/><text x="729.0" y="433.5" text-anchor="middle" font-size="10" font-weight="500" fill="#115e59"><tspan x="729.0" dy="0">alimenta impacto</tspan></text></g></g><g class="sol-edge-label-wrap" data-from="receipt" data-to="plan"><g class="sol-edge-label sol-edge-label-lineage"><rect x="702.0" y="296.5" width="54" height="22" rx="4" fill="#ecfeff" stroke="#99f6e4" stroke-width="0.9"/><text x="729.0" y="311.5" text-anchor="middle" font-size="10" font-weight="500" fill="#115e59"><tspan x="729.0" dy="0">compara</tspan></text></g></g></svg></div><div class="figure-legend" aria-label="Legenda do diagrama"><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#475569;background:#f8fafc"></span> Entidade física / tabela</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#087f8c;background:#ecfeff"></span> Visão derivada / mart</span><span class="legend-item"><span class="legend-outline-swatch" style="border-color:#4f46e5;background:#eef2ff"></span> Objeto lógico / JSON</span><span class="legend-item"><span class="line-dashed" style="border-top-color:#087f8c"></span> Derivação / linhagem (não é FK)</span></div><figcaption>Artefatos do ciclo de documentação</figcaption><p class="diagram-note">Artefatos são arquivos, não tabelas relacionais; setas tracejadas indicam derivação, não chave estrangeira.</p></figure><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Artefato</th>
+<th>Grão</th>
+<th>Identidade</th>
+<th>Produzido por</th>
+<th>Consumido por</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>document.json</code></td>
+<td>1 objeto = 1 manual</td>
+<td>Título + versão + revisão</td>
+<td>Autoria</td>
+<td>Build e verify</td>
+</tr>
+<tr>
+<td><code>content.md</code></td>
+<td>1 arquivo = 1 seção por H2</td>
+<td>Títulos H2 na ordem</td>
+<td>Autoria</td>
+<td>Build</td>
+</tr>
+<tr>
+<td><code>inventory.json</code></td>
+<td>1 arquivo = 1 varredura</td>
+<td>Caminho + hash de cada arquivo</td>
+<td><code>inspect_repo.py</code></td>
+<td>Autoria e impacto</td>
+</tr>
+<tr>
+<td><code>documentacao.html</code></td>
+<td>1 arquivo = 1 manual</td>
+<td>Caminho de saída</td>
+<td>Build</td>
+<td>Leitor</td>
+</tr>
+<tr>
+<td><code>validation.json</code></td>
+<td>1 arquivo = 1 build</td>
+<td><code>manifestSha256</code> + revisão</td>
+<td>Build</td>
+<td>Verify e operação</td>
+</tr>
+<tr>
+<td><code>update-plan.md</code></td>
+<td>1 arquivo = 1 diagnóstico</td>
+<td>Revisão documentada → atual</td>
+<td>Verify</td>
+<td>Autoria</td>
+</tr>
+</tbody></table></div>
+<h3 id="modelo-dicionario-do-manifesto">Dicionário do manifesto</h3>
+<details>
+<summary>Campos de document.json</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Obrigatório</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>title</code></td>
+<td>string</td>
+<td>Sim</td>
+<td>Título do documento e do HTML</td>
+</tr>
+<tr>
+<td><code>subtitle</code></td>
+<td>string</td>
+<td>Sim</td>
+<td>Descrição curta exibida no hero</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>string</td>
+<td>Sim</td>
+<td>Versão editorial do manual</td>
+</tr>
+<tr>
+<td><code>updated</code></td>
+<td>string <code>YYYY-MM-DD</code></td>
+<td>Sim</td>
+<td>Data de atualização do documento</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>string</td>
+<td>Sim</td>
+<td>Caminho relativo do Markdown</td>
+</tr>
+<tr>
+<td><code>sections</code></td>
+<td>array</td>
+<td>Sim</td>
+<td>Seções na ordem em que aparecem no Markdown</td>
+</tr>
+<tr>
+<td><code>sources</code></td>
+<td>array</td>
+<td>Recomendado</td>
+<td>Fontes locais com id, path e descrição</td>
+</tr>
+<tr>
+<td><code>language</code></td>
+<td><code>pt-BR</code> ou <code>en</code></td>
+<td>Não</td>
+<td>Idioma do shell e dos rótulos</td>
+</tr>
+<tr>
+<td><code>theme</code></td>
+<td><code>verde</code>, <code>azul</code> ou <code>vermelho</code></td>
+<td>Não</td>
+<td>Tema inicial; ausência equivale a vermelho</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>full</code> ou <code>summary</code></td>
+<td>Não</td>
+<td>Preset de detalhe do documento</td>
+</tr>
+<tr>
+<td><code>eyebrow</code></td>
+<td>string</td>
+<td>Não</td>
+<td>Sobrelinha do hero; tem padrão por idioma</td>
+</tr>
+<tr>
+<td><code>cards</code></td>
+<td>array de até 4</td>
+<td>Não</td>
+<td>Cartões de destaque do hero</td>
+</tr>
+<tr>
+<td><code>repoRoot</code></td>
+<td>string</td>
+<td>Com fontes</td>
+<td>Raiz para resolver <code>sources[].path</code></td>
+</tr>
+<tr>
+<td><code>revision</code></td>
+<td>string</td>
+<td>Não</td>
+<td>Revisão Git efetivamente lida</td>
+</tr>
+<tr>
+<td><code>dataAsOf</code></td>
+<td>string</td>
+<td>Não</td>
+<td>Data dos dados observados, distinta da atualização</td>
+</tr>
+<tr>
+<td><code>companionDoc</code></td>
+<td>objeto</td>
+<td>Não</td>
+<td>Link seguro para manual ou guia companheiro</td>
+</tr>
+</tbody></table></div>
+<p>Cada seção exige <code>id</code> (padrão <code>^[a-z][a-z0-9-]*$</code>), <code>title</code> e <code>audience</code> (<code>all</code>, <code>business</code>, <code>technical</code> ou <code>operations</code>). <code>sources</code> é uma lista de IDs de fontes. IDs de seção não podem colidir com o shell (<code>main</code>, <code>search</code>, <code>expand</code>, <code>print</code>, <code>diagram-dialog</code>, entre outros). O schema usa <code>additionalProperties: false</code>, portanto campos não previstos são rejeitados.</p>
+</details><h3 id="modelo-dicionario-do-recibo">Dicionário do recibo</h3>
+<details>
+<summary>Campos de validation.json</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>passed</code></td>
+<td>boolean</td>
+<td>Indica se o validador não encontrou erros</td>
+</tr>
+<tr>
+<td><code>errors</code></td>
+<td>array</td>
+<td>Lista de falhas estruturais</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>string</td>
+<td><code>full</code> ou <code>summary</code> efetivamente usado</td>
+</tr>
+<tr>
+<td><code>wordCount</code></td>
+<td>number</td>
+<td>Palavras contadas no corpo das seções</td>
+</tr>
+<tr>
+<td><code>readingMinutes</code></td>
+<td>number</td>
+<td>Estimativa <code>max(1, round(wordCount / 190))</code></td>
+</tr>
+<tr>
+<td><code>sections</code></td>
+<td>number</td>
+<td>Seções de conteúdo, sem o bloco de referências</td>
+</tr>
+<tr>
+<td><code>contentSections</code></td>
+<td>number</td>
+<td>Mesma contagem de seções de conteúdo</td>
+</tr>
+<tr>
+<td><code>referenceBlocks</code></td>
+<td>number</td>
+<td>Quantidade de blocos de referências gerados</td>
+</tr>
+<tr>
+<td><code>diagrams</code></td>
+<td>number</td>
+<td>Figuras de diagrama no HTML</td>
+</tr>
+<tr>
+<td><code>charts</code></td>
+<td>number</td>
+<td>Figuras de gráfico no HTML</td>
+</tr>
+<tr>
+<td><code>bytes</code></td>
+<td>number</td>
+<td>Tamanho do HTML em bytes</td>
+</tr>
+<tr>
+<td><code>warnings</code></td>
+<td>array</td>
+<td>Avisos não bloqueantes de autoria</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>string</td>
+<td>Versão da skill que gerou o recibo</td>
+</tr>
+<tr>
+<td><code>skillVersion</code></td>
+<td>string</td>
+<td>Versão da skill registrada no build</td>
+</tr>
+<tr>
+<td><code>builtAt</code></td>
+<td>ISO 8601</td>
+<td>Momento do build</td>
+</tr>
+<tr>
+<td><code>manifestSha256</code></td>
+<td>string</td>
+<td>Hash do manifesto bruto</td>
+</tr>
+<tr>
+<td><code>inputSha256</code></td>
+<td>string</td>
+<td>Hash do Markdown de entrada</td>
+</tr>
+<tr>
+<td><code>htmlSha256</code></td>
+<td>string</td>
+<td>Hash do HTML final</td>
+</tr>
+<tr>
+<td><code>revision</code></td>
+<td>string ou null</td>
+<td>Revisão Git documentada</td>
+</tr>
+<tr>
+<td><code>sources</code></td>
+<td>array</td>
+<td>Fontes com path e SHA-256</td>
+</tr>
+<tr>
+<td><code>browserReviewed</code></td>
+<td>boolean</td>
+<td>Revisão visual registrada separadamente</td>
+</tr>
+</tbody></table></div>
+<p>O recibo é uma fotografia do build, não um monitor de produção. <code>builtAt</code> muda a cada compilação; <code>manifestSha256</code> e <code>htmlSha256</code> permitem comparar artefatos; <code>sources</code> é a lista que o <code>verify.mjs</code> confronta com o estado atual. <code>browserReviewed</code> permanece <code>false</code> porque o build não abre navegador.</p>
+</details><h3 id="modelo-dicionario-do-dossie">Dicionário do dossiê</h3>
+<details>
+<summary>Campos de inventory.json</summary><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>dossierVersion</code></td>
+<td>string</td>
+<td>Versão do formato do dossiê</td>
+</tr>
+<tr>
+<td><code>generatedAt</code></td>
+<td>ISO 8601</td>
+<td>Momento da varredura</td>
+</tr>
+<tr>
+<td><code>repository</code></td>
+<td>string</td>
+<td>Caminho absoluto do repositório</td>
+</tr>
+<tr>
+<td><code>revision</code></td>
+<td>string ou null</td>
+<td>HEAD do Git no momento da varredura</td>
+</tr>
+<tr>
+<td><code>workingTreeChanges</code></td>
+<td>string</td>
+<td>Saída de <code>git status --short</code></td>
+</tr>
+<tr>
+<td><code>countsByKind</code></td>
+<td>objeto</td>
+<td>Contagem por code, config, docs, schema, infra etc.</td>
+</tr>
+<tr>
+<td><code>stackSignals</code></td>
+<td>objeto</td>
+<td>Contagem de sinais de stacks detectados</td>
+</tr>
+<tr>
+<td><code>scaleProfile</code></td>
+<td>objeto</td>
+<td>Tier, arquivos, core files e linhas</td>
+</tr>
+<tr>
+<td><code>entrypoints</code></td>
+<td>objeto</td>
+<td>Workflows, bundles, ADF, endpoints e CLIs</td>
+</tr>
+<tr>
+<td><code>envAndCliParams</code></td>
+<td>array</td>
+<td>Variáveis de ambiente e parâmetros de CLI</td>
+</tr>
+<tr>
+<td><code>notebooks</code></td>
+<td>array</td>
+<td>Notebooks Databricks e <code>.ipynb</code></td>
+</tr>
+<tr>
+<td><code>dataContracts</code></td>
+<td>array</td>
+<td>Schemas, DDLs e contratos extraídos</td>
+</tr>
+<tr>
+<td><code>sqlLineage</code></td>
+<td>array</td>
+<td>Fontes, alvos e linhagem SQL</td>
+</tr>
+<tr>
+<td><code>iacResources</code></td>
+<td>array</td>
+<td>Recursos Terraform/Bicep</td>
+</tr>
+<tr>
+<td><code>symbolIndex</code></td>
+<td>objeto</td>
+<td>Constantes, símbolos e E/S por arquivo</td>
+</tr>
+<tr>
+<td><code>testsIndex</code></td>
+<td>objeto</td>
+<td>Testes detectados por arquivo</td>
+</tr>
+<tr>
+<td><code>dependencyGraph</code></td>
+<td>objeto</td>
+<td>Arestas, graus de entrada e saída</td>
+</tr>
+<tr>
+<td><code>readingWaves</code></td>
+<td>objeto</td>
+<td>Ondas 1 a 4 com centralidade</td>
+</tr>
+<tr>
+<td><code>files</code></td>
+<td>array</td>
+<td>Metadados de cada arquivo inventariado</td>
+</tr>
+</tbody></table></div>
+<p>A varredura é estática e determinística. Ela não executa o projeto, não chama LLM e não substitui leitura: serve para priorizar, localizar símbolos e montar o grafo que a análise de impacto usa. Nomes de segredo e connection strings são redigidos antes de aparecer no JSON.</p>
+</details><blockquote class="callout-warning">
+<p>Atenção: o dossiê pode conter falsos positivos. Rotas de teste, fixtures e referências de documentação podem ser classificadas como stacks ou endpoints de produção. Neste próprio repositório, o inventário sinalizou Databricks, Spark, Event Hubs, Cosmos DB e uma rota <code>/telemetry/{tenant_id}</code> proveniente de testes e referências, não de uma esteira em produção. A leitura humana ou de agente continua necessária.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: os artefatos não formam um modelo relacional. As setas do diagrama mostram quem deriva de quem; elas não representam chaves estrangeiras, cardinalidade de negócio ou integridade referencial.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-schema">schemas/document.schema.json</a> <a href="#ref-build">scripts/build.mjs</a> <a href="#ref-verify">scripts/verify.mjs</a> <a href="#ref-inspect">scripts/inspect_repo.py</a></div></div></details>
+<details class="doc-section" id="operacao" data-audience="operations" open><summary class="section-heading"><span class="number">09</span><h2>Operação e recuperação</h2><span class="audience operations">Operação</span></summary><div class="section-body"><p>A operação é local e idempotente na maior parte dos casos. O build recusa sobrescrever; o verify é somente leitura; o inspect apenas grava o dossiê e o plano. A suíte de testes usa diretórios temporários e não altera o documento publicado.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Sintoma</th>
+<th>Causa provável</th>
+<th>Ação de recuperação</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Output already exists</code></td>
+<td>HTML de destino já existe</td>
+<td>Escolha outro nome ou use <code>--force</code> de forma deliberada</td>
+</tr>
+<tr>
+<td><code>Output cannot overwrite an input</code></td>
+<td><code>--out</code> aponta para o manifesto ou o Markdown</td>
+<td>Escolha um caminho de saída separado</td>
+</tr>
+<tr>
+<td><code>repoRoot is required for local sources</code></td>
+<td>Há <code>sources</code> sem <code>repoRoot</code></td>
+<td>Defina <code>repoRoot</code> relativo à pasta do manifesto</td>
+</tr>
+<tr>
+<td><code>Source outside repository</code></td>
+<td><code>sources[].path</code> escapa da raiz</td>
+<td>Corrija o caminho ou mova a fonte</td>
+</tr>
+<tr>
+<td><code>Unknown source</code></td>
+<td>Seção referencia um id inexistente</td>
+<td>Adicione a fonte ou corrija o id</td>
+</tr>
+<tr>
+<td><code>Duplicate source</code> ou <code>Duplicate section</code></td>
+<td>IDs repetidos</td>
+<td>Renomeie os IDs</td>
+</tr>
+<tr>
+<td>H2 não coincide</td>
+<td>Título ou ordem divergente do manifesto</td>
+<td>Alinhe <code>sections[].title</code> e os H2 exatamente</td>
+</tr>
+<tr>
+<td>H1 no conteúdo</td>
+<td>Título de nível 1 no Markdown</td>
+<td>Remova o H1; use o título do manifesto</td>
+</tr>
+<tr>
+<td><code>Invalid chart block</code></td>
+<td>JSON, rótulo, valor ou unidade inválidos</td>
+<td>Corrija o bloco; consulte as regras de gráfico</td>
+</tr>
+<tr>
+<td><code>Invalid solution diagram block</code></td>
+<td>Nó/aresta inválido ou id duplicado</td>
+<td>Corrija o JSON e os IDs</td>
+</tr>
+<tr>
+<td><code>Broken anchor</code></td>
+<td>Link interno aponta para id inexistente</td>
+<td>Aponte para uma seção ou H3 existente</td>
+</tr>
+<tr>
+<td><code>External or unsupported asset</code></td>
+<td>Script, iframe, CDN ou CSS remoto</td>
+<td>Embute o recurso ou remove a dependência</td>
+</tr>
+<tr>
+<td><code>Unrendered LaTeX math</code></td>
+<td>Fórmula com <code>$...$</code> ou <code>$$...$$</code></td>
+<td>Use Unicode e HTML</td>
+</tr>
+<tr>
+<td><code>verify</code> com <code>changed</code></td>
+<td>Fonte mudou desde o build</td>
+<td>Releia a seção, atualize o texto e recompile</td>
+</tr>
+<tr>
+<td><code>verify</code> com <code>missing</code></td>
+<td>Fonte removida ou renomeada</td>
+<td>Corrija o manifesto ou restaure o arquivo</td>
+</tr>
+<tr>
+<td>Revisão Git diferente</td>
+<td>Commit novo desde o recibo</td>
+<td>Reexecute o impacto e revise as seções <code>stale</code></td>
+</tr>
+<tr>
+<td>Árvore suja</td>
+<td>Alterações não commitadas</td>
+<td>Trate como snapshot local e confirme as fontes lidas</td>
+</tr>
+<tr>
+<td>Página para de rolar sobre tabela</td>
+<td>HTML antigo com contenção de roda em <code>.table-wrap</code></td>
+<td>Recompile com a versão 1.7.0 ou posterior; a contenção foi removida</td>
+</tr>
+</tbody></table></div>
+<p>O ciclo de atualização recomendado é: gerar um novo dossiê, rodar o verify em modo impacto, abrir o <code>update-plan.md</code>, revisar apenas as seções <code>stale</code> e as fontes alteradas, ajustar o conteúdo e recompilar. O plano mostra as fontes diretas, os dependentes transitivos, os arquivos core novos que ainda não estão no manifesto e o resumo <code>git diff --stat</code> quando a revisão documentada difere da atual.</p>
+<pre><code class="language-bash">python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
+node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md</code></pre><p>A revisão de entrega deve cobrir: overflow global, sidebar com rolagem independente sem sobrepor o rodapé, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas), fechamento do modal com Escape e impressão com todas as seções. O teste deve ser feito em desktop, por volta de 1440 px; o layout não é otimizado para telas estreitas.</p>
+<blockquote class="callout-rule">
+<p>Regra de negócio: <code>--force</code> é uma decisão editorial, não um atalho de automação. Use quando a intenção for substituir deliberadamente o HTML existente e mantenha o recibo anterior se precisar comparar versões.</p>
+</blockquote>
+<blockquote class="callout-warning">
+<p>Atenção: o <code>verify.mjs</code> sem <code>--strict</code> sai com código 0 mesmo quando há drift; ele relata <code>ok: false</code> no JSON. Em CI, use <code>--strict</code> para transformar drift em falha de processo.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: hashes provam que os bytes mudaram ou permaneceram iguais; não provam que o significado da seção continua correto. A decisão de reescrever continua humana.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-readme">README.md</a> <a href="#ref-package">package.json</a> <a href="#ref-build">scripts/build.mjs</a> <a href="#ref-verify">scripts/verify.mjs</a></div></div></details>
+<details class="doc-section" id="decisoes" data-audience="all" open><summary class="section-heading"><span class="number">10</span><h2>Decisões e limites</h2><span class="audience all">Para todos</span></summary><div class="section-body"><p>O projeto faz escolhas explícitas para manter o produto portátil, auditável e reproduzível. As decisões abaixo explicam o comportamento atual; não são um roadmap.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Efeito</th>
+<th>Trade-off</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HTML único e offline</td>
+<td>Leitura em ambientes fechados, sem servidor ou CDN</td>
+<td>Arquivo maior; sem atualização remota</td>
+</tr>
+<tr>
+<td>Renderização em tempo de build</td>
+<td>SVG, gráficos e Mermaid não dependem de runtime</td>
+<td>O build precisa de Node; o HTML não</td>
+</tr>
+<tr>
+<td>Inputs em Markdown/JSON</td>
+<td>Edição, revisão e versionamento simples</td>
+<td>Títulos H2 e manifesto precisam ser mantidos em sincronia</td>
+</tr>
+<tr>
+<td>Inspeção estática</td>
+<td>Zero execução de código e zero tokens de LLM</td>
+<td>Heurísticas podem gerar falsos positivos</td>
+</tr>
+<tr>
+<td>Hashes + Git no recibo</td>
+<td>Drift detectável e impacto rastreável</td>
+<td>Não há prova semântica nem de execução</td>
+</tr>
+<tr>
+<td>Sanitização e validação</td>
+<td>Bloqueiam HTML perigoso, ativos externos e estruturas quebradas</td>
+<td>Conteúdo precisa respeitar o contrato de autoria</td>
+</tr>
+<tr>
+<td>Interface desktop-first</td>
+<td>Layout confortável em ~1440 px, com sidebar e diagramas amplos</td>
+<td>Não há otimização para mobile ou telas estreitas</td>
+</tr>
+<tr>
+<td>Temas por cor</td>
+<td>Vermelho padrão, com Verde e Azul alternáveis e preferência persistida</td>
+<td>A troca de tema não altera layout, conteúdo ou semântica</td>
+</tr>
+<tr>
+<td>Rolagem de tabelas</td>
+<td>A roda rola a tabela quando ela tem overflow e a página quando não tem</td>
+<td>Tabelas altas ainda rolam internamente antes de encadear</td>
+</tr>
+<tr>
+<td>Dependências fixadas</td>
+<td>Builds reproduzíveis e auditoria de versões</td>
+<td>Atualização exige mudança consciente do lockfile</td>
+</tr>
+<tr>
+<td>Separação skill × projeto</td>
+<td>O gerador é reutilizável; o conteúdo fica no repositório documentado</td>
+<td>A skill precisa ser instalada ou referenciada no ambiente de autoria</td>
+</tr>
+</tbody></table></div>
+<h3 id="decisoes-limitacoes-conhecidas">Limitações conhecidas</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Limitação</th>
+<th>Impacto na leitura</th>
+<th>Mitigação</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Snapshot estático</td>
+<td>Não prova execução, deploy ou telemetria de produção</td>
+<td>Declarar <code>dataAsOf</code> e distinguir código de observação</td>
+</tr>
+<tr>
+<td>Extração heurística</td>
+<td>Rotas, stacks e notebooks de teste podem parecer produção</td>
+<td>Confirmar no código e citar <code>arquivo:linha</code></td>
+</tr>
+<tr>
+<td><code>.css</code> fora da lista de extensões</td>
+<td>O dossiê não inventaria folhas de estilo</td>
+<td>Ler <code>assets/document.css</code> quando o visual for relevante</td>
+</tr>
+<tr>
+<td>Títulos H2 exatos</td>
+<td>Pequenas diferenças de acento ou ordem quebram o build</td>
+<td>Comparar manifesto e conteúdo antes de compilar</td>
+</tr>
+<tr>
+<td>Duas versões editoriais</td>
+<td>Manual completo e Guia Rápido exigem dois inputs</td>
+<td>Usar <code>companionDoc</code> e manter o guia enxuto</td>
+</tr>
+<tr>
+<td>Gráfico apenas de barras</td>
+<td>Séries temporais e valores negativos não são suportados</td>
+<td>Outro renderizador documentado ou tabela</td>
+</tr>
+<tr>
+<td>Impacto depende de <code>sections[].sources</code></td>
+<td>Fontes não vinculadas não são roteadas</td>
+<td>Preencher <code>sources</code> em todas as seções aplicáveis</td>
+</tr>
+<tr>
+<td>Validação estrutural</td>
+<td>Não garante clareza, precisão ou beleza</td>
+<td>Revisão desktop e leitura crítica</td>
+</tr>
+<tr>
+<td>Mermaid embutido no build</td>
+<td>Não há edição interativa no HTML final</td>
+<td>Editar o texto do fence e recompilar</td>
+</tr>
+<tr>
+<td>Mobile não otimizado</td>
+<td>Layout pode ficar apertado em telas estreitas</td>
+<td>Usar desktop; o produto declara essa escolha</td>
+</tr>
+</tbody></table></div>
+<blockquote class="callout-rule">
+<p>Regra de negócio: a skill documenta o estado atual. Backlog de defeitos, maturidade, severidade e plano de modernização não fazem parte da entrega, a menos que solicitados explicitamente.</p>
+</blockquote>
+<blockquote class="callout-limit">
+<p>Limitação: nunca reproduza valores de segredo encontrados no código. Descreva onde vivem (por exemplo, Key Vault, <code>dbutils.secrets</code>, variável de ambiente), qual é o papel e a necessidade de rotação, sem transformar a documentação em auditoria de segurança.</p>
+</blockquote>
+<blockquote class="callout-warning">
+<p>Atenção: a ausência de um dado não é zero. Se não há telemetria, o documento deve dizer que não há; não deve inventar volumes, SLAs ou resultados para preencher cartões.</p>
+</blockquote>
+<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-tools">references/tools.md</a> <a href="#ref-authoring">references/authoring.md</a> <a href="#ref-diagrams">scripts/diagrams.mjs</a></div></div></details>
+<details class="doc-section" id="glossario" data-audience="all" open><summary class="section-heading"><span class="number">11</span><h2>Glossário e referências</h2><span class="audience all">Para todos</span></summary><div class="section-body"><div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Termo</th>
+<th>Significado neste projeto</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Skill</td>
+<td>Pacote operacional com instruções e scripts que um agente carrega para executar a documentação</td>
+</tr>
+<tr>
+<td>Manifesto</td>
+<td><code>document.json</code>, contrato do manual: seções, fontes, cartões, modo e tema</td>
+</tr>
+<tr>
+<td>Dossiê</td>
+<td><code>inventory.json</code>, fotografia estática do repositório com arquivos, símbolos e grafo</td>
+</tr>
+<tr>
+<td>Plano de leitura</td>
+<td><code>reading-plan.md</code>, ordem priorizada de leitura em quatro ondas</td>
+</tr>
+<tr>
+<td>Onda de leitura</td>
+<td>Agrupamento de arquivos por papel e centralidade (entrypoints, core, contratos, testes)</td>
+</tr>
+<tr>
+<td>Fence</td>
+<td>Bloco de código Markdown com linguagem especial, como <code>solution</code>, <code>schema</code>, <code>chart</code> ou <code>mermaid</code></td>
+</tr>
+<tr>
+<td>Diagrama 2D</td>
+<td>SVG determinístico renderizado em grade de colunas e linhas pelo <code>diagrams.mjs</code></td>
+</tr>
+<tr>
+<td>Recibo</td>
+<td><code>validation.json</code>, resultado do build com erros, avisos, métricas e hashes</td>
+</tr>
+<tr>
+<td>Drift</td>
+<td>Diferença entre o estado atual das fontes e o estado registrado no recibo</td>
+</tr>
+<tr>
+<td><code>stale</code></td>
+<td>Seção cujas fontes diretas ou transitivas mudaram e precisam de revisão</td>
+</tr>
+<tr>
+<td><code>fresh</code></td>
+<td>Seção cujas fontes declaradas permanecem com o mesmo hash</td>
+</tr>
+<tr>
+<td>Guia Rápido</td>
+<td>Modo <code>summary</code>, com 4 a 7 capítulos e estimativa de leitura</td>
+</tr>
+<tr>
+<td><code>companionDoc</code></td>
+<td>Link seguro entre o Guia Rápido e o Manual Completo</td>
+</tr>
+<tr>
+<td>Callout</td>
+<td>Citação Markdown tipada: regra, exemplo, atenção ou limitação</td>
+</tr>
+<tr>
+<td>Fingerprint</td>
+<td>Hash SHA-256 usado para comparar manifesto, Markdown, HTML e fontes</td>
+</tr>
+</tbody></table></div>
+<h3 id="glossario-arquivos-de-referencia">Arquivos de referência</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Conteúdo</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SKILL.md</code></td>
+<td>Fluxo operacional, decisões editoriais e política de manutenção da skill</td>
+</tr>
+<tr>
+<td><code>README.md</code></td>
+<td>Visão geral, requisitos, comandos, recursos e histórico resumido</td>
+</tr>
+<tr>
+<td><code>references/authoring.md</code></td>
+<td>Contrato de autoria, sintaxe de diagramas, gráficos e critérios de revisão</td>
+</tr>
+<tr>
+<td><code>references/data-engineering.md</code></td>
+<td>Perfil para pipelines, nuvem, streaming, APIs e qualidade de dados</td>
+</tr>
+<tr>
+<td><code>references/tools.md</code></td>
+<td>Dependências, escopo e separação entre autoria e renderização</td>
+</tr>
+<tr>
+<td><code>schemas/document.schema.json</code></td>
+<td>Esquema JSON que o build aplica ao manifesto</td>
+</tr>
+<tr>
+<td><code>scripts/build.mjs</code></td>
+<td>Compilador, sanitização, shell e recibo</td>
+</tr>
+<tr>
+<td><code>scripts/diagrams.mjs</code></td>
+<td>Motor SVG 2D e enriquecimento de Mermaid</td>
+</tr>
+<tr>
+<td><code>scripts/validate.mjs</code></td>
+<td>Auditoria estrutural do HTML e dos SVGs</td>
+</tr>
+<tr>
+<td><code>scripts/verify.mjs</code></td>
+<td>Hashes, revisão Git, impacto e plano de atualização</td>
+</tr>
+<tr>
+<td><code>scripts/inspect_repo.py</code></td>
+<td>Varredura estática, dossiê e plano de leitura</td>
+</tr>
+<tr>
+<td><code>assets/document.css</code></td>
+<td>Design system, temas e estilos de impressão</td>
+</tr>
+<tr>
+<td><code>assets/document.js</code></td>
+<td>Busca, filtros, temas, cópia e modal de diagramas</td>
+</tr>
+<tr>
+<td><code>examples/minimal/</code></td>
+<td>Exemplo mínimo executável</td>
+</tr>
+<tr>
+<td><code>examples/showcase/</code></td>
+<td>Exemplo completo com as 11 categorias e diagramas avançados</td>
+</tr>
+<tr>
+<td><code>tests/</code></td>
+<td>30 testes de build, diagramas, dossiê e impacto</td>
+</tr>
+</tbody></table></div>
+<p>Este manual foi gerado a partir da revisão <code>78dc658d3b1a895a64aa0956b306955eb240989d</code>, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco <strong>Referências do documento</strong>, gerado automaticamente a partir de <code>sources[]</code>. Para aprofundar, comece por <a href="#uso">Como usar</a>, <a href="#solucao">Desenho da solução</a> e <a href="#operacao">Operação e recuperação</a>.</p>
+<div class="section-sources">Referências: <a href="#ref-skill">SKILL.md</a> <a href="#ref-tools">references/tools.md</a> <a href="#ref-changelog">CHANGELOG.md</a></div></div></details><details class="doc-section" id="document-references" data-audience="technical"><summary class="section-heading"><h2>Referências do documento</h2></summary><div class="section-body"><p>Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.</p><div class="table-wrap"><table><thead><tr><th>Arquivo</th><th>Conteúdo</th></tr></thead><tbody><tr id="ref-skill"><td class="source-path">SKILL.md</td><td>Contrato operacional do skill: fluxo, decisões e manutenção.</td></tr><tr id="ref-readme"><td class="source-path">README.md</td><td>Visão geral, requisitos, comandos e recursos do projeto.</td></tr><tr id="ref-package"><td class="source-path">package.json</td><td>Versão, engines, scripts e dependências fixadas.</td></tr><tr id="ref-schema"><td class="source-path">schemas/document.schema.json</td><td>Esquema JSON do manifesto document.json.</td></tr><tr id="ref-build"><td class="source-path">scripts/build.mjs</td><td>Compilador do manifesto e do Markdown no HTML final.</td></tr><tr id="ref-diagrams"><td class="source-path">scripts/diagrams.mjs</td><td>Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid.</td></tr><tr id="ref-validate"><td class="source-path">scripts/validate.mjs</td><td>Validador estrutural do HTML, dos SVGs e da navegação.</td></tr><tr id="ref-verify"><td class="source-path">scripts/verify.mjs</td><td>Conferência de hashes, revisão Git e análise incremental de impacto.</td></tr><tr id="ref-inspect"><td class="source-path">scripts/inspect_repo.py</td><td>Inspetor estático do repositório e gerador do dossiê/plano de leitura.</td></tr><tr id="ref-ui"><td class="source-path">assets/document.js</td><td>Comportamentos offline da interface: busca, filtros, temas e modal.</td></tr><tr id="ref-styles"><td class="source-path">assets/document.css</td><td>Design system, layout desktop, temas e estilos de impressão.</td></tr><tr id="ref-authoring"><td class="source-path">references/authoring.md</td><td>Contrato de autoria, sintaxe de diagramas e critérios de revisão.</td></tr><tr id="ref-data-engineering"><td class="source-path">references/data-engineering.md</td><td>Perfil de documentação para engenharia de dados, nuvem e streaming.</td></tr><tr id="ref-tools"><td class="source-path">references/tools.md</td><td>Dependências, escopo e separação entre autoria e renderização.</td></tr><tr id="ref-agent"><td class="source-path">agents/openai.yaml</td><td>Metadados de descoberta da skill em agentes compatíveis.</td></tr><tr id="ref-changelog"><td class="source-path">CHANGELOG.md</td><td>Histórico de versões e mudanças do gerador.</td></tr><tr id="ref-tests-build"><td class="source-path">tests/build.test.mjs</td><td>Testes do compilador, validador, temas, modos e avisos.</td></tr><tr id="ref-tests-diagrams"><td class="source-path">tests/diagrams.test.mjs</td><td>Testes do motor 2D, Mermaid, gráficos e exemplos.</td></tr><tr id="ref-tests-dossier"><td class="source-path">tests/dossier.test.mjs</td><td>Testes do inspetor, do dossiê e da análise de impacto.</td></tr><tr id="ref-example-minimal"><td class="source-path">examples/minimal/document.json</td><td>Manifesto mínimo executável.</td></tr><tr id="ref-example-showcase"><td class="source-path">examples/showcase/document.json</td><td>Manifesto completo com as 11 categorias de leitura.</td></tr></tbody></table></div><p class="revision">Código: 78dc658d3b1a895a64aa0956b306955eb240989d</p></div></details><footer>project-html-docs · Manual do Gerador · 1.7.0 · HTML único · leitura offline</footer></div><button id="back-to-top" type="button" hidden aria-label="Topo">↑ Topo</button></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-zoom-out" type="button" aria-label="Reduzir zoom">−</button><span id="dialog-zoom-label" class="dialog-zoom-label" aria-live="polite">100%</span><button id="dialog-zoom-in" type="button" aria-label="Aumentar zoom">+</button><button id="dialog-fit" type="button">Ajustar à tela</button><button id="dialog-actual" type="button" class="is-active">Tamanho real</button><button id="dialog-close" type="button">Fechar</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>(() => {
+  const lang = document.documentElement.lang.startsWith('pt');
+  const words = lang
+    ? {
+        copy: 'Copiar', copied: 'Copiado', failed: 'Selecione e copie o código',
+        found: 'seção encontrada', foundPlural: 'seções encontradas',
+        filterPlaceholder: 'Filtrar linhas desta tabela…', rows: 'linhas', row: 'linha'
+      }
+    : {
+        copy: 'Copy', copied: 'Copied', failed: 'Select and copy the code',
+        found: 'section found', foundPlural: 'sections found',
+        filterPlaceholder: 'Filter table rows…', rows: 'rows', row: 'row'
+      };
+
+  const sections = [...document.querySelectorAll('.doc-section')];
+  const search = document.querySelector('#search');
+  const searchClear = document.querySelector('#search-clear');
+  const normalize = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const index = new Map(sections.map(s => [s, normalize(s.textContent)]));
+  const openAncestors = el => { for (let n = el; n; n = n.parentElement) if (n.tagName === 'DETAILS') n.open = true; };
+
+  // A busca abre seções para revelar o resultado e destaca os termos encontrados.
+  // Guardamos o estado anterior e restauramos quando o campo é limpo.
+  const savedOpen = new Map();
+  let searchActive = false;
+  const saveOpenState = () => {
+    savedOpen.clear();
+    document.querySelectorAll('main details').forEach(d => savedOpen.set(d, d.open));
+  };
+  const restoreOpenState = () => {
+    for (const [d, open] of savedOpen) d.open = open;
+    savedOpen.clear();
+  };
+
+  function clearMarks(root) {
+    root.querySelectorAll('mark.search-hit').forEach(m => {
+      const parent = m.parentNode;
+      if (!parent) return;
+      parent.replaceChild(document.createTextNode(m.textContent), m);
+      parent.normalize();
+    });
+  }
+
+  function highlightTerms(root, terms) {
+    clearMarks(root);
+    if (!terms.length) return;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+      acceptNode(node) {
+        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+        const p = node.parentElement;
+        if (!p || p.closest('svg, pre, code, script, style, .table-filter, .figure-tools, .audience, .number')) {
+          return NodeFilter.FILTER_REJECT;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const toProcess = [];
+    let cur;
+    while ((cur = walker.nextNode())) toProcess.push(cur);
+
+    for (const textNode of toProcess) {
+      const orig = textNode.nodeValue;
+      const norm = normalize(orig);
+      // Skip nodes whose length changes under NFD folding to avoid index drift
+      if (norm.length !== orig.length) continue;
+      let matchIdx = -1;
+      let matchLen = 0;
+      for (const term of terms) {
+        const i = norm.indexOf(term);
+        if (i !== -1 && (matchIdx === -1 || i < matchIdx)) {
+          matchIdx = i;
+          matchLen = term.length;
+        }
+      }
+      if (matchIdx === -1 || matchLen === 0) continue;
+      const frag = document.createDocumentFragment();
+      if (matchIdx > 0) frag.append(document.createTextNode(orig.slice(0, matchIdx)));
+      const mark = document.createElement('mark');
+      mark.className = 'search-hit';
+      mark.textContent = orig.slice(matchIdx, matchIdx + matchLen);
+      frag.append(mark);
+      if (matchIdx + matchLen < orig.length) frag.append(document.createTextNode(orig.slice(matchIdx + matchLen)));
+      textNode.parentNode.replaceChild(frag, textNode);
+    }
+  }
+
+  function filter() {
+    const raw = search.value;
+    if (searchClear) searchClear.hidden = !raw.length;
+    const terms = normalize(raw).trim().split(/\s+/).filter(Boolean);
+    if (terms.length && !searchActive) { saveOpenState(); searchActive = true; }
+
+    let found = 0;
+    for (const s of sections) {
+      s.hidden = !terms.every(t => index.get(s).includes(t));
+      if (!s.hidden) {
+        found++;
+        if (terms.length) {
+          s.open = true;
+          s.querySelectorAll('details').forEach(d => d.open = true);
+          highlightTerms(s.querySelector('.section-body') || s, terms);
+        } else {
+          clearMarks(s);
+        }
+      } else {
+        clearMarks(s);
+      }
+      const a = document.querySelector(`nav a[href="#${s.id}"]`);
+      if (a) a.hidden = s.hidden;
+      const subNav = document.querySelector(`nav .nav-sub[data-parent="${s.id}"]`);
+      if (subNav) subNav.hidden = s.hidden;
+    }
+
+    if (!terms.length && searchActive) { restoreOpenState(); searchActive = false; }
+
+    document.querySelector('#search-count').textContent = terms.length
+      ? `${found} ${found === 1 ? words.found : words.foundPlural}`
+      : '';
+    document.querySelector('#no-results').hidden = found > 0;
+  }
+
+  search.addEventListener('input', filter);
+  searchClear?.addEventListener('click', () => {
+    search.value = '';
+    filter();
+    search.focus();
+  });
+
+  // Atalho '/' ou Ctrl/Cmd+K para focar a pesquisa rapidamente
+  document.addEventListener('keydown', e => {
+    const tag = document.activeElement?.tagName;
+    const editable = tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable;
+    if ((e.key === '/' && !editable) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
+      e.preventDefault();
+      search.focus();
+      search.select();
+    } else if (e.key === 'Escape' && document.activeElement === search && search.value) {
+      e.preventDefault();
+      search.value = '';
+      filter();
+    }
+  });
+
+  document.querySelector('#expand').addEventListener('click', () => {
+    searchActive = false;
+    savedOpen.clear();
+    document.querySelectorAll('main details').forEach(d => d.open = true);
+  });
+  document.querySelector('#collapse').addEventListener('click', () => {
+    searchActive = false;
+    savedOpen.clear();
+    document.querySelectorAll('main details').forEach(d => d.open = false);
+  });
+
+  // Filtro de perfil de leitura (preserva todas as seções no DOM; foca e expande as relevantes)
+  const filterBtns = [...document.querySelectorAll('[data-audience-filter]')];
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.audienceFilter;
+      filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+      sections.forEach(s => {
+        const aud = s.dataset.audience || 'all';
+        const navLink = document.querySelector(`nav a[href="#${s.id}"]`);
+        const subNav = document.querySelector(`nav .nav-sub[data-parent="${s.id}"]`);
+        if (target === 'all') {
+          s.classList.remove('is-audience-secondary');
+          navLink?.classList.remove('is-audience-secondary');
+          subNav?.classList.remove('is-audience-secondary');
+          s.open = s.id !== 'document-references';
+        } else {
+          const primary = aud === 'all' || aud === target;
+          s.classList.toggle('is-audience-secondary', !primary);
+          navLink?.classList.toggle('is-audience-secondary', !primary);
+          subNav?.classList.toggle('is-audience-secondary', !primary);
+          if (!searchActive) s.open = primary;
+        }
+      });
+    });
+  });
+
+  // Seletor de paleta de cores (Verde, Azul e Vermelho) sem alterar layout.
+  // O vermelho é o padrão; valores antigos do localStorage são migrados.
+  const themeBtns = [...document.querySelectorAll('[data-theme-select]')];
+  if (themeBtns.length) {
+    const themeAliases = { verde: 'verde', azul: 'azul', vermelho: 'vermelho', default: 'azul', santander: 'vermelho' };
+    const normalizeTheme = theme => themeAliases[theme] || 'vermelho';
+    const applyTheme = (theme, persist = false) => {
+      const target = normalizeTheme(theme);
+      document.documentElement.setAttribute('data-theme', target);
+      themeBtns.forEach(b => {
+        const active = b.dataset.themeSelect === target;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      if (persist) {
+        try { localStorage.setItem('project-docs-theme', target); } catch {}
+      }
+    };
+    let initialTheme = normalizeTheme(document.documentElement.getAttribute('data-theme'));
+    try {
+      const saved = localStorage.getItem('project-docs-theme');
+      if (saved) initialTheme = normalizeTheme(saved);
+    } catch {}
+    applyTheme(initialTheme, true);
+    themeBtns.forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.themeSelect, true)));
+  }
+
+  // Filtro local automático para dicionários e tabelas extensas (>= 8 linhas), inclusive dentro de <details>
+  document.querySelectorAll('.section-body .table-wrap').forEach(wrap => {
+    if (wrap.closest('.chart')) return;
+    const tbody = wrap.querySelector('tbody');
+    if (!tbody) return;
+    const rows = [...tbody.querySelectorAll('tr')];
+    if (rows.length < 8) return;
+    const bar = document.createElement('div');
+    bar.className = 'table-filter';
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.placeholder = words.filterPlaceholder;
+    input.setAttribute('aria-label', words.filterPlaceholder);
+    const count = document.createElement('span');
+    count.className = 'table-filter-count';
+    count.textContent = `${rows.length} ${words.rows}`;
+    bar.append(input, count);
+    wrap.before(bar);
+
+    const rowIndex = new Map(rows.map(r => [r, normalize(r.textContent)]));
+    input.addEventListener('input', () => {
+      const terms = normalize(input.value).trim().split(/\s+/).filter(Boolean);
+      let visible = 0;
+      rows.forEach(r => {
+        const ok = terms.every(t => rowIndex.get(r).includes(t));
+        r.hidden = !ok;
+        if (ok) visible++;
+      });
+      count.textContent = `${visible} ${visible === 1 ? words.row : words.rows}`;
+    });
+  });
+
+  const printState = new Map();
+  function beforePrint() {
+    document.querySelectorAll('main details').forEach(d => { printState.set(d, d.open); d.open = true; });
+  }
+  function afterPrint() {
+    for (const [d, v] of printState) d.open = v;
+    printState.clear();
+  }
+  window.addEventListener('beforeprint', beforePrint);
+  window.addEventListener('afterprint', afterPrint);
+  document.querySelector('#print').addEventListener('click', () => window.print());
+
+  function revealHash() {
+    const id = decodeURIComponent(location.hash.slice(1));
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) { search.value = ''; filter(); openAncestors(el); el.scrollIntoView(); }
+  }
+  window.addEventListener('hashchange', revealHash);
+  if (location.hash) requestAnimationFrame(revealHash);
+  document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => {
+    if (a.closest('svg')) return;
+    const rawHref = a.getAttribute('href') || '';
+    const targetId = decodeURIComponent(rawHref.slice(1));
+    const el = targetId ? document.getElementById(targetId) : null;
+    if (el) { search.value = ''; filter(); openAncestors(el); }
+  }));
+
+  // Copia com clipboard; se o navegador negar, tenta execCommand e por fim
+  // seleciona o código para cópia manual.
+  document.querySelectorAll('pre').forEach(pre => {
+    const button = document.createElement('button');
+    button.className = 'copy';
+    button.textContent = words.copy;
+    button.type = 'button';
+    let copyTimer;
+    button.addEventListener('click', async () => {
+      const code = pre.querySelector('code');
+      const text = code ? code.textContent : '';
+      let copied = false;
+      try {
+        if (navigator.clipboard?.writeText) { await navigator.clipboard.writeText(text); copied = true; }
+      } catch {}
+      if (!copied) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.top = '-1000px';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { copied = document.execCommand('copy'); } catch {}
+        ta.remove();
+      }
+      if (copied) {
+        button.textContent = words.copied;
+      } else if (code) {
+        const range = document.createRange();
+        range.selectNodeContents(code);
+        const selection = getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        button.textContent = words.failed;
+      }
+      clearTimeout(copyTimer);
+      copyTimer = setTimeout(() => button.textContent = words.copy, 2500);
+    });
+    pre.append(button);
+  });
+
+  // Realce sutil de conexões ao passar o mouse ou focar nós em diagramas determinísticos (inclusive no modal)
+  function bindDiagramInteractivity(root) {
+    root.querySelectorAll('.sol-svg').forEach(svg => {
+      const nodes = [...svg.querySelectorAll('.sol-node')];
+      const edges = [...svg.querySelectorAll('.sol-edge')];
+      const labels = [...svg.querySelectorAll('.sol-edge-label-wrap')];
+      const clearFocus = () => {
+        svg.classList.remove('has-focus');
+        [...nodes, ...edges, ...labels].forEach(el => {
+          el.classList.remove('is-dimmed', 'is-highlighted');
+        });
+      };
+      const focusNode = nodeId => {
+        const connected = new Set([nodeId]);
+        svg.classList.add('has-focus');
+        edges.forEach(e => {
+          const match = e.dataset.from === nodeId || e.dataset.to === nodeId;
+          e.classList.toggle('is-highlighted', match);
+          e.classList.toggle('is-dimmed', !match);
+          if (match) { connected.add(e.dataset.from); connected.add(e.dataset.to); }
+        });
+        labels.forEach(l => {
+          const match = l.dataset.from === nodeId || l.dataset.to === nodeId;
+          l.classList.toggle('is-highlighted', match);
+          l.classList.toggle('is-dimmed', !match);
+        });
+        nodes.forEach(n => {
+          const hit = connected.has(n.dataset.nodeId);
+          n.classList.toggle('is-highlighted', n.dataset.nodeId === nodeId);
+          n.classList.toggle('is-dimmed', !hit);
+        });
+      };
+      nodes.forEach(node => {
+        node.addEventListener('mouseenter', () => focusNode(node.dataset.nodeId));
+        node.addEventListener('focus', () => focusNode(node.dataset.nodeId));
+        node.addEventListener('mouseleave', clearFocus);
+        node.addEventListener('blur', clearFocus);
+      });
+    });
+  }
+  bindDiagramInteractivity(document);
+
+  // O SVG ampliado precisa de IDs próprios para não colidir com o original.
+  function reprefixSvg(svg, prefix) {
+    const map = new Map();
+    svg.querySelectorAll('[id]').forEach(el => {
+      const oldId = el.id;
+      const newId = prefix + oldId;
+      map.set(oldId, newId);
+      el.id = newId;
+    });
+    if (!map.size) return;
+    svg.querySelectorAll('*').forEach(el => {
+      for (const attr of [...el.attributes]) {
+        let value = attr.value;
+        for (const [oldId, newId] of map) {
+          value = value.replaceAll(`url(#${oldId})`, `url(#${newId})`);
+          if (value === `#${oldId}`) value = `#${newId}`;
+        }
+        if (value !== attr.value) el.setAttribute(attr.name, value);
+      }
+    });
+  }
+
+  const dialog = document.querySelector('#diagram-dialog');
+  const dialogCanvas = document.querySelector('#dialog-canvas');
+  const btnFit = document.querySelector('#dialog-fit');
+  const btnActual = document.querySelector('#dialog-actual');
+  const btnZoomIn = document.querySelector('#dialog-zoom-in');
+  const btnZoomOut = document.querySelector('#dialog-zoom-out');
+  const zoomLabel = document.querySelector('#dialog-zoom-label');
+  let trigger;
+  let zoomScale = 1;
+  let currentNaturalWidth = 800;
+
+  function applyZoom() {
+    const svg = dialogCanvas.querySelector('svg');
+    if (!svg) return;
+    dialogCanvas.classList.remove('is-fit');
+    dialogCanvas.classList.add('is-actual');
+    btnFit?.classList.remove('is-active');
+    btnActual?.classList.toggle('is-active', Math.abs(zoomScale - 1) < 0.01);
+    svg.style.width = Math.round(currentNaturalWidth * zoomScale) + 'px';
+    if (zoomLabel) zoomLabel.textContent = `${Math.round(zoomScale * 100)}%`;
+  }
+
+  function setDialogMode(mode) {
+    const svg = dialogCanvas.querySelector('svg');
+    if (mode === 'fit') {
+      dialogCanvas.classList.add('is-fit');
+      dialogCanvas.classList.remove('is-actual');
+      btnFit?.classList.add('is-active');
+      btnActual?.classList.remove('is-active');
+      if (svg) svg.style.width = '100%';
+      if (zoomLabel) zoomLabel.textContent = lang ? 'Ajustado' : 'Fit';
+    } else {
+      zoomScale = 1;
+      applyZoom();
+    }
+  }
+
+  btnFit?.addEventListener('click', () => setDialogMode('fit'));
+  btnActual?.addEventListener('click', () => setDialogMode('actual'));
+  btnZoomIn?.addEventListener('click', () => { zoomScale = Math.min(2.2, +(zoomScale + 0.2).toFixed(2)); applyZoom(); });
+  btnZoomOut?.addEventListener('click', () => { zoomScale = Math.max(0.5, +(zoomScale - 0.2).toFixed(2)); applyZoom(); });
+
+  document.querySelectorAll('[data-expand-diagram]').forEach(button => {
+    button.addEventListener('click', () => {
+      trigger = button;
+      const figure = button.closest('figure');
+      const svg = figure.querySelector('svg').cloneNode(true);
+      reprefixSvg(svg, 'dialog-svg-');
+      currentNaturalWidth = parseFloat(svg.getAttribute('data-natural-width')) || 800;
+      zoomScale = 1;
+      svg.style.width = currentNaturalWidth + 'px';
+      dialogCanvas.replaceChildren(svg);
+      bindDiagramInteractivity(dialogCanvas);
+      document.querySelector('#dialog-title').textContent = figure.querySelector('figcaption')?.textContent || '';
+      dialog.showModal();
+      if (currentNaturalWidth > (dialogCanvas.clientWidth || 900)) {
+        setDialogMode('fit');
+      } else {
+        setDialogMode('actual');
+      }
+    });
+  });
+  document.querySelector('#dialog-close').addEventListener('click', () => dialog.close());
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && dialog.open) { e.preventDefault(); dialog.close(); } });
+  dialog.addEventListener('close', () => setTimeout(() => trigger?.focus(), 60));
+
+  const backToTop = document.querySelector('#back-to-top');
+  if (backToTop) {
+    const syncTopBtn = () => { backToTop.hidden = window.scrollY < 420; };
+    syncTopBtn();
+    window.addEventListener('scroll', syncTopBtn, { passive: true });
+    backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+
+  function setActiveNav(id) {
+    document.querySelectorAll('nav a[aria-current]').forEach(a => a.removeAttribute('aria-current'));
+    const activeLink = document.querySelector(`nav a[href="#${id}"]`);
+    if (activeLink) {
+      activeLink.setAttribute('aria-current', 'location');
+      activeLink.scrollIntoView({ block: 'nearest' });
+    }
+  }
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      for (const e of entries) if (e.isIntersecting) setActiveNav(e.target.id);
+    }, {rootMargin: '-5% 0px -65% 0px'});
+    sections.forEach(s => observer.observe(s));
+
+    window.addEventListener('scroll', () => {
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 40) {
+        const lastVisible = [...sections].reverse().find(s => !s.hidden);
+        if (lastVisible) setActiveNav(lastVisible.id);
+      }
+    }, { passive: true });
+  }
+})();
+</script></body></html>

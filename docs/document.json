@@ -1,0 +1,128 @@
+{
+  "title": "project-html-docs · Manual do Gerador",
+  "subtitle": "Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.",
+  "eyebrow": "project-html-docs · manual do próprio gerador",
+  "version": "1.7.0",
+  "updated": "2026-11-15",
+  "language": "pt-BR",
+  "theme": "vermelho",
+  "mode": "full",
+  "content": "content.md",
+  "companionDoc": { "href": "documentacao-resumida.html", "label": "Guia rápido" },
+  "repoRoot": "..",
+  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
+  "dataAsOf": "2026-11-15 · snapshot local de implementação; sem telemetria de produção",
+  "cards": [
+    {
+      "label": "Entrega",
+      "value": "1 HTML offline",
+      "description": "CSS, JavaScript e SVG embutidos; nenhum servidor, CDN ou runtime externo na leitura."
+    },
+    {
+      "label": "Descoberta",
+      "value": "0 tokens de LLM",
+      "description": "O inspect_repo.py varre o repositório com AST e regex, sem executar o código analisado."
+    },
+    {
+      "label": "Integridade",
+      "value": "SHA-256 + Git",
+      "description": "Cada fonte entra no recibo; o verify.mjs detecta drift e calcula as seções afetadas."
+    },
+    {
+      "label": "Versão atual",
+      "value": "1.7.0 · 30 testes",
+      "description": "Manual completo e Guia Rápido; suíte passando em 15/11/2026."
+    }
+  ],
+  "sections": [
+    {
+      "id": "resumo",
+      "title": "Resumo executivo",
+      "audience": "all",
+      "sources": ["skill", "readme", "package"]
+    },
+    {
+      "id": "escopo",
+      "title": "Visão funcional e escopo",
+      "audience": "all",
+      "sources": ["skill", "authoring", "readme", "data-engineering"]
+    },
+    {
+      "id": "estado",
+      "title": "Estado atual da solução",
+      "audience": "all",
+      "sources": ["package", "changelog", "tests-build", "tests-diagrams", "tests-dossier"]
+    },
+    {
+      "id": "uso",
+      "title": "Como usar",
+      "audience": "operations",
+      "sources": ["skill", "readme", "authoring", "agent"]
+    },
+    {
+      "id": "solucao",
+      "title": "Desenho da solução",
+      "audience": "all",
+      "sources": ["build", "diagrams", "ui", "styles"]
+    },
+    {
+      "id": "fluxo",
+      "title": "Fluxo e processamento",
+      "audience": "technical",
+      "sources": ["inspect", "build", "verify", "validate"]
+    },
+    {
+      "id": "regras",
+      "title": "Regras funcionais e validações",
+      "audience": "technical",
+      "sources": ["authoring", "build", "validate", "verify", "inspect"]
+    },
+    {
+      "id": "modelo",
+      "title": "Modelo e relacionamento dos artefatos",
+      "audience": "technical",
+      "sources": ["schema", "build", "verify", "inspect"]
+    },
+    {
+      "id": "operacao",
+      "title": "Operação e recuperação",
+      "audience": "operations",
+      "sources": ["readme", "package", "build", "verify"]
+    },
+    {
+      "id": "decisoes",
+      "title": "Decisões e limites",
+      "audience": "all",
+      "sources": ["skill", "tools", "authoring", "diagrams"]
+    },
+    {
+      "id": "glossario",
+      "title": "Glossário e referências",
+      "audience": "all",
+      "sources": ["skill", "tools", "changelog"]
+    }
+  ],
+  "sources": [
+    {"id": "skill", "path": "SKILL.md", "description": "Contrato operacional do skill: fluxo, decisões e manutenção."},
+    {"id": "readme", "path": "README.md", "description": "Visão geral, requisitos, comandos e recursos do projeto."},
+    {"id": "package", "path": "package.json", "description": "Versão, engines, scripts e dependências fixadas."},
+    {"id": "schema", "path": "schemas/document.schema.json", "description": "Esquema JSON do manifesto document.json."},
+    {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown no HTML final."},
+    {"id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid."},
+    {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML, dos SVGs e da navegação."},
+    {"id": "verify", "path": "scripts/verify.mjs", "description": "Conferência de hashes, revisão Git e análise incremental de impacto."},
+    {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Inspetor estático do repositório e gerador do dossiê/plano de leitura."},
+    {"id": "ui", "path": "assets/document.js", "description": "Comportamentos offline da interface: busca, filtros, temas e modal."},
+    {"id": "styles", "path": "assets/document.css", "description": "Design system, layout desktop, temas e estilos de impressão."},
+    {"id": "authoring", "path": "references/authoring.md", "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão."},
+    {"id": "data-engineering", "path": "references/data-engineering.md", "description": "Perfil de documentação para engenharia de dados, nuvem e streaming."},
+    {"id": "tools", "path": "references/tools.md", "description": "Dependências, escopo e separação entre autoria e renderização."},
+    {"id": "agent", "path": "agents/openai.yaml", "description": "Metadados de descoberta da skill em agentes compatíveis."},
+    {"id": "changelog", "path": "CHANGELOG.md", "description": "Histórico de versões e mudanças do gerador."},
+    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes do compilador, validador, temas, modos e avisos."},
+    {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes do motor 2D, Mermaid, gráficos e exemplos."},
+    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do inspetor, do dossiê e da análise de impacto."},
+    {"id": "example-minimal", "path": "examples/minimal/document.json", "description": "Manifesto mínimo executável."},
+    {"id": "example-showcase", "path": "examples/showcase/document.json", "description": "Manifesto completo com as 11 categorias de leitura."}
+  ]
+}

@@ -1,0 +1,1618 @@
+{
+  "dossierVersion": "1.5.0",
+  "generatedAt": "2026-11-15T06:57:14.322469+00:00",
+  "repository": "C:\\Users\\alebi\\Documents\\ChatGPT\\teste-opendata\\project-html-docs",
+  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
+  "workingTreeChanges": "M CHANGELOG.md\n M README.md\n M SKILL.md\n M assets/document.css\n M assets/document.js\n M package-lock.json\n M package.json\n M references/authoring.md\n M schemas/document.schema.json\n M scripts/build.mjs\n M tests/build.test.mjs\n?? docs/",
+  "includes": [],
+  "excludes": [
+    "docs"
+  ],
+  "countsByKind": {
+    "code": 9,
+    "config": 6,
+    "docs": 8
+  },
+  "stackSignals": {
+    "api_service": 6,
+    "azure_blob_adls": 5,
+    "cosmos_db": 4,
+    "data_quality": 1,
+    "databricks": 7,
+    "dbt": 2,
+    "delta_lake": 4,
+    "event_hubs": 6,
+    "iceberg": 1,
+    "orchestration": 2,
+    "scala": 3,
+    "spark_pyspark": 7,
+    "sql_warehouse": 6,
+    "terraform_iac": 3
+  },
+  "stacksByFile": {
+    "CHANGELOG.md": [
+      "api_service",
+      "azure_blob_adls",
+      "databricks",
+      "event_hubs",
+      "orchestration",
+      "spark_pyspark",
+      "sql_warehouse",
+      "terraform_iac"
+    ],
+    "README.md": [
+      "api_service",
+      "databricks",
+      "spark_pyspark",
+      "sql_warehouse"
+    ],
+    "SKILL.md": [
+      "api_service",
+      "azure_blob_adls",
+      "cosmos_db",
+      "databricks",
+      "event_hubs",
+      "spark_pyspark",
+      "sql_warehouse"
+    ],
+    "references/data-engineering.md": [
+      "api_service",
+      "azure_blob_adls",
+      "cosmos_db",
+      "databricks",
+      "delta_lake",
+      "event_hubs",
+      "scala",
+      "spark_pyspark",
+      "sql_warehouse"
+    ],
+    "references/tools.md": [
+      "databricks"
+    ],
+    "scripts/inspect_repo.py": [
+      "api_service",
+      "azure_blob_adls",
+      "cosmos_db",
+      "data_quality",
+      "databricks",
+      "dbt",
+      "delta_lake",
+      "event_hubs",
+      "iceberg",
+      "orchestration",
+      "scala",
+      "spark_pyspark",
+      "sql_warehouse",
+      "terraform_iac"
+    ],
+    "tests/diagrams.test.mjs": [
+      "dbt",
+      "delta_lake",
+      "event_hubs",
+      "spark_pyspark"
+    ],
+    "tests/dossier.test.mjs": [
+      "api_service",
+      "azure_blob_adls",
+      "cosmos_db",
+      "databricks",
+      "delta_lake",
+      "event_hubs",
+      "scala",
+      "spark_pyspark",
+      "sql_warehouse",
+      "terraform_iac"
+    ]
+  },
+  "scaleProfile": {
+    "tier": "small",
+    "totalFiles": 23,
+    "coreFiles": 13,
+    "totalCodeLines": 5156,
+    "recommendedStrategy": "Leitura sequencial guiada por Ondas 1 -> 2 -> 3 (projeto compacto)."
+  },
+  "entrypoints": {
+    "workflows": [],
+    "databricksBundles": [],
+    "adfPipelines": [],
+    "endpoints": [
+      {
+        "file": "tests/dossier.test.mjs",
+        "method": "GET",
+        "path": "/telemetry/{tenant_id}",
+        "line": 103
+      }
+    ],
+    "cliOrMainFiles": [
+      "scripts/inspect_repo.py"
+    ]
+  },
+  "envAndCliParams": [
+    {
+      "file": "scripts/inspect_repo.py",
+      "kind": "cli_arg",
+      "name": "repository",
+      "line": 1548
+    },
+    {
+      "file": "scripts/inspect_repo.py",
+      "kind": "cli_arg",
+      "name": "--out",
+      "line": 1549,
+      "help": "Output JSON inventory/dossier path"
+    },
+    {
+      "file": "scripts/inspect_repo.py",
+      "kind": "cli_arg",
+      "name": "--plan",
+      "line": 1550,
+      "help": "Optional output Markdown reading-plan path"
+    },
+    {
+      "file": "scripts/inspect_repo.py",
+      "kind": "cli_arg",
+      "name": "--include",
+      "line": 1551,
+      "default": "",
+      "help": "Comma-separated path fragments to include"
+    },
+    {
+      "file": "scripts/inspect_repo.py",
+      "kind": "cli_arg",
+      "name": "--exclude",
+      "line": 1552,
+      "default": "",
+      "help": "Comma-separated path fragments to exclude"
+    }
+  ],
+  "notebooks": [
+    {
+      "path": "scripts/inspect_repo.py",
+      "format": "databricks_py",
+      "cells": 1,
+      "languages": [
+        "python"
+      ]
+    }
+  ],
+  "dataContracts": [],
+  "sqlLineage": [],
+  "iacResources": [],
+  "inlineConfigs": {
+    "package.json": {
+      "name": "project-html-docs",
+      "version": "1.7.0",
+      "scripts": {
+        "test": "node --test tests/*.test.mjs",
+        "build:example": "node scripts/build.mjs examples/minimal/document.json --out examples/minimal/documentacao.html --force",
+        "build:showcase": "node scripts/build.mjs examples/showcase/document.json --out examples/showcase/documentacao.html --force"
+      },
+      "dependencies": [
+        "ajv",
+        "beautiful-mermaid",
+        "cheerio",
+        "marked",
+        "sanitize-html"
+      ]
+    },
+    "examples/minimal/document.json": {
+      "title": "Daily sales",
+      "subtitle": "Combines accepted orders into a daily dataset for business analysis.",
+      "version": "Example 1.0",
+      "updated": "2026-11-14",
+      "language": "en",
+      "content": "content.md",
+      "cards": [
+        {
+          "label": "Delivery",
+          "value": "Daily totals",
+          "description": "Illustrative example; no production results."
+        }
+      ],
+      "sections": [
+        {
+          "id": "overview",
+          "title": "Purpose and use",
+          "audience": "all"
+        },
+        {
+          "id": "flow",
+          "title": "Processing flow",
+          "audience": "technical"
+        },
+        {
+          "id": "rules",
+          "title": "Rules and example",
+          "audience": "business"
+        }
+      ]
+    },
+    "examples/showcase/document.json": {
+      "title": "Comparador Analítico PCM · Referência Visual",
+      "subtitle": "Exemplo ilustrativo completo demonstrando todas as 11 categorias preservadas e os diagramas 2D de solução, fluxo em e...",
+      "eyebrow": "project-html-docs · padrão visual v1.3.0",
+      "version": "Exemplo 1.3.0",
+      "updated": "2026-11-14",
+      "language": "pt-BR",
+      "content": "content.md",
+      "cards": [
+        {
+          "label": "Escopo",
+          "value": "2 estágios 2D",
+          "description": "Comparação rápida em toda execução e sintética apenas para dias sem agregado válido."
+        },
+        {
+          "label": "Base integrada",
+          "value": "~200 mi/dia",
+          "description": "Leitura seletiva por partição e versão Delta fixa quando há recalculo."
+        },
+        {
+          "label": "Agregação diária",
+          "value": "~250 linhas/dia",
+          "description": "Reaproveitamento de dias válidos reduz reprocessamento de ~18 min para ~21 s."
+        },
+        {
+          "label": "Leitura",
+          "value": "11 categorias",
+          "description": "Manual offline único preservando todas as seções funcionais e técnicas."
+        }
+      ],
+      "sections": [
+        {
+          "id": "resumo",
+          "title": "Resumo executivo",
+          "audience": "all"
+        },
+        {
+          "id": "escopo",
+          "title": "Visão funcional e escopo",
+          "audience": "all"
+        },
+        {
+          "id": "estado",
+          "title": "Estado atual da solução",
+          "audience": "all"
+        },
+        {
+          "id": "uso",
+          "title": "Como usar",
+          "audience": "all"
+        },
+        {
+          "id": "solucao",
+          "title": "Desenho da solução",
+          "audience": "all"
+        },
+        {
+          "id": "fluxo",
+          "title": "Fluxo e processamento",
+          "audience": "technical"
+        },
+        {
+          "id": "regras",
+          "title": "Regras funcionais e cálculos",
+          "audience": "business"
+        },
+        {
+          "id": "modelo",
+          "title": "Modelo e relacionamento dos dados",
+          "audience": "technical"
+        },
+        "..."
+      ]
+    },
+    "schemas/document.schema.json": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "subtitle",
+        "version",
+        "updated",
+        "content",
+        "sections"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "subtitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "eyebrow": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+        },
+        "language": {
+          "enum": [
+            "pt-BR",
+            "en"
+          ]
+        },
+        "theme": {
+          "enum": [
+            "verde",
+            "azul",
+            "vermelho",
+            "default",
+            "santander"
+          ]
+        },
+        "mode": {
+          "enum": [
+            "full",
+            "summary"
+          ]
+        },
+        "companionDoc": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "href",
+            "label"
+          ],
+          "properties": {
+            "href": {
+              "type": "string",
+              "minLength": 1
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "content": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "symbolIndex": {
+    "scripts/build.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "enhanceSectionHtml",
+          "kind": "function",
+          "startLine": 31,
+          "endLine": 31,
+          "signature": "enhanceSectionHtml(rawHtml,sectionId=null,usedIds=new Set()"
+        },
+        {
+          "name": "barChart",
+          "kind": "function",
+          "startLine": 73,
+          "endLine": 73,
+          "signature": "barChart(spec,locale='pt-BR')"
+        },
+        {
+          "name": "build",
+          "kind": "function",
+          "startLine": 110,
+          "endLine": 110,
+          "signature": "build(manifestFile,output,{force=false,mode:cliMode}={})"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/diagrams.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "charWidth",
+          "kind": "function",
+          "startLine": 37,
+          "endLine": 37,
+          "signature": "charWidth(c, fontSize = 12, mono = false)"
+        },
+        {
+          "name": "measureText",
+          "kind": "function",
+          "startLine": 48,
+          "endLine": 48,
+          "signature": "measureText(str, fontSize = 12, mono = false)"
+        },
+        {
+          "name": "parseRichTokens",
+          "kind": "function",
+          "startLine": 57,
+          "endLine": 57,
+          "signature": "parseRichTokens(text)"
+        },
+        {
+          "name": "splitLongCode",
+          "kind": "function",
+          "startLine": 72,
+          "endLine": 72,
+          "signature": "splitLongCode(str, maxW, fontSize)"
+        },
+        {
+          "name": "wrapRichLines",
+          "kind": "function",
+          "startLine": 108,
+          "endLine": 108,
+          "signature": "wrapRichLines(lines, maxW, fontSize = 11.5)"
+        },
+        {
+          "name": "renderWrappedLinesSvg",
+          "kind": "function",
+          "startLine": 156,
+          "endLine": 156,
+          "signature": "renderWrappedLinesSvg(visualLines, startX, startY, lineH, fontSize = 11.5, fill = '#334155', align = ')"
+        },
+        {
+          "name": "roundedOrthogonalPath",
+          "kind": "function",
+          "startLine": 188,
+          "endLine": 188,
+          "signature": "roundedOrthogonalPath(pts, radius = 6)"
+        },
+        {
+          "name": "renderLegendHtml",
+          "kind": "function",
+          "startLine": 217,
+          "endLine": 217,
+          "signature": "renderLegendHtml(legend, locale = 'pt-BR')"
+        },
+        {
+          "name": "renderInlineCodeHtml",
+          "kind": "function",
+          "startLine": 233,
+          "endLine": 233,
+          "signature": "renderInlineCodeHtml(text)"
+        },
+        {
+          "name": "cleanDiagramTitle",
+          "kind": "function",
+          "startLine": 238,
+          "endLine": 238,
+          "signature": "cleanDiagramTitle(title)"
+        },
+        {
+          "name": "wrapFigure",
+          "kind": "function",
+          "startLine": 242,
+          "endLine": 242,
+          "signature": "wrapFigure(svg, title, { legendHtml = '', noteHtml = '', diagramLabel = 'Ampliar' } = {})"
+        },
+        {
+          "name": "wrapEdgeLabelText",
+          "kind": "function",
+          "startLine": 247,
+          "endLine": 247,
+          "signature": "wrapEdgeLabelText(text, maxW, fontSize = 10.5)"
+        },
+        {
+          "name": "pillMetrics",
+          "kind": "function",
+          "startLine": 271,
+          "endLine": 271,
+          "signature": "pillMetrics(text, fontSize = 10.5)"
+        },
+        {
+          "name": "resolvePillPositions",
+          "kind": "function",
+          "startLine": 277,
+          "endLine": 277,
+          "signature": "resolvePillPositions(pills, boxObstacles)"
+        },
+        {
+          "name": "renderPillLabel",
+          "kind": "function",
+          "startLine": 305,
+          "endLine": 305,
+          "signature": "renderPillLabel(x, y, text, { bg = '#ffffff', stroke = '#cbd5e1', fg = '#334155', fontSize = 10.)"
+        },
+        {
+          "name": "renderNodeCard",
+          "kind": "function",
+          "startLine": 316,
+          "endLine": 316,
+          "signature": "renderNodeCard(node, x, y, w, h, layout)"
+        },
+        {
+          "name": "layoutNodeBox",
+          "kind": "function",
+          "startLine": 387,
+          "endLine": 387,
+          "signature": "layoutNodeBox(node, colWidth)"
+        },
+        {
+          "name": "renderSolutionDiagram",
+          "kind": "function",
+          "startLine": 430,
+          "endLine": 430,
+          "signature": "renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Ampliar', mode = 'solution' } = {})"
+        },
+        {
+          "name": "renderSchemaDiagram",
+          "kind": "function",
+          "startLine": 888,
+          "endLine": 888,
+          "signature": "renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Ampliar' } = {})"
+        },
+        {
+          "name": "enhanceMermaidSvg",
+          "kind": "function",
+          "startLine": 1276,
+          "endLine": 1276,
+          "signature": "enhanceMermaidSvg($, mermaidSource)"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/inspect_repo.py": {
+      "constants": [
+        {
+          "name": "SKIP",
+          "line": 23,
+          "value": "{'node_modules', 'data', '.pytest_cache', 'build', 'target', '.git', '.ruff_cach"
+        },
+        {
+          "name": "EXTENSIONS",
+          "line": 29,
+          "value": "{'.graphql', '.scala', '.hql', '.html', '.ini', '.ipynb', '.md', '.ddl', '.json'"
+        },
+        {
+          "name": "SPECIAL_NAMES",
+          "line": 37,
+          "value": "{'Makefile', 'Dockerfile', 'Procfile', 'Jenkinsfile'}"
+        },
+        {
+          "name": "KIND",
+          "line": 39,
+          "value": {
+            ".md": "docs",
+            ".mdx": "docs",
+            ".rst": "docs",
+            ".txt": "docs",
+            ".html": "docs",
+            ".py": "code",
+            ".sh": "code",
+            ".ps1": "code",
+            ".js": "code",
+            ".mjs": "code"
+          }
+        },
+        {
+          "name": "STACK_PATTERNS",
+          "line": 53,
+          "value": {
+            "spark_pyspark": "('pyspark', 'sparksession', 'spark.read', 'spark.write', 'spark.table', 'spark.s",
+            "databricks": "('databricks', 'dbutils', 'unity_catalog', 'databricks.yml', '# databricks noteb",
+            "delta_lake": "('deltatable', 'using delta', '.format(\"delta\")', \".format('delta')\", 'merge int",
+            "cosmos_db": "('azure.cosmos', 'cosmosclient', 'cosmos_db', 'cosmos.oltp', 'com.azure.cosmos.s",
+            "event_hubs": "('azure.eventhub', 'eventhubconsumerclient', 'eventhubproducerclient', 'format(\"",
+            "azure_blob_adls": "('azure.storage.blob', 'blobserviceclient', 'azure.storage.filedatalake', 'datal",
+            "dbt": "('dbt_project.yml', 'profiles.yml', 'dbt_packages', 'ref(', 'source(')",
+            "sql_warehouse": "('duckdb', 'pyarrow', 'parquet', 'snowflake', 'bigquery', 'synapse', 'create tab",
+            "iceberg": "('iceberg', 'using iceberg')",
+            "orchestration": "('airflow', 'dag(', '@dag', 'dagster', '@asset', '@job', 'prefect', '@flow', '@t"
+          }
+        },
+        {
+          "name": "SECRET_NAME_RE",
+          "line": 101,
+          "value": "<redacted>"
+        },
+        {
+          "name": "NOISE_DATA_EXTS",
+          "line": 106,
+          "value": "{'.csv', '.parquet'}"
+        },
+        {
+          "name": "GENERATED_ARTIFACT_PATTERNS",
+          "line": 107,
+          "value": "('*.validation.json', 'reading-plan.md', 'update-plan.md', 'documentacao*.html')"
+        }
+      ],
+      "symbols": [
+        {
+          "name": "is_secret_name",
+          "kind": "function",
+          "startLine": 110,
+          "endLine": 111,
+          "decorators": [],
+          "signature": "is_secret_name(name: str) -> bool",
+          "doc": null
+        },
+        {
+          "name": "safe_preview_value",
+          "kind": "function",
+          "startLine": 114,
+          "endLine": 129,
+          "decorators": [],
+          "signature": "safe_preview_value(name: str, raw_val: Any) -> Any",
+          "doc": null
+        },
+        {
+          "name": "detect_stack_signals",
+          "kind": "function",
+          "startLine": 132,
+          "endLine": 151,
+          "decorators": [],
+          "signature": "detect_stack_signals(posix_path: str, text: str) -> list[str]",
+          "doc": null
+        },
+        {
+          "name": "_unparse",
+          "kind": "function",
+          "startLine": 154,
+          "endLine": 160,
+          "decorators": [],
+          "signature": "_unparse(node: ast.AST | None) -> str | None",
+          "doc": null
+        },
+        {
+          "name": "_const_value",
+          "kind": "function",
+          "startLine": 163,
+          "endLine": 168,
+          "decorators": [],
+          "signature": "_const_value(node: ast.AST) -> Any",
+          "doc": null
+        },
+        {
+          "name": "_call_chain",
+          "kind": "function",
+          "startLine": 171,
+          "endLine": 181,
+          "decorators": [],
+          "signature": "_call_chain(node: ast.AST) -> list[str]",
+          "doc": null
+        },
+        {
+          "name": "_spark_chain_details",
+          "kind": "function",
+          "startLine": 184,
+          "endLine": 224,
+          "decorators": [],
+          "signature": "_spark_chain_details(call_node: ast.Call) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "_strip_databricks_cells",
+          "kind": "function",
+          "startLine": 227,
+          "endLine": 281,
+          "decorators": [],
+          "signature": "_strip_databricks_cells(text: str) -> tuple[bool, list[dict[str, Any]], str]",
+          "doc": null
+        },
+        {
+          "name": "_extract_regex_python_symbols",
+          "kind": "function",
+          "startLine": 284,
+          "endLine": 297,
+          "decorators": [],
+          "signature": "_extract_regex_python_symbols(text: str) -> list[dict[str, Any]]",
+          "doc": null
+        },
+        {
+          "name": "extract_sql_facts",
+          "kind": "function",
+          "startLine": 300,
+          "endLine": 395,
+          "decorators": [],
+          "signature": "extract_sql_facts(text: str, origin: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_python_facts",
+          "kind": "function",
+          "startLine": 398,
+          "endLine": 763,
+          "decorators": [],
+          "signature": "extract_python_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_ipynb_facts",
+          "kind": "function",
+          "startLine": 766,
+          "endLine": 799,
+          "decorators": [],
+          "signature": "extract_ipynb_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_js_ts_facts",
+          "kind": "function",
+          "startLine": 802,
+          "endLine": 832,
+          "decorators": [],
+          "signature": "extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_scala_facts",
+          "kind": "function",
+          "startLine": 835,
+          "endLine": 860,
+          "decorators": [],
+          "signature": "extract_scala_facts(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_workflow_or_config",
+          "kind": "function",
+          "startLine": 863,
+          "endLine": 931,
+          "decorators": [],
+          "signature": "extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "extract_iac_resources",
+          "kind": "function",
+          "startLine": 934,
+          "endLine": 942,
+          "decorators": [],
+          "signature": "extract_iac_resources(posix_path: str, text: str) -> list[dict[str, str]]",
+          "doc": null
+        },
+        {
+          "name": "_resolve_python_import",
+          "kind": "function",
+          "startLine": 945,
+          "endLine": 966,
+          "decorators": [],
+          "signature": "_resolve_python_import(imp: dict[str, Any], from_file: str, module_index: dict[str, str]) -> list[str]",
+          "doc": null
+        },
+        {
+          "name": "_resolve_js_import",
+          "kind": "function",
+          "startLine": 969,
+          "endLine": 978,
+          "decorators": [],
+          "signature": "_resolve_js_import(specifier: str, from_file: str, all_paths: set[str]) -> str | None",
+          "doc": null
+        },
+        {
+          "name": "_resolve_notebook_target",
+          "kind": "function",
+          "startLine": 981,
+          "endLine": 998,
+          "decorators": [],
+          "signature": "_resolve_notebook_target(raw_ref: str, from_file: str, all_paths: set[str]) -> str | None",
+          "doc": null
+        },
+        {
+          "name": "inspect",
+          "kind": "function",
+          "startLine": 1001,
+          "endLine": 1394,
+          "decorators": [],
+          "signature": "inspect(root: Path, includes: list[str] | None, excludes: list[str] | None, ignore_paths: set[str] | None) -> dict[str, Any]",
+          "doc": null
+        },
+        {
+          "name": "render_reading_plan",
+          "kind": "function",
+          "startLine": 1397,
+          "endLine": 1543,
+          "decorators": [],
+          "signature": "render_reading_plan(dossier: dict[str, Any]) -> str",
+          "doc": null
+        }
+      ],
+      "dataIO": [
+        {
+          "op": "spark_format",
+          "format": "delta",
+          "line": 64
+        }
+      ]
+    },
+    "scripts/validate.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "validateHtml",
+          "kind": "function",
+          "startLine": 6,
+          "endLine": 6,
+          "signature": "validateHtml(html)"
+        }
+      ],
+      "dataIO": []
+    },
+    "scripts/verify.mjs": {
+      "constants": [],
+      "symbols": [
+        {
+          "name": "git",
+          "kind": "function",
+          "startLine": 9,
+          "endLine": 9,
+          "signature": "git(cwd, ...args)"
+        },
+        {
+          "name": "readJson",
+          "kind": "function",
+          "startLine": 17,
+          "endLine": 17,
+          "signature": "readJson(file)"
+        },
+        {
+          "name": "verify",
+          "kind": "function",
+          "startLine": 21,
+          "endLine": 21,
+          "signature": "verify(manifestFile, receiptFile)"
+        },
+        {
+          "name": "analyzeImpact",
+          "kind": "function",
+          "startLine": 83,
+          "endLine": 83,
+          "signature": "analyzeImpact(manifestFile, receiptFile, {dossierFile = null} = {})"
+        },
+        {
+          "name": "renderUpdatePlan",
+          "kind": "function",
+          "startLine": 217,
+          "endLine": 217,
+          "signature": "renderUpdatePlan(impact)"
+        },
+        {
+          "name": "getFlagValue",
+          "kind": "function",
+          "startLine": 291,
+          "endLine": 291,
+          "signature": "getFlagValue(argv, flag)"
+        }
+      ],
+      "dataIO": []
+    }
+  },
+  "testsIndex": {
+    "tests/build.test.mjs": [
+      {
+        "name": "runnable example: offline diagrams, accessible values and nested details survive rendering",
+        "startLine": 16
+      },
+      {
+        "name": "multiple SVGs namespace marker identifiers; unsafe Markdown HTML cannot execute",
+        "startLine": 33
+      },
+      {
+        "name": "content/manifest mismatch fails without creating an output",
+        "startLine": 43
+      },
+      {
+        "name": "chart rejects misleading values and duplicate categories; zero remains zero",
+        "startLine": 49
+      },
+      {
+        "name": "chart keeps a 45-character label inside the SVG and marks zero",
+        "startLine": 58
+      },
+      {
+        "name": "chart features: semantic variants, accessible row titles, value proximity, dignified zero, and grid scale",
+        "startLine": 69
+      },
+      {
+        "name": "validator rejects runtime/asset dependencies and broken navigation",
+        "startLine": 114
+      },
+      {
+        "name": "validator rejects incomplete structures and inline external styles",
+        "startLine": 119
+      },
+      {
+        "name": "verify detects changed sources and receipt drift",
+        "startLine": 131
+      },
+      {
+        "name": "validator rejects raw LaTeX math in prose/tables while allowing currency and code blocks",
+        "startLine": 147
+      },
+      {
+        "name": "generated HTML uses concise search placeholder that fits sidebar input",
+        "startLine": 162
+      },
+      {
+        "name": "runtime script enables local table filters inside nested <details> dictionaries without touching chart tables",
+        "startLine": 170
+      },
+      {
+        "name": "generated HTML defaults to the red theme, exposes Verde/Azul/Vermelho and maps legacy theme aliases",
+        "startLine": 176
+      },
+      {
+        "name": "table wrappers do not trap page wheel scrolling",
+        "startLine": 221
+      },
+      {
+        "name": "v1.5.0 build & validate: H3 subnav, back-to-top, H1 guard, authoring warnings, and SVG structural audit",
+        "startLine": 228
+      },
+      {
+        "name": "v1.6.0 summary mode: data-mode, quick-guide badges, companionDoc link, readingMinutes, and length warnings",
+        "startLine": 276
+      }
+    ],
+    "tests/diagrams.test.mjs": [
+      {
+        "name": "parseRichTokens and wrapRichLines isolate inline code chips and hard-wrap long separatorless tokens",
+        "startLine": 22
+      },
+      {
+        "name": "renderSchemaDiagram renders typed entities, wrapped grain, spread ports, natural key order and lineage vs FK",
+        "startLine": 95
+      },
+      {
+        "name": "enhanceMermaidSvg upgrades ER column order, PK/FK classes, composite branch badges and state colors",
+        "startLine": 157
+      },
+      {
+        "name": "build enforces reserved IDs, localized eyebrow, safe table attributes, typed callouts, and column badges",
+        "startLine": 185
+      },
+      {
+        "name": "inspect_repo.py discovers Jinja/SQL/DDL data-engineering templates and detects stackSignals",
+        "startLine": 236
+      },
+      {
+        "name": "showcase example builds cleanly preserving all 11 categories, audience filters, dictionary badges and new diagrams",
+        "startLine": 255
+      },
+      {
+        "name": "renderSolutionDiagram auto-bypasses explicit right->left skip edges and wraps long bold titles in narrow boxes",
+        "startLine": 333
+      },
+      {
+        "name": "renderSchemaDiagram routes cross-row bottom->right relations through inter-row gutter around intermediate entities",
+        "startLine": 361
+      }
+    ],
+    "tests/dossier.test.mjs": [
+      {
+        "name": "verify.mjs --impact propagates drift through dependency graph and marks only stale sections",
+        "startLine": 171
+      }
+    ]
+  },
+  "dependencyGraph": {
+    "edges": [
+      {
+        "from": "scripts/build.mjs",
+        "to": "scripts/validate.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "scripts/build.mjs",
+        "to": "scripts/diagrams.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/build.test.mjs",
+        "to": "scripts/build.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/build.test.mjs",
+        "to": "scripts/validate.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/build.test.mjs",
+        "to": "scripts/verify.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/diagrams.test.mjs",
+        "to": "scripts/diagrams.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/diagrams.test.mjs",
+        "to": "scripts/build.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/diagrams.test.mjs",
+        "to": "scripts/validate.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/dossier.test.mjs",
+        "to": "scripts/build.mjs",
+        "kind": "import"
+      },
+      {
+        "from": "tests/dossier.test.mjs",
+        "to": "scripts/verify.mjs",
+        "kind": "import"
+      }
+    ],
+    "inDegree": {
+      "scripts/build.mjs": 3,
+      "scripts/diagrams.mjs": 2,
+      "scripts/validate.mjs": 3,
+      "scripts/verify.mjs": 2
+    },
+    "outDegree": {
+      "scripts/build.mjs": 2,
+      "tests/build.test.mjs": 3,
+      "tests/diagrams.test.mjs": 3,
+      "tests/dossier.test.mjs": 2
+    }
+  },
+  "readingWaves": {
+    "wave1": [
+      {
+        "path": "scripts/inspect_repo.py",
+        "kind": "code",
+        "lines": 1574,
+        "centrality": 7,
+        "stacks": [
+          "api_service",
+          "azure_blob_adls",
+          "cosmos_db",
+          "data_quality",
+          "databricks",
+          "dbt",
+          "delta_lake",
+          "event_hubs",
+          "iceberg",
+          "orchestration",
+          "scala",
+          "spark_pyspark",
+          "sql_warehouse",
+          "terraform_iac"
+        ],
+        "symbolsCount": 21,
+        "testsCount": 0
+      },
+      {
+        "path": "README.md",
+        "kind": "docs",
+        "lines": 298,
+        "centrality": 5,
+        "stacks": [
+          "api_service",
+          "databricks",
+          "spark_pyspark",
+          "sql_warehouse"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "package.json",
+        "kind": "config",
+        "lines": 10,
+        "centrality": 5,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "agents/openai.yaml",
+        "kind": "config",
+        "lines": 5,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "examples/minimal/document.json",
+        "kind": "config",
+        "lines": 2,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "examples/showcase/document.json",
+        "kind": "config",
+        "lines": 29,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "package-lock.json",
+        "kind": "config",
+        "lines": 622,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "schemas/document.schema.json",
+        "kind": "config",
+        "lines": 20,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      }
+    ],
+    "wave2": [
+      {
+        "path": "scripts/build.mjs",
+        "kind": "code",
+        "lines": 226,
+        "centrality": 8,
+        "stacks": [],
+        "symbolsCount": 3,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/validate.mjs",
+        "kind": "code",
+        "lines": 77,
+        "centrality": 6,
+        "stacks": [],
+        "symbolsCount": 1,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/diagrams.mjs",
+        "kind": "code",
+        "lines": 1367,
+        "centrality": 4,
+        "stacks": [],
+        "symbolsCount": 20,
+        "testsCount": 0
+      },
+      {
+        "path": "scripts/verify.mjs",
+        "kind": "code",
+        "lines": 329,
+        "centrality": 4,
+        "stacks": [],
+        "symbolsCount": 6,
+        "testsCount": 0
+      },
+      {
+        "path": "assets/document.js",
+        "kind": "code",
+        "lines": 472,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      }
+    ],
+    "wave3": [],
+    "wave4": [
+      {
+        "path": "tests/dossier.test.mjs",
+        "kind": "code",
+        "lines": 330,
+        "centrality": 1,
+        "stacks": [
+          "api_service",
+          "azure_blob_adls",
+          "cosmos_db",
+          "databricks",
+          "delta_lake",
+          "event_hubs",
+          "scala",
+          "spark_pyspark",
+          "sql_warehouse",
+          "terraform_iac"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 1
+      },
+      {
+        "path": "CHANGELOG.md",
+        "kind": "docs",
+        "lines": 177,
+        "centrality": 0,
+        "stacks": [
+          "api_service",
+          "azure_blob_adls",
+          "databricks",
+          "event_hubs",
+          "orchestration",
+          "spark_pyspark",
+          "sql_warehouse",
+          "terraform_iac"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "SKILL.md",
+        "kind": "docs",
+        "lines": 53,
+        "centrality": 0,
+        "stacks": [
+          "api_service",
+          "azure_blob_adls",
+          "cosmos_db",
+          "databricks",
+          "event_hubs",
+          "spark_pyspark",
+          "sql_warehouse"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "examples/minimal/content.md",
+        "kind": "docs",
+        "lines": 39,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "examples/showcase/content.md",
+        "kind": "docs",
+        "lines": 429,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "references/authoring.md",
+        "kind": "docs",
+        "lines": 160,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "references/data-engineering.md",
+        "kind": "docs",
+        "lines": 91,
+        "centrality": 0,
+        "stacks": [
+          "api_service",
+          "azure_blob_adls",
+          "cosmos_db",
+          "databricks",
+          "delta_lake",
+          "event_hubs",
+          "scala",
+          "spark_pyspark",
+          "sql_warehouse"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "references/tools.md",
+        "kind": "docs",
+        "lines": 12,
+        "centrality": 0,
+        "stacks": [
+          "databricks"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 0
+      },
+      {
+        "path": "tests/build.test.mjs",
+        "kind": "code",
+        "lines": 311,
+        "centrality": 0,
+        "stacks": [],
+        "symbolsCount": 0,
+        "testsCount": 16
+      },
+      {
+        "path": "tests/diagrams.test.mjs",
+        "kind": "code",
+        "lines": 470,
+        "centrality": 0,
+        "stacks": [
+          "dbt",
+          "delta_lake",
+          "event_hubs",
+          "spark_pyspark"
+        ],
+        "symbolsCount": 0,
+        "testsCount": 8
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": "CHANGELOG.md",
+      "bytes": 20656,
+      "lines": 177,
+      "kind": "docs",
+      "sha256": "9d626c5588530ace1a5588a451239fdb245910841afa1a6d326c5f579973ba60",
+      "stacks": [
+        "api_service",
+        "azure_blob_adls",
+        "databricks",
+        "event_hubs",
+        "orchestration",
+        "spark_pyspark",
+        "sql_warehouse",
+        "terraform_iac"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "README.md",
+      "bytes": 15707,
+      "lines": 298,
+      "kind": "docs",
+      "sha256": "99013c2270eead24ae542d08ccf3648f1e159d739ac8d25242762d6bff28da69",
+      "stacks": [
+        "api_service",
+        "databricks",
+        "spark_pyspark",
+        "sql_warehouse"
+      ],
+      "wave": 1,
+      "centrality": 5
+    },
+    {
+      "path": "SKILL.md",
+      "bytes": 13371,
+      "lines": 53,
+      "kind": "docs",
+      "sha256": "4649cb6871c4acc2d263fa58da5d5a1688728907456a029562cb4a2cde200406",
+      "stacks": [
+        "api_service",
+        "azure_blob_adls",
+        "cosmos_db",
+        "databricks",
+        "event_hubs",
+        "spark_pyspark",
+        "sql_warehouse"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 22497,
+      "lines": 622,
+      "kind": "config",
+      "sha256": "a499aaf16e1841f74b450709aa1d0ae37bd5d9abe732f1a3d835b1d4ee180ed0",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "package.json",
+      "bytes": 564,
+      "lines": 10,
+      "kind": "config",
+      "sha256": "f657db67fb7d58bf7f9e60145e9df2eeeff6fd2e1393723de1fe375f888cdea4",
+      "wave": 1,
+      "centrality": 5
+    },
+    {
+      "path": "agents/openai.yaml",
+      "bytes": 251,
+      "lines": 5,
+      "kind": "config",
+      "sha256": "00b931cdbc30e9b1eab2aa1ff129438215845b1dd4a3ba6fcbd03e78cb885015",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "assets/document.js",
+      "bytes": 19409,
+      "lines": 472,
+      "kind": "code",
+      "sha256": "87b476b4b1af05ba35be5af7eff074a6a700524165e00a32b12842af2df856aa",
+      "wave": 2,
+      "centrality": 0
+    },
+    {
+      "path": "examples/minimal/content.md",
+      "bytes": 974,
+      "lines": 39,
+      "kind": "docs",
+      "sha256": "e3fe2c683b099ab5373536cc7db03678a399cb64613f1b1a680c2ee0573a2492",
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "examples/minimal/document.json",
+      "bytes": 509,
+      "lines": 2,
+      "kind": "config",
+      "sha256": "ebb55178085138fa62c558ebc5cab866c51979026211cc2e261b3dfd516717e9",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "examples/showcase/content.md",
+      "bytes": 19344,
+      "lines": 429,
+      "kind": "docs",
+      "sha256": "79e6a9e97d1768b5b6665e115ef7720489afc8cd95c571ff62b3efa7376eae38",
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "examples/showcase/document.json",
+      "bytes": 1958,
+      "lines": 29,
+      "kind": "config",
+      "sha256": "d45972dcfc86c81edbf3957905f6eaa480bb6883b0189dc3c72a0a4a0f371aed",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "references/authoring.md",
+      "bytes": 17852,
+      "lines": 160,
+      "kind": "docs",
+      "sha256": "7f6fc210a4fdbd52ae28263e4a89ae18541f547936b80bc757f9d62b2dfc16e0",
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "references/data-engineering.md",
+      "bytes": 11259,
+      "lines": 91,
+      "kind": "docs",
+      "sha256": "f9a7aa394ad32433622aadd0c6d3e2e922f783de8337ef897ee117b3563ac68b",
+      "stacks": [
+        "api_service",
+        "azure_blob_adls",
+        "cosmos_db",
+        "databricks",
+        "delta_lake",
+        "event_hubs",
+        "scala",
+        "spark_pyspark",
+        "sql_warehouse"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "references/tools.md",
+      "bytes": 1567,
+      "lines": 12,
+      "kind": "docs",
+      "sha256": "764896442c95ffd01ae429eb6c294aabfc043bd952f2d7ae5739542f05aa1097",
+      "stacks": [
+        "databricks"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "schemas/document.schema.json",
+      "bytes": 1783,
+      "lines": 20,
+      "kind": "config",
+      "sha256": "a80393b272cf13943f55480efeb7ffc8e6f376c62199234dd9e9d4a7d7b22e8a",
+      "wave": 1,
+      "centrality": 0
+    },
+    {
+      "path": "scripts/build.mjs",
+      "bytes": 26405,
+      "lines": 226,
+      "kind": "code",
+      "sha256": "32e4eca9463e7d5f175e5f9c9adcc7dfab91d005617482437d27d7d3849fb55d",
+      "wave": 2,
+      "centrality": 8
+    },
+    {
+      "path": "scripts/diagrams.mjs",
+      "bytes": 66288,
+      "lines": 1367,
+      "kind": "code",
+      "sha256": "c5b733dac129bc629feea7664c40f6b0cd1282b343a8846945aa0dd43dc3b0c4",
+      "wave": 2,
+      "centrality": 4
+    },
+    {
+      "path": "scripts/inspect_repo.py",
+      "bytes": 75761,
+      "lines": 1574,
+      "kind": "code",
+      "sha256": "9873e871455d1e83805a61c9be2cdfe96ebdf572ed29c3608c9f838c78e9815d",
+      "stacks": [
+        "api_service",
+        "azure_blob_adls",
+        "cosmos_db",
+        "data_quality",
+        "databricks",
+        "dbt",
+        "delta_lake",
+        "event_hubs",
+        "iceberg",
+        "orchestration",
+        "scala",
+        "spark_pyspark",
+        "sql_warehouse",
+        "terraform_iac"
+      ],
+      "wave": 1,
+      "centrality": 7
+    },
+    {
+      "path": "scripts/validate.mjs",
+      "bytes": 5509,
+      "lines": 77,
+      "kind": "code",
+      "sha256": "65627b105fb1cd169fb8bc7db1ae820a524f01b2b07f2af5f1c83e207d6bb9b2",
+      "wave": 2,
+      "centrality": 6
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "bytes": 12393,
+      "lines": 329,
+      "kind": "code",
+      "sha256": "e1a2f81b3841efc468a91acb466253567311bed6ad352eb5b9ca8d3d74936314",
+      "wave": 2,
+      "centrality": 4
+    },
+    {
+      "path": "tests/build.test.mjs",
+      "bytes": 19120,
+      "lines": 311,
+      "kind": "code",
+      "sha256": "6190f877a2d9aeca77763ad1fdf2f595d6e3f48c692c2fe41d2dfdd67aabda87",
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "tests/diagrams.test.mjs",
+      "bytes": 23905,
+      "lines": 470,
+      "kind": "code",
+      "sha256": "69d0ecb6d57de9011c83767b7c1068ae6dd93b826810d402eed0f044aab8e831",
+      "stacks": [
+        "dbt",
+        "delta_lake",
+        "event_hubs",
+        "spark_pyspark"
+      ],
+      "wave": 4,
+      "centrality": 0
+    },
+    {
+      "path": "tests/dossier.test.mjs",
+      "bytes": 14856,
+      "lines": 330,
+      "kind": "code",
+      "sha256": "2cd7d221bff861efad4a5264014d849316b67e70e8468faf55387edcd922ae02",
+      "stacks": [
+        "api_service",
+        "azure_blob_adls",
+        "cosmos_db",
+        "databricks",
+        "delta_lake",
+        "event_hubs",
+        "scala",
+        "spark_pyspark",
+        "sql_warehouse",
+        "terraform_iac"
+      ],
+      "wave": 4,
+      "centrality": 1
+    }
+  ],
+  "note": "Static deterministic dossier only; zero LLM calls and zero execution of project code. Secret-like values are redacted."
+}

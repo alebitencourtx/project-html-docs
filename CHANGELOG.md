@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.7.0 — 2026-11-15
+
+Renomeação dos temas por cor, com **Vermelho** como padrão, inclusão do tema **Verde** e correção da rolagem sobre tabelas curtas.
+
+### Adicionado
+
+- **Temas Verde, Azul e Vermelho (`assets/document.css`, `assets/document.js`, `scripts/build.mjs`, `schemas/document.schema.json`)**:
+  - O seletor de temas passa a exibir **Verde**, **Azul** e **Vermelho**, com **Vermelho** ativo por padrão em documentos sem `theme`.
+  - O tema **Verde** recebe paleta própria para shell, sidebar, hero, callouts e diagramas 2D (`solution`/`schema`), preservando as cores semânticas de sucesso, atenção e erro.
+  - O tema **Azul** corresponde à paleta anterior `default`; o antigo `santander` corresponde a **Vermelho**. Valores antigos continuam aceitos no schema e são migrados no `localStorage`.
+  - Manifestos podem usar `"theme": "verde" | "azul" | "vermelho"`; o padrão de ausência é vermelho.
+
+### Corrigido
+
+- **Rolagem sobre tabelas**: removida a contenção de encadeamento da roda em `.table-wrap`, que fazia a página parar de rolar ao passar o mouse sobre tabelas curtas ou células sem overflow vertical.
+- **Testes**: cobertura do tema padrão vermelho, dos três seletores, dos aliases legados e da ausência de contenção de roda em tabelas; suíte com 30 testes.
+
 ## 1.6.0 — 2026-11-14
 
 Adição do **Modo Guia Rápido / Visão Resumida (`mode: "summary"` e `--mode summary`)** para gerar documentação panorâmica objetiva (~5 minutos de leitura) lado a lado com o manual completo.

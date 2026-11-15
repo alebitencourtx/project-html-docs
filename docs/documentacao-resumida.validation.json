@@ -1,0 +1,121 @@
+{
+  "passed": true,
+  "errors": [],
+  "mode": "summary",
+  "wordCount": 1655,
+  "readingMinutes": 9,
+  "sections": 6,
+  "contentSections": 6,
+  "referenceBlocks": 1,
+  "diagrams": 1,
+  "charts": 1,
+  "bytes": 103132,
+  "browserReviewed": false,
+  "warnings": [],
+  "version": "1.7.0",
+  "skillVersion": "1.7.0",
+  "builtAt": "2026-11-15T06:58:24.999Z",
+  "manifestSha256": "3ff5a00654e56779050ea0f782513fcceedb8a40a24356396f0d7eef4e61168d",
+  "document": "project-html-docs · Guia Rápido",
+  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
+  "inputSha256": "4ae7ee5ccf9f0ae7d0724ffcddf1c916260c5fbe7ada574de6098eba9bfa3768",
+  "htmlSha256": "ad8f70dd50847b5dae356327a018220886ff4670944bc8623443f04cd8e66cea",
+  "sources": [
+    {
+      "id": "skill",
+      "path": "SKILL.md",
+      "description": "Contrato operacional da skill.",
+      "sha256": "4649cb6871c4acc2d263fa58da5d5a1688728907456a029562cb4a2cde200406"
+    },
+    {
+      "id": "readme",
+      "path": "README.md",
+      "description": "Visão geral, requisitos e comandos.",
+      "sha256": "99013c2270eead24ae542d08ccf3648f1e159d739ac8d25242762d6bff28da69"
+    },
+    {
+      "id": "package",
+      "path": "package.json",
+      "description": "Versão, engines e dependências fixadas.",
+      "sha256": "f657db67fb7d58bf7f9e60145e9df2eeeff6fd2e1393723de1fe375f888cdea4"
+    },
+    {
+      "id": "schema",
+      "path": "schemas/document.schema.json",
+      "description": "Esquema do manifesto document.json.",
+      "sha256": "a80393b272cf13943f55480efeb7ffc8e6f376c62199234dd9e9d4a7d7b22e8a"
+    },
+    {
+      "id": "build",
+      "path": "scripts/build.mjs",
+      "description": "Compilador do manifesto e do Markdown.",
+      "sha256": "32e4eca9463e7d5f175e5f9c9adcc7dfab91d005617482437d27d7d3849fb55d"
+    },
+    {
+      "id": "diagrams",
+      "path": "scripts/diagrams.mjs",
+      "description": "Motor de diagramas 2D e Mermaid.",
+      "sha256": "c5b733dac129bc629feea7664c40f6b0cd1282b343a8846945aa0dd43dc3b0c4"
+    },
+    {
+      "id": "validate",
+      "path": "scripts/validate.mjs",
+      "description": "Validador estrutural do HTML e dos SVGs.",
+      "sha256": "65627b105fb1cd169fb8bc7db1ae820a524f01b2b07f2af5f1c83e207d6bb9b2"
+    },
+    {
+      "id": "verify",
+      "path": "scripts/verify.mjs",
+      "description": "Hashes, revisão Git e análise de impacto.",
+      "sha256": "e1a2f81b3841efc468a91acb466253567311bed6ad352eb5b9ca8d3d74936314"
+    },
+    {
+      "id": "inspect",
+      "path": "scripts/inspect_repo.py",
+      "description": "Dossiê estático e plano de leitura.",
+      "sha256": "9873e871455d1e83805a61c9be2cdfe96ebdf572ed29c3608c9f838c78e9815d"
+    },
+    {
+      "id": "authoring",
+      "path": "references/authoring.md",
+      "description": "Contrato de autoria e revisão.",
+      "sha256": "7f6fc210a4fdbd52ae28263e4a89ae18541f547936b80bc757f9d62b2dfc16e0"
+    },
+    {
+      "id": "tools",
+      "path": "references/tools.md",
+      "description": "Dependências e escopo.",
+      "sha256": "764896442c95ffd01ae429eb6c294aabfc043bd952f2d7ae5739542f05aa1097"
+    },
+    {
+      "id": "changelog",
+      "path": "CHANGELOG.md",
+      "description": "Histórico de versões.",
+      "sha256": "9d626c5588530ace1a5588a451239fdb245910841afa1a6d326c5f579973ba60"
+    },
+    {
+      "id": "tests-build",
+      "path": "tests/build.test.mjs",
+      "description": "Testes de build, temas e validação.",
+      "sha256": "6190f877a2d9aeca77763ad1fdf2f595d6e3f48c692c2fe41d2dfdd67aabda87"
+    },
+    {
+      "id": "tests-diagrams",
+      "path": "tests/diagrams.test.mjs",
+      "description": "Testes de diagramas, gráficos e exemplos.",
+      "sha256": "69d0ecb6d57de9011c83767b7c1068ae6dd93b826810d402eed0f044aab8e831"
+    },
+    {
+      "id": "tests-dossier",
+      "path": "tests/dossier.test.mjs",
+      "description": "Testes do dossiê e do impacto.",
+      "sha256": "2cd7d221bff861efad4a5264014d849316b67e70e8468faf55387edcd922ae02"
+    },
+    {
+      "id": "example-showcase",
+      "path": "examples/showcase/document.json",
+      "description": "Exemplo completo com 11 categorias.",
+      "sha256": "d45972dcfc86c81edbf3957905f6eaa480bb6883b0189dc3c72a0a4a0f371aed"
+    }
+  ]
+}

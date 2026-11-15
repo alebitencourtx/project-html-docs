@@ -178,13 +178,15 @@
     });
   });
 
-  // Seletor de paleta de cores (Atual vs Santander) sem alterar layout
+  // Seletor de paleta de cores (Verde, Azul e Vermelho) sem alterar layout.
+  // O vermelho é o padrão; valores antigos do localStorage são migrados.
   const themeBtns = [...document.querySelectorAll('[data-theme-select]')];
   if (themeBtns.length) {
+    const themeAliases = { verde: 'verde', azul: 'azul', vermelho: 'vermelho', default: 'azul', santander: 'vermelho' };
+    const normalizeTheme = theme => themeAliases[theme] || 'vermelho';
     const applyTheme = (theme, persist = false) => {
-      const target = theme === 'santander' ? 'santander' : 'default';
-      if (target === 'santander') document.documentElement.setAttribute('data-theme', 'santander');
-      else document.documentElement.removeAttribute('data-theme');
+      const target = normalizeTheme(theme);
+      document.documentElement.setAttribute('data-theme', target);
       themeBtns.forEach(b => {
         const active = b.dataset.themeSelect === target;
         b.classList.toggle('is-active', active);
@@ -194,12 +196,12 @@
         try { localStorage.setItem('project-docs-theme', target); } catch {}
       }
     };
-    let initialTheme = document.documentElement.getAttribute('data-theme') === 'santander' ? 'santander' : 'default';
+    let initialTheme = normalizeTheme(document.documentElement.getAttribute('data-theme'));
     try {
       const saved = localStorage.getItem('project-docs-theme');
-      if (saved === 'santander' || saved === 'default') initialTheme = saved;
+      if (saved) initialTheme = normalizeTheme(saved);
     } catch {}
-    applyTheme(initialTheme, false);
+    applyTheme(initialTheme, true);
     themeBtns.forEach(btn => btn.addEventListener('click', () => applyTheme(btn.dataset.themeSelect, true)));
   }
 

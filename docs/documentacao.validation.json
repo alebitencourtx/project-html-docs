@@ -1,0 +1,151 @@
+{
+  "passed": true,
+  "errors": [],
+  "mode": "full",
+  "wordCount": 6204,
+  "readingMinutes": 33,
+  "sections": 11,
+  "contentSections": 11,
+  "referenceBlocks": 1,
+  "diagrams": 3,
+  "charts": 1,
+  "bytes": 188495,
+  "browserReviewed": false,
+  "warnings": [],
+  "version": "1.7.0",
+  "skillVersion": "1.7.0",
+  "builtAt": "2026-11-15T06:58:24.344Z",
+  "manifestSha256": "8031702053a41fe84b62138874530ab9c91666b8e57d80e52b0982fd0c219111",
+  "document": "project-html-docs · Manual do Gerador",
+  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
+  "inputSha256": "2c16c898e93c3fcfea3345624f5c59cfabc3476bb611cf14973ba134d5dbfcc6",
+  "htmlSha256": "395f67a324ccdfb790d221a44657e1fef17d5b1d8108e708909ebd7e65f6630a",
+  "sources": [
+    {
+      "id": "skill",
+      "path": "SKILL.md",
+      "description": "Contrato operacional do skill: fluxo, decisões e manutenção.",
+      "sha256": "4649cb6871c4acc2d263fa58da5d5a1688728907456a029562cb4a2cde200406"
+    },
+    {
+      "id": "readme",
+      "path": "README.md",
+      "description": "Visão geral, requisitos, comandos e recursos do projeto.",
+      "sha256": "99013c2270eead24ae542d08ccf3648f1e159d739ac8d25242762d6bff28da69"
+    },
+    {
+      "id": "package",
+      "path": "package.json",
+      "description": "Versão, engines, scripts e dependências fixadas.",
+      "sha256": "f657db67fb7d58bf7f9e60145e9df2eeeff6fd2e1393723de1fe375f888cdea4"
+    },
+    {
+      "id": "schema",
+      "path": "schemas/document.schema.json",
+      "description": "Esquema JSON do manifesto document.json.",
+      "sha256": "a80393b272cf13943f55480efeb7ffc8e6f376c62199234dd9e9d4a7d7b22e8a"
+    },
+    {
+      "id": "build",
+      "path": "scripts/build.mjs",
+      "description": "Compilador do manifesto e do Markdown no HTML final.",
+      "sha256": "32e4eca9463e7d5f175e5f9c9adcc7dfab91d005617482437d27d7d3849fb55d"
+    },
+    {
+      "id": "diagrams",
+      "path": "scripts/diagrams.mjs",
+      "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid.",
+      "sha256": "c5b733dac129bc629feea7664c40f6b0cd1282b343a8846945aa0dd43dc3b0c4"
+    },
+    {
+      "id": "validate",
+      "path": "scripts/validate.mjs",
+      "description": "Validador estrutural do HTML, dos SVGs e da navegação.",
+      "sha256": "65627b105fb1cd169fb8bc7db1ae820a524f01b2b07f2af5f1c83e207d6bb9b2"
+    },
+    {
+      "id": "verify",
+      "path": "scripts/verify.mjs",
+      "description": "Conferência de hashes, revisão Git e análise incremental de impacto.",
+      "sha256": "e1a2f81b3841efc468a91acb466253567311bed6ad352eb5b9ca8d3d74936314"
+    },
+    {
+      "id": "inspect",
+      "path": "scripts/inspect_repo.py",
+      "description": "Inspetor estático do repositório e gerador do dossiê/plano de leitura.",
+      "sha256": "9873e871455d1e83805a61c9be2cdfe96ebdf572ed29c3608c9f838c78e9815d"
+    },
+    {
+      "id": "ui",
+      "path": "assets/document.js",
+      "description": "Comportamentos offline da interface: busca, filtros, temas e modal.",
+      "sha256": "87b476b4b1af05ba35be5af7eff074a6a700524165e00a32b12842af2df856aa"
+    },
+    {
+      "id": "styles",
+      "path": "assets/document.css",
+      "description": "Design system, layout desktop, temas e estilos de impressão.",
+      "sha256": "75969fc00aada3f58b113f9e0b77ac3d43161bed1479657b13e9e5a5cb60fe9e"
+    },
+    {
+      "id": "authoring",
+      "path": "references/authoring.md",
+      "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão.",
+      "sha256": "7f6fc210a4fdbd52ae28263e4a89ae18541f547936b80bc757f9d62b2dfc16e0"
+    },
+    {
+      "id": "data-engineering",
+      "path": "references/data-engineering.md",
+      "description": "Perfil de documentação para engenharia de dados, nuvem e streaming.",
+      "sha256": "f9a7aa394ad32433622aadd0c6d3e2e922f783de8337ef897ee117b3563ac68b"
+    },
+    {
+      "id": "tools",
+      "path": "references/tools.md",
+      "description": "Dependências, escopo e separação entre autoria e renderização.",
+      "sha256": "764896442c95ffd01ae429eb6c294aabfc043bd952f2d7ae5739542f05aa1097"
+    },
+    {
+      "id": "agent",
+      "path": "agents/openai.yaml",
+      "description": "Metadados de descoberta da skill em agentes compatíveis.",
+      "sha256": "00b931cdbc30e9b1eab2aa1ff129438215845b1dd4a3ba6fcbd03e78cb885015"
+    },
+    {
+      "id": "changelog",
+      "path": "CHANGELOG.md",
+      "description": "Histórico de versões e mudanças do gerador.",
+      "sha256": "9d626c5588530ace1a5588a451239fdb245910841afa1a6d326c5f579973ba60"
+    },
+    {
+      "id": "tests-build",
+      "path": "tests/build.test.mjs",
+      "description": "Testes do compilador, validador, temas, modos e avisos.",
+      "sha256": "6190f877a2d9aeca77763ad1fdf2f595d6e3f48c692c2fe41d2dfdd67aabda87"
+    },
+    {
+      "id": "tests-diagrams",
+      "path": "tests/diagrams.test.mjs",
+      "description": "Testes do motor 2D, Mermaid, gráficos e exemplos.",
+      "sha256": "69d0ecb6d57de9011c83767b7c1068ae6dd93b826810d402eed0f044aab8e831"
+    },
+    {
+      "id": "tests-dossier",
+      "path": "tests/dossier.test.mjs",
+      "description": "Testes do inspetor, do dossiê e da análise de impacto.",
+      "sha256": "2cd7d221bff861efad4a5264014d849316b67e70e8468faf55387edcd922ae02"
+    },
+    {
+      "id": "example-minimal",
+      "path": "examples/minimal/document.json",
+      "description": "Manifesto mínimo executável.",
+      "sha256": "ebb55178085138fa62c558ebc5cab866c51979026211cc2e261b3dfd516717e9"
+    },
+    {
+      "id": "example-showcase",
+      "path": "examples/showcase/document.json",
+      "description": "Manifesto completo com as 11 categorias de leitura.",
+      "sha256": "d45972dcfc86c81edbf3957905f6eaa480bb6883b0189dc3c72a0a4a0f371aed"
+    }
+  ]
+}

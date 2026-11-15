@@ -173,24 +173,56 @@ test('runtime script enables local table filters inside nested <details> diction
   assert.match(js,/wrap\.closest\(['"]\.chart['"]\)/);
 });
 
-test('generated HTML includes theme switcher (Default/Atual vs Santander) and supports manifest theme="santander"',()=>fixture(async dir=>{
+test('generated HTML defaults to the red theme, exposes Verde/Azul/Vermelho and maps legacy theme aliases',()=>fixture(async dir=>{
   await fs.writeFile(path.join(dir,'content.md'),'## S\n\nTexto.\n');
-  await fs.writeFile(path.join(dir,'document.json'),JSON.stringify({
-    title:'Santander Doc',subtitle:'Tema',version:'1.0',updated:'2026-11-14',theme:'santander',content:'content.md',
+  const writeManifest=(name,theme)=>fs.writeFile(path.join(dir,`${name}.json`),JSON.stringify({
+    title:`${name} Doc`,subtitle:'Tema',version:'1.0',updated:'2026-11-14',theme,content:'content.md',
     sections:[{id:'sec',title:'S',audience:'all'}]
   }));
-  const out=path.join(dir,'santander.html');
-  const r=await build(path.join(dir,'document.json'),out);
-  assert.equal(r.passed,true);
+  const render=async(name)=>{
+    const out=path.join(dir,`${name}.html`);
+    const r=await build(path.join(dir,`${name}.json`),out);
+    assert.equal(r.passed,true);
+    const html=await fs.readFile(out,'utf8');
+    return {html,$:load(html)};
+  };
+
+  await writeManifest('default-theme',undefined);
+  const def=await render('default-theme');
+  assert.equal(def.$('html').attr('data-theme'),'vermelho');
+  assert.equal(def.$('[data-theme-select="verde"]').length,1);
+  assert.equal(def.$('[data-theme-select="azul"]').length,1);
+  assert.equal(def.$('[data-theme-select="vermelho"]').length,1);
+  assert.equal(def.$('[data-theme-select="vermelho"].is-active').length,1);
+  assert.match(def.html,/:root\[data-theme="verde"\]/);
+  assert.match(def.html,/:root\[data-theme="vermelho"\]/);
+  assert.match(def.html,/--accent:\s*#990000/);
+  assert.match(def.html,/--accent:\s*#0f7a52/);
+  assert.match(def.html,/\.sol-zone-warm \.sol-zone-bg/);
+  assert.match(def.html,/\.sol-edge-lineage path/);
+
+  await writeManifest('azul-theme','azul');
+  const azul=await render('azul-theme');
+  assert.equal(azul.$('html').attr('data-theme'),'azul');
+  assert.equal(azul.$('[data-theme-select="azul"].is-active').length,1);
+
+  await writeManifest('verde-theme','verde');
+  const verde=await render('verde-theme');
+  assert.equal(verde.$('html').attr('data-theme'),'verde');
+  assert.equal(verde.$('[data-theme-select="verde"].is-active').length,1);
+
+  await writeManifest('legacy-santander','santander');
+  assert.equal((await render('legacy-santander')).$('html').attr('data-theme'),'vermelho');
+
+  await writeManifest('legacy-default','default');
+  assert.equal((await render('legacy-default')).$('html').attr('data-theme'),'azul');
+}));
+
+test('table wrappers do not trap page wheel scrolling',()=>fixture(async dir=>{
+  const out=path.join(dir,'scroll.html');
+  await build(path.join(root,'examples/minimal/document.json'),out);
   const html=await fs.readFile(out,'utf8');
-  const $=load(html);
-  assert.equal($('html').attr('data-theme'),'santander');
-  assert.equal($('[data-theme-select="default"]').length,1);
-  assert.equal($('[data-theme-select="santander"].is-active').length,1);
-  assert.match(html,/:root\[data-theme="santander"\]/);
-  assert.match(html,/--accent:\s*#990000/);
-  assert.match(html,/\.sol-zone-warm \.sol-zone-bg/);
-  assert.match(html,/\.sol-edge-lineage path/);
+  assert.ok(!/overscroll-behavior\s*:\s*contain/i.test(html),'Table wrappers must not contain wheel scrolling');
 }));
 
 test('v1.5.0 build & validate: H3 subnav, back-to-top, H1 guard, authoring warnings, and SVG structural audit',()=>fixture(async dir=>{

@@ -4,8 +4,8 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-29%20passing-success.svg)](#testes-automatizados)
-[![Version](https://img.shields.io/badge/version-1.6.0-orange.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-30%20passing-success.svg)](#testes-automatizados)
+[![Version](https://img.shields.io/badge/version-1.7.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
@@ -24,7 +24,7 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 - **Dois modos de apresentação (Manual Completo vs Guia Rápido)**:
   - **Manual Completo (`mode: "full"`)**: Cobre toda a jornada com todas as seções, diagramas detalhados e dicionários completos.
   - **Guia Rápido / Visão Resumida (`mode: "summary"`)**: Versão panorâmica e objetiva para leitura em ~5 minutos, com 4 a 7 capítulos de alto sinal, badges de tempo de leitura e link cruzado (`companionDoc`) para o manual completo.
-- **Temas integrados**: Alternância entre o tema padrão e o tema corporativo Santander diretamente pela barra de ferramentas, salvando a preferência no navegador e harmonizando tanto o visual da página quanto as cores dos diagramas SVG 2D.
+- **Temas integrados**: Alternância entre os temas **Verde**, **Azul** e **Vermelho** (padrão) diretamente pela barra de ferramentas, salvando a preferência no navegador e harmonizando tanto o visual da página quanto as cores dos diagramas SVG 2D.
 - **Motor próprio de diagramas 2D em SVG**: Suporte nativo a diagramas de arquitetura (`solution`) e modelagem de tabelas com linhagem (`schema`), com desvio inteligente de sobreposição de rótulos (*pill collision avoidance*) e sem depender de bibliotecas externas no navegador.
 - **Navegação focada na leitura em desktop**:
   - Barra lateral flexível com rolagem independente que nunca sobrepõe o rodapé de leitura offline.
@@ -51,7 +51,7 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 ```text
 project-html-docs/
 ├── assets/
-│   ├── document.css            # Estilos visuais, layout flexível e temas (Padrão e Santander)
+│   ├── document.css            # Estilos visuais, layout flexível e temas (Verde, Azul e Vermelho)
 │   └── document.js             # Lógica de busca, temas, subnavegação H3 e controles
 ├── examples/
 │   ├── minimal/                # Exemplo simples de documentação funcional
@@ -271,7 +271,7 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios e análise de impacto:
 
 ```bash
-# Rodar todos os testes unitários (29 testes)
+# Rodar todos os testes unitários (30 testes)
 npm test
 
 # Compilar os exemplos disponíveis
@@ -283,6 +283,7 @@ npm run build:showcase
 
 ## Histórico de releases
 
+- **[v1.7.0](CHANGELOG.md#170--2026-11-15)**: Temas nomeados **Verde**, **Azul** e **Vermelho**, com vermelho como padrão; harmonização cromática dos diagramas 2D no tema verde; remoção da contenção de roda que travava a página ao passar sobre tabelas curtas.
 - **[v1.6.0](CHANGELOG.md#160--2026-11-14)**: Modo Guia Rápido / Visão Resumida (`mode: "summary"`, `--mode summary`), badges de tempo de leitura (`~N min de leitura`), link seguro `companionDoc`, contagem de palavras e avisos de concisão no recibo de validação.
 - **[v1.5.0](CHANGELOG.md#150--2026-11-14)**: Sidebar flex com scroll independente, subnavegação H3, botão voltar ao topo, harmonização cromática do tema Santander nos diagramas SVG, prevenção de colisão de rótulos, validação geométrica de SVGs, extração de cadeias PySpark, pipelines ADF, Scala e suporte a `.docignore`.
 - **[v1.4.0](CHANGELOG.md#140--2026-11-14)**: Mapeamento estático profundo (AST Python, Databricks notebooks, PySpark, Event Hubs, Cosmos DB, ADLS Gen2, APIs), reading waves e análise incremental de impacto (`verify.mjs --impact`).

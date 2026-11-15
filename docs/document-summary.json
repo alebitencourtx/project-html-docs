@@ -1,0 +1,93 @@
+{
+  "title": "project-html-docs · Guia Rápido",
+  "subtitle": "Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.",
+  "eyebrow": "project-html-docs · guia rápido",
+  "version": "1.7.0",
+  "updated": "2026-11-15",
+  "language": "pt-BR",
+  "theme": "vermelho",
+  "mode": "summary",
+  "content": "content-summary.md",
+  "repoRoot": "..",
+  "revision": "78dc658d3b1a895a64aa0956b306955eb240989d",
+  "dataAsOf": "2026-11-15 · snapshot local de implementação",
+  "companionDoc": { "href": "documentacao.html", "label": "Manual completo" },
+  "cards": [
+    {
+      "label": "Entrega",
+      "value": "1 HTML offline",
+      "description": "CSS, JavaScript e SVG embutidos; nenhum servidor ou CDN na leitura."
+    },
+    {
+      "label": "Descoberta",
+      "value": "0 tokens de LLM",
+      "description": "inspect_repo.py usa AST e regex, sem executar o projeto analisado."
+    },
+    {
+      "label": "Integridade",
+      "value": "SHA-256 + Git",
+      "description": "O recibo registra as fontes; o verify detecta drift e impacto."
+    },
+    {
+      "label": "Temas",
+      "value": "Vermelho padrão",
+      "description": "Verde, Azul e Vermelho; a preferência fica no navegador."
+    }
+  ],
+  "sections": [
+    {
+      "id": "resumo",
+      "title": "O que é e para quem",
+      "audience": "all",
+      "sources": ["skill", "readme", "package"]
+    },
+    {
+      "id": "solucao",
+      "title": "Como funciona",
+      "audience": "all",
+      "sources": ["build", "diagrams", "verify", "inspect"]
+    },
+    {
+      "id": "uso",
+      "title": "Como usar",
+      "audience": "operations",
+      "sources": ["skill", "readme", "authoring"]
+    },
+    {
+      "id": "regras",
+      "title": "Regras e limites",
+      "audience": "technical",
+      "sources": ["authoring", "build", "validate", "schema"]
+    },
+    {
+      "id": "operacao",
+      "title": "Verificação e atualização",
+      "audience": "operations",
+      "sources": ["verify", "tests-build", "tests-diagrams", "tests-dossier", "changelog"]
+    },
+    {
+      "id": "referencias",
+      "title": "Referências essenciais",
+      "audience": "all",
+      "sources": ["skill", "tools", "example-showcase"]
+    }
+  ],
+  "sources": [
+    {"id": "skill", "path": "SKILL.md", "description": "Contrato operacional da skill."},
+    {"id": "readme", "path": "README.md", "description": "Visão geral, requisitos e comandos."},
+    {"id": "package", "path": "package.json", "description": "Versão, engines e dependências fixadas."},
+    {"id": "schema", "path": "schemas/document.schema.json", "description": "Esquema do manifesto document.json."},
+    {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown."},
+    {"id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor de diagramas 2D e Mermaid."},
+    {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML e dos SVGs."},
+    {"id": "verify", "path": "scripts/verify.mjs", "description": "Hashes, revisão Git e análise de impacto."},
+    {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Dossiê estático e plano de leitura."},
+    {"id": "authoring", "path": "references/authoring.md", "description": "Contrato de autoria e revisão."},
+    {"id": "tools", "path": "references/tools.md", "description": "Dependências e escopo."},
+    {"id": "changelog", "path": "CHANGELOG.md", "description": "Histórico de versões."},
+    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes de build, temas e validação."},
+    {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes de diagramas, gráficos e exemplos."},
+    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do dossiê e do impacto."},
+    {"id": "example-showcase", "path": "examples/showcase/document.json", "description": "Exemplo completo com 11 categorias."}
+  ]
+}
