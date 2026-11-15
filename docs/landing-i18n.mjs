@@ -9,25 +9,26 @@ export const VIDEO_CHAPTERS = [
 ];
 
 export const RECIPES = {
-  cli: `# 1. Install dependencies & run unit tests
+  cli: `# 1. Install dependencies & verify environment (doctor)
 npm ci --ignore-scripts && npm test
+node scripts/cli.mjs doctor
 
 # 2. Static repository discovery (AST + regex + dependency graph)
-python3 scripts/inspect_repo.py . \\
+node scripts/cli.mjs inspect . \\
   --out docs/inventory.json \\
   --plan docs/reading-plan.md
 
 # 3. Compile single-file offline HTML + SHA-256 receipt
-node scripts/build.mjs docs/document.json \\
+node scripts/cli.mjs build docs/document.json \\
   --out docs/documentacao.html --force
 
 # 4. Verify hashes & detect stale sections after commits
-node scripts/verify.mjs docs/document.json \\
+node scripts/cli.mjs verify docs/document.json \\
   docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md`,
   manifest: `{
   "title": "project-html-docs",
   "subtitle": "Gerador de documentação técnica e funcional em HTML único offline",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "updated": "2026-11-15",
   "mode": "full",
   "theme": "vermelho",
@@ -43,7 +44,7 @@ node scripts/verify.mjs docs/document.json \\
       "id": "executive-summary",
       "title": "Visão Executiva",
       "audience": "all",
-      "sources": ["skill", "builder"]
+      "sources": ["skill", "cli", "builder"]
     },
     {
       "id": "architecture",
@@ -53,7 +54,8 @@ node scripts/verify.mjs docs/document.json \\
     }
   ],
   "sources": [
-    { "id": "skill", "path": "SKILL.md", "description": "Workflow principal da skill" },
+    { "id": "skill", "path": "SKILL.md", "description": "Porta de entrada da skill" },
+    { "id": "cli", "path": "scripts/cli.mjs", "description": "Entrada única inspect/build/verify/doctor" },
     { "id": "builder", "path": "scripts/build.mjs", "description": "Compilador HTML offline e auditoria" },
     { "id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor SVG 2D e enhancer Mermaid" },
     { "id": "verifier", "path": "scripts/verify.mjs", "description": "Verificação de hashes e análise de impacto" },
@@ -61,13 +63,13 @@ node scripts/verify.mjs docs/document.json \\
   ]
 }`,
   skill: `Use the project-html-docs skill (SKILL.md):
-1. Run scripts/inspect_repo.py on this repository to generate
+1. Run scripts/cli.mjs inspect on this repository to generate
    docs/inventory.json and docs/reading-plan.md.
-2. Read the prioritized waves and author docs/document.json +
+2. Read references on demand and author docs/document.json +
    docs/content.md strictly from implemented behavior.
 3. Compile docs/documentacao.html (mode: "full") and
-   docs/documentacao-resumida.html (mode: "summary") with theme "vermelho".
-4. Verify SHA-256 receipts with scripts/verify.mjs.`,
+   docs/documentacao-resumida.html (mode: "summary") with scripts/cli.mjs build.
+4. Verify SHA-256 receipts with scripts/cli.mjs verify.`,
 };
 
 export const TRANSLATIONS = {
@@ -86,9 +88,9 @@ export const TRANSLATIONS = {
     ariaProofMetrics: 'Métricas do gerador',
     ariaPipelineDiagram: 'Pipeline de compilação do project-html-docs',
     ariaRecipeTabs: 'Exemplos de uso',
-    heroMeta: 'v1.10.0 · Licença MIT · Node 22+ & Python 3.10+ · Saída 100% offline',
+    heroMeta: 'v1.11.0 · Licença MIT · Node 22+ & Python 3.10+ · Saída 100% offline',
     heroTitle: 'Documentação de projeto em um único HTML offline e verificável.',
-    heroSubtitle: 'Uma skill e um compilador determinístico que transformam o estado implementado de qualquer repositório em um manual técnico e funcional — com diagramas 2D em SVG, busca instantânea, filtro por perfil e recibo SHA-256.',
+    heroSubtitle: 'Uma skill enxuta com CLI única e compilador determinístico que transformam o estado implementado de qualquer repositório em um manual técnico e funcional — com diagramas 2D em SVG, busca instantânea, filtro por perfil e recibo SHA-256.',
     heroPrimaryCta: 'Explorar manual ao vivo',
     heroSecondaryCta: 'Abrir guia rápido (9 min)',
     videoWindowTitle: 'project-html-docs · Demonstração gravada em 1440×900',
@@ -105,9 +107,9 @@ export const TRANSLATIONS = {
     proof1Value: '1 HTML',
     proof1Label: 'Sem servidor, CDN ou runtime externo na leitura',
     proof2Value: '0 tokens',
-    proof2Label: 'Descoberta estática via AST, regex e grafo (inspect_repo.py)',
-    proof3Value: '51 / 51',
-    proof3Label: 'Testes automatizados em build, SVG, dossiê e impacto',
+    proof2Label: 'Descoberta estática via AST, regex e grafo (cli.mjs inspect)',
+    proof3Value: '55',
+    proof3Label: 'Testes automatizados em CLI, ZIP, build, SVG, dossiê e impacto',
     proof4Value: 'SHA-256',
     proof4Label: 'Recibo de integridade + detecção incremental de seções stale',
     capSectionEyebrow: '01 · Arquitetura do produto',
@@ -160,10 +162,10 @@ export const TRANSLATIONS = {
     artSummaryCta: 'Abrir guia rápido',
     qsEyebrow: '04 · Pronto para GitHub Pages e uso local',
     qsTitle: 'Documente seu repositório com evidência verificável.',
-    qsBody: 'Clone o repositório, execute os testes unitários ou aponte um agente para SKILL.md para gerar o primeiro manual HTML do seu projeto.',
+    qsBody: 'Baixe o ZIP enxuto da Release, clone o repositório ou aponte seu agente para SKILL.md e execute scripts/cli.mjs para gerar o primeiro manual HTML.',
     qsPrimaryCta: 'Abrir manual completo',
     qsRepoCta: 'Ver repositório no GitHub',
-    footerLicense: 'Licença MIT · v1.10.0',
+    footerLicense: 'Licença MIT · v1.11.0',
     footerRepo: 'GitHub',
     footerFull: 'Manual completo',
     footerSummary: 'Guia rápido',
@@ -183,9 +185,9 @@ export const TRANSLATIONS = {
     ariaProofMetrics: 'Generator highlights',
     ariaPipelineDiagram: 'project-html-docs compilation pipeline',
     ariaRecipeTabs: 'Usage examples',
-    heroMeta: 'v1.10.0 · MIT License · Node 22+ & Python 3.10+ · 100% offline output',
+    heroMeta: 'v1.11.0 · MIT License · Node 22+ & Python 3.10+ · 100% offline output',
     heroTitle: 'Turn any codebase into a single-file, offline, verifiable HTML manual.',
-    heroSubtitle: 'An operational skill and deterministic compiler that document a repository’s current implemented state—complete with 2D SVG diagrams, instant search, audience filtering, and SHA-256 receipts.',
+    heroSubtitle: 'A lean operational skill with a unified CLI and deterministic compiler that document a repository’s current implemented state—complete with 2D SVG diagrams, instant search, audience filtering, and SHA-256 receipts.',
     heroPrimaryCta: 'Explore live manual',
     heroSecondaryCta: 'Open quick guide (9 min)',
     videoWindowTitle: 'project-html-docs · Recorded walkthrough at 1440×900',
@@ -202,9 +204,9 @@ export const TRANSLATIONS = {
     proof1Value: '1 HTML',
     proof1Label: 'Zero server, CDN, or external runtime required when reading',
     proof2Value: '0 tokens',
-    proof2Label: 'Deterministic AST, regex & graph discovery (inspect_repo.py)',
-    proof3Value: '51 / 51',
-    proof3Label: 'Automated tests covering build, SVG geometry, dossier & impact',
+    proof2Label: 'Deterministic AST, regex & graph discovery (cli.mjs inspect)',
+    proof3Value: '55',
+    proof3Label: 'Automated tests covering CLI, ZIP, build, SVG geometry, dossier & impact',
     proof4Value: 'SHA-256',
     proof4Label: 'Validation receipt + incremental stale-section impact routing',
     capSectionEyebrow: '01 · Product architecture',
@@ -257,10 +259,10 @@ export const TRANSLATIONS = {
     artSummaryCta: 'Open quick guide',
     qsEyebrow: '04 · Ready for GitHub Pages & local use',
     qsTitle: 'Document your repository with verifiable evidence.',
-    qsBody: 'Clone the repository, run the automated test suite, or point an agent to SKILL.md to generate your project’s first offline HTML manual.',
+    qsBody: 'Download the slim Release ZIP, clone the repo, or point an agent to SKILL.md and run scripts/cli.mjs to generate your project’s first offline HTML manual.',
     qsPrimaryCta: 'Open full manual',
     qsRepoCta: 'View on GitHub',
-    footerLicense: 'MIT License · v1.10.0',
+    footerLicense: 'MIT License · v1.11.0',
     footerRepo: 'GitHub',
     footerFull: 'Full manual',
     footerSummary: 'Quick guide',

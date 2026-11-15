@@ -2,45 +2,45 @@
   "passed": true,
   "errors": [],
   "mode": "full",
-  "wordCount": 6908,
-  "readingMinutes": 36,
+  "wordCount": 7091,
+  "readingMinutes": 37,
   "sections": 11,
   "contentSections": 11,
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 211783,
+  "bytes": 215097,
   "browserReviewed": true,
   "warnings": [],
-  "version": "1.10.0",
-  "skillVersion": "1.10.0",
+  "version": "1.11.0",
+  "skillVersion": "1.11.0",
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao.html",
-  "rendererSha256": "f826e852b7a91c908683b9b112164867c9625160b391afffd12fa2844c756761",
-  "builtAt": "2026-11-15T19:49:39.287Z",
-  "manifestSha256": "e8ea02e172226030cb52502ae8ed3ec28fd416fbeb502b54e7bb6f760cea968f",
+  "rendererSha256": "8e059010cffca2b743f53aab5a9b722a17b801bfb62574860f0129f54d88e83f",
+  "builtAt": "2026-11-15T21:49:16.165Z",
+  "manifestSha256": "93093d673446559ccc5c7a2e2a5e4aba3dd4651b13412d3960cb9835d2cd0176",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "12ea3444daf308d63a29a52e970352074f2331a7",
-  "inputSha256": "82e7ca76e4db51f2e53a5c665df1cfd9f6c4cc93d83b9c4db1fdfd4493b3fe8b",
-  "htmlSha256": "44fe309e230c6bf857f5e53ee94bf0c65ae98024f34a69ba7fbced778cf58642",
+  "revision": "cd943234b153f91a9183b69916806faa7e5e6772",
+  "inputSha256": "0be495d5afa224e67003578870cb55b58518ecea84c5b3b797d8da02a2fd8262",
+  "htmlSha256": "a7751369e83fadd34740ab591f9b48754adfc8cec27d070dba2378ef3a1b75d4",
   "sources": [
     {
       "id": "skill",
       "path": "SKILL.md",
       "description": "Contrato operacional do skill: fluxo, decisões e manutenção.",
-      "sha256": "89edf5883aea49ffd74ac1260b0b3c426a979618536aedb15e08e9587e984e39"
+      "sha256": "0ae7be6c04d04972ec82fca811025d876f3aef3c3c1799527be8e4361939e1cb"
     },
     {
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos, comandos e recursos do projeto.",
-      "sha256": "c8b5fca1400cbf9578cc5ab9c479b378128cd342a53bd1a690495c8896b4befd"
+      "sha256": "3d96e00f4b2a8a8b9864e6d4f92baa00e24476f227ab7cf795f7d01f7a339bd1"
     },
     {
       "id": "package",
       "path": "package.json",
       "description": "Versão, engines, scripts e dependências fixadas.",
-      "sha256": "0024711ec6d4bb84ad6b0bb7fabc8937afe2eea1901f4132e544da54164692dd"
+      "sha256": "43afe703301870ae96b4dcc065ea3885eeff2d9c5fa4d8c509af00cd6f35c61a"
     },
     {
       "id": "license",
@@ -58,7 +58,7 @@
       "id": "ci-workflow",
       "path": ".github/workflows/ci.yml",
       "description": "Matriz CI Ubuntu/Windows com Node, Python e Playwright Chromium.",
-      "sha256": "e4e0b585c617d5d8aef23c63ce9d58bc6c52fd1a076480e5ebbbc67c3f154355"
+      "sha256": "4868949e7bb9f0384b00f741647d267f8b35a49c627324d102949d7c6bcdcbd9"
     },
     {
       "id": "schema",
@@ -178,7 +178,7 @@
       "id": "authoring",
       "path": "references/authoring.md",
       "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão.",
-      "sha256": "d70832f12732bbb4d895409799a5aded28867d174e6731d010508bee2c606426"
+      "sha256": "d50f26b1a70ac95df9f4fbf619782b9a7c94723f12ebc9d846f72f70086cc1f6"
     },
     {
       "id": "data-engineering",
@@ -202,7 +202,7 @@
       "id": "changelog",
       "path": "CHANGELOG.md",
       "description": "Histórico de versões e mudanças do gerador.",
-      "sha256": "1f3bacbaae576de6fdddc9722341621f7600bccbe2e393efad6d8aafd5a7a091"
+      "sha256": "4ef62af12b254e54bea4c36f7bbfbaf4bc34d3e4c3cd1af6d7789a57b411a38a"
     },
     {
       "id": "tests-build",
@@ -245,7 +245,37 @@
       "path": "examples/showcase/document.json",
       "description": "Manifesto completo com as 11 categorias de leitura.",
       "sha256": "d45972dcfc86c81edbf3957905f6eaa480bb6883b0189dc3c72a0a4a0f371aed"
+    },
+    {
+      "id": "cli",
+      "path": "scripts/cli.mjs",
+      "description": "Entrada única portável e verificação de pré-requisitos.",
+      "sha256": "1f9082442fb0c044e427f35f1681f79fde2be00d9b4fb79c3158df02f1be4a01"
+    },
+    {
+      "id": "packager",
+      "path": ".github/scripts/package_skill.py",
+      "description": "Empacotador do ZIP enxuto e versionado.",
+      "sha256": "b9ffed172f7782dead6e1dd96007283fb9a630a5c5fb9c08c781917bee5d3fc9"
+    },
+    {
+      "id": "release",
+      "path": ".github/workflows/release.yml",
+      "description": "Validação e distribuição do ZIP em releases.",
+      "sha256": "eb3a8a93518b5482fd27b9778247982e6ea2e77a7f432a86673112dcb258e025"
+    },
+    {
+      "id": "tests-cli",
+      "path": "tests/cli.test.mjs",
+      "description": "CLI fora da raiz e execução do ZIP extraído.",
+      "sha256": "b02b834e47ba7d1ad443cf352db7f82cc97577f6be0a7ad6b14763cf8d8163e1"
+    },
+    {
+      "id": "diagram-guide",
+      "path": "references/diagrams.md",
+      "description": "Referência sob demanda de diagramas, gráficos e interface.",
+      "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T19:49:40.747Z"
+  "browserReviewedAt": "2026-11-15T21:49:29.246Z"
 }

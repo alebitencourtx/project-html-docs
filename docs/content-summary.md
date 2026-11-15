@@ -10,7 +10,7 @@ O mesmo documento atende dois públicos. Leitores de negócio encontram propósi
 <div class="card"><h3>Operação</h3><p>Pré-requisitos, comandos, verificação de integridade e recuperação de falhas previsíveis.</p></div>
 </div>
 
-A versão atual é a **1.10.0**, com **51 testes** passando em 15/11/2026 (incluindo Chromium headless). Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` sem sobrescrita passiva na carga, e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile (`inert` sincronizado + *focus trap*), zoom `Fit` monótono, impressão de tabelas filtradas, validação formal AJV e hashes canônicos LF.
+A versão atual é a **1.11.0**, com **55 testes definidos**; 53 passaram nesta execução e 2 testes opcionais de navegador foram ignorados por ausência de playwright-cli. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` sem sobrescrita passiva na carga, e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile (`inert` sincronizado + *focus trap*), zoom `Fit` monótono, impressão de tabelas filtradas, validação formal AJV e hashes canônicos LF.
 
 > Regra de negócio: documentar é descrever o comportamento atual e comprovável. Planos históricos e intenções não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.
 
@@ -69,6 +69,10 @@ O `build.mjs` usa AJV para o schema do manifesto (`document.schema.json`) e dos 
 
 ## Como usar
 
+A entrada única é `scripts/cli.mjs`: `doctor` confere Node, Python e dependências; `inspect`, `build` e `verify` devolvem JSON com caminhos resolvidos. Para executar de outra pasta, use o caminho absoluto da CLI entre aspas. Os scripts internos continuam disponíveis por compatibilidade.
+
+A instalação enxuta usa o ZIP versionado da Release: extraia em uma pasta `project-html-docs`, execute `npm ci --ignore-scripts --prefix "<skill>"` e `node "<skill>/scripts/cli.mjs" doctor`. O ZIP inclui apenas a skill, scripts, assets, schemas, referências, exemplo mínimo, licença e manifests npm; não inclui vídeos, landing page, testes nem node_modules. A LLM lê `SKILL.md` e consulta as referências sob demanda. No repositório de desenvolvimento, `npm run package:skill` gera o arquivo em `dist/`.
+
 A autoria exige **Node 22+** e **Python 3.10+**. O leitor final precisa apenas de um navegador. As dependências são instaladas uma vez e ficam fixadas pelo `package-lock.json`.
 
 ```bash
@@ -76,13 +80,13 @@ A autoria exige **Node 22+** e **Python 3.10+**. O leitor final precisa apenas d
 npm ci --ignore-scripts
 
 # 2. Mapear o repositório (opcional, mas recomendado)
-python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
+node scripts/cli.mjs inspect . --out docs/inventory.json --plan docs/reading-plan.md
 
 # 3. Compilar o manual completo
-node scripts/build.mjs docs/document.json --out docs/documentacao.html
+node scripts/cli.mjs build docs/document.json --out docs/documentacao.html
 
 # 4. Verificar as fontes
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json
 
 # 5. Rodar a suíte quando o gerador mudar
 npm test
@@ -92,13 +96,13 @@ O manifesto exige `title`, `subtitle`, `version`, `updated`, `content` e `sectio
 
 | Comando | Resultado |
 |---|---|
-| `python scripts/inspect_repo.py <repo> --out <json> --plan <md>` | Dossiê estático e plano de leitura |
-| `node scripts/build.mjs <manifest> --out <html>` | Manual completo e recibo |
-| `node scripts/build.mjs <manifest> --out <html> --mode summary` | Guia Rápido e recibo |
-| `node scripts/verify.mjs <manifest> <receipt> [--html <html>]` | Conferência de fontes LF, artefatos e revisão (`sourceDrift`) |
-| `node scripts/verify.mjs <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` após revisão real em desktop e mobile |
-| `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Plano de atualização por impacto |
-| `npm test` | 51 testes da suíte (incluindo Chromium headless) |
+| `node scripts/cli.mjs inspect <repo> --out <json> --plan <md>` | Dossiê estático e plano de leitura |
+| `node scripts/cli.mjs build <manifest> --out <html>` | Manual completo e recibo |
+| `node scripts/cli.mjs build <manifest> --out <html> --mode summary` | Guia Rápido e recibo |
+| `node scripts/cli.mjs verify <manifest> <receipt> [--html <html>]` | Conferência de fontes LF, artefatos e revisão (`sourceDrift`) |
+| `node scripts/cli.mjs verify <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` após revisão real em desktop e mobile |
+| `node scripts/cli.mjs verify <manifest> <receipt> --impact --dossier <json> --plan <md>` | Plano de atualização por impacto |
+| `npm test` | 55 testes da suíte (incluindo Chromium headless) |
 
 O conteúdo começa com um `##` cujo texto coincide, na ordem, com `sections[].title`. Cada `###` vira subnavegação. Um `#` é reservado ao título do documento. Tabelas ganham cabeçalho fixo e filtro a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas.
 
@@ -148,14 +152,14 @@ Para gerar as duas versões, use manifestos separados: `document.json` em modo `
 O `verify.mjs` relê o manifesto e o recibo (`receiptStatus`), confere hashes canônicos LF (`sha256-lf-text-v1`) das fontes, dos artefatos de autoria (`manifestSha256`, `inputSha256`, `htmlSha256`) e do renderer da skill (`rendererSha256`, incluindo libs e `package-lock.json`), detecta fontes inesperadas e diferencia commits exclusivos de documentação via `revision.sourceDrift`. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos, marca apenas as seções `stale` e avisa quando basta rodar `build.mjs --force`; com `--mark-reviewed`, grava `browserReviewed: true` e `browserReviewedAt` no recibo após validação visual real.
 
 ```bash
-python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
+node scripts/cli.mjs inspect . --out docs/inventory.json --plan docs/reading-plan.md
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
 O plano mostra fontes alteradas, dependentes, arquivos core novos (truncando listagens acima de 25 itens), resumo `git diff --stat` e as seções que precisam de revisão. Se uma fonte mudou e não está vinculada a nenhuma seção, o plano avisa; corrija `sections[].sources` antes de confiar no roteamento.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo (1.10.0)","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"success"}]}
+{"type":"bar","title":"Testes definidos por arquivo (1.11.0)","unit":"testes","source":"Definições em tests/*.test.mjs; browser opcionais","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"neutral"},{"label":"tests/cli.test.mjs","value":4,"variant":"success"}]}
 ```
 
 | Sintoma | Causa provável | Ação |
@@ -202,4 +206,4 @@ A revisão de entrega cobre overflow global, menu lateral recolhível no mobile 
 | `stale` | Seção cujas fontes mudaram e precisa de revisão |
 | Guia Rápido | Modo `summary`, com 4 a 7 capítulos |
 
-Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da revisão `12ea3444daf308d63a29a52e970352074f2331a7` (v1.10.0) em 15/11/2026.
+Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da revisão `cd943234b153f91a9183b69916806faa7e5e6772` da v1.11.0 em 15/11/2026.

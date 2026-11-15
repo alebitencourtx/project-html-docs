@@ -2,16 +2,19 @@
   "title": "project-html-docs · Manual do Gerador",
   "subtitle": "Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.",
   "eyebrow": "project-html-docs · manual do próprio gerador",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "updated": "2026-11-15",
   "language": "pt-BR",
   "theme": "vermelho",
   "mode": "full",
   "content": "content.md",
-  "companionDoc": { "href": "documentacao-resumida.html", "label": "Guia rápido" },
+  "companionDoc": {
+    "href": "documentacao-resumida.html",
+    "label": "Guia rápido"
+  },
   "repoRoot": "..",
-  "revision": "12ea3444daf308d63a29a52e970352074f2331a7",
-  "dataAsOf": "2026-11-15 · snapshot local v1.10.0 de implementação; sem telemetria de produção",
+  "revision": "cd943234b153f91a9183b69916806faa7e5e6772",
+  "dataAsOf": "2026-11-15 · snapshot local v1.11.0 de implementação; sem telemetria de produção",
   "cards": [
     {
       "label": "Entrega",
@@ -30,7 +33,7 @@
     },
     {
       "label": "Versão atual",
-      "value": "1.10.0 · 51 testes",
+      "value": "1.11.0 · 55 testes",
       "description": "Contratos AJV formais, modularização, acessibilidade Chromium e segurança reforçada em 15/11/2026."
     }
   ],
@@ -39,106 +42,377 @@
       "id": "resumo",
       "title": "Resumo executivo",
       "audience": "all",
-      "sources": ["skill", "readme", "package", "license"]
+      "sources": [
+        "skill",
+        "readme",
+        "package",
+        "license"
+      ]
     },
     {
       "id": "escopo",
       "title": "Visão funcional e escopo",
       "audience": "all",
-      "sources": ["skill", "authoring", "readme", "data-engineering"]
+      "sources": [
+        "skill",
+        "authoring",
+        "readme",
+        "data-engineering"
+      ]
     },
     {
       "id": "estado",
       "title": "Estado atual da solução",
       "audience": "all",
-      "sources": ["package", "changelog", "ci-workflow", "tests-build", "tests-diagrams", "tests-dossier", "tests-landing", "tests-browser"]
+      "sources": [
+        "package",
+        "changelog",
+        "ci-workflow",
+        "tests-build",
+        "tests-diagrams",
+        "tests-dossier",
+        "tests-landing",
+        "tests-browser",
+        "cli",
+        "packager",
+        "release",
+        "tests-cli",
+        "diagram-guide"
+      ]
     },
     {
       "id": "uso",
       "title": "Como usar",
       "audience": "operations",
-      "sources": ["skill", "readme", "authoring", "agent", "gitattributes"]
+      "sources": [
+        "skill",
+        "readme",
+        "authoring",
+        "agent",
+        "gitattributes",
+        "cli",
+        "packager",
+        "release",
+        "tests-cli",
+        "diagram-guide"
+      ]
     },
     {
       "id": "solucao",
       "title": "Desenho da solução",
       "audience": "all",
-      "sources": ["build", "diagrams", "lib-shell", "lib-i18n", "ui", "styles"]
+      "sources": [
+        "build",
+        "diagrams",
+        "lib-shell",
+        "lib-i18n",
+        "ui",
+        "styles",
+        "cli",
+        "packager",
+        "release",
+        "tests-cli",
+        "diagram-guide"
+      ]
     },
     {
       "id": "fluxo",
       "title": "Fluxo e processamento",
       "audience": "technical",
-      "sources": ["inspect", "inspector-init", "inspector-extractors", "inspector-sql", "inspector-graph", "build", "verify", "validate", "renderer-hash"]
+      "sources": [
+        "inspect",
+        "inspector-init",
+        "inspector-extractors",
+        "inspector-sql",
+        "inspector-graph",
+        "build",
+        "verify",
+        "validate",
+        "renderer-hash"
+      ]
     },
     {
       "id": "regras",
       "title": "Regras funcionais e validações",
       "audience": "technical",
-      "sources": ["authoring", "schema-diagram", "lib-urls", "lib-hash", "inspector-redaction", "build", "validate", "verify", "inspect"]
+      "sources": [
+        "authoring",
+        "schema-diagram",
+        "lib-urls",
+        "lib-hash",
+        "inspector-redaction",
+        "build",
+        "validate",
+        "verify",
+        "inspect"
+      ]
     },
     {
       "id": "modelo",
       "title": "Modelo e relacionamento dos artefatos",
       "audience": "technical",
-      "sources": ["schema", "schema-diagram", "build", "verify", "inspect", "inspector-graph", "renderer-hash"]
+      "sources": [
+        "schema",
+        "schema-diagram",
+        "build",
+        "verify",
+        "inspect",
+        "inspector-graph",
+        "renderer-hash"
+      ]
     },
     {
       "id": "operacao",
       "title": "Operação e recuperação",
       "audience": "operations",
-      "sources": ["readme", "package", "build", "verify", "renderer-hash", "ci-workflow"]
+      "sources": [
+        "readme",
+        "package",
+        "build",
+        "verify",
+        "renderer-hash",
+        "ci-workflow",
+        "cli",
+        "packager",
+        "release",
+        "tests-cli",
+        "diagram-guide"
+      ]
     },
     {
       "id": "decisoes",
       "title": "Decisões e limites",
       "audience": "all",
-      "sources": ["skill", "tools", "authoring", "diagrams", "license"]
+      "sources": [
+        "skill",
+        "tools",
+        "authoring",
+        "diagrams",
+        "license"
+      ]
     },
     {
       "id": "glossario",
       "title": "Glossário e referências",
       "audience": "all",
-      "sources": ["skill", "tools", "changelog", "license"]
+      "sources": [
+        "skill",
+        "tools",
+        "changelog",
+        "license"
+      ]
     }
   ],
   "sources": [
-    {"id": "skill", "path": "SKILL.md", "description": "Contrato operacional do skill: fluxo, decisões e manutenção."},
-    {"id": "readme", "path": "README.md", "description": "Visão geral, requisitos, comandos e recursos do projeto."},
-    {"id": "package", "path": "package.json", "description": "Versão, engines, scripts e dependências fixadas."},
-    {"id": "license", "path": "LICENSE", "description": "Texto oficial da licença MIT do projeto."},
-    {"id": "gitattributes", "path": ".gitattributes", "description": "Política de fim de linha LF e atributos binários portáveis."},
-    {"id": "ci-workflow", "path": ".github/workflows/ci.yml", "description": "Matriz CI Ubuntu/Windows com Node, Python e Playwright Chromium."},
-    {"id": "schema", "path": "schemas/document.schema.json", "description": "Esquema JSON do manifesto document.json (com obrigatoriedade condicional de repoRoot)."},
-    {"id": "schema-diagram", "path": "schemas/diagram.schema.json", "description": "Esquema JSON formal dos diagramas solution/flow, schema/erd e chartSpec."},
-    {"id": "build", "path": "scripts/build.mjs", "description": "Compilador do manifesto e do Markdown no HTML final com proteção atômica."},
-    {"id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid."},
-    {"id": "validate", "path": "scripts/validate.mjs", "description": "Validador estrutural do HTML, links seguros, dos SVGs e da navegação."},
-    {"id": "verify", "path": "scripts/verify.mjs", "description": "Conferência de hashes LF/binários, completeness do recibo, revisão Git e impacto."},
-    {"id": "renderer-hash", "path": "scripts/renderer-hash.mjs", "description": "Cálculo determinístico do SHA-256 dos assets, scripts e lockfile do renderer."},
-    {"id": "lib-urls", "path": "scripts/lib/urls.mjs", "description": "Whitelist de protocolos seguros e proteção contra caracteres de controle em URLs."},
-    {"id": "lib-hash", "path": "scripts/lib/hash.mjs", "description": "Hashing canônico LF para texto (sha256-lf-text-v1) e hash bruto para binários."},
-    {"id": "lib-i18n", "path": "scripts/lib/i18n.mjs", "description": "Dicionários PT-BR/EN e strings da interface offline do documento."},
-    {"id": "lib-shell", "path": "scripts/lib/html-shell.mjs", "description": "Template de montagem do shell HTML offline, hero, sidebar e modal."},
-    {"id": "inspect", "path": "scripts/inspect_repo.py", "description": "Fachada CLI do inspetor estático e gerador do dossiê/plano de leitura."},
-    {"id": "inspector-init", "path": "scripts/inspector/__init__.py", "description": "Interface pública do pacote modular do inspetor estático."},
-    {"id": "inspector-redaction", "path": "scripts/inspector/redaction.py", "description": "Sanitização centralizada pré-truncamento de tokens, CLI, env e workflows."},
-    {"id": "inspector-sql", "path": "scripts/inspector/sql_parser.py", "description": "Parser DDL balanceado (tipos parametrizados/genéricos) e linhagem SQL."},
-    {"id": "inspector-extractors", "path": "scripts/inspector/extractors.py", "description": "Extratores AST Python, JS/TS, Blob vs Cosmos DB, PySpark streaming e Scala."},
-    {"id": "inspector-graph", "path": "scripts/inspector/graph.py", "description": "Varredura .docignore, grafo de dependências, omissões, ondas e reading-plan.md."},
-    {"id": "ui", "path": "assets/document.js", "description": "Comportamentos offline: drawer mobile inert sincronizado, zoom Fit monótono, busca e impressão."},
-    {"id": "styles", "path": "assets/document.css", "description": "Design system, layout responsivo, temas e regras @media print."},
-    {"id": "authoring", "path": "references/authoring.md", "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão."},
-    {"id": "data-engineering", "path": "references/data-engineering.md", "description": "Perfil de documentação para engenharia de dados, nuvem e streaming."},
-    {"id": "tools", "path": "references/tools.md", "description": "Dependências, escopo e separação entre autoria e renderização."},
-    {"id": "agent", "path": "agents/openai.yaml", "description": "Metadados UTF-8 de descoberta da skill em agentes compatíveis."},
-    {"id": "changelog", "path": "CHANGELOG.md", "description": "Histórico de versões e mudanças do gerador."},
-    {"id": "tests-build", "path": "tests/build.test.mjs", "description": "Testes do compilador, segurança URL, colisões, canonicalização LF, CLI e temas."},
-    {"id": "tests-diagrams", "path": "tests/diagrams.test.mjs", "description": "Testes do motor 2D, contratos AJV de diagramas, Mermaid, gráficos e exemplos."},
-    {"id": "tests-dossier", "path": "tests/dossier.test.mjs", "description": "Testes do inspetor modular, redação pré-truncamento, DDL, Blob/Cosmos, grafo e impacto."},
-    {"id": "tests-landing", "path": "tests/landing.test.mjs", "description": "Testes da landing page, receita buildável, WAI-ARIA, metadados e i18n PT/EN."},
-    {"id": "tests-browser", "path": "tests/browser.test.mjs", "description": "Testes reais em Chromium headless via playwright-cli (mobile drawer, zoom Fit, print e tabs ARIA)."},
-    {"id": "example-minimal", "path": "examples/minimal/document.json", "description": "Manifesto mínimo executável."},
-    {"id": "example-showcase", "path": "examples/showcase/document.json", "description": "Manifesto completo com as 11 categorias de leitura."}
+    {
+      "id": "skill",
+      "path": "SKILL.md",
+      "description": "Contrato operacional do skill: fluxo, decisões e manutenção."
+    },
+    {
+      "id": "readme",
+      "path": "README.md",
+      "description": "Visão geral, requisitos, comandos e recursos do projeto."
+    },
+    {
+      "id": "package",
+      "path": "package.json",
+      "description": "Versão, engines, scripts e dependências fixadas."
+    },
+    {
+      "id": "license",
+      "path": "LICENSE",
+      "description": "Texto oficial da licença MIT do projeto."
+    },
+    {
+      "id": "gitattributes",
+      "path": ".gitattributes",
+      "description": "Política de fim de linha LF e atributos binários portáveis."
+    },
+    {
+      "id": "ci-workflow",
+      "path": ".github/workflows/ci.yml",
+      "description": "Matriz CI Ubuntu/Windows com Node, Python e Playwright Chromium."
+    },
+    {
+      "id": "schema",
+      "path": "schemas/document.schema.json",
+      "description": "Esquema JSON do manifesto document.json (com obrigatoriedade condicional de repoRoot)."
+    },
+    {
+      "id": "schema-diagram",
+      "path": "schemas/diagram.schema.json",
+      "description": "Esquema JSON formal dos diagramas solution/flow, schema/erd e chartSpec."
+    },
+    {
+      "id": "build",
+      "path": "scripts/build.mjs",
+      "description": "Compilador do manifesto e do Markdown no HTML final com proteção atômica."
+    },
+    {
+      "id": "diagrams",
+      "path": "scripts/diagrams.mjs",
+      "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid."
+    },
+    {
+      "id": "validate",
+      "path": "scripts/validate.mjs",
+      "description": "Validador estrutural do HTML, links seguros, dos SVGs e da navegação."
+    },
+    {
+      "id": "verify",
+      "path": "scripts/verify.mjs",
+      "description": "Conferência de hashes LF/binários, completeness do recibo, revisão Git e impacto."
+    },
+    {
+      "id": "renderer-hash",
+      "path": "scripts/renderer-hash.mjs",
+      "description": "Cálculo determinístico do SHA-256 dos assets, scripts e lockfile do renderer."
+    },
+    {
+      "id": "lib-urls",
+      "path": "scripts/lib/urls.mjs",
+      "description": "Whitelist de protocolos seguros e proteção contra caracteres de controle em URLs."
+    },
+    {
+      "id": "lib-hash",
+      "path": "scripts/lib/hash.mjs",
+      "description": "Hashing canônico LF para texto (sha256-lf-text-v1) e hash bruto para binários."
+    },
+    {
+      "id": "lib-i18n",
+      "path": "scripts/lib/i18n.mjs",
+      "description": "Dicionários PT-BR/EN e strings da interface offline do documento."
+    },
+    {
+      "id": "lib-shell",
+      "path": "scripts/lib/html-shell.mjs",
+      "description": "Template de montagem do shell HTML offline, hero, sidebar e modal."
+    },
+    {
+      "id": "inspect",
+      "path": "scripts/inspect_repo.py",
+      "description": "Fachada CLI do inspetor estático e gerador do dossiê/plano de leitura."
+    },
+    {
+      "id": "inspector-init",
+      "path": "scripts/inspector/__init__.py",
+      "description": "Interface pública do pacote modular do inspetor estático."
+    },
+    {
+      "id": "inspector-redaction",
+      "path": "scripts/inspector/redaction.py",
+      "description": "Sanitização centralizada pré-truncamento de tokens, CLI, env e workflows."
+    },
+    {
+      "id": "inspector-sql",
+      "path": "scripts/inspector/sql_parser.py",
+      "description": "Parser DDL balanceado (tipos parametrizados/genéricos) e linhagem SQL."
+    },
+    {
+      "id": "inspector-extractors",
+      "path": "scripts/inspector/extractors.py",
+      "description": "Extratores AST Python, JS/TS, Blob vs Cosmos DB, PySpark streaming e Scala."
+    },
+    {
+      "id": "inspector-graph",
+      "path": "scripts/inspector/graph.py",
+      "description": "Varredura .docignore, grafo de dependências, omissões, ondas e reading-plan.md."
+    },
+    {
+      "id": "ui",
+      "path": "assets/document.js",
+      "description": "Comportamentos offline: drawer mobile inert sincronizado, zoom Fit monótono, busca e impressão."
+    },
+    {
+      "id": "styles",
+      "path": "assets/document.css",
+      "description": "Design system, layout responsivo, temas e regras @media print."
+    },
+    {
+      "id": "authoring",
+      "path": "references/authoring.md",
+      "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão."
+    },
+    {
+      "id": "data-engineering",
+      "path": "references/data-engineering.md",
+      "description": "Perfil de documentação para engenharia de dados, nuvem e streaming."
+    },
+    {
+      "id": "tools",
+      "path": "references/tools.md",
+      "description": "Dependências, escopo e separação entre autoria e renderização."
+    },
+    {
+      "id": "agent",
+      "path": "agents/openai.yaml",
+      "description": "Metadados UTF-8 de descoberta da skill em agentes compatíveis."
+    },
+    {
+      "id": "changelog",
+      "path": "CHANGELOG.md",
+      "description": "Histórico de versões e mudanças do gerador."
+    },
+    {
+      "id": "tests-build",
+      "path": "tests/build.test.mjs",
+      "description": "Testes do compilador, segurança URL, colisões, canonicalização LF, CLI e temas."
+    },
+    {
+      "id": "tests-diagrams",
+      "path": "tests/diagrams.test.mjs",
+      "description": "Testes do motor 2D, contratos AJV de diagramas, Mermaid, gráficos e exemplos."
+    },
+    {
+      "id": "tests-dossier",
+      "path": "tests/dossier.test.mjs",
+      "description": "Testes do inspetor modular, redação pré-truncamento, DDL, Blob/Cosmos, grafo e impacto."
+    },
+    {
+      "id": "tests-landing",
+      "path": "tests/landing.test.mjs",
+      "description": "Testes da landing page, receita buildável, WAI-ARIA, metadados e i18n PT/EN."
+    },
+    {
+      "id": "tests-browser",
+      "path": "tests/browser.test.mjs",
+      "description": "Testes reais em Chromium headless via playwright-cli (mobile drawer, zoom Fit, print e tabs ARIA)."
+    },
+    {
+      "id": "example-minimal",
+      "path": "examples/minimal/document.json",
+      "description": "Manifesto mínimo executável."
+    },
+    {
+      "id": "example-showcase",
+      "path": "examples/showcase/document.json",
+      "description": "Manifesto completo com as 11 categorias de leitura."
+    },
+    {
+      "id": "cli",
+      "path": "scripts/cli.mjs",
+      "description": "Entrada única portável e verificação de pré-requisitos."
+    },
+    {
+      "id": "packager",
+      "path": ".github/scripts/package_skill.py",
+      "description": "Empacotador do ZIP enxuto e versionado."
+    },
+    {
+      "id": "release",
+      "path": ".github/workflows/release.yml",
+      "description": "Validação e distribuição do ZIP em releases."
+    },
+    {
+      "id": "tests-cli",
+      "path": "tests/cli.test.mjs",
+      "description": "CLI fora da raiz e execução do ZIP extraído."
+    },
+    {
+      "id": "diagram-guide",
+      "path": "references/diagrams.md",
+      "description": "Referência sob demanda de diagramas, gráficos e interface."
+    }
   ]
 }

@@ -16,7 +16,7 @@ O fluxo da skill é deliberadamente separado em duas camadas. A primeira é **de
 
 > Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.
 
-A versão atual é a **1.10.0**, com **51 testes automatizados** passando em 15/11/2026 (incluindo execução real em Chromium headless). Ela consolida **segurança de URLs** (`scripts/lib/urls.mjs`), **sanitização pré-truncamento de segredos** (`scripts/inspector/redaction.py`), **gravação atômica** contra colisão de recibos/temporários, **hashes canônicos LF** (`sha256-lf-text-v1`), **contratos formais via AJV** (`schemas/diagram.schema.json` e `if/then` de `repoRoot`), **modularização** em `scripts/lib/*` e `scripts/inspector/*`, e **ergonomia mobile/impressão/WAI-ARIA** verificada em navegador real. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
+A versão atual é a **1.11.0**, com **55 testes definidos**; 53 passaram nesta execução e 2 testes opcionais de navegador foram ignorados por ausência de playwright-cli. Ela consolida **segurança de URLs** (`scripts/lib/urls.mjs`), **sanitização pré-truncamento de segredos** (`scripts/inspector/redaction.py`), **gravação atômica** contra colisão de recibos/temporários, **hashes canônicos LF** (`sha256-lf-text-v1`), **contratos formais via AJV** (`schemas/diagram.schema.json` e `if/then` de `repoRoot`), **modularização** em `scripts/lib/*` e `scripts/inspector/*`, e **ergonomia mobile/impressão/WAI-ARIA** verificada em navegador real. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
 
 ## Visão funcional e escopo
 
@@ -51,7 +51,7 @@ Quando o repositório documentado é uma esteira de dados, a skill incorpora o p
 
 ## Estado atual da solução
 
-A versão **1.10.0** é um pacote Node.js privado sob licença MIT (`LICENSE`), com dependências fixadas (`package-lock.json`), workflow de CI Ubuntu/Windows (`.github/workflows/ci.yml`), política LF (`.gitattributes`) e um pacote Python modular de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, segurança, contratos AJV, diagramas, gráficos, temas, modos, análise de impacto e **testes reais em Chromium headless**.
+A versão **1.11.0** é um pacote Node.js privado sob licença MIT (`LICENSE`), com dependências fixadas (`package-lock.json`), workflow de CI Ubuntu/Windows (`.github/workflows/ci.yml`), política LF (`.gitattributes`) e um pacote Python modular de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, segurança, contratos AJV, diagramas, gráficos, temas, modos, análise de impacto e **testes reais em Chromium headless**.
 
 | Componente | Linhas | Papel |
 |---|---|---|
@@ -68,7 +68,7 @@ A versão **1.10.0** é um pacote Node.js privado sob licença MIT (`LICENSE`), 
 A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **medium**: **44 arquivos totais**, **29 arquivos core** e **8.285 linhas** de código ou schema.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo (1.10.0)","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"success"}]}
+{"type":"bar","title":"Testes definidos por arquivo (1.11.0)","unit":"testes","source":"Definições em tests/*.test.mjs; browser opcionais","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"neutral"},{"label":"tests/cli.test.mjs","value":4,"variant":"success"}]}
 ```
 
 O histórico recente mostra a evolução do produto em camadas. A versão 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho; a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu diagramas, subnavegação H3 e extratores; a 1.6.0 trouxe o modo resumido; a 1.7.0 consolidou os temas **Vermelho** e **Azul** e a rolagem sobre tabelas curtas; a 1.8.0 adicionou o menu lateral recolhível no mobile e `rendererSha256`; a 1.9.0 endureceu acessibilidade (`inert`/focus trap mobile), Mermaid no tema vermelho, verificação de artefatos + `sourceDrift` + `--mark-reviewed` e extração JS/TS/`.docignore`; e a **1.10.0** consolidou contratos AJV (`diagram.schema.json`), modularização (`scripts/lib/*` e `scripts/inspector/*`), hashes canônicos LF (`sha256-lf-text-v1`), segurança de URLs/segredos/atômico, zoom `Fit` monótono, impressão de tabelas filtradas, WAI-ARIA e testes em Chromium headless.
@@ -78,12 +78,16 @@ Na interface, o seletor oferece **Vermelho** (primeiro e padrão) e **Azul**; a 
 <div class="cards">
 <div class="card"><h3>Núcleo determinístico</h3><p>Inspeção modular sem execução, renderização validada por schema AJV, escrita atômica e recibos canônicos LF.</p></div>
 <div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive multi-ocorrência, filtros com aria-pressed, temas, tabelas e modal com zoom Fit monótono.</p></div>
-<div class="card"><h3>Qualidade verificável</h3><p>51 testes (incluindo Chromium headless), exemplos mínimo e showcase, CI Ubuntu/Windows e revisão registrada.</p></div>
+<div class="card"><h3>Qualidade verificável</h3><p>55 testes (incluindo Chromium headless), exemplos mínimo e showcase, CI Ubuntu/Windows e revisão registrada.</p></div>
 </div>
 
 > Atenção: a suíte prova o comportamento dos geradores e do HTML produzido; ela não prova que o conteúdo semântico de um manual específico está correto. Essa verificação continua sendo responsabilidade da autoria e da revisão.
 
 ## Como usar
+
+A entrada única é `scripts/cli.mjs`: `doctor` confere Node, Python e dependências; `inspect`, `build` e `verify` devolvem JSON com caminhos resolvidos. Para executar de outra pasta, use o caminho absoluto da CLI entre aspas. Os scripts internos continuam disponíveis por compatibilidade.
+
+A instalação enxuta usa o ZIP versionado da Release: extraia em uma pasta `project-html-docs`, execute `npm ci --ignore-scripts --prefix "<skill>"` e `node "<skill>/scripts/cli.mjs" doctor`. O ZIP inclui apenas a skill, scripts, assets, schemas, referências, exemplo mínimo, licença e manifests npm; não inclui vídeos, landing page, testes nem node_modules. A LLM lê `SKILL.md` e consulta as referências sob demanda. No repositório de desenvolvimento, `npm run package:skill` gera o arquivo em `dist/`.
 
 O uso típico tem cinco passos: instalar uma vez, mapear o repositório, escrever os inputs, compilar e verificar. Os comandos abaixo assumem que a skill está neste repositório e que o diretório de trabalho da documentação é `docs/`.
 
@@ -94,13 +98,13 @@ Para distribuição como skill, `SKILL.md` é o entrypoint legível por agentes 
 npm ci --ignore-scripts
 
 # 2. Mapear o repositório e gerar o dossiê + plano de leitura
-python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
+node scripts/cli.mjs inspect . --out docs/inventory.json --plan docs/reading-plan.md
 
 # 3. Compilar o manual completo
-node scripts/build.mjs docs/document.json --out docs/documentacao.html
+node scripts/cli.mjs build docs/document.json --out docs/documentacao.html
 
 # 4. Conferir hashes, fontes e revisão
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json
 
 # 5. Rodar a suíte quando o gerador for alterado
 npm test
@@ -111,15 +115,15 @@ O manifesto é o contrato do documento. Ele exige `title`, `subtitle`, `version`
 | Comando | Efeito | Saída |
 |---|---|---|
 | `npm ci --ignore-scripts` | Instala as versões do `package-lock.json` | `node_modules/` |
-| `python scripts/inspect_repo.py <repo> --out <json> --plan <md>` | Varredura estática, sem executar o projeto | Dossiê e plano de leitura |
-| `node scripts/build.mjs <manifest> --out <html>` | Compila, valida e grava o manual | HTML + recibo |
-| `node scripts/build.mjs <manifest> --out <html> --force` | Atualiza um HTML existente de forma deliberada | HTML + recibo |
-| `node scripts/build.mjs <manifest> --out <html> --mode summary` | Força o modo Guia Rápido | HTML + recibo |
-| `node scripts/verify.mjs <manifest> <receipt> [--html <html>]` | Compara fontes LF, artefatos (`manifest`/`content`/`html`) e revisão (`sourceDrift`) | Relatório JSON (`receiptStatus`) |
-| `node scripts/verify.mjs <manifest> <receipt> --strict` | Falha com código 1 se recibo incompleto ou drift real de fonte/artefato | Relatório JSON |
-| `node scripts/verify.mjs <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` e timestamp após inspeção real | Recibo atualizado |
-| `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Calcula seções afetadas e grava o plano | Relatório + `update-plan.md` |
-| `npm test` | Executa os 51 testes (incluindo Chromium headless) | Resultado da suíte |
+| `node scripts/cli.mjs inspect <repo> --out <json> --plan <md>` | Varredura estática, sem executar o projeto | Dossiê e plano de leitura |
+| `node scripts/cli.mjs build <manifest> --out <html>` | Compila, valida e grava o manual | HTML + recibo |
+| `node scripts/cli.mjs build <manifest> --out <html> --force` | Atualiza um HTML existente de forma deliberada | HTML + recibo |
+| `node scripts/cli.mjs build <manifest> --out <html> --mode summary` | Força o modo Guia Rápido | HTML + recibo |
+| `node scripts/cli.mjs verify <manifest> <receipt> [--html <html>]` | Compara fontes LF, artefatos (`manifest`/`content`/`html`) e revisão (`sourceDrift`) | Relatório JSON (`receiptStatus`) |
+| `node scripts/cli.mjs verify <manifest> <receipt> --strict` | Falha com código 1 se recibo incompleto ou drift real de fonte/artefato | Relatório JSON |
+| `node scripts/cli.mjs verify <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` e timestamp após inspeção real | Recibo atualizado |
+| `node scripts/cli.mjs verify <manifest> <receipt> --impact --dossier <json> --plan <md>` | Calcula seções afetadas e grava o plano | Relatório + `update-plan.md` |
+| `npm test` | Executa os 55 testes (incluindo Chromium headless) | Resultado da suíte |
 
 O conteúdo começa obrigatoriamente com um `##` cujo texto coincida, na ordem, com `sections[].title`. Cada `###` vira subnavegação lateral. Um `#` dentro do Markdown é reservado ao título do documento e provoca erro de build. Tabelas ganham cabeçalho fixo, rolagem local e filtro automático a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas. Diagramas são declarados em fences próprios.
 
@@ -609,8 +613,8 @@ A operação é local e idempotente na maior parte dos casos. O build recusa sob
 O ciclo de atualização recomendado é: gerar um novo dossiê, rodar o verify em modo impacto e abrir o `update-plan.md`. Se houver mudanças de código, revise apenas as seções `stale` e as fontes alteradas antes de recompilar; se apenas o template da skill tiver mudado (`renderer.needsRebuild: true` com fontes sincronizadas), pule a releitura e rode diretamente `build.mjs --force`. O plano mostra alterações de renderer, fontes diretas, dependentes transitivos, novos arquivos core e `git diff --stat` quando a revisão documentada difere da atual.
 
 ```bash
-python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
-node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
+node scripts/cli.mjs inspect . --out docs/inventory.json --plan docs/reading-plan.md
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
 A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, `main.inert` + *focus trap* por `Tab`, e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento com destaque de todas as ocorrências, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas 2D e Mermaid no tema Vermelho), fechamento do modal (`<= 960 px` responsivo) com Escape e impressão com todas as seções. O teste deve cobrir tanto desktop (~1440 px) quanto mobile (~390 px).
@@ -706,6 +710,6 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | `assets/document.js` | Busca, filtros (`aria-pressed`), temas, zoom `Fit` monótono e `inert` sincronizado |
 | `examples/minimal/` | Exemplo mínimo executável |
 | `examples/showcase/` | Exemplo completo com as 11 categorias e diagramas avançados |
-| `tests/` | **51 testes** em 5 arquivos (incluindo `tests/browser.test.mjs` em Chromium headless) |
+| `tests/` | **55 testes** em 6 arquivos (incluindo `tests/browser.test.mjs` em Chromium headless) |
 
-Este manual foi gerado a partir da revisão `12ea3444daf308d63a29a52e970352074f2331a7` (v1.10.0) em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
+Este manual foi gerado a partir da revisão `cd943234b153f91a9183b69916806faa7e5e6772` da v1.11.0 em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
