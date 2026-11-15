@@ -1,15 +1,13 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {createHash} from 'node:crypto';
-import {execFileSync} from 'node:child_process';
-import {pathToFileURL} from 'node:url';
-import {computeRendererHash, getSkillVersion} from './renderer-hash.mjs';
-
-const hash = v => createHash('sha256').update(v).digest('hex');
+import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
+import { computeRendererHash, getSkillVersion } from './renderer-hash.mjs';
+import { HASH_ALGORITHM, hashRaw, hashCanonicalText } from './lib/hash.mjs';
 
 function git(cwd, ...args) {
   try {
-    return execFileSync('git', ['-C', cwd, ...args], {encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore']}).trim();
+    return execFileSync('git', ['-C', cwd, ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
   } catch {
     return null;
   }
@@ -19,17 +17,32 @@ async function readJson(file) {
   return JSON.parse(await fs.readFile(file, 'utf8'));
 }
 
-async function checkOptionalFileHash(filePath, expectedSha256) {
+function hashByAlgorithm(buf, filePath, useCanonicalText) {
+  return useCanonicalText ? hashCanonicalText(buf, filePath) : hashRaw(buf);
+}
+
+async function checkFileHash(filePath, expectedSha256, { useCanonicalText = false } = {}) {
   if (!expectedSha256) return null;
   try {
     const raw = await fs.readFile(filePath);
-    return hash(raw) === expectedSha256;
+    return hashByAlgorithm(raw, filePath, useCanonicalText) === expectedSha256;
   } catch {
     return false;
   }
 }
 
-export async function verify(manifestFile, receiptFile) {
+function resolveCandidateHtmlPath(receiptPath, receipt, explicitHtmlFile) {
+  if (explicitHtmlFile) return path.resolve(explicitHtmlFile);
+  if (typeof receipt?.htmlPath === 'string' && receipt.htmlPath.trim()) {
+    return path.resolve(path.dirname(receiptPath), receipt.htmlPath);
+  }
+  if (/\.validation\.json$/i.test(receiptPath)) {
+    return receiptPath.replace(/\.validation\.json$/i, '.html');
+  }
+  return null;
+}
+
+export async function verify(manifestFile, receiptFile, { strict = false, htmlFile = null } = {}) {
   const manifestPath = path.resolve(manifestFile);
   const receiptPath = path.resolve(receiptFile);
   const manifestRaw = await fs.readFile(manifestPath, 'utf8');
@@ -37,38 +50,49 @@ export async function verify(manifestFile, receiptFile) {
   const receipt = await readJson(receiptPath);
   const base = path.dirname(manifestPath);
   const repo = path.resolve(base, manifest.repoRoot || '.');
-  const declared = new Map((manifest.sources || []).map(s => [s.id, s]));
-  const recorded = new Map((receipt.sources || []).map(s => [s.id, s]));
+  const useCanonicalText = receipt?.hashAlgorithm === HASH_ALGORITHM;
+
+  const isPlainReceiptObj = Boolean(receipt) && typeof receipt === 'object' && !Array.isArray(receipt);
+  const declaredList = Array.isArray(manifest.sources) ? manifest.sources : [];
+  const recordedList = isPlainReceiptObj && Array.isArray(receipt.sources) ? receipt.sources : [];
+
+  const declared = new Map(declaredList.map(s => [s.id, s]));
+  const recorded = new Map(recordedList.map(s => [s.id, s]));
   const results = [];
 
   for (const [id, source] of declared) {
     const file = path.resolve(repo, source.path);
     const rel = path.relative(repo, file);
     if (rel.startsWith('..') || path.isAbsolute(rel)) {
-      results.push({id, path: source.path, status: 'outside-repository'});
+      results.push({ id, path: source.path, status: 'outside-repository' });
       continue;
     }
     let raw;
     try {
       raw = await fs.readFile(file);
     } catch {
-      results.push({id, path: source.path, status: 'missing'});
+      results.push({ id, path: source.path, status: 'missing' });
       continue;
     }
     const expected = recorded.get(id);
-    if (!expected) results.push({id, path: source.path, status: 'not-in-receipt'});
-    else if (expected.path !== source.path) results.push({id, path: source.path, status: 'path-changed', recordedPath: expected.path});
-    else if (expected.sha256 !== hash(raw)) results.push({id, path: source.path, status: 'changed'});
-    else results.push({id, path: source.path, status: 'ok'});
+    if (!expected) {
+      results.push({ id, path: source.path, status: 'not-in-receipt' });
+    } else if (expected.path !== source.path) {
+      results.push({ id, path: source.path, status: 'path-changed', recordedPath: expected.path });
+    } else if (expected.sha256 !== hashByAlgorithm(raw, file, useCanonicalText)) {
+      results.push({ id, path: source.path, status: 'changed' });
+    } else {
+      results.push({ id, path: source.path, status: 'ok' });
+    }
   }
 
   for (const [id, source] of recorded) {
-    if (!declared.has(id)) results.push({id, path: source.path, status: 'unexpected'});
+    if (!declared.has(id)) results.push({ id, path: source.path, status: 'unexpected' });
   }
 
   const currentRevision = git(repo, 'rev-parse', 'HEAD');
   const dirty = git(repo, 'status', '--short');
-  const revisionMatches = !receipt.revision || !currentRevision ? null : receipt.revision === currentRevision;
+  const revisionMatches = !receipt?.revision || !currentRevision ? null : receipt.revision === currentRevision;
   let sourceDriftBetweenRevisions = null;
   if (revisionMatches === false) {
     const diffNames = git(repo, 'diff', '--name-only', `${receipt.revision}..${currentRevision}`);
@@ -84,37 +108,71 @@ export async function verify(manifestFile, receiptFile) {
   }
 
   const contentPath = manifest.content ? path.resolve(base, manifest.content) : null;
-  const htmlPath = /\.validation\.json$/i.test(receiptPath)
-    ? receiptPath.replace(/\.validation\.json$/i, '.html')
+  const htmlPath = resolveCandidateHtmlPath(receiptPath, receipt, htmlFile);
+
+  const manifestMatches = isPlainReceiptObj && receipt.manifestSha256
+    ? hashByAlgorithm(Buffer.from(manifestRaw, 'utf8'), manifestPath, useCanonicalText) === receipt.manifestSha256
     : null;
-  const [manifestMatches, contentMatches, htmlMatches] = await Promise.all([
-    receipt.manifestSha256 ? Promise.resolve(receipt.manifestSha256 === hash(manifestRaw)) : Promise.resolve(null),
-    contentPath ? checkOptionalFileHash(contentPath, receipt.inputSha256) : Promise.resolve(null),
-    htmlPath ? checkOptionalFileHash(htmlPath, receipt.htmlSha256) : Promise.resolve(null),
-  ]);
+  const contentMatches = contentPath
+    ? await checkFileHash(contentPath, isPlainReceiptObj ? receipt.inputSha256 : null, { useCanonicalText })
+    : null;
+
+  let htmlMatches = null;
+  if (isPlainReceiptObj && receipt.htmlSha256) {
+    if (!htmlPath) {
+      htmlMatches = false;
+    } else {
+      htmlMatches = await checkFileHash(htmlPath, receipt.htmlSha256, { useCanonicalText: false });
+    }
+  } else if (strict) {
+    htmlMatches = false;
+  }
+
+  const hasValidSourcesEvidence = Array.isArray(receipt?.sources) &&
+    receipt.sources.every(s => s && typeof s.id === 'string' && typeof s.path === 'string' && typeof s.sha256 === 'string');
+  const hasCompleteArtifactEvidence = Boolean(
+    isPlainReceiptObj &&
+    receipt.passed === true &&
+    receipt.manifestSha256 &&
+    receipt.inputSha256 &&
+    receipt.htmlSha256,
+  );
+  let receiptStatus = 'invalid';
+  if (isPlainReceiptObj) {
+    if (hasCompleteArtifactEvidence && (declaredList.length === 0 || hasValidSourcesEvidence)) {
+      receiptStatus = 'complete';
+    } else if (declaredList.length > 0 && hasValidSourcesEvidence && recordedList.length > 0) {
+      receiptStatus = 'legacy-partial';
+    }
+  }
+  const receiptValid = receiptStatus !== 'invalid';
 
   const bad = results.filter(r => r.status !== 'ok');
   const revisionOk = revisionMatches !== false || sourceDriftBetweenRevisions === false;
-  const artifactsOk = manifestMatches !== false && contentMatches !== false && htmlMatches !== false;
-  const ok = bad.length === 0 && revisionOk && artifactsOk;
+  const artifactsOk = strict
+    ? (receiptStatus === 'complete' && manifestMatches === true && contentMatches === true && htmlMatches === true)
+    : (manifestMatches !== false && contentMatches !== false && htmlMatches !== false);
+  const ok = receiptValid && bad.length === 0 && revisionOk && artifactsOk;
 
   const [currentRendererSha256, currentSkillVersion] = await Promise.all([
     computeRendererHash(),
     getSkillVersion(),
   ]);
-  const documentedRendererSha256 = receipt.rendererSha256 || null;
-  const documentedSkillVersion = receipt.skillVersion || receipt.version || null;
+  const documentedRendererSha256 = (isPlainReceiptObj && receipt.rendererSha256) || null;
+  const documentedSkillVersion = (isPlainReceiptObj && (receipt.skillVersion || receipt.version)) || null;
   const rendererMatches = documentedRendererSha256 ? documentedRendererSha256 === currentRendererSha256 : null;
   const rendererNeedsRebuild = documentedRendererSha256
     ? documentedRendererSha256 !== currentRendererSha256
-    : Boolean(documentedSkillVersion || receipt.builtAt || receipt.htmlSha256);
+    : Boolean(documentedSkillVersion || receipt?.builtAt || receipt?.htmlSha256);
 
   return {
     ok,
+    receiptValid,
+    receiptStatus,
     document: manifest.title,
-    browserReviewed: Boolean(receipt.browserReviewed),
+    browserReviewed: Boolean(isPlainReceiptObj && receipt.browserReviewed),
     revision: {
-      documented: receipt.revision || null,
+      documented: (isPlainReceiptObj && receipt.revision) || null,
       current: currentRevision,
       matches: revisionMatches,
       sourceDrift: sourceDriftBetweenRevisions,
@@ -123,6 +181,7 @@ export async function verify(manifestFile, receiptFile) {
       manifestMatches,
       contentMatches,
       htmlMatches,
+      htmlPath: htmlPath ? path.relative(path.dirname(receiptPath), htmlPath).replace(/\\/g, '/') : null,
     },
     renderer: {
       documentedVersion: documentedSkillVersion,
@@ -144,10 +203,10 @@ export async function verify(manifestFile, receiptFile) {
   };
 }
 
-export async function analyzeImpact(manifestFile, receiptFile, {dossierFile = null} = {}) {
+export async function analyzeImpact(manifestFile, receiptFile, { dossierFile = null, strict = false, htmlFile = null } = {}) {
   const manifestPath = path.resolve(manifestFile);
   const manifest = await readJson(manifestPath);
-  const baseReport = await verify(manifestPath, receiptFile);
+  const baseReport = await verify(manifestPath, receiptFile, { strict, htmlFile });
 
   const declaredSources = manifest.sources || [];
   const pathToIds = new Map();
@@ -177,10 +236,8 @@ export async function analyzeImpact(manifestFile, receiptFile, {dossierFile = nu
       const to = String(edge.to || '').replace(/\\/g, '/');
       if (!from || !to) continue;
       if (edge.kind === 'sql_lineage') {
-        // Producer (from) changed -> downstream SQL consumer (to) is impacted
         addImpactEdge(from, to);
       } else {
-        // Imported module/notebook/script (to) changed -> caller/bundle/workflow (from) is impacted
         addImpactEdge(to, from);
       }
     }
@@ -284,15 +341,18 @@ export function renderUpdatePlan(impact) {
     impact.artifacts.contentMatches !== false &&
     impact.artifacts.htmlMatches !== false
   );
+  const receiptOk = impact.receiptValid !== false;
   const sourcesSynced = Boolean(impact.ok && !impact.untrackedCoreFiles.length);
   const rendererNeedsRebuild = Boolean(impact.renderer?.needsRebuild);
-  const overallStatus = !artifactsSynced
-    ? 'Artefatos editados após o último build (execute build.mjs --force para recompilar o HTML)'
-    : !sourcesSynced
-      ? 'Desatualizado (revisão cirúrgica recomendada)'
-      : rendererNeedsRebuild
-        ? 'Código-fonte sincronizado · Template da skill atualizado (regere o HTML com build.mjs --force)'
-        : 'Sincronizado (nenhuma atualização necessária)';
+  const overallStatus = !receiptOk
+    ? 'Recibo de validação incompleto ou inválido (execute build.mjs --force)'
+    : !artifactsSynced
+      ? 'Artefatos editados após o último build (execute build.mjs --force para recompilar o HTML)'
+      : !sourcesSynced
+        ? 'Desatualizado (revisão cirúrgica recomendada)'
+        : rendererNeedsRebuild
+          ? 'Código-fonte sincronizado · Template da skill atualizado (regere o HTML com build.mjs --force)'
+          : 'Sincronizado (nenhuma atualização necessária)';
 
   const lines = [
     '# Plano de Atualização Incremental (Drift & Impacto)',
@@ -303,11 +363,12 @@ export function renderUpdatePlan(impact) {
     '',
   ];
 
-  if (!artifactsSynced) {
+  if (!artifactsSynced || !receiptOk) {
     const drifted = [];
-    if (impact.artifacts.manifestMatches === false) drifted.push('`document.json`');
-    if (impact.artifacts.contentMatches === false) drifted.push('`content.md`');
-    if (impact.artifacts.htmlMatches === false) drifted.push('`.html` compilado');
+    if (!receiptOk) drifted.push('`validation.json` inválido/incompleto');
+    if (impact.artifacts?.manifestMatches === false) drifted.push('`document.json`');
+    if (impact.artifacts?.contentMatches === false) drifted.push('`content.md`');
+    if (impact.artifacts?.htmlMatches === false) drifted.push('`.html` compilado');
     lines.push(
       '## 0. Artefatos de Autoria Divergentes do Recibo',
       '',
@@ -399,57 +460,91 @@ export function renderUpdatePlan(impact) {
   return lines.join('\n');
 }
 
-function getFlagValue(argv, flag) {
-  const idx = argv.indexOf(flag);
-  return idx >= 0 && idx + 1 < argv.length ? argv[idx + 1] : null;
+export function parseVerifyCliArgs(argv) {
+  let strict = false;
+  let impactMode = false;
+  let markReviewed = false;
+  let dossierFile = null;
+  let planOut = null;
+  let htmlFile = null;
+  const positional = [];
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === '--strict') {
+      strict = true;
+    } else if (arg === '--impact') {
+      impactMode = true;
+    } else if (arg === '--mark-reviewed') {
+      markReviewed = true;
+    } else if (arg === '--dossier' || arg === '--plan' || arg === '--html') {
+      const val = argv[i + 1];
+      if (!val || val.startsWith('--')) throw Error(`Flag ${arg} requires a value`);
+      if (arg === '--dossier') dossierFile = val;
+      else if (arg === '--plan') planOut = val;
+      else htmlFile = val;
+      i++;
+    } else if (arg.startsWith('--')) {
+      throw Error(`Unknown flag: ${arg}`);
+    } else {
+      positional.push(arg);
+    }
+  }
+
+  if (positional.length < 2 || positional.length > 2) {
+    throw Error('Usage: node scripts/verify.mjs <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>] [--html <output.html>] [--mark-reviewed]');
+  }
+  return {
+    manifestFile: positional[0],
+    receiptFile: positional[1],
+    strict,
+    impactMode,
+    markReviewed,
+    dossierFile,
+    planOut,
+    htmlFile,
+  };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  const argv = process.argv.slice(2);
-  const strict = argv.includes('--strict');
-  const impactMode = argv.includes('--impact');
-  const markReviewed = argv.includes('--mark-reviewed');
-  const dossierFile = getFlagValue(argv, '--dossier');
-  const planOut = getFlagValue(argv, '--plan');
+  try {
+    const opts = parseVerifyCliArgs(process.argv.slice(2));
+    const result = opts.impactMode || opts.dossierFile || opts.planOut
+      ? await analyzeImpact(opts.manifestFile, opts.receiptFile, {
+          dossierFile: opts.dossierFile,
+          strict: opts.strict,
+          htmlFile: opts.htmlFile,
+        })
+      : await verify(opts.manifestFile, opts.receiptFile, {
+          strict: opts.strict,
+          htmlFile: opts.htmlFile,
+        });
 
-  const skipVals = new Set([dossierFile, planOut].filter(Boolean));
-  const positional = argv.filter(a => !a.startsWith('--') && !skipVals.has(a));
-
-  if (positional.length < 2) {
-    console.error('Usage: node scripts/verify.mjs <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>] [--mark-reviewed]');
-    process.exitCode = 2;
-  } else {
-    try {
-      const result = impactMode || dossierFile || planOut
-        ? await analyzeImpact(positional[0], positional[1], {dossierFile})
-        : await verify(positional[0], positional[1]);
-
-      if (markReviewed) {
-        if (!result.ok) {
-          console.error('Cannot mark browserReviewed=true because verification failed (resolve source or artifact drift first).');
-          process.exitCode = 1;
-        } else {
-          const receiptPath = path.resolve(positional[1]);
-          const receipt = await readJson(receiptPath);
-          receipt.browserReviewed = true;
-          receipt.browserReviewedAt = new Date().toISOString();
-          await fs.writeFile(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
-          result.browserReviewed = true;
-          result.browserReviewedAt = receipt.browserReviewedAt;
-        }
+    if (opts.markReviewed) {
+      if (!result.ok) {
+        console.error('Cannot mark browserReviewed=true because verification failed (resolve source or artifact drift first).');
+        process.exitCode = 1;
+      } else {
+        const receiptPath = path.resolve(opts.receiptFile);
+        const receipt = await readJson(receiptPath);
+        receipt.browserReviewed = true;
+        receipt.browserReviewedAt = new Date().toISOString();
+        await fs.writeFile(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
+        result.browserReviewed = true;
+        result.browserReviewedAt = receipt.browserReviewedAt;
       }
-
-      if (planOut) {
-        const resolvedPlan = path.resolve(planOut);
-        await fs.mkdir(path.dirname(resolvedPlan), {recursive: true});
-        await fs.writeFile(resolvedPlan, renderUpdatePlan(result), 'utf8');
-      }
-
-      console.log(JSON.stringify(result, null, 2));
-      if (strict && !result.ok) process.exitCode = 1;
-    } catch (e) {
-      console.error(e.stack || e.message);
-      process.exitCode = 2;
     }
+
+    if (opts.planOut) {
+      const resolvedPlan = path.resolve(opts.planOut);
+      await fs.mkdir(path.dirname(resolvedPlan), { recursive: true });
+      await fs.writeFile(resolvedPlan, renderUpdatePlan(result), 'utf8');
+    }
+
+    console.log(JSON.stringify(result, null, 2));
+    if (opts.strict && !result.ok) process.exitCode = 1;
+  } catch (e) {
+    console.error(e.message || e.stack);
+    process.exitCode = 2;
   }
 }

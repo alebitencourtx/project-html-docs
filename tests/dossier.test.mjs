@@ -493,5 +493,178 @@ test('verify.mjs v1.9.0 detects artifact drift, accepts doc-only git advances, t
     assert.match(renderUpdatePlan(fakeImpact), /\.\.\. e mais 5 arquivo\(s\) não listado\(s\)\./);
   }));
 
+test('F02, F04, F07, F08, F09 & M04: redaction before truncation, lambda/subscript isolation, reexports/.ipynb/.mts edges, balanced DDL types, Blob vs Cosmos disambiguation, and streaming toTable', () =>
+  withTempDir(async (dir) => {
+    await fs.mkdir(path.join(dir, 'src'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'notebooks'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'sql'), { recursive: true });
+    await fs.mkdir(path.join(dir, '.github/workflows'), { recursive: true });
+
+    // F02: CLI passwords in workflows & package.json scripts + long command truncation
+    await fs.writeFile(
+      path.join(dir, '.github/workflows/deploy.yml'),
+      'name: Deploy\non: [push]\njobs:\n  deploy:\n    steps:\n      - run: ' + 'echo step && '.repeat(12) + 'tool --password AUDIT_FAKE_PASSWORD_123 -p=SHORT_PASS_999\n',
+    );
+    await fs.writeFile(
+      path.join(dir, 'package.json'),
+      JSON.stringify({
+        name: 'fixture',
+        version: '1.0.0',
+        scripts: { deploy: 'tool --password PKG_SECRET_PASSWORD_123 --api-key=PKG_API_KEY_999' },
+      }),
+    );
+
+    // F04: valid lambda & subscript calls + broken syntax file isolated with parseWarnings
+    await fs.writeFile(
+      path.join(dir, 'src/lambdas.py'),
+      '(lambda: 1)()\nhandlers = {"run": lambda: 2}\nhandlers["run"]()\n',
+    );
+    await fs.writeFile(path.join(dir, 'src/broken.py'), 'def oops(:\n  pass\n');
+
+    // F07: JS/TS reexports, side-effect imports, dynamic imports, .mts + .ipynb Python imports
+    await fs.writeFile(path.join(dir, 'src/lib.mts'), 'export const VAL = 42;\n');
+    await fs.writeFile(path.join(dir, 'src/reexport.mts'), 'export { VAL } from "./lib";\n');
+    await fs.writeFile(path.join(dir, 'src/side.ts'), 'import "./lib";\nconst m = import("./reexport");\n');
+    await fs.writeFile(path.join(dir, 'src/nb_config.py'), 'BATCH_SIZE = 100\n');
+    await fs.writeFile(
+      path.join(dir, 'notebooks/analysis.ipynb'),
+      JSON.stringify({
+        cells: [{ cell_type: 'code', source: ['from src.nb_config import BATCH_SIZE\n', 'print(BATCH_SIZE)\n'] }],
+        metadata: {},
+        nbformat: 4,
+        nbformat_minor: 5,
+      }),
+    );
+
+    // F08: DDL with parenthesized types + comma inside DECIMAL(10, 2) + STRUCT<...>
+    await fs.writeFile(
+      path.join(dir, 'sql/tables.sql'),
+      'CREATE TABLE payment (\n  id INT,\n  amount DECIMAL(10, 2),\n  status VARCHAR(30),\n  meta STRUCT<kind STRING, ver INT>\n);\n',
+    );
+
+    // F09: Blob vs Cosmos disambiguation + Spark streaming outputMode + toTable
+    await fs.writeFile(
+      path.join(dir, 'src/storage_and_stream.py'),
+      [
+        'from azure.storage.blob import BlobServiceClient',
+        'from azure.cosmos import CosmosClient',
+        '',
+        'def copy_blob(blob_client: BlobServiceClient):',
+        '    container = blob_client.get_container_client("archive")',
+        '    container.upload_blob("snap.json", "{}")',
+        '',
+        'def write_cosmos(cosmos_client: CosmosClient):',
+        '    container = cosmos_client.get_container_client("telemetry")',
+        '    container.upsert_item({"id": "1"})',
+        '',
+        'def stream_events(df):',
+        '    df.writeStream.format("delta").outputMode("append").toTable("db.events")',
+      ].join('\n'),
+    );
+
+    // M04: Oversized file tracking in omittedCounts/omittedFiles
+    await fs.writeFile(path.join(dir, 'src/huge.py'), 'x = "' + 'A'.repeat(2 * 1024 * 1024 + 32) + '"\n');
+
+    const outJson = path.join(dir, 'inv.json');
+    const outPlan = path.join(dir, 'reading-plan.md');
+    execFileSync('python3', [path.join(root, 'scripts/inspect_repo.py'), dir, '--out', outJson, '--plan', outPlan]);
+    const invText = await fs.readFile(outJson, 'utf8');
+    const planText = await fs.readFile(outPlan, 'utf8');
+    const inv = JSON.parse(invText);
+
+    // F02 checks
+    for (const secret of ['AUDIT_FAKE_PASSWORD_123', 'SHORT_PASS_999', 'PKG_SECRET_PASSWORD_123', 'PKG_API_KEY_999']) {
+      assert.ok(!invText.includes(secret), `Secret ${secret} must not appear anywhere in inventory.json`);
+      assert.ok(!planText.includes(secret), `Secret ${secret} must not appear anywhere in reading-plan.md`);
+    }
+
+    // F04 & M04 checks
+    assert.ok(inv.files.some((f) => f.path === 'src/lambdas.py'));
+    assert.ok(inv.parseWarnings.some((w) => w.file === 'src/broken.py'));
+    assert.ok(inv.omittedCounts.max_size_exceeded >= 1);
+    assert.ok(inv.omittedFiles.some((o) => o.path === 'src/huge.py' && o.reason === 'max_size_exceeded'));
+    assert.match(planText, /src\/broken\.py/);
+    assert.match(planText, /max_size_exceeded/);
+
+    // F07 checks
+    assert.ok(inv.files.some((f) => f.path === 'src/lib.mts'));
+    assert.ok(inv.dependencyGraph.edges.some((e) => e.from === 'src/reexport.mts' && e.to === 'src/lib.mts'));
+    assert.ok(inv.dependencyGraph.edges.some((e) => e.from === 'src/side.ts' && e.to === 'src/lib.mts'));
+    assert.ok(inv.dependencyGraph.edges.some((e) => e.from === 'src/side.ts' && e.to === 'src/reexport.mts'));
+    assert.ok(inv.dependencyGraph.edges.some((e) => e.from === 'notebooks/analysis.ipynb' && e.to === 'src/nb_config.py'));
+
+    // F08 checks
+    const paymentContract = inv.dataContracts.find((c) => c.name === 'payment' && c.kind === 'sql_ddl');
+    assert.ok(paymentContract, 'Expected payment table dataContract');
+    assert.deepEqual(
+      paymentContract.fields.map((f) => f.name),
+      ['id', 'amount', 'status', 'meta'],
+    );
+    assert.match(paymentContract.fields.find((f) => f.name === 'amount').type, /DECIMAL\(10,\s*2\)/i);
+    assert.match(paymentContract.fields.find((f) => f.name === 'status').type, /VARCHAR\(30\)/i);
+
+    // F09 checks
+    const io = inv.symbolIndex['src/storage_and_stream.py'].dataIO;
+    assert.ok(io.some((entry) => entry.op === 'azure_blob_adls' && entry.method === 'get_container_client' && entry.target === 'archive'), 'blob_client.get_container_client must map to azure_blob_adls');
+    assert.ok(!io.some((entry) => entry.op === 'cosmos_db' && entry.target === 'archive'), 'archive blob container must NOT be misclassified as cosmos_db');
+    assert.ok(io.some((entry) => entry.op === 'cosmos_db' && entry.method === 'get_container_client' && entry.target === 'telemetry'), 'cosmos_client.get_container_client must map to cosmos_db');
+    const streamWrite = io.find((entry) => entry.op === 'spark_write_stream');
+    assert.ok(streamWrite, 'Expected spark_write_stream from .toTable("db.events")');
+    assert.equal(streamWrite.target, 'db.events');
+    assert.equal(streamWrite.outputMode, 'append');
+
+    // F07 end-to-end transitive --impact check when dependency src/lib.mts or src/nb_config.py changes
+    const docs = path.join(dir, '_docs');
+    await fs.mkdir(docs, { recursive: true });
+    await fs.writeFile(
+      path.join(docs, 'document.json'),
+      JSON.stringify({
+        title: 'Impact Graph F07',
+        subtitle: 'Transitive reexport and ipynb propagation',
+        version: '1.0.0',
+        updated: '2026-11-15',
+        repoRoot: '..',
+        content: 'content.md',
+        sections: [
+          { id: 'lib-sec', title: 'Base Lib', audience: 'technical', sources: ['lib'] },
+          { id: 'ts-sec', title: 'TS Consumers', audience: 'technical', sources: ['side'] },
+          { id: 'nb-sec', title: 'Notebook Analysis', audience: 'technical', sources: ['nb'] },
+          { id: 'ddl-sec', title: 'SQL Contracts', audience: 'technical', sources: ['ddl'] },
+        ],
+        sources: [
+          { id: 'lib', path: 'src/lib.mts', description: 'Shared TS lib' },
+          { id: 'side', path: 'src/side.ts', description: 'Side-effect & dynamic consumer' },
+          { id: 'nb', path: 'notebooks/analysis.ipynb', description: 'Notebook consumer' },
+          { id: 'ddl', path: 'sql/tables.sql', description: 'SQL DDL' },
+        ],
+      }),
+    );
+    await fs.writeFile(
+      path.join(docs, 'content.md'),
+      '## Base Lib\n\nL.\n\n## TS Consumers\n\nT.\n\n## Notebook Analysis\n\nN.\n\n## SQL Contracts\n\nD.\n',
+    );
+    await build(path.join(docs, 'document.json'), path.join(docs, 'out.html'));
+
+    await fs.writeFile(path.join(dir, 'src/lib.mts'), 'export const VAL = 99;\n');
+    const impact = await analyzeImpact(
+      path.join(docs, 'document.json'),
+      path.join(docs, 'out.validation.json'),
+      { dossierFile: outJson },
+    );
+    assert.equal(impact.ok, false);
+    assert.deepEqual(impact.impactedPaths.direct, ['src/lib.mts']);
+    assert.ok(impact.impactedPaths.transitive.includes('src/reexport.mts'));
+    assert.ok(impact.impactedPaths.transitive.includes('src/side.ts'));
+    assert.deepEqual(
+      impact.impactedSections.map((s) => s.id),
+      ['lib-sec', 'ts-sec'],
+    );
+    assert.deepEqual(
+      impact.freshSections.map((s) => s.id),
+      ['nb-sec', 'ddl-sec'],
+    );
+  }));
+
+
 
 

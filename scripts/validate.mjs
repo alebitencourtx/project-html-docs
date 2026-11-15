@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {load} from 'cheerio';
+import {isSafeHref} from './lib/urls.mjs';
 
 export function validateHtml(html) {
   const $=load(html); const errors=[]; const ids=new Set();
@@ -19,7 +20,7 @@ export function validateHtml(html) {
   $('figure').each((_,e)=>{if(!$(e).find('figcaption').length)errors.push('Figure missing figcaption');});
   $('details').each((_,e)=>{if($(e).children('summary').length!==1)errors.push('Details missing a single summary');});
   $('table').each((_,e)=>{if(!$(e).find('thead').length||!$(e).find('th').length)errors.push('Table missing header cells');});
-  $('a[href]').each((_,e)=>{if(/^javascript:/i.test($(e).attr('href')))errors.push('Unsafe link');if(!$(e).text().trim()&&!$(e).find('img').length)errors.push('Link without text');});
+  $('a[href]').each((_,e)=>{const href=$(e).attr('href')||'';if(!isSafeHref(href))errors.push(`Unsafe link: ${href.trim().slice(0,80)}`);if(!$(e).text().trim()&&!$(e).find('img').length)errors.push('Link without text');});
   let sawH2=false,sawH3=false;
   $('h1,h2,h3,h4').each((_,e)=>{
     const $e=$(e);

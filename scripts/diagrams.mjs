@@ -1,3 +1,22 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import Ajv from 'ajv';
+
+const DIAGRAM_SCHEMA_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../schemas/diagram.schema.json');
+const DIAGRAM_SCHEMA = JSON.parse(readFileSync(DIAGRAM_SCHEMA_PATH, 'utf8'));
+const diagramAjv = new Ajv({ allErrors: true, allowUnionTypes: true });
+diagramAjv.addSchema(DIAGRAM_SCHEMA);
+const validateSolutionSchema = diagramAjv.getSchema('diagram.schema.json#/definitions/solutionDiagram');
+const validateSchemaDiagramSchema = diagramAjv.getSchema('diagram.schema.json#/definitions/schemaDiagram');
+const validateChartSchema = diagramAjv.getSchema('diagram.schema.json#/definitions/chartSpec');
+
+export function validateChartSpec(spec) {
+  if (!validateChartSchema(spec)) {
+    throw Error(`Invalid chart spec: ${diagramAjv.errorsText(validateChartSchema.errors)}`);
+  }
+}
+
 const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({
   '&': '&amp;',
   '<': '&lt;',
@@ -460,8 +479,11 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
 
   const seenIds = new Set();
   for (const n of spec.nodes) {
-    if (!n.id || typeof n.id !== 'string' || seenIds.has(n.id)) throw Error(`Duplicate or missing node id: ${n.id}`);
+    if (!n || !n.id || typeof n.id !== 'string' || seenIds.has(n.id)) throw Error(`Duplicate or missing node id: ${n?.id}`);
     seenIds.add(n.id);
+  }
+  if (!validateSolutionSchema(spec)) {
+    throw Error(`Invalid ${mode} diagram spec: ${diagramAjv.errorsText(validateSolutionSchema.errors)}`);
   }
 
   const zones = Array.isArray(spec.zones) ? spec.zones : [];
@@ -940,8 +962,11 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
 
   const seen = new Set();
   for (const ent of spec.entities) {
-    if (!ent.id || !ent.name || seen.has(ent.id)) throw Error(`Invalid or duplicate entity id: ${ent.id}`);
+    if (!ent || !ent.id || !ent.name || seen.has(ent.id)) throw Error(`Invalid or duplicate entity id: ${ent?.id}`);
     seen.add(ent.id);
+  }
+  if (!validateSchemaDiagramSchema(spec)) {
+    throw Error(`Invalid schema diagram spec: ${diagramAjv.errorsText(validateSchemaDiagramSchema.errors)}`);
   }
 
   const relations = Array.isArray(spec.relations) ? spec.relations : [];

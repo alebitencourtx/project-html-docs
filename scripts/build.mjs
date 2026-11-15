@@ -1,241 +1,467 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {fileURLToPath,pathToFileURL} from 'node:url';
-import {createHash} from 'node:crypto';
-import {Marked} from 'marked';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { Marked } from 'marked';
 import Ajv from 'ajv';
-import sanitizeHtml from 'sanitize-html';
-import {load} from 'cheerio';
-import {renderMermaidSVG} from 'beautiful-mermaid';
-import {validateHtml} from './validate.mjs';
-import {renderSolutionDiagram,renderSchemaDiagram,enhanceMermaidSvg} from './diagrams.mjs';
-import {computeRendererHash} from './renderer-hash.mjs';
+import { load } from 'cheerio';
+import { renderMermaidSVG } from 'beautiful-mermaid';
+import { validateHtml } from './validate.mjs';
+import { renderSolutionDiagram, renderSchemaDiagram, enhanceMermaidSvg, validateChartSpec } from './diagrams.mjs';
+import { computeRendererHash } from './renderer-hash.mjs';
+import { assertSafeHref } from './lib/urls.mjs';
+import { HASH_ALGORITHM, hashRaw, hashCanonicalText } from './lib/hash.mjs';
+import { RESERVED_IDS, normalizeTheme, getUiWords } from './lib/i18n.mjs';
+import { esc, cleanMarkdownHtml, enhanceSectionHtml, renderHtmlDocument } from './lib/html-shell.mjs';
 
-const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
-const PKG=JSON.parse(await fs.readFile(path.join(ROOT,'package.json'),'utf8'));
-const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const hash=v=>createHash('sha256').update(v).digest('hex');
-const textTags=[...sanitizeHtml.defaults.allowedTags,'details','summary','div','span','figure','figcaption'];
-const clean=v=>sanitizeHtml(v,{allowedTags:textTags,allowedAttributes:{...sanitizeHtml.defaults.allowedAttributes,'*':['class'],a:['href','title'],details:['open']},allowedSchemes:['https','http','mailto'],allowProtocolRelative:false});
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const PKG = JSON.parse(await fs.readFile(path.join(ROOT, 'package.json'), 'utf8'));
+const SCHEMA = JSON.parse(await fs.readFile(path.join(ROOT, 'schemas/document.schema.json'), 'utf8'));
+const validateManifest = new Ajv({ allErrors: true }).compile(SCHEMA);
 
-const RESERVED_IDS=new Set([
-  'main','sidebar','sidebar-backdrop','nav-toggle','nav-close','mobile-search-btn',
-  'search','search-clear','search-count','expand','collapse','print','no-results','back-to-top',
-  'document-references','diagram-dialog','dialog-title','dialog-zoom-in','dialog-zoom-out',
-  'dialog-zoom-label','dialog-fit','dialog-actual','dialog-close','dialog-canvas'
-]);
+const VARIANTS = {
+  accent: '#087f8c',
+  success: '#16a34a',
+  warning: '#d97706',
+  danger: '#dc2626',
+  neutral: '#64748b',
+};
 
-const VARIANTS={accent:'#087f8c',success:'#16a34a',warning:'#d97706',danger:'#dc2626',neutral:'#64748b'};
-const slugify=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'sub';
-const THEME_ALIASES={vermelho:'vermelho',azul:'azul',santander:'vermelho',default:'azul'};
-const normalizeTheme=v=>THEME_ALIASES[v]||'vermelho';
-
-function enhanceSectionHtml(rawHtml,sectionId=null,usedIds=new Set()){
-  const $=load(rawHtml,null,false);
-  const subHeadings=[];
-  $('table').each((_,tbl)=>{
-    const $tbl=$(tbl);
-    if(!$tbl.parent().hasClass('table-wrap'))$tbl.wrap('<div class="table-wrap"></div>');
-  });
-  $('blockquote').each((_,bq)=>{
-    const $bq=$(bq);
-    const txt=$bq.text().trim();
-    if(/^(?:\[!IMPORTANT\]|Regra(?:\s+de\s+neg[oó]cio|\s+de\s+ouro)?\s*:|Business\s+rule\s*:)/i.test(txt))$bq.addClass('callout-rule');
-    else if(/^(?:\[!TIP\]|Exemplo(?:\s+pr[aá]tico|\s+num[eé]rico)?\s*:|Worked\s+example\s*:|Example\s*:)/i.test(txt))$bq.addClass('callout-example');
-    else if(/^(?:\[!WARNING\]|Aten[çc][aã]o\s*:|Aviso\s*:|Cuidado\s*:|Warning\s*:)/i.test(txt))$bq.addClass('callout-warning');
-    else if(/^(?:\[!NOTE\]|Limita[çc][aã]o\s*:|Limite\s*:|Limitation\s*:|Note\s*:)/i.test(txt))$bq.addClass('callout-limit');
-  });
-  $('td code').each((_,el)=>{
-    const $el=$(el);
-    const t=$el.text().trim().toUpperCase();
-    if(t==='PK')$el.addClass('col-badge col-badge-pk');
-    else if(t==='FK')$el.addClass('col-badge col-badge-fk');
-    else if(t==='UK')$el.addClass('col-badge col-badge-uk');
-    else if(t==='PARTIÇÃO'||t==='PARTICAO'||t==='PARTITION'||t==='CLUSTER')$el.addClass('col-badge col-badge-partition');
-    else if(t==='PII'||t==='SENSÍVEL'||t==='SENSIVEL')$el.addClass('col-badge col-badge-pii');
-    else if(t==='NOT NULL'||t==='OBRIGATÓRIO'||t==='OBRIGATORIO')$el.addClass('col-badge col-badge-notnull');
-  });
-  if(sectionId){
-    $('h3').each((_,el)=>{
-      const $el=$(el);
-      if($el.closest('.card').length)return;
-      const title=$el.text().trim();
-      if(!title)return;
-      const base=`${sectionId}-${slugify(title)}`;
-      let id=base,n=2;
-      while(usedIds.has(id))id=`${base}-${n++}`;
-      usedIds.add(id);
-      $el.attr('id',id);
-      subHeadings.push({id,title});
-    });
+export function barChart(spec, locale = 'pt-BR') {
+  if (!spec || spec.type !== 'bar' || !spec.title || !spec.unit || !spec.source || !Array.isArray(spec.data) || !spec.data.length || spec.data.length > 40) {
+    throw Error('chart requires type=bar, title, unit, source, and 1–40 data items');
   }
-  return {html:$.html(),subHeadings};
-}
+  const seen = new Set();
+  for (const d of spec.data) {
+    if (!d || typeof d.label !== 'string' || !d.label.trim() || d.label.length > 45 || !Number.isFinite(d.value) || d.value < 0 || seen.has(d.label)) {
+      throw Error('chart labels must be unique (max 45 chars); values must be finite and nonnegative');
+    }
+    if (d.variant !== undefined && !VARIANTS[d.variant]) {
+      throw Error('chart variant must be warning, danger, success, neutral, or accent');
+    }
+    seen.add(d.label);
+  }
+  validateChartSpec(spec);
 
-export function barChart(spec,locale='pt-BR'){
-  if(spec.type!=='bar'||!spec.title||!spec.unit||!spec.source||!Array.isArray(spec.data)||!spec.data.length||spec.data.length>40)throw Error('chart requires type=bar, title, unit, source, and 1–40 data items');
-  const seen=new Set();for(const d of spec.data){if(typeof d.label!=='string'||!d.label.trim()||d.label.length>45||!Number.isFinite(d.value)||d.value<0||seen.has(d.label))throw Error('chart labels must be unique (max 45 chars); values must be finite and nonnegative');if(d.variant!==undefined&&!VARIANTS[d.variant])throw Error('chart variant must be warning, danger, success, neutral, or accent');seen.add(d.label);}
-  const max=Math.max(1,...spec.data.map(d=>d.value)),row=42;
-  const widthOf=c=>c===' '?4.2:'MW@%'.includes(c)?14:/[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ]/.test(c)?10.5:/[0-9]/.test(c)?8.4:/[il.,:;!|'`]/.test(c)?3.5:7.6;
-  const labelWidth=Math.max(...spec.data.map(d=>[...d.label].reduce((sum,c)=>sum+widthOf(c),0)));
-  const left=Math.max(220,Math.round(labelWidth+24)),plot=540,w=left+plot+80;
-  const plotTop=10,plotBottom=spec.data.length*row+10,h=plotBottom+52;
-  const fmt=new Intl.NumberFormat(locale,{maximumFractionDigits:2});
-  const gridlines=[0.25,0.5,0.75,1].map(pct=>{const gx=left+Math.round(pct*plot);return `<line class="chart-gridline" x1="${gx}" y1="${plotTop}" x2="${gx}" y2="${plotBottom}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>`;}).join('');
-  const rows=spec.data.map((d,i)=>{
-    const y=i*row+16;
-    const color=(d.variant&&VARIANTS[d.variant])?VARIANTS[d.variant]:VARIANTS.accent;
-    const bw=d.value===0?0:Math.max(2,Math.round((d.value/max)*plot));
-    const title=`${d.label}: ${fmt.format(d.value)} ${spec.unit}`;
+  const max = Math.max(1, ...spec.data.map(d => d.value));
+  const row = 42;
+  const widthOf = c => c === ' ' ? 4.2 : 'MW@%'.includes(c) ? 14 : /[A-ZÁÀÂÃÉÊÍÓÔÕÚÇ]/.test(c) ? 10.5 : /[0-9]/.test(c) ? 8.4 : /[il.,:;!|'`]/.test(c) ? 3.5 : 7.6;
+  const labelWidth = Math.max(...spec.data.map(d => [...d.label].reduce((sum, c) => sum + widthOf(c), 0)));
+  const left = Math.max(220, Math.round(labelWidth + 24));
+  const plot = 540;
+  const w = left + plot + 80;
+  const plotTop = 10;
+  const plotBottom = spec.data.length * row + 10;
+  const h = plotBottom + 52;
+  const fmt = new Intl.NumberFormat(locale, { maximumFractionDigits: 2 });
+
+  const gridlines = [0.25, 0.5, 0.75, 1].map(pct => {
+    const gx = left + Math.round(pct * plot);
+    return `<line class="chart-gridline" x1="${gx}" y1="${plotTop}" x2="${gx}" y2="${plotBottom}" stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3"/>`;
+  }).join('');
+
+  const rows = spec.data.map((d, i) => {
+    const y = i * row + 16;
+    const color = (d.variant && VARIANTS[d.variant]) ? VARIANTS[d.variant] : VARIANTS.accent;
+    const bw = d.value === 0 ? 0 : Math.max(2, Math.round((d.value / max) * plot));
+    const title = `${d.label}: ${fmt.format(d.value)} ${spec.unit}`;
     let valEl;
-    if(d.value===0){
-      valEl=`<g data-zero="true" class="chart-zero-badge"><rect x="${left+4}" y="${y+3}" width="54" height="17" rx="3" fill="#edf2f7"/><text x="${left+31}" y="${y+15}" text-anchor="middle" fill="#526778" font-size="11" font-weight="600">0 (zero)</text></g>`;
-    }else if(bw>=64){
-      valEl=`<text class="chart-value chart-value-inside" x="${left+bw-10}" y="${y+16}" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">${esc(fmt.format(d.value))}</text>`;
-    }else{
-      valEl=`<line class="chart-guide" x1="${left+bw+3}" y1="${y+11.5}" x2="${left+bw+11}" y2="${y+11.5}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/><text class="chart-value chart-value-outside" x="${left+bw+15}" y="${y+16}" text-anchor="start" fill="#172b3c" font-weight="600" font-size="12">${esc(fmt.format(d.value))}</text>`;
+    if (d.value === 0) {
+      valEl = `<g data-zero="true" class="chart-zero-badge"><rect x="${left + 4}" y="${y + 3}" width="54" height="17" rx="3" fill="#edf2f7"/><text x="${left + 31}" y="${y + 15}" text-anchor="middle" fill="#526778" font-size="11" font-weight="600">0 (zero)</text></g>`;
+    } else if (bw >= 64) {
+      valEl = `<text class="chart-value chart-value-inside" x="${left + bw - 10}" y="${y + 16}" text-anchor="end" fill="#ffffff" font-weight="600" font-size="12">${esc(fmt.format(d.value))}</text>`;
+    } else {
+      valEl = `<line class="chart-guide" x1="${left + bw + 3}" y1="${y + 11.5}" x2="${left + bw + 11}" y2="${y + 11.5}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2"/><text class="chart-value chart-value-outside" x="${left + bw + 15}" y="${y + 16}" text-anchor="start" fill="#172b3c" font-weight="600" font-size="12">${esc(fmt.format(d.value))}</text>`;
     }
-    const barEl=bw>0?`<rect class="chart-bar" x="${left}" y="${y}" width="${bw}" height="23" rx="4" fill="${color}"/>`:'';
-    return `<g class="chart-row" tabindex="0"><title>${esc(title)}</title><text class="chart-label" x="${left-14}" y="${y+16}" text-anchor="end" fill="#314c5e">${esc(d.label)}</text><rect class="chart-track" x="${left}" y="${y}" width="${plot}" height="23" rx="4" fill="#e8eff3"/>${barEl}${valEl}</g>`;
+    const barEl = bw > 0 ? `<rect class="chart-bar" x="${left}" y="${y}" width="${bw}" height="23" rx="4" fill="${color}"/>` : '';
+    return `<g class="chart-row" tabindex="0"><title>${esc(title)}</title><text class="chart-label" x="${left - 14}" y="${y + 16}" text-anchor="end" fill="#314c5e">${esc(d.label)}</text><rect class="chart-track" x="${left}" y="${y}" width="${plot}" height="23" rx="4" fill="#e8eff3"/>${barEl}${valEl}</g>`;
   }).join('');
-  const axisTicks=[0,0.25,0.5,0.75,1].map(pct=>{
-    const gx=left+Math.round(pct*plot);
-    const tickVal=pct*max;
-    const anchor=pct===0?'start':pct===1?'end':'middle';
-    return `<line class="chart-axis-tick" x1="${gx}" y1="${plotBottom}" x2="${gx}" y2="${plotBottom+4}" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="${gx}" y="${plotBottom+16}" text-anchor="${anchor}" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">${esc(fmt.format(tickVal))}</text>`;
+
+  const axisTicks = [0, 0.25, 0.5, 0.75, 1].map(pct => {
+    const gx = left + Math.round(pct * plot);
+    const tickVal = pct * max;
+    const anchor = pct === 0 ? 'start' : pct === 1 ? 'end' : 'middle';
+    return `<line class="chart-axis-tick" x1="${gx}" y1="${plotBottom}" x2="${gx}" y2="${plotBottom + 4}" stroke="#94a3b8" stroke-width="1"/><text class="chart-axis-val" x="${gx}" y="${plotBottom + 16}" text-anchor="${anchor}" fill="#526778" font-size="11" font-variant-numeric="tabular-nums">${esc(fmt.format(tickVal))}</text>`;
   }).join('');
-  const axis=`<g class="chart-axis" aria-hidden="true"><line class="chart-axis-line" x1="${left}" y1="${plotBottom}" x2="${left+plot}" y2="${plotBottom}" stroke="#cbd5e1" stroke-width="1"/>${axisTicks}</g>`;
-  const table=`<table><thead><tr><th>${locale==='pt-BR'?'Categoria':'Category'}</th><th>${esc(spec.unit)}</th></tr></thead><tbody>${spec.data.map(d=>`<tr><td>${esc(d.label)}</td><td>${esc(fmt.format(d.value))}</td></tr>`).join('')}</tbody></table>`;
-  return `<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(spec.title)}" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:${w}px"><g class="chart-gridlines" aria-hidden="true">${gridlines}</g>${rows}${axis}<text x="${left}" y="${h-6}" fill="#526778" font-size="12">0 · ${esc(spec.unit)} · ${locale==='pt-BR'?'escala linear':'linear scale'}</text></svg><figcaption><strong>${esc(spec.title)}</strong> · ${esc(spec.source)}${spec.asOf?' · '+esc(spec.asOf):''}</figcaption><details><summary>${locale==='pt-BR'?'Dados do gráfico':'Chart data'}</summary><div class="table-wrap">${table}</div></details></figure>`;
+
+  const axis = `<g class="chart-axis" aria-hidden="true"><line class="chart-axis-line" x1="${left}" y1="${plotBottom}" x2="${left + plot}" y2="${plotBottom}" stroke="#cbd5e1" stroke-width="1"/>${axisTicks}</g>`;
+  const table = `<table><thead><tr><th>${locale === 'pt-BR' ? 'Categoria' : 'Category'}</th><th>${esc(spec.unit)}</th></tr></thead><tbody>${spec.data.map(d => `<tr><td>${esc(d.label)}</td><td>${esc(fmt.format(d.value))}</td></tr>`).join('')}</tbody></table>`;
+  return `<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(spec.title)}" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:${w}px"><g class="chart-gridlines" aria-hidden="true">${gridlines}</g>${rows}${axis}<text x="${left}" y="${h - 6}" fill="#526778" font-size="12">0 · ${esc(spec.unit)} · ${locale === 'pt-BR' ? 'escala linear' : 'linear scale'}</text></svg><figcaption><strong>${esc(spec.title)}</strong> · ${esc(spec.source)}${spec.asOf ? ' · ' + esc(spec.asOf) : ''}</figcaption><details><summary>${locale === 'pt-BR' ? 'Dados do gráfico' : 'Chart data'}</summary><div class="table-wrap">${table}</div></details></figure>`;
 }
 
-export async function build(manifestFile,output,{force=false,mode:cliMode}={}){
-  const manifestPath=path.resolve(manifestFile),base=path.dirname(manifestPath);const manifestRaw=await fs.readFile(manifestPath,'utf8');const spec=JSON.parse(manifestRaw);
-  const schema=JSON.parse(await fs.readFile(path.join(ROOT,'schemas/document.schema.json'),'utf8'));
-  const validate=new Ajv({allErrors:true}).compile(schema);if(!validate(spec))throw Error(JSON.stringify(validate.errors));
-  const mode=cliMode??spec.mode??'full';
-  if(mode!=='full'&&mode!=='summary')throw Error(`Invalid mode "${mode}": expected "full" or "summary"`);
-  if(!output)throw Error('Choose an output with --out; no file is overwritten unless --force is explicit');
-  output=path.resolve(output);try{await fs.access(output);if(!force)throw Error(`Output already exists: ${output}; choose a new name or --force`);}catch(e){if(e.code!=='ENOENT')throw e;}
-  const input=path.resolve(base,spec.content);if(output===input||output===manifestPath)throw Error('Output cannot overwrite an input');
-  const md=await fs.readFile(input,'utf8');const en=spec.language==='en',locale=en?'en':'pt-BR';
-  const words=en?{
-    all:'Everyone',business:'Business',technical:'Technical',operations:'Operations',
-    search:'Search documentation',clearSearch:'Clear search',expand:'Expand all',collapse:'Collapse all',print:'Print / PDF',
-    none:'No sections found.',offline:'Single HTML · offline reading',sources:'Sources',updated:'Updated',code:'Code',
-    diagram:'Expand',close:'Close',fit:'Fit to view',actual:'100%',hint:'Choose a section or filter by reading profile.',
-    data:'Data as of',reference:'Document references',
-    defaultEyebrow:mode==='summary'?'Quick guide · Summary view':'Functional & technical documentation',
-    summaryBadge:'Quick guide',
-    readingBadge:m=>`~${m} min read`,
-    filterAll:'All',filterBusiness:'Business view',filterTechnical:'Technical view',filterOps:'Operations',backToTop:'Back to top',
-    themeRed:'Red',themeBlue:'Blue',
-    menu:'Menu',openMenu:'Open navigation menu',closeMenu:'Close navigation menu'
-  }:{
-    all:'Para todos',business:'Funcional',technical:'Técnico',operations:'Operação',
-    search:'Pesquisar documentação',clearSearch:'Limpar busca',expand:'Expandir tudo',collapse:'Recolher tudo',print:'Imprimir / PDF',
-    none:'Nenhuma seção encontrada.',offline:'HTML único · leitura offline',sources:'Referências',updated:'Atualizado',code:'Código',
-    diagram:'Ampliar',close:'Fechar',fit:'Ajustar à tela',actual:'Tamanho real',hint:'Navegue por assunto ou filtre por perfil de leitura.',
-    data:'Dados observados em',reference:'Referências do documento',
-    defaultEyebrow:mode==='summary'?'Guia rápido · Visão resumida':'Documentação funcional e técnica',
-    summaryBadge:'Guia rápido',
-    readingBadge:m=>`~${m} min de leitura`,
-    filterAll:'Todas',filterBusiness:'Visão de negócio',filterTechnical:'Visão técnica',filterOps:'Operação',backToTop:'Topo',
-    themeRed:'Vermelho',themeBlue:'Azul',
-    menu:'Menu',openMenu:'Abrir menu de navegação',closeMenu:'Fechar menu de navegação'
-  };
-  const sourceMap=new Map(),evidence=[];
-  for(const source of spec.sources||[]){if(sourceMap.has(source.id))throw Error(`Duplicate source: ${source.id}`);if(!spec.repoRoot)throw Error('repoRoot is required for local sources');const repo=path.resolve(base,spec.repoRoot);const p=path.resolve(repo,source.path);const rel=path.relative(repo,p);if(rel.startsWith('..')||path.isAbsolute(rel))throw Error('Source outside repository');const raw=await fs.readFile(p);const item={...source,sha256:hash(raw)};sourceMap.set(source.id,item);evidence.push(item);}
-  const ids=new Set();const usedIds=new Set([...RESERVED_IDS,...evidence.map(s=>`ref-${s.id}`)]);
-  for(const section of spec.sections){if(RESERVED_IDS.has(section.id))throw Error(`Reserved section id "${section.id}" cannot be used`);if(ids.has(section.id))throw Error(`Duplicate section: ${section.id}`);ids.add(section.id);usedIds.add(section.id);for(const s of section.sources||[])if(!sourceMap.has(s))throw Error(`Unknown source: ${s}`);}
-  const mdParser=new Marked({gfm:true});const tokens=mdParser.lexer(md);const groups=[];let current;
-  for(const token of tokens){
-    if(token.type==='heading'&&token.depth===1)throw Error(`H1 heading is reserved for document title; found "${token.text}" in ${current?`section "${current.title}"`:'document top'}`);
-    if(token.type==='heading'&&token.depth===2){current={title:token.text,tokens:[]};groups.push(current);}
-    else if(current){
-      if(token.type==='html'&&/<h1(?:\s|>)/i.test(token.text||''))throw Error(`H1 heading is reserved for document title; found HTML <h1> in section "${current.title}"`);
-      current.tokens.push(token);
+async function ensureWritableTarget(targetPath, protectedPaths, { force, label }) {
+  for (const [protPath, protName] of protectedPaths) {
+    if (targetPath === protPath) {
+      throw Error(`${label} cannot overwrite input ${protName}: ${targetPath}`);
     }
-    else if(token.type!=='space')throw Error('Start content with a level-two heading listed in document.json');
   }
-  if(groups.length!==spec.sections.length)throw Error(`Markdown H2 headings must match sections[].title in order (found ${groups.length}, expected ${spec.sections.length})`);
-  for(let i=0;i<groups.length;i++){if(groups[i].title!==spec.sections[i].title)throw Error(`Markdown H2 headings must match sections[].title in order (index ${i}: expected "${spec.sections[i].title}", found "${groups[i].title}")`);}
-  let diagramIndex=0;const generated=new Map();
-  mdParser.use({renderer:{html({text}){return text;},code({text,lang}){
-    const type=(lang||'').trim().split(/\s+/)[0];let html;
-    if(type==='mermaid'){
-      const title=(lang||'').trim().slice(type.length).trim();if(!title)throw Error('Give each mermaid fence a descriptive title after mermaid');
-      const raw=renderMermaidSVG(text,{bg:'#f8fbfc',fg:'#172b3c',accent:'#087f8c',line:'#7992a2',surface:'#ffffff',border:'#b8cbd5',font:'Segoe UI',padding:22,nodeSpacing:28,layerSpacing:38});
-      const $=load(raw,{xml:true});$('style').each((_,e)=>$(e).text($(e).text().replace(/@import\s+url\([^)]*\)\s*;/g,'')));
-      enhanceMermaidSvg($,text);
-      const svg=$('svg');const prefix=`diagram-${++diagramIndex}-`;const replaces=new Map();$('[id]').each((_,e)=>{const old=$(e).attr('id');replaces.set(old,prefix+old);$(e).attr('id',prefix+old);});
-      $('*').each((_,e)=>{for(const [a,v] of Object.entries(e.attribs||{})){let next=v;for(const [old,id]of replaces){next=next.replaceAll(`url(#${old})`,`url(#${id})`);if(next===`#${old}`)next=`#${id}`;}if(next!==v)$(e).attr(a,next);}});
-      const width=parseFloat(svg.attr('width'))||Number(svg.attr('viewBox')?.split(/\s+/)[2])||800;
-      svg.attr({'role':'img','aria-label':title,'data-natural-width':String(width),'style':`${svg.attr('style')||''};width:${width}px;max-width:100%;height:auto`});
-      html=`<figure class="diagram"><div class="figure-tools"><span class="figure-tag">${esc(title)}</span><button type="button" data-expand-diagram aria-label="${words.diagram}: ${esc(title)}">${words.diagram}</button></div><div class="diagram-scroll">${$.xml()}</div><figcaption>${esc(title)}</figcaption></figure>`;
-    }else if(type==='solution'||type==='flow'){
-      const prefix=`diagram-${++diagramIndex}-`;
-      try{html=renderSolutionDiagram(JSON.parse(text),{locale,diagramLabel:words.diagram,mode:type}).replaceAll('__PREFIX__',prefix);}
-      catch(e){throw Error(`Invalid ${type} diagram block: ${e.message}`);}
-    }else if(type==='schema'||type==='erd'){
-      const prefix=`diagram-${++diagramIndex}-`;
-      try{html=renderSchemaDiagram(JSON.parse(text),{locale,diagramLabel:words.diagram}).replaceAll('__PREFIX__',prefix);}
-      catch(e){throw Error(`Invalid ${type} diagram block: ${e.message}`);}
-    }else if(type==='chart'){
-      try{html=barChart(JSON.parse(text),locale);}
-      catch(e){throw Error(`Invalid chart block: ${e.message}`);}
-    }else{return `<pre><code${type?` class="language-${esc(type)}"`:''}>${esc(text)}</code></pre>`;}
-    const key=`GENERATEDVISUAL${generated.size}END`;generated.set(key,html);return `<div>${key}</div>`;
-  }}});
-  const subNavBySection=new Map();
-  const body=groups.map((g,i)=>{const section=spec.sections[i];const enhanced=enhanceSectionHtml(clean(mdParser.parser(g.tokens)),section.id,usedIds);let content=enhanced.html;subNavBySection.set(section.id,enhanced.subHeadings);for(const[key,value]of generated)content=content.replace(`<div>${key}</div>`,()=>value);const refs=(section.sources||[]).map(id=>`<a href="#ref-${id}">${esc(sourceMap.get(id).path)}</a>`).join(' ');return `<details class="doc-section" id="${section.id}" data-audience="${section.audience}" open><summary class="section-heading"><span class="number">${String(i+1).padStart(2,'0')}</span><h2>${esc(section.title)}</h2><span class="audience ${section.audience}">${words[section.audience]}</span></summary><div class="section-body">${content}${refs?`<div class="section-sources">${words.sources}: ${refs}</div>`:''}</div></details>`;}).join('\n');
-  const nav=spec.sections.map((s,i)=>{
-    const subs=subNavBySection.get(s.id)||[];
-    const subHtml=subs.length?`<div class="nav-sub" data-parent="${s.id}">${subs.map(sub=>`<a href="#${sub.id}">${esc(sub.title)}</a>`).join('')}</div>`:'';
-    return `<a href="#${s.id}" data-audience="${s.audience}"><span>${String(i+1).padStart(2,'0')}</span>${esc(s.title)}</a>${subHtml}`;
+  try {
+    await fs.access(targetPath);
+    if (!force) {
+      throw Error(`${label} already exists: ${targetPath}; choose a new name or --force`);
+    }
+  } catch (e) {
+    if (e.code !== 'ENOENT') throw e;
+  }
+}
+
+async function writeAtomicFile(targetPath, data) {
+  const uniqueSuffix = `.${process.pid}.${Date.now()}.${Math.random().toString(16).slice(2, 8)}.tmp`;
+  const tmpPath = `${targetPath}${uniqueSuffix}`;
+  try {
+    await fs.writeFile(tmpPath, data);
+    await fs.rename(tmpPath, targetPath);
+  } finally {
+    await fs.rm(tmpPath, { force: true }).catch(() => {});
+  }
+}
+
+export async function build(manifestFile, output, { force = false, mode: cliMode } = {}) {
+  const manifestPath = path.resolve(manifestFile);
+  const base = path.dirname(manifestPath);
+  const manifestRaw = await fs.readFile(manifestPath, 'utf8');
+  const spec = JSON.parse(manifestRaw);
+
+  if (!validateManifest(spec)) {
+    throw Error(JSON.stringify(validateManifest.errors));
+  }
+
+  const mode = cliMode ?? spec.mode ?? 'full';
+  if (mode !== 'full' && mode !== 'summary') {
+    throw Error(`Invalid mode "${mode}": expected "full" or "summary"`);
+  }
+  if (!output) {
+    throw Error('Choose an output with --out; no file is overwritten unless --force is explicit');
+  }
+
+  output = path.resolve(output);
+  const receiptPath = output.replace(/\.html$/i, '') + '.validation.json';
+  const input = path.resolve(base, spec.content);
+
+  const protectedInputs = [
+    [manifestPath, 'manifest'],
+    [input, 'content'],
+  ];
+
+  // Resolve and hash sources before writing any output
+  const sourceMap = new Map();
+  const evidence = [];
+  for (const source of spec.sources || []) {
+    if (sourceMap.has(source.id)) throw Error(`Duplicate source: ${source.id}`);
+    if (!spec.repoRoot) throw Error('repoRoot is required for local sources');
+    const repo = path.resolve(base, spec.repoRoot);
+    const p = path.resolve(repo, source.path);
+    const rel = path.relative(repo, p);
+    if (rel.startsWith('..') || path.isAbsolute(rel)) throw Error('Source outside repository');
+    protectedInputs.push([p, `source "${source.id}"`]);
+    const raw = await fs.readFile(p);
+    const item = { ...source, sha256: hashCanonicalText(raw, p) };
+    sourceMap.set(source.id, item);
+    evidence.push(item);
+  }
+
+  await ensureWritableTarget(output, protectedInputs, { force, label: 'Output' });
+  await ensureWritableTarget(receiptPath, protectedInputs, { force, label: 'Validation receipt' });
+  if (output === receiptPath) {
+    throw Error('Output and validation receipt paths must be distinct');
+  }
+
+  const md = await fs.readFile(input, 'utf8');
+  const en = spec.language === 'en';
+  const locale = en ? 'en' : 'pt-BR';
+  const words = getUiWords(en, mode);
+
+  const ids = new Set();
+  const usedIds = new Set([...RESERVED_IDS, ...evidence.map(s => `ref-${s.id}`)]);
+  for (const section of spec.sections) {
+    if (RESERVED_IDS.has(section.id)) throw Error(`Reserved section id "${section.id}" cannot be used`);
+    if (ids.has(section.id)) throw Error(`Duplicate section: ${section.id}`);
+    ids.add(section.id);
+    usedIds.add(section.id);
+    for (const s of section.sources || []) {
+      if (!sourceMap.has(s)) throw Error(`Unknown source: ${s}`);
+    }
+  }
+
+  const mdParser = new Marked({ gfm: true });
+  const tokens = mdParser.lexer(md);
+  const groups = [];
+  let current;
+  for (const token of tokens) {
+    if (token.type === 'heading' && token.depth === 1) {
+      throw Error(`H1 heading is reserved for document title; found "${token.text}" in ${current ? `section "${current.title}"` : 'document top'}`);
+    }
+    if (token.type === 'heading' && token.depth === 2) {
+      current = { title: token.text, tokens: [] };
+      groups.push(current);
+    } else if (current) {
+      if (token.type === 'html' && /<h1(?:\s|>)/i.test(token.text || '')) {
+        throw Error(`H1 heading is reserved for document title; found HTML <h1> in section "${current.title}"`);
+      }
+      current.tokens.push(token);
+    } else if (token.type !== 'space') {
+      throw Error('Start content with a level-two heading listed in document.json');
+    }
+  }
+
+  if (groups.length !== spec.sections.length) {
+    throw Error(`Markdown H2 headings must match sections[].title in order (found ${groups.length}, expected ${spec.sections.length})`);
+  }
+  for (let i = 0; i < groups.length; i++) {
+    if (groups[i].title !== spec.sections[i].title) {
+      throw Error(`Markdown H2 headings must match sections[].title in order (index ${i}: expected "${spec.sections[i].title}", found "${groups[i].title}")`);
+    }
+  }
+
+  let diagramIndex = 0;
+  const generated = new Map();
+  mdParser.use({
+    renderer: {
+      html({ text }) {
+        return text;
+      },
+      code({ text, lang }) {
+        const type = (lang || '').trim().split(/\s+/)[0];
+        let html;
+        if (type === 'mermaid') {
+          const title = (lang || '').trim().slice(type.length).trim();
+          if (!title) throw Error('Give each mermaid fence a descriptive title after mermaid');
+          const raw = renderMermaidSVG(text, {
+            bg: '#f8fbfc', fg: '#172b3c', accent: '#087f8c', line: '#7992a2',
+            surface: '#ffffff', border: '#b8cbd5', font: 'Segoe UI', padding: 22, nodeSpacing: 28, layerSpacing: 38,
+          });
+          const $ = load(raw, { xml: true });
+          $('style').each((_, e) => $(e).text($(e).text().replace(/@import\s+url\([^)]*\)\s*;/g, '')));
+          enhanceMermaidSvg($, text);
+          const svg = $('svg');
+          const prefix = `diagram-${++diagramIndex}-`;
+          const replaces = new Map();
+          $('[id]').each((_, e) => {
+            const old = $(e).attr('id');
+            replaces.set(old, prefix + old);
+            $(e).attr('id', prefix + old);
+          });
+          $('*').each((_, e) => {
+            for (const [a, v] of Object.entries(e.attribs || {})) {
+              let next = v;
+              for (const [old, id] of replaces) {
+                next = next.replaceAll(`url(#${old})`, `url(#${id})`);
+                if (next === `#${old}`) next = `#${id}`;
+              }
+              if (next !== v) $(e).attr(a, next);
+            }
+          });
+          const width = parseFloat(svg.attr('width')) || Number(svg.attr('viewBox')?.split(/\s+/)[2]) || 800;
+          svg.attr({
+            role: 'img',
+            'aria-label': title,
+            'data-natural-width': String(width),
+            style: `${svg.attr('style') || ''};width:${width}px;max-width:100%;height:auto`,
+          });
+          html = `<figure class="diagram"><div class="figure-tools"><span class="figure-tag">${esc(title)}</span><button type="button" data-expand-diagram aria-label="${words.diagram}: ${esc(title)}">${words.diagram}</button></div><div class="diagram-scroll">${$.xml()}</div><figcaption>${esc(title)}</figcaption></figure>`;
+        } else if (type === 'solution' || type === 'flow') {
+          const prefix = `diagram-${++diagramIndex}-`;
+          try {
+            html = renderSolutionDiagram(JSON.parse(text), { locale, diagramLabel: words.diagram, mode: type }).replaceAll('__PREFIX__', prefix);
+          } catch (e) {
+            throw Error(`Invalid ${type} diagram block: ${e.message}`);
+          }
+        } else if (type === 'schema' || type === 'erd') {
+          const prefix = `diagram-${++diagramIndex}-`;
+          try {
+            html = renderSchemaDiagram(JSON.parse(text), { locale, diagramLabel: words.diagram }).replaceAll('__PREFIX__', prefix);
+          } catch (e) {
+            throw Error(`Invalid ${type} diagram block: ${e.message}`);
+          }
+        } else if (type === 'chart') {
+          try {
+            html = barChart(JSON.parse(text), locale);
+          } catch (e) {
+            throw Error(`Invalid chart block: ${e.message}`);
+          }
+        } else {
+          return `<pre><code${type ? ` class="language-${esc(type)}"` : ''}>${esc(text)}</code></pre>`;
+        }
+        const key = `GENERATEDVISUAL${generated.size}END`;
+        generated.set(key, html);
+        return `<div>${key}</div>`;
+      },
+    },
+  });
+
+  const subNavBySection = new Map();
+  const body = groups.map((g, i) => {
+    const section = spec.sections[i];
+    const enhanced = enhanceSectionHtml(cleanMarkdownHtml(mdParser.parser(g.tokens)), section.id, usedIds);
+    let content = enhanced.html;
+    subNavBySection.set(section.id, enhanced.subHeadings);
+    for (const [key, value] of generated) {
+      content = content.replace(`<div>${key}</div>`, () => value);
+    }
+    const refs = (section.sources || []).map(id => `<a href="#ref-${id}">${esc(sourceMap.get(id).path)}</a>`).join(' ');
+    return `<details class="doc-section" id="${section.id}" data-audience="${section.audience}" open><summary class="section-heading"><span class="number">${String(i + 1).padStart(2, '0')}</span><h2>${esc(section.title)}</h2><span class="audience ${section.audience}">${words[section.audience]}</span></summary><div class="section-body">${content}${refs ? `<div class="section-sources">${words.sources}: ${refs}</div>` : ''}</div></details>`;
+  }).join('\n');
+
+  const nav = spec.sections.map((s, i) => {
+    const subs = subNavBySection.get(s.id) || [];
+    const subHtml = subs.length
+      ? `<div class="nav-sub" data-parent="${s.id}">${subs.map(sub => `<a href="#${sub.id}">${esc(sub.title)}</a>`).join('')}</div>`
+      : '';
+    return `<a href="#${s.id}" data-audience="${s.audience}"><span>${String(i + 1).padStart(2, '0')}</span>${esc(s.title)}</a>${subHtml}`;
   }).join('');
-  const refs=evidence.length?`<details class="doc-section" id="document-references" data-audience="technical"><summary class="section-heading"><h2>${words.reference}</h2></summary><div class="section-body"><p>${en?'Local files used to describe this revision.':'Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.'}</p><div class="table-wrap"><table><thead><tr><th>${en?'File':'Arquivo'}</th><th>${en?'Purpose':'Conteúdo'}</th></tr></thead><tbody>${evidence.map(s=>`<tr id="ref-${s.id}"><td class="source-path">${esc(s.path)}</td><td>${esc(s.description)}</td></tr>`).join('')}</tbody></table></div><p class="revision">${words.code}: ${esc(spec.revision||'—')}</p></div></details>`:'';
-  const cards=(spec.cards||[]).map(c=>`<article class="metric"><span class="label">${esc(c.label)}</span><strong>${esc(c.value)}</strong><p>${esc(c.description)}</p></article>`).join('');
-  const initialTheme=normalizeTheme(spec.theme);
-  let companionHtml='';
-  if(spec.companionDoc){
-    const rawHref=String(spec.companionDoc.href||'').trim();
-    if(/^(?:javascript|data|vbscript):/i.test(rawHref))throw Error(`Unsafe companionDoc href: ${rawHref}`);
-    companionHtml=`<a class="hero-companion" href="${esc(rawHref)}">${esc(spec.companionDoc.label)} ↗</a>`;
+
+  const refs = evidence.length
+    ? `<details class="doc-section" id="document-references" data-audience="technical"><summary class="section-heading"><h2>${words.reference}</h2></summary><div class="section-body"><p>${en ? 'Local files used to describe this revision.' : 'Arquivos locais usados para descrever esta revisão. As referências são para aprofundamento; o conteúdo necessário à leitura está incorporado.'}</p><div class="table-wrap"><table><thead><tr><th>${en ? 'File' : 'Arquivo'}</th><th>${en ? 'Purpose' : 'Conteúdo'}</th></tr></thead><tbody>${evidence.map(s => `<tr id="ref-${s.id}"><td class="source-path">${esc(s.path)}</td><td>${esc(s.description)}</td></tr>`).join('')}</tbody></table></div><p class="revision">${words.code}: ${esc(spec.revision || '—')}</p></div></details>`
+    : '';
+
+  const cards = (spec.cards || []).map(c =>
+    `<article class="metric"><span class="label">${esc(c.label)}</span><strong>${esc(c.value)}</strong><p>${esc(c.description)}</p></article>`,
+  ).join('');
+
+  const initialTheme = normalizeTheme(spec.theme);
+  let companionHtml = '';
+  if (spec.companionDoc) {
+    const safeHref = assertSafeHref(spec.companionDoc.href, 'companionDoc href');
+    companionHtml = `<a class="hero-companion" href="${esc(safeHref)}">${esc(spec.companionDoc.label)} ↗</a>`;
   }
-  const approxWordCount=(()=>{const $m=load(body,null,false);$m('svg,script,style').remove();return $m.text().trim().split(/\s+/).filter(Boolean).length;})();
-  const approxReadingMin=Math.max(1,Math.round(approxWordCount/190));
-  const modeBadgesHtml=mode==='summary'?`<span class="badge-mode">${esc(words.summaryBadge)}</span><span>${esc(words.readingBadge(approxReadingMin))}</span>`:'';
-  const css=await fs.readFile(path.join(ROOT,'assets/document.css'),'utf8');const js=await fs.readFile(path.join(ROOT,'assets/document.js'),'utf8');
-  const mobileBarHtml=`<div class="mobile-topbar"><button id="nav-toggle" type="button" aria-expanded="false" aria-controls="sidebar" aria-label="${words.openMenu}"><svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="5" x2="17" y2="5"/><line x1="3" y1="10" x2="17" y2="10"/><line x1="3" y1="15" x2="17" y2="15"/></svg><span>${words.menu}</span></button><span class="mobile-topbar-title">${esc(spec.title)}</span><button id="mobile-search-btn" type="button" aria-label="${words.search}"><svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5.5"/><line x1="13" y1="13" x2="17" y2="17"/></svg></button></div>`;
-  const html=`<!DOCTYPE html>\n<html lang="${locale}" data-mode="${mode}" data-theme="${initialTheme}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="${esc(spec.subtitle)}"><meta name="generator" content="project-html-docs ${PKG.version}"><title>${esc(spec.title)} · ${esc(spec.version)}</title><style>${css}</style></head><body><a class="skip" href="#main">${en?'Skip to content':'Ir para o conteúdo'}</a><div id="sidebar-backdrop" class="sidebar-backdrop" hidden></div><aside id="sidebar" class="sidebar"><div class="sidebar-head"><p class="brand">${esc(mode==='summary'?(en?'Quick guide':'Guia rápido'):(en?'Project documentation':'Documentação de projeto'))}</p><button id="nav-close" class="sidebar-close" type="button" aria-label="${words.closeMenu}">×</button></div><strong>${esc(spec.title)}</strong><label for="search">${words.search}</label><div class="search-box"><input id="search" type="search" autocomplete="off" placeholder="${en?'Search docs… (/)':'Buscar tópicos… (/)'}"><button id="search-clear" type="button" hidden aria-label="${words.clearSearch}">×</button></div><div id="search-count" class="search-count" role="status" aria-live="polite"></div><nav aria-label="${en?'Contents':'Conteúdo'}">${nav}${refs?`<a href="#document-references" data-audience="technical">${words.sources}</a>`:''}</nav><small>${words.offline}<br>${esc(spec.version)} · ${esc(spec.updated)}</small></aside><main id="main">${mobileBarHtml}<header class="hero"><p class="eyebrow">${esc(spec.eyebrow||words.defaultEyebrow)}</p><h1>${esc(spec.title)}</h1><p class="subtitle">${esc(spec.subtitle)}</p><div class="badges">${modeBadgesHtml}<span>${esc(spec.version)}</span><span>${words.updated}: ${esc(spec.updated)}</span><span>${words.offline}</span>${spec.dataAsOf?`<span>${words.data}: ${esc(spec.dataAsOf)}</span>`:''}${companionHtml}</div></header><div class="content">${cards?`<div class="hero-cards">${cards}</div>`:''}<div class="toolbar"><span class="hint">${words.hint}</span><div class="audience-filter" role="group" aria-label="${en?'Reading profile':'Perfil de leitura'}"><button type="button" data-audience-filter="all" class="is-active">${words.filterAll}</button><button type="button" data-audience-filter="business">${words.filterBusiness}</button><button type="button" data-audience-filter="technical">${words.filterTechnical}</button><button type="button" data-audience-filter="operations">${words.filterOps}</button></div><div class="theme-filter" role="group" aria-label="${en?'Color theme':'Tema de cores'}"><button type="button" data-theme-select="vermelho" class="${initialTheme==='vermelho'?'is-active':''}" aria-pressed="${initialTheme==='vermelho'}"><span class="theme-swatch theme-swatch-vermelho" aria-hidden="true"></span>${words.themeRed}</button><button type="button" data-theme-select="azul" class="${initialTheme==='azul'?'is-active':''}" aria-pressed="${initialTheme==='azul'}"><span class="theme-swatch theme-swatch-azul" aria-hidden="true"></span>${words.themeBlue}</button></div><div class="toolbar-actions"><button id="expand" type="button">${words.expand}</button><button id="collapse" type="button">${words.collapse}</button><button id="print" type="button">${words.print}</button></div></div><p id="no-results" hidden>${words.none}</p>${body}${refs}<footer>${esc(spec.title)} · ${esc(spec.version)} · ${words.offline}</footer></div><button id="back-to-top" type="button" hidden aria-label="${words.backToTop}">↑ ${words.backToTop}</button></main><dialog id="diagram-dialog" aria-labelledby="dialog-title"><div class="dialog-head"><strong id="dialog-title"></strong><div class="dialog-controls"><button id="dialog-zoom-out" type="button" aria-label="${en?'Zoom out':'Reduzir zoom'}">−</button><span id="dialog-zoom-label" class="dialog-zoom-label" aria-live="polite">100%</span><button id="dialog-zoom-in" type="button" aria-label="${en?'Zoom in':'Aumentar zoom'}">+</button><button id="dialog-fit" type="button">${words.fit}</button><button id="dialog-actual" type="button" class="is-active">${words.actual}</button><button id="dialog-close" type="button">${words.close}</button></div></div><div id="dialog-canvas" class="dialog-canvas"></div></dialog><script>${js}</script></body></html>`;
-  const validated=validateHtml(html);
-  const warnings=[];
-  if(spec.sections.length>=4){
-    const allCount=spec.sections.filter(s=>s.audience==='all').length;
-    if(allCount/spec.sections.length>0.7)warnings.push(`High proportion of sections tagged "audience": "all" (${allCount}/${spec.sections.length}); distribute business/technical/operations for effective filtering.`);
+
+  const approxWordCount = (() => {
+    const $m = load(body, null, false);
+    $m('svg,script,style').remove();
+    return $m.text().trim().split(/\s+/).filter(Boolean).length;
+  })();
+  const approxReadingMin = Math.max(1, Math.round(approxWordCount / 190));
+  const modeBadgesHtml = mode === 'summary'
+    ? `<span class="badge-mode">${esc(words.summaryBadge)}</span><span>${esc(words.readingBadge(approxReadingMin))}</span>`
+    : '';
+
+  const [css, js, rendererSha256] = await Promise.all([
+    fs.readFile(path.join(ROOT, 'assets/document.css'), 'utf8'),
+    fs.readFile(path.join(ROOT, 'assets/document.js'), 'utf8'),
+    computeRendererHash(ROOT),
+  ]);
+
+  const html = renderHtmlDocument({
+    spec, pkgVersion: PKG.version, en, locale, mode, initialTheme, words, css, js,
+    nav, refs, cards, companionHtml, modeBadgesHtml, body,
+  });
+
+  const validated = validateHtml(html);
+  const warnings = [];
+  if (spec.sections.length >= 4) {
+    const allCount = spec.sections.filter(s => s.audience === 'all').length;
+    if (allCount / spec.sections.length > 0.7) {
+      warnings.push(`High proportion of sections tagged "audience": "all" (${allCount}/${spec.sections.length}); distribute business/technical/operations for effective filtering.`);
+    }
   }
-  if((spec.sources||[]).length>0&&spec.sections.length>=3){
-    const unlinked=spec.sections.filter(s=>!(s.sources&&s.sources.length)).length;
-    if(unlinked/spec.sections.length>0.5)warnings.push(`${unlinked}/${spec.sections.length} sections omit "sources"; populate sections[].sources for incremental --impact tracking.`);
+  if ((spec.sources || []).length > 0 && spec.sections.length >= 3) {
+    const unlinked = spec.sections.filter(s => !(s.sources && s.sources.length)).length;
+    if (unlinked / spec.sections.length > 0.5) {
+      warnings.push(`${unlinked}/${spec.sections.length} sections omit "sources"; populate sections[].sources for incremental --impact tracking.`);
+    }
   }
-  if(mode==='summary'){
-    if(validated.contentSections>8)warnings.push(`Summary mode has ${validated.contentSections} sections; aim for 4-7 focused chapters to keep quick-guide scannability.`);
-    if(validated.wordCount>3500)warnings.push(`Summary mode has ${validated.wordCount} words (~${validated.readingMinutes} min); trim encyclopedic details to keep under ~3,500 words.`);
+  if (mode === 'summary') {
+    if (validated.contentSections > 8) {
+      warnings.push(`Summary mode has ${validated.contentSections} sections; aim for 4-7 focused chapters to keep quick-guide scannability.`);
+    }
+    if (validated.wordCount > 3500) {
+      warnings.push(`Summary mode has ${validated.wordCount} words (~${validated.readingMinutes} min); trim encyclopedic details to keep under ~3,500 words.`);
+    }
   }
-  if(spec.companionDoc){
-    const rawHref=String(spec.companionDoc.href||'').trim();
-    if(rawHref&&!/^(?:https?:|mailto:|#)/i.test(rawHref)){
-      const cleanRel=rawHref.split(/[?#]/)[0];
-      if(cleanRel){
-        const sibling=path.resolve(path.dirname(output),cleanRel);
-        try{await fs.access(sibling);}catch(e){if(e.code==='ENOENT')warnings.push(`Companion document "${cleanRel}" was not found at ${sibling}; remember to compile it alongside this file.`);}
+  if (spec.companionDoc) {
+    const rawHref = String(spec.companionDoc.href || '').trim();
+    if (rawHref && !/^(?:https?:|mailto:|#)/i.test(rawHref)) {
+      const cleanRel = rawHref.split(/[?#]/)[0];
+      if (cleanRel) {
+        const sibling = path.resolve(path.dirname(output), cleanRel);
+        try {
+          await fs.access(sibling);
+        } catch (e) {
+          if (e.code === 'ENOENT') {
+            warnings.push(`Companion document "${cleanRel}" was not found at ${sibling}; remember to compile it alongside this file.`);
+          }
+        }
       }
     }
   }
-  const rendererSha256=await computeRendererHash(ROOT);
-  const receipt={...validated,warnings,version:PKG.version,skillVersion:PKG.version,rendererSha256,builtAt:new Date().toISOString(),manifestSha256:hash(manifestRaw),document:spec.title,revision:spec.revision||null,inputSha256:hash(md),htmlSha256:hash(html),sources:evidence};if(!receipt.passed)throw Error(JSON.stringify(receipt.errors));
-  await fs.mkdir(path.dirname(output),{recursive:true});const temporary=output+'.tmp';await fs.writeFile(temporary,html);await fs.rename(temporary,output);await fs.writeFile(output.replace(/\.html$/i,'')+'.validation.json',JSON.stringify(receipt,null,2)+'\n');return receipt;
+
+  const relHtmlPath = path.relative(path.dirname(receiptPath), output).replace(/\\/g, '/') || path.basename(output);
+  const receipt = {
+    ...validated,
+    warnings,
+    version: PKG.version,
+    skillVersion: PKG.version,
+    hashAlgorithm: HASH_ALGORITHM,
+    htmlPath: relHtmlPath,
+    rendererSha256,
+    builtAt: new Date().toISOString(),
+    manifestSha256: hashCanonicalText(manifestRaw, manifestPath),
+    document: spec.title,
+    revision: spec.revision || null,
+    inputSha256: hashCanonicalText(md, input),
+    htmlSha256: hashRaw(html),
+    sources: evidence,
+  };
+  if (!receipt.passed) throw Error(JSON.stringify(receipt.errors));
+
+  await fs.mkdir(path.dirname(output), { recursive: true });
+  await writeAtomicFile(output, html);
+  await writeAtomicFile(receiptPath, JSON.stringify(receipt, null, 2) + '\n');
+  return receipt;
 }
 
-if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){try{const args=process.argv.slice(2);const i=args.indexOf('--out');const m=args.indexOf('--mode');const receipt=await build(args[0],i>=0?args[i+1]:null,{force:args.includes('--force'),mode:m>=0?args[m+1]:undefined});console.log(JSON.stringify({passed:receipt.passed,mode:receipt.mode,wordCount:receipt.wordCount,readingMinutes:receipt.readingMinutes,warnings:receipt.warnings,sections:receipt.sections,contentSections:receipt.contentSections,referenceBlocks:receipt.referenceBlocks,diagrams:receipt.diagrams,charts:receipt.charts,bytes:receipt.bytes,browserReviewed:false},null,2));}catch(e){console.error(e.stack||e.message);process.exitCode=1;}}
+export function parseBuildCliArgs(args) {
+  let manifestFile = null;
+  let outFile = null;
+  let mode;
+  let force = false;
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    if (arg === '--force') {
+      force = true;
+    } else if (arg === '--out') {
+      const val = args[i + 1];
+      if (!val || val.startsWith('--')) throw Error('Flag --out requires a file path');
+      outFile = val;
+      i++;
+    } else if (arg === '--mode') {
+      const val = args[i + 1];
+      if (!val || val.startsWith('--')) throw Error('Flag --mode requires "full" or "summary"');
+      mode = val;
+      i++;
+    } else if (arg.startsWith('--')) {
+      throw Error(`Unknown flag: ${arg}`);
+    } else if (!manifestFile) {
+      manifestFile = arg;
+    } else {
+      throw Error(`Unexpected positional argument: ${arg}`);
+    }
+  }
+  if (!manifestFile) {
+    throw Error('Usage: node scripts/build.mjs <document.json> --out <output.html> [--mode full|summary] [--force]');
+  }
+  return { manifestFile, outFile, mode, force };
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  try {
+    const { manifestFile, outFile, mode, force } = parseBuildCliArgs(process.argv.slice(2));
+    const receipt = await build(manifestFile, outFile, { force, mode });
+    console.log(JSON.stringify({
+      passed: receipt.passed,
+      mode: receipt.mode,
+      wordCount: receipt.wordCount,
+      readingMinutes: receipt.readingMinutes,
+      warnings: receipt.warnings,
+      sections: receipt.sections,
+      contentSections: receipt.contentSections,
+      referenceBlocks: receipt.referenceBlocks,
+      diagrams: receipt.diagrams,
+      charts: receipt.charts,
+      bytes: receipt.bytes,
+      browserReviewed: false,
+    }, null, 2));
+  } catch (e) {
+    console.error(e.stack || e.message);
+    process.exitCode = 1;
+  }
+}

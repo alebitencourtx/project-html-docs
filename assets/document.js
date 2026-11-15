@@ -25,6 +25,14 @@
   const mainEl = document.querySelector('main');
   const navContainer = document.querySelector('.sidebar nav');
 
+  function syncSidebarInert() {
+    if (!sidebar) return;
+    const offscreen = mobileMq.matches && !sidebar.classList.contains('is-open');
+    if ('inert' in sidebar) sidebar.inert = offscreen;
+    if (offscreen) sidebar.setAttribute('aria-hidden', 'true');
+    else sidebar.removeAttribute('aria-hidden');
+  }
+
   function setDrawerOpen(open, { focusTarget = null, restoreFocus = false } = {}) {
     if (!sidebar) return;
     const active = Boolean(open && mobileMq.matches);
@@ -36,6 +44,7 @@
       else if (active) mainEl.setAttribute('aria-hidden', 'true');
       else mainEl.removeAttribute('aria-hidden');
     }
+    syncSidebarInert();
     if (navToggle) navToggle.setAttribute('aria-expanded', active ? 'true' : 'false');
     if (active) {
       const target = focusTarget === 'search' ? search : (navClose || search);
@@ -48,16 +57,22 @@
     }
   }
 
+  syncSidebarInert();
+
   navToggle?.addEventListener('click', () => {
     setDrawerOpen(!sidebar?.classList.contains('is-open'), { restoreFocus: true });
   });
   navClose?.addEventListener('click', () => setDrawerOpen(false, { restoreFocus: true }));
   backdrop?.addEventListener('click', () => setDrawerOpen(false, { restoreFocus: true }));
   mobileSearchBtn?.addEventListener('click', () => setDrawerOpen(true, { focusTarget: 'search' }));
+  const onMobileMqChange = e => {
+    if (!e.matches) setDrawerOpen(false);
+    else syncSidebarInert();
+  };
   if (typeof mobileMq.addEventListener === 'function') {
-    mobileMq.addEventListener('change', e => { if (!e.matches) setDrawerOpen(false); });
+    mobileMq.addEventListener('change', onMobileMqChange);
   } else if (typeof mobileMq.addListener === 'function') {
-    mobileMq.addListener(e => { if (!e.matches) setDrawerOpen(false); });
+    mobileMq.addListener(onMobileMqChange);
   }
   const normalize = x => String(x || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const index = new Map(sections.map(s => [s, normalize(s.textContent)]));
@@ -246,7 +261,11 @@
   filterBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const target = btn.dataset.audienceFilter;
-      filterBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+      filterBtns.forEach(b => {
+        const active = b === btn;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
       sections.forEach(s => {
         const aud = s.dataset.audience || 'all';
         const navLink = document.querySelector(`nav a[href="#${s.id}"]`);
@@ -327,12 +346,19 @@
   });
 
   const printState = new Map();
+  const printHiddenRows = new Set();
   function beforePrint() {
     document.querySelectorAll('main details').forEach(d => { printState.set(d, d.open); d.open = true; });
+    document.querySelectorAll('.section-body .table-wrap tbody tr[hidden]').forEach(r => {
+      printHiddenRows.add(r);
+      r.hidden = false;
+    });
   }
   function afterPrint() {
     for (const [d, v] of printState) d.open = v;
     printState.clear();
+    for (const r of printHiddenRows) r.hidden = true;
+    printHiddenRows.clear();
   }
   window.addEventListener('beforeprint', beforePrint);
   window.addEventListener('afterprint', afterPrint);
@@ -473,6 +499,14 @@
   let zoomScale = 1;
   let currentNaturalWidth = 800;
 
+  function getEffectiveZoomScale() {
+    if (!dialogCanvas.classList.contains('is-fit')) return zoomScale;
+    const svg = dialogCanvas.querySelector('svg');
+    const renderedWidth = svg?.getBoundingClientRect().width || dialogCanvas.clientWidth || currentNaturalWidth;
+    const ratio = currentNaturalWidth > 0 ? renderedWidth / currentNaturalWidth : 1;
+    return Math.min(2.2, Math.max(0.15, ratio));
+  }
+
   function applyZoom() {
     const svg = dialogCanvas.querySelector('svg');
     if (!svg) return;
@@ -501,8 +535,16 @@
 
   btnFit?.addEventListener('click', () => setDialogMode('fit'));
   btnActual?.addEventListener('click', () => setDialogMode('actual'));
-  btnZoomIn?.addEventListener('click', () => { zoomScale = Math.min(2.2, +(zoomScale + 0.2).toFixed(2)); applyZoom(); });
-  btnZoomOut?.addEventListener('click', () => { zoomScale = Math.max(0.5, +(zoomScale - 0.2).toFixed(2)); applyZoom(); });
+  btnZoomIn?.addEventListener('click', () => {
+    const base = getEffectiveZoomScale();
+    zoomScale = Math.min(2.2, Math.max(base, +(base + 0.2).toFixed(2)));
+    applyZoom();
+  });
+  btnZoomOut?.addEventListener('click', () => {
+    const base = getEffectiveZoomScale();
+    zoomScale = Math.max(0.15, Math.min(base, +(base - 0.2).toFixed(2)));
+    applyZoom();
+  });
 
   document.querySelectorAll('[data-expand-diagram]').forEach(button => {
     button.addEventListener('click', () => {

@@ -4,8 +4,8 @@ Gerador de documentação técnica e funcional para projetos de software e engen
 
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python Version](https://img.shields.io/badge/python-%3E%3D3.10-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-40%20passing-success.svg)](#testes-automatizados)
-[![Version](https://img.shields.io/badge/version-1.9.0-orange.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-51%20passing-success.svg)](#testes-automatizados)
+[![Version](https://img.shields.io/badge/version-1.10.0-orange.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 ---
@@ -51,14 +51,20 @@ O resultado não depende de servidores web, frameworks dinâmicos ou acesso à i
 
 ```text
 project-html-docs/
+├── .gitattributes              # Política de fim de linha LF e atributos binários
+├── .github/
+│   └── workflows/
+│       └── ci.yml              # Matriz CI Ubuntu/Windows (Node + Python + Playwright)
+├── agents/
+│   └── openai.yaml             # Metadados UTF-8 de descoberta da skill
 ├── assets/
-│   ├── document.css            # Estilos visuais, layout flexível e temas (Vermelho e Azul)
-│   └── document.js             # Lógica de busca, temas, subnavegação H3 e controles
+│   ├── document.css            # Estilos visuais, layout responsivo e temas (Vermelho e Azul)
+│   └── document.js             # Busca, filtros, drawer mobile inert/trap, zoom e impressão
 ├── docs/                       # Landing page e documentação oficial (GitHub Pages)
 │   ├── index.html              # Landing page interativa bilíngue (PT/EN)
 │   ├── landing.css             # Estilos da landing page
-│   ├── landing.js              # Interatividade da landing page
-│   ├── landing-i18n.mjs        # Dicionários de tradução e capítulos do vídeo
+│   ├── landing.js              # Interatividade e navegação WAI-ARIA da landing page
+│   ├── landing-i18n.mjs        # Dicionários de tradução, ARIA e receitas válidas
 │   ├── demo.mp4                # Vídeo demonstrativo da skill
 │   ├── demo-poster.png         # Pôster do vídeo demonstrativo
 │   ├── documentacao.html       # Manual completo do próprio gerador
@@ -71,20 +77,25 @@ project-html-docs/
 │   ├── data-engineering.md     # Boas práticas para esteiras de dados, nuvem e streaming
 │   └── tools.md                # Descrição das dependências do gerador
 ├── schemas/
-│   └── document.schema.json    # Validação estrutural do arquivo document.json
+│   ├── diagram.schema.json     # Esquema JSON formal de solution, flow, schema e barChart
+│   └── document.schema.json    # Validação estrutural do manifesto document.json
 ├── scripts/
-│   ├── build.mjs               # Compila os arquivos fonte no HTML final
-│   ├── diagrams.mjs            # Motor de renderização de diagramas em SVG 2D
-│   ├── inspect_repo.py         # Análise estática do repositório e geração do plano de leitura
-│   ├── renderer-hash.mjs       # Hash determinístico dos assets/templates da própria skill
-│   ├── validate.mjs            # Validador de integridade, geometria SVG e qualidade do HTML
-│   └── verify.mjs              # Checagem de hashes SHA-256 (fontes + renderer) e impacto incremental
+│   ├── build.mjs               # Compila manifesto e Markdown no HTML final e recibo
+│   ├── diagrams.mjs            # Motor SVG 2D (solution/flow/schema) e enhancer Mermaid
+│   ├── inspect_repo.py         # Fachada CLI do dossiê estático AST/regex/grafo
+│   ├── inspector/              # Pacote Python modular (redaction, sql_parser, extractors, graph)
+│   ├── lib/                    # Módulos compartilhados (urls, hash, i18n, html-shell)
+│   ├── renderer-hash.mjs       # Hash determinístico dos assets/scripts/lockfile da skill
+│   ├── validate.mjs            # Validador estrutural de HTML, URLs, SVGs e navegação
+│   └── verify.mjs              # Checagem estrita de recibos, hashes SHA-256 e impacto
 ├── tests/
-│   ├── build.test.mjs          # Testes do compilador, modo summary e validador HTML
-│   ├── diagrams.test.mjs       # Testes unitários do motor de diagramas e temas
-│   ├── dossier.test.mjs        # Testes de mapeamento estático, AST e análise de impacto
-│   └── landing.test.mjs        # Testes da landing page, i18n e integridade
+│   ├── browser.test.mjs        # Testes reais em Chromium headless (drawer, zoom, print, ARIA)
+│   ├── build.test.mjs          # Testes do compilador, segurança de URLs, colisões e recibos
+│   ├── diagrams.test.mjs       # Testes unitários e de contrato AJV do motor de diagramas
+│   ├── dossier.test.mjs        # Testes de AST, DDL, E/S, redação, grafo e impacto
+│   └── landing.test.mjs        # Testes da landing page, i18n, receitas e consistência
 ├── CHANGELOG.md                # Registro de novidades de cada versão
+├── LICENSE                     # Licença MIT
 ├── package.json                # Dependências fixadas e scripts de execução
 ├── README.md                   # Guia introdutório do projeto
 └── SKILL.md                    # Instruções operacionais para execução guiada por agentes
@@ -237,9 +248,9 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
       "grain": "1 linha = 1 evento recebido",
       "col": 0, "row": 0,
       "columns": [
-        { "name": "event_id", "type": "STRING", "badge": "PK" },
-        { "name": "device_id", "type": "STRING", "badge": "FK" },
-        { "name": "data_particao", "type": "DATE", "badge": "PARTIÇÃO" },
+        { "name": "event_id", "type": "STRING", "key": "PK" },
+        { "name": "device_id", "type": "STRING", "key": "FK" },
+        { "name": "data_particao", "type": "DATE", "key": "PART" },
         { "name": "payload", "type": "STRING" }
       ]
     },
@@ -250,14 +261,14 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
       "grain": "1 linha = 1 dispositivo por dia",
       "col": 1, "row": 0,
       "columns": [
-        { "name": "data_referencia", "type": "DATE", "badge": "PK" },
-        { "name": "device_id", "type": "STRING", "badge": "PK" },
-        { "name": "total_eventos", "type": "BIGINT", "badge": "NOT NULL" }
+        { "name": "data_referencia", "type": "DATE", "key": "PK" },
+        { "name": "device_id", "type": "STRING", "key": "PK" },
+        { "name": "total_eventos", "type": "BIGINT", "nullable": false }
       ]
     }
   ],
   "relations": [
-    { "from": "t_origem", "to": "t_destino", "cardinality": "1..N", "kind": "lineage", "label": "agregação" }
+    { "from": "t_origem", "to": "t_destino", "fromCard": "1", "toCard": "1..N", "kind": "lineage", "label": "agregação" }
   ]
 }
 ```
@@ -284,7 +295,7 @@ Especifica tabelas, colunas, tipos, chaves e relações com definição clara do
 A suíte de testes cobre a validação estrutural do HTML, modo summary, geometria dos diagramas SVG, desvios de rota, mapeamento AST de repositórios, análise de impacto e integridade da landing page:
 
 ```bash
-# Rodar todos os testes unitários (40 testes)
+# Rodar todos os testes automatizados (51 testes, incluindo Chromium headless)
 npm test
 
 # Compilar os exemplos disponíveis
@@ -296,6 +307,7 @@ npm run build:showcase
 
 ## Histórico de releases
 
+- **[v1.10.0](CHANGELOG.md#1100--2026-11-15)**: Blindagem completa de URLs (rejeitando caracteres de controle e lista explícita de protocolos seguros), sanitização centralizada de segredos em previews/workflows/`package.json`, proteção atômica contra colisão de recibo/temporário, hashes canônicos `sha256-lf-text-v1` + `package-lock.json` no renderer, validação formal via `diagram.schema.json` e `if/then` de `repoRoot`, modularização em `scripts/lib/` e `scripts/inspector/`, correções de DDL/Blob/streaming/grafo, zoom Fit e drawer `inert`/impressão no navegador e testes reais em Chromium.
 - **[v1.9.0](CHANGELOG.md#190--2026-11-15)**: Hardening de acessibilidade mobile (`inert`, focus trap, modal até 960 px), harmonização Mermaid no tema Vermelho, verificação de artefatos + `--mark-reviewed` + `sourceDrift` no `verify.mjs`, faixas múltiplas em diagramas 2D e extração JS/TS + `.docignore` completo no `inspect_repo.py`.
 - **[v1.8.0](CHANGELOG.md#180--2026-11-15)**: Visão mobile responsiva com menu lateral recolhível (drawer off-canvas até 960 px) e detecção de atualização exclusiva do renderer da skill (`rendererSha256`) no `verify.mjs --impact`.
 - **[v1.7.0](CHANGELOG.md#170--2026-11-15)**: Temas por cor (Vermelho padrão e Azul), remoção de retenção de rolagem sobre tabelas, nova landing page oficial em `docs/index.html` com vídeo demonstrativo, internacionalização e manual completo do gerador em `docs/`.
@@ -309,4 +321,4 @@ npm run build:showcase
 
 ## Licença
 
-Distribuído sob licença MIT. Consulte o arquivo `package.json` para mais informações.
+Distribuído sob [licença MIT](LICENSE). Consulte o arquivo `LICENSE` e `package.json` para mais informações.

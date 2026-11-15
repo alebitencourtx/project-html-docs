@@ -4,11 +4,14 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
+import {execFileSync,spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {load} from 'cheerio';
 import {build,barChart} from '../scripts/build.mjs';
 import {validateHtml} from '../scripts/validate.mjs';
 import {verify} from '../scripts/verify.mjs';
+import {computeRendererHash,RENDERER_FILES} from '../scripts/renderer-hash.mjs';
+import {isSafeHref} from '../scripts/lib/urls.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 async function fixture(fn){const dir=await fs.mkdtemp(path.join(os.tmpdir(),'project-doc-test-'));try{await fn(dir);}finally{await fs.rm(dir,{recursive:true,force:true});}}
@@ -393,6 +396,169 @@ test('v1.9.0 build & validate: $-safe diagram notes, companionDoc missing warnin
   const currencyOk=validateHtml('<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><main><details class="doc-section" open><summary><h2>S</h2></summary><div class="section-body"><p>De $10 e $20 até R$ 500.</p></div></details></main></body></html>');
   assert.equal(currencyOk.passed,true);
 }));
+
+test('F01 URL security: blocks control-character obfuscated javascript/data/protocol-relative hrefs in build & validate',()=>fixture(async dir=>{
+  assert.equal(isSafeHref('documentacao.html'),true);
+  assert.equal(isSafeHref('#sec'),true);
+  assert.equal(isSafeHref('https://example.com'),true);
+  assert.equal(isSafeHref('mailto:team@example.com'),true);
+
+  for (const evil of [
+    'java\nscript:alert(1)',
+    'java\tscript:alert(1)',
+    'java\rscript:alert(1)',
+    'javascript:void(0)',
+    'data:text/html,<script>alert(1)</script>',
+    'vbscript:msgbox(1)',
+    '//evil.example.com/payload',
+  ]) {
+    assert.equal(isSafeHref(evil),false,`Expected unsafe href rejected: ${JSON.stringify(evil)}`);
+    await fs.writeFile(path.join(dir,'c.md'),'## Sec\n\nOk.\n');
+    await fs.writeFile(path.join(dir,'m.json'),JSON.stringify({
+      title:'Evil URL',subtitle:'T',version:'1.0.0',updated:'2026-11-15',
+      companionDoc:{href:evil,label:'Link'},content:'c.md',
+      sections:[{id:'sec',title:'Sec',audience:'all'}]
+    }));
+    await assert.rejects(()=>build(path.join(dir,'m.json'),path.join(dir,'out.html'),{force:true}),/Unsafe companionDoc/);
+
+    const rawHtml=`<!DOCTYPE html><html lang="pt-BR"><head><title>T</title></head><body><h1>T</h1><a href="${evil.replace(/"/g,'&quot;')}">Click</a></body></html>`;
+    const res=validateHtml(rawHtml);
+    assert.equal(res.passed,false,`validateHtml must reject unsafe href ${JSON.stringify(evil)}`);
+    assert.ok(res.errors.some(e=>e.includes('Unsafe link')));
+  }
+}));
+
+test('F03 collision & atomic writes: refuses receipt/manifest collisions, preserves existing receipt without --force, and leaves zero tmp leftovers',()=>fixture(async dir=>{
+  await fs.writeFile(path.join(dir,'collision.md'),'## Sec\n\nBody.\n');
+  const manifestObj={title:'Collision',subtitle:'T',version:'1.0.0',updated:'2026-11-15',content:'collision.md',sections:[{id:'sec',title:'Sec',audience:'all'}]};
+  const receiptManifestPath=path.join(dir,'collision.validation.json');
+  await fs.writeFile(receiptManifestPath,JSON.stringify(manifestObj,null,2));
+
+  await assert.rejects(()=>build(receiptManifestPath,path.join(dir,'collision.html')),/cannot overwrite input manifest/);
+  assert.equal(JSON.parse(await fs.readFile(receiptManifestPath,'utf8')).title,'Collision');
+
+  await fs.writeFile(path.join(dir,'ok.md'),'## Sec\n\nBody.\n');
+  await fs.writeFile(path.join(dir,'ok.json'),JSON.stringify({title:'Ok',subtitle:'T',version:'1.0.0',updated:'2026-11-15',content:'ok.md',sections:[{id:'sec',title:'Sec',audience:'all'}]}));
+  await fs.writeFile(path.join(dir,'ok.validation.json'),'{"sentinel":true}');
+  await assert.rejects(()=>build(path.join(dir,'ok.json'),path.join(dir,'ok.html')),/Validation receipt already exists/);
+  assert.equal(await fs.readFile(path.join(dir,'ok.validation.json'),'utf8'),'{"sentinel":true}');
+
+  await build(path.join(dir,'ok.json'),path.join(dir,'ok.html'),{force:true});
+  const leftovers=(await fs.readdir(dir)).filter(f=>f.includes('.tmp'));
+  assert.deepEqual(leftovers,[]);
+}));
+
+test('F05 strict verification: rejects empty {} receipts, requires HTML match in strict mode, and supports renamed receipts with --html',()=>fixture(async dir=>{
+  const repo=path.join(dir,'repo');await fs.mkdir(repo);
+  await fs.writeFile(path.join(repo,'a.txt'),'hello');
+  const mPath=path.join(dir,'document.json');
+  await fs.writeFile(mPath,JSON.stringify({
+    title:'Strict Test',subtitle:'T',version:'1.0.0',updated:'2026-11-15',
+    repoRoot:'repo',content:'c.md',
+    sections:[{id:'sec',title:'Sec',audience:'all',sources:['a']}],
+    sources:[{id:'a',path:'a.txt',description:'src'}]
+  }));
+  await fs.writeFile(path.join(dir,'c.md'),'## Sec\n\nTexto.\n');
+
+  const emptyReceipt=path.join(dir,'empty.validation.json');
+  await fs.writeFile(emptyReceipt,'{}');
+  const emptyRes=await verify(mPath,emptyReceipt);
+  assert.equal(emptyRes.ok,false);
+  assert.equal(emptyRes.receiptValid,false);
+  assert.equal(emptyRes.receiptStatus,'invalid');
+
+  const htmlPath=path.join(dir,'manual.html');
+  await build(mPath,htmlPath);
+  const receiptPath=path.join(dir,'manual.validation.json');
+  const renamedReceipt=path.join(dir,'receipt-copy.json');
+  await fs.copyFile(receiptPath,renamedReceipt);
+
+  // Renamed receipt still resolves htmlPath recorded in receipt; tampering HTML must fail!
+  const htmlOriginal=await fs.readFile(htmlPath,'utf8');
+  await fs.writeFile(htmlPath,htmlOriginal+'<!-- tampered -->');
+  const tamperedRes=await verify(mPath,renamedReceipt,{strict:true});
+  assert.equal(tamperedRes.ok,false);
+  assert.equal(tamperedRes.artifacts.htmlMatches,false);
+
+  // Restore HTML and confirm renamed receipt passes strict with explicit --html CLI flag too
+  await fs.writeFile(htmlPath,htmlOriginal);
+  const cliOut=execFileSync('node',[path.join(root,'scripts/verify.mjs'),mPath,renamedReceipt,'--html',htmlPath,'--strict'],{encoding:'utf8'});
+  const cliJson=JSON.parse(cliOut);
+  assert.equal(cliJson.ok,true);
+  assert.equal(cliJson.artifacts.htmlMatches,true);
+
+  // Missing HTML fails strict verification cleanly
+  await fs.unlink(htmlPath);
+  const missingHtmlRes=await verify(mPath,renamedReceipt,{strict:true});
+  assert.equal(missingHtmlRes.ok,false);
+  assert.equal(missingHtmlRes.artifacts.htmlMatches,false);
+}));
+
+test('F06 & M02 canonical LF hashing and lockfile renderer identity',()=>fixture(async dir=>{
+  const lfDir=path.join(dir,'lf');
+  const crlfDir=path.join(dir,'crlf');
+  await fs.mkdir(lfDir,{recursive:true});
+  await fs.mkdir(crlfDir,{recursive:true});
+
+  const manifestStr='{\n  "title": "LF Check",\n  "subtitle": "S",\n  "version": "1.0.0",\n  "updated": "2026-11-15",\n  "repoRoot": ".",\n  "content": "c.md",\n  "sections": [{"id": "s", "title": "S", "audience": "all", "sources": ["x"]}],\n  "sources": [{"id": "x", "path": "src.py", "description": "s"}]\n}\n';
+  const mdStr='## S\n\nLinha 1\nLinha 2\n';
+  const pyStr='x = 1\ny = 2\n';
+
+  await fs.writeFile(path.join(lfDir,'document.json'),manifestStr);
+  await fs.writeFile(path.join(lfDir,'c.md'),mdStr);
+  await fs.writeFile(path.join(lfDir,'src.py'),pyStr);
+
+  await fs.writeFile(path.join(crlfDir,'document.json'),manifestStr.replace(/\n/g,'\r\n'));
+  await fs.writeFile(path.join(crlfDir,'c.md'),mdStr.replace(/\n/g,'\r\n'));
+  await fs.writeFile(path.join(crlfDir,'src.py'),pyStr.replace(/\n/g,'\r\n'));
+
+  const rLf=await build(path.join(lfDir,'document.json'),path.join(lfDir,'out.html'));
+  const rCrlf=await build(path.join(crlfDir,'document.json'),path.join(crlfDir,'out.html'));
+  assert.equal(rLf.hashAlgorithm,'sha256-lf-text-v1');
+  assert.equal(rLf.manifestSha256,rCrlf.manifestSha256);
+  assert.equal(rLf.inputSha256,rCrlf.inputSha256);
+  assert.equal(rLf.sources[0].sha256,rCrlf.sources[0].sha256);
+  assert.equal(rLf.rendererSha256,rCrlf.rendererSha256);
+
+  assert.ok(RENDERER_FILES.includes('package-lock.json'));
+  assert.ok(RENDERER_FILES.includes('schemas/diagram.schema.json'));
+  assert.match(await computeRendererHash(),/^[a-f0-9]{64}$/);
+}));
+
+test('F14 strict UTF-8 encoding across text assets, agents/openai.yaml, schemas and docs',async()=>{
+  const decoder=new TextDecoder('utf-8',{fatal:true});
+  const textDirs=['agents','assets','examples','references','schemas','scripts','tests'];
+  const rootFiles=['README.md','CHANGELOG.md','SKILL.md','LICENSE','package.json','.gitattributes'];
+  const checked=[];
+  for (const rf of rootFiles) checked.push(path.join(root,rf));
+  async function walk(d){
+    for (const ent of await fs.readdir(d,{withFileTypes:true})) {
+      const full=path.join(d,ent.name);
+      if (ent.isDirectory()) await walk(full);
+      else if (/\.(md|mjs|js|py|json|yaml|yml|css|html|txt)$/i.test(ent.name)) checked.push(full);
+    }
+  }
+  for (const td of textDirs) await walk(path.join(root,td));
+  for (const f of checked) {
+    const buf=await fs.readFile(f);
+    assert.doesNotThrow(()=>decoder.decode(buf),`Invalid UTF-8 bytes in ${path.relative(root,f)}`);
+  }
+});
+
+test('M03 CLI argument validation rejects unknown flags, invalid mode, and missing flag values',()=>{
+  const r1=spawnSync('node',[path.join(root,'scripts/build.mjs'),'examples/minimal/document.json','--bogus-flag'],{cwd:root,encoding:'utf8'});
+  assert.notEqual(r1.status,0);
+  assert.match(r1.stderr,/Unknown flag/);
+
+  const r2=spawnSync('node',[path.join(root,'scripts/build.mjs'),'examples/minimal/document.json','--mode','invalid-mode'],{cwd:root,encoding:'utf8'});
+  assert.notEqual(r2.status,0);
+  assert.match(r2.stderr,/Invalid mode/);
+
+  const r3=spawnSync('node',[path.join(root,'scripts/verify.mjs'),'docs/document.json','docs/documentacao.validation.json','--html'],{cwd:root,encoding:'utf8'});
+  assert.notEqual(r3.status,0);
+  assert.match(r3.stderr,/requires a value/);
+});
+
 
 
 

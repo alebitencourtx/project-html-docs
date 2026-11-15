@@ -1046,6 +1046,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .cards, .hero-cards { break-inside: avoid; }
   pre { white-space: pre-wrap; overflow-wrap: anywhere; background: var(--code-inline-bg); color: var(--ink); font-size: 9px; padding: 12px; }
   .doc-section[hidden] { display: block !important; }
+  .section-body .table-wrap tbody tr[hidden] { display: table-row !important; }
   details::details-content { display: block !important; content-visibility: visible !important; }
   .section-heading h2 { font-size: 19px; }
   .hero h1 { font-size: 30px; }

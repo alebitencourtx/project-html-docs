@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.10.0 — 2026-11-15
+
+Aplicação integral das correções de segurança, confiabilidade, fidelidade de extração, acessibilidade/interação no navegador, formalização de contratos, testes comportamentais e modularização do projeto.
+
+### Corrigido
+
+- **Proteção de URLs e Saídas do Compilador (`scripts/lib/urls.mjs`, `scripts/build.mjs`, `scripts/validate.mjs`) [F01, F03]**:
+  - `isSafeHref` rejeita caracteres de controle Unicode (`U+0000–U+001F`, `U+007F`), links protocol-relative (`//...`) e protocolos fora da whitelist (`http:`, `https:`, `mailto:`, `tel:` e referências relativas/`#`), sendo aplicada igualmente a `companionDoc.href` no `build.mjs` e a todos os `a[href]` no `validate.mjs`.
+  - Proteção de colisão e `--force` estendida para `output`, `receiptPath` (`.validation.json`) e temporários exclusivos com limpeza em `try/finally`, impedindo que recibos ou arquivos temporários sobrescrevam manifestos, conteúdos ou fontes.
+- **Integridade de Recibos e Portabilidade LF/CRLF (`scripts/lib/hash.mjs`, `scripts/verify.mjs`, `scripts/renderer-hash.mjs`, `.gitattributes`) [F05, F06, M02]**:
+  - Canonicalização textual `sha256-lf-text-v1` (normalizando apenas CRLF → LF em buffers sem byte NUL, mantendo binários intactos) para fontes, manifesto, Markdown, HTML e `rendererSha256` (agora incluindo `package-lock.json`, `schemas/diagram.schema.json`, `scripts/lib/*` e flag `--html`).
+  - `verify.mjs` diferencia `receiptStatus` (`complete`, `legacy-partial`, `invalid`), rejeita `{}` até fora do `--strict`, exige `receiptStatus === 'complete'` com hashes válidos no `--strict`, e resolve HTML via `--html` -> `receipt.htmlPath` -> irmão `.validation.json` (reprovando quando `htmlSha256` existe mas o arquivo está ausente).
+- **Confiabilidade, Segurança e Precisão do Inspetor (`scripts/inspector/*`, `scripts/inspect_repo.py`) [F02, F04, F07, F08, F09]**:
+  - Sanitização centralizada em `inspector/redaction.py` aplicada antes de qualquer truncamento para tokens, chaves CLI (`--password`, `--token`, `--secret`, `--api-key`, `-p`), variáveis de ambiente inline, strings de conexão, `scripts` de `package.json`, valores `.toml` e comandos de workflows.
+  - Guarda contra `_call_chain` vazia em lambdas e acessos por índice (`(lambda: 1)()`, `handlers["run"]()`), isolamento de erros por arquivo com registro em `parseWarnings`.
+  - Grafo de dependências ampliado para `export ... from '...'`, imports side-effect (`import '...'`), `import('...')`, arquivos `.mts`/`.cts` e imports Python dentro de notebooks `.ipynb`.
+  - Varredura de `CREATE TABLE` DDL com equilíbrio de parênteses, aspas e genéricos `<...>` preservando tipos parametrizados (`DECIMAL(10, 2)`, `VARCHAR(30)`) e todas as colunas posteriores.
+  - Desambiguação de `get_container_client` por tipo/import/receptor (`azure_blob_adls` vs `cosmos_db`) e suporte a terminadores PySpark `toTable`, `table`, `orc`, `text` e `.outputMode(...)`.
+- **Usabilidade e Acessibilidade no Navegador (`assets/document.js`, `assets/document.css`) [F10, F11, F12]**:
+  - Cálculo da escala efetiva (`getEffectiveZoomScale()`) ao sair do modo `Ajustado` (`Fit`) com piso `0.15`, garantindo que `−` nunca amplie e `+` nunca encolha o diagrama.
+  - `syncSidebarInert()` aplicado na carga inicial, ao abrir/fechar o drawer e na transição de breakpoints `mobileMq`, removendo controles invisíveis off-screen da ordem de `Tab`.
+  - Restauração temporária de linhas filtradas (`tbody tr[hidden]`) durante `beforeprint`/`afterprint` combinada com regra `@media print` explícita.
+- **Receita da Landing Page, UTF-8 e Exemplos do README (`docs/landing-i18n.mjs`, `agents/openai.yaml`, `README.md`) [F13, F14, F15]**:
+  - `RECIPES.manifest` atualizado com `"repoRoot": ".."` e `"content": "content.md"` válidos tanto no AJV quanto no `build.mjs`.
+  - `agents/openai.yaml` regravado em UTF-8 estrito sem bytes inválidos.
+  - Exemplo `schema` do `README.md` corrigido para `"key"` e `"fromCard"`/`"toCard"`.
+
+### Adicionado & Melhorado
+
+- **Arquitetura Modular (`scripts/lib/*`, `scripts/inspector/*`) [M07]**: extração de `urls.mjs`, `hash.mjs`, `i18n.mjs` e `html-shell.mjs` e divisão de `inspect_repo.py` em `redaction.py`, `sql_parser.py`, `extractors.py` e `graph.py` mantendo API/CLI compatíveis.
+- **Contratos Formais & Observabilidade (`schemas/diagram.schema.json`, `schemas/document.schema.json`, CLI, `inspector/graph.py`) [M03, M04]**: schema formal para `solution`/`flow`, `schema`/`erd` e `chartSpec` (`additionalProperties: false`); obrigatoriedade condicional de `repoRoot` quando há `sources`; rejeição explícita de flags inválidas/sem valor em `build.mjs` e `verify.mjs`; suporte completo a `.mts`/`.cts` e exposição de `omittedCounts`/`parseWarnings` no inventário e no `reading-plan.md`.
+- **Acessibilidade WAI-ARIA, Licença & CI (`docs/index.html`, `docs/landing.js`, `LICENSE`, `.github/workflows/ci.yml`) [M01, M05, M06]**: `aria-pressed` sincronizado nos filtros de perfil, contrato completo de tabs WAI-ARIA (`aria-controls`, `tabpanel`, `aria-labelledby`, roving `tabindex`, setas/Home/End) e tradução PT/EN de `aria-label` na landing page, arquivo `LICENSE` MIT dedicado e workflow CI em matriz Ubuntu/Windows com Node, Python e Playwright.
+- **Testes [F01–F15, M01, M03–M06]**: suíte ampliada de 40 para **51 testes**, cobrindo Chromium headless (`tests/browser.test.mjs`), segurança de URLs, colisões e escrita atômica, canonicalização LF, contratos AJV (`schemas/diagram.schema.json`), parsers AST/DDL/stream e atributos WAI-ARIA.
+
 ## 1.9.0 — 2026-11-15
 
 Hardening completo de acessibilidade mobile, renderização 2D/Mermaid no tema Vermelho, auditoria de integridade de artefatos e descoberta JS/TS/dotenv/`.docignore`.

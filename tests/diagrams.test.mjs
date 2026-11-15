@@ -13,6 +13,7 @@ import {
   renderSolutionDiagram,
   renderSchemaDiagram,
   enhanceMermaidSvg,
+  validateChartSpec,
 } from '../scripts/diagrams.mjs';
 import { build } from '../scripts/build.mjs';
 import { validateHtml } from '../scripts/validate.mjs';
@@ -516,6 +517,36 @@ test('v1.9.0 diagrams: multiple bottom-inner edges get distinct Y lanes, colSpan
     assert.ok(p.x >= 0 && p.x + p.w <= vb[2], `Pill out of horizontal bounds: ${JSON.stringify(p)} vs ${vb[2]}`);
   }
 });
+
+test('M03 & F15 schema contract: diagram and chart renderers reject unknown keys like column badge or relation cardinality', () => {
+  assert.throws(() => renderSchemaDiagram({
+    title: 'Invalid Badge Property',
+    entities: [{
+      id: 't1', name: 'tbl', kind: 'table', col: 0, row: 0,
+      columns: [{ name: 'id', type: 'INT', badge: 'PK' }],
+    }],
+  }), /Invalid schema diagram spec/);
+
+  assert.throws(() => renderSchemaDiagram({
+    title: 'Invalid Cardinality Property',
+    entities: [
+      { id: 't1', name: 'a', kind: 'table', col: 0, row: 0, columns: [{ name: 'id', type: 'INT', key: 'PK' }] },
+      { id: 't2', name: 'b', kind: 'table', col: 1, row: 0, columns: [{ name: 'id', type: 'INT', key: 'PK' }] },
+    ],
+    relations: [{ from: 't1', to: 't2', cardinality: '1..N', kind: 'lineage' }],
+  }), /Invalid schema diagram spec/);
+
+  assert.throws(() => renderSolutionDiagram({
+    title: 'Negative coordinates',
+    nodes: [{ id: 'a', col: -1, row: 0, title: 'Bad' }],
+  }), /Invalid solution diagram spec/);
+
+  assert.throws(() => validateChartSpec({
+    type: 'bar', title: 'Bad chart', unit: 'u', source: 's', unknownExtra: true,
+    data: [{ label: 'X', value: 1 }],
+  }), /Invalid chart spec/);
+});
+
 
 
 

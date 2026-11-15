@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "diagram.schema.json",
+  "definitions": {
+    "role": {
+      "type": "string",
+      "enum": ["regulator", "danger", "analytical", "info", "step", "neutral", "output", "success", "warning", "json"]
+    },
+    "side": {
+      "type": "string",
+      "enum": ["left", "right", "top", "bottom"]
+    },
+    "legendItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "type": { "type": "string", "enum": ["box", "solid", "dashed"] },
+        "role": { "$ref": "#/definitions/role" },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    },
+    "solutionDiagram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "nodes"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "cols": { "type": "integer", "minimum": 1 },
+        "colGap": { "type": "number", "minimum": 0 },
+        "rowGap": { "type": "number", "minimum": 0 },
+        "colWidth": { "type": "number", "minimum": 60 },
+        "inputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "label": { "type": "string" },
+            "nodes": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "zones": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "title": { "type": "string" },
+              "subtitle": { "type": "string" },
+              "variant": { "type": "string", "enum": ["warm", "cool", "teal", "amber", "neutral"] },
+              "row": { "type": "integer", "minimum": 0 },
+              "rowSpan": { "type": "integer", "minimum": 1 },
+              "colStart": { "type": "integer", "minimum": 0 },
+              "colSpan": { "type": "integer", "minimum": 1 },
+              "callouts": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["text"],
+                  "properties": {
+                    "col": { "type": "integer", "minimum": 0 },
+                    "row": { "type": "integer", "minimum": 0 },
+                    "text": { "type": "string" },
+                    "role": { "$ref": "#/definitions/role" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "nodes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "title"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "col": { "type": "integer", "minimum": 0 },
+              "row": { "type": "integer", "minimum": 0 },
+              "colSpan": { "type": "integer", "minimum": 1 },
+              "rowSpan": { "type": "integer", "minimum": 1 },
+              "step": { "type": ["string", "integer"] },
+              "role": { "$ref": "#/definitions/role" },
+              "shape": { "type": "string", "enum": ["card", "cylinder", "decision"] },
+              "title": { "type": "string", "minLength": 1 },
+              "lines": { "type": "array", "items": { "type": "string" } },
+              "body": { "type": "string" },
+              "meta": { "type": "string" },
+              "dashed": { "type": "boolean" }
+            }
+          }
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "type": "string", "minLength": 1 },
+              "to": { "type": "string", "minLength": 1 },
+              "fromSide": { "$ref": "#/definitions/side" },
+              "toSide": { "$ref": "#/definitions/side" },
+              "channel": { "type": "string", "enum": ["bottom", "bottom-inner", "top"] },
+              "branch": { "type": "string", "enum": ["yes", "no"] },
+              "role": { "$ref": "#/definitions/role" },
+              "style": { "type": "string", "enum": ["solid", "dashed", "thick"] },
+              "label": { "type": "string" }
+            }
+          }
+        },
+        "legend": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/legendItem" }
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "schemaDiagram": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "entities"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "cols": { "type": "integer", "minimum": 1 },
+        "colGap": { "type": "number", "minimum": 0 },
+        "rowGap": { "type": "number", "minimum": 0 },
+        "entities": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "name"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "name": { "type": "string", "minLength": 1 },
+              "kind": { "type": "string", "enum": ["table", "mart", "json", "external"] },
+              "grain": { "type": "string" },
+              "col": { "type": "integer", "minimum": 0 },
+              "row": { "type": "integer", "minimum": 0 },
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["name"],
+                  "properties": {
+                    "name": { "type": "string", "minLength": 1 },
+                    "type": { "type": "string" },
+                    "key": { "type": "string" },
+                    "nullable": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to"],
+            "properties": {
+              "from": { "type": "string", "minLength": 1 },
+              "to": { "type": "string", "minLength": 1 },
+              "kind": { "type": "string", "enum": ["fk", "relation", "lineage"] },
+              "fromSide": { "$ref": "#/definitions/side" },
+              "toSide": { "$ref": "#/definitions/side" },
+              "channel": { "type": "string", "enum": ["bottom", "top"] },
+              "fromCard": { "type": "string", "enum": ["1", "1..1", "0..1", "1..N", "0..N", "N"] },
+              "toCard": { "type": "string", "enum": ["1", "1..1", "0..1", "1..N", "0..N", "N"] },
+              "label": { "type": "string" }
+            }
+          }
+        },
+        "legend": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/legendItem" }
+        },
+        "note": { "type": "string" }
+      }
+    },
+    "chartSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "title", "unit", "source", "data"],
+      "properties": {
+        "type": { "const": "bar" },
+        "title": { "type": "string", "minLength": 1 },
+        "unit": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "asOf": { "type": "string" },
+        "data": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 40,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "value"],
+            "properties": {
+              "label": { "type": "string", "minLength": 1, "maxLength": 45 },
+              "value": { "type": "number", "minimum": 0 },
+              "variant": { "type": "string", "enum": ["accent", "warning", "danger", "success", "neutral"] }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,8 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import {createHash} from 'node:crypto';
-import {fileURLToPath} from 'node:url';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { canonicalizeTextBuffer } from './lib/hash.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -12,16 +13,23 @@ export const RENDERER_FILES = [
   'scripts/diagrams.mjs',
   'scripts/validate.mjs',
   'scripts/renderer-hash.mjs',
+  'scripts/lib/urls.mjs',
+  'scripts/lib/hash.mjs',
+  'scripts/lib/i18n.mjs',
+  'scripts/lib/html-shell.mjs',
   'schemas/document.schema.json',
+  'schemas/diagram.schema.json',
   'package.json',
+  'package-lock.json',
 ];
 
 export async function computeRendererHash(skillRoot = ROOT) {
   const h = createHash('sha256');
   for (const rel of RENDERER_FILES) {
     const raw = await fs.readFile(path.join(skillRoot, rel));
-    h.update(`${rel}\n${raw.length}\n`);
-    h.update(raw);
+    const canonical = canonicalizeTextBuffer(raw, rel);
+    h.update(`${rel}\n${canonical.length}\n`);
+    h.update(canonical);
   }
   return h.digest('hex');
 }
