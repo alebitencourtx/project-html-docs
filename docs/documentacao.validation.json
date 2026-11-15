@@ -2,43 +2,43 @@
   "passed": true,
   "errors": [],
   "mode": "full",
-  "wordCount": 6385,
-  "readingMinutes": 34,
+  "wordCount": 6566,
+  "readingMinutes": 35,
   "sections": 11,
   "contentSections": 11,
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 194670,
-  "browserReviewed": false,
+  "bytes": 201711,
+  "browserReviewed": true,
   "warnings": [],
-  "version": "1.8.0",
-  "skillVersion": "1.8.0",
-  "rendererSha256": "95798c85fd13097396d18f204306e28a7348e9b4db9dcffe2cbcea1a4107e9a7",
-  "builtAt": "2026-11-15T14:51:16.524Z",
-  "manifestSha256": "aac46c7b7c7d289141454500d2bf90b8a30d7737c7ebbd6ec55daf889c5ab8c1",
+  "version": "1.9.0",
+  "skillVersion": "1.9.0",
+  "rendererSha256": "81782a0a2ca5ec8e66daca1137c5e48ec04bf7028096f38318fe75f190c9b935",
+  "builtAt": "2026-11-15T15:53:17.716Z",
+  "manifestSha256": "3884611bf6289ef36f6ec5f315c85d4889505ca6b9d9e0b0f941b9f1fc6c77af",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
-  "inputSha256": "d6d2270c59d0ae4325fe838705cfe7cb52736d3d229f4eb008c6cd25542a03d3",
-  "htmlSha256": "8bdd93fcbe67032dcd442325e2b618eafabd226f91a59ecb59ef91efdbcd7bca",
+  "revision": "5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e",
+  "inputSha256": "596c1bd5139cddf91840526bddae56db1ea72692d676f92cd8c2dcbc9206330c",
+  "htmlSha256": "3e45d4c0437a6c08629e4c417c97fd92332e0f72c96df85cfe4f219d086b4825",
   "sources": [
     {
       "id": "skill",
       "path": "SKILL.md",
       "description": "Contrato operacional do skill: fluxo, decisões e manutenção.",
-      "sha256": "2318fdd53e017a8dba778496d4fa64ff0b605b010efa5a819ebf08f39fb170e1"
+      "sha256": "aaefb11e9ae172c787be4c6e56d3cac2abe591ea474662ef94d8e2c26526f092"
     },
     {
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos, comandos e recursos do projeto.",
-      "sha256": "a0c5d3c48a6877465fccc5d9c6755a230f14310925e635c69c6bff9222cf1806"
+      "sha256": "2d3ade2f59ff3514f8de613d9791fa4e951ddffdb904865274268cb1bfa8c4e2"
     },
     {
       "id": "package",
       "path": "package.json",
       "description": "Versão, engines, scripts e dependências fixadas.",
-      "sha256": "88a070df7ee2ef56beac8be236e2d7e119bd34fcef87ff0b240b70321149d0c1"
+      "sha256": "ae53cff603eeb562c652a3b37d11e9f73d0902256d61dbcd9260049016029244"
     },
     {
       "id": "schema",
@@ -50,55 +50,55 @@
       "id": "build",
       "path": "scripts/build.mjs",
       "description": "Compilador do manifesto e do Markdown no HTML final.",
-      "sha256": "b9cca5d79111a92bed0ba6da911b63d2116a493e720a65c6f0a11bbe693a9ac2"
+      "sha256": "3ed75d42f0e8f7c65c53f808a82b10a59a1744ecd497f17a4e50d494c7e426e7"
     },
     {
       "id": "diagrams",
       "path": "scripts/diagrams.mjs",
       "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid.",
-      "sha256": "c5b733dac129bc629feea7664c40f6b0cd1282b343a8846945aa0dd43dc3b0c4"
+      "sha256": "10f6e85cc300dceac128857cfd60c03698a7d14ac5b00b23ee38335c8d81ea59"
     },
     {
       "id": "validate",
       "path": "scripts/validate.mjs",
       "description": "Validador estrutural do HTML, dos SVGs e da navegação.",
-      "sha256": "65627b105fb1cd169fb8bc7db1ae820a524f01b2b07f2af5f1c83e207d6bb9b2"
+      "sha256": "9315a9dc63e5bb17a223b85d6faaa7271691b1b0c888eaba0799655436f4719f"
     },
     {
       "id": "verify",
       "path": "scripts/verify.mjs",
       "description": "Conferência de hashes de fontes/renderer, revisão Git e análise incremental de impacto.",
-      "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065"
+      "sha256": "5234d1e42f8dc98afaee9c91e5f197adb1169a230772b7034612efbf64012dea"
     },
     {
       "id": "renderer-hash",
       "path": "scripts/renderer-hash.mjs",
       "description": "Cálculo determinístico do SHA-256 dos assets e scripts de renderização da skill.",
-      "sha256": "3077c43340aca8eb008f62de54a653022d82b328af5ea76dfcf8594812b203a7"
+      "sha256": "8759b3dd8ef25f8d05073b05cfb42f15c2cfcd8a2cf54baf5e4cd9f1388dda84"
     },
     {
       "id": "inspect",
       "path": "scripts/inspect_repo.py",
       "description": "Inspetor estático do repositório e gerador do dossiê/plano de leitura.",
-      "sha256": "9873e871455d1e83805a61c9be2cdfe96ebdf572ed29c3608c9f838c78e9815d"
+      "sha256": "848a5b533dc615ae9e2fe229f7108af218e45f92b7706b84e99f5ac91bbb2bbd"
     },
     {
       "id": "ui",
       "path": "assets/document.js",
       "description": "Comportamentos offline da interface: drawer mobile, busca, filtros, temas e modal.",
-      "sha256": "b8e0c3722e0be17ea62940b29c899f68d1dd026567ce52d39d61f98d21df3fa7"
+      "sha256": "c4cfce702caa12cfead22b3d944b775fa443d8accebfe5474c77a5b76fc7ad79"
     },
     {
       "id": "styles",
       "path": "assets/document.css",
       "description": "Design system, layout responsivo (desktop + drawer mobile), temas e estilos de impressão.",
-      "sha256": "7221ddeb82ea4810f5b26a6a7e2ee848845e010e6d1c12d5ebba5e302efa414e"
+      "sha256": "45fcca0dd93bb512f87702361ee85e0d15afa91bf9d81d25a7cc6fd2cb4d7e8e"
     },
     {
       "id": "authoring",
       "path": "references/authoring.md",
       "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão.",
-      "sha256": "5386618d1badb1ff1006f402429f284f5e6914bb18c4482b01c606d9533750d0"
+      "sha256": "ec777792648c0047d6cbd6db79dd77ad7beb79fa7f5515f224a6419ce97d91ca"
     },
     {
       "id": "data-engineering",
@@ -122,31 +122,31 @@
       "id": "changelog",
       "path": "CHANGELOG.md",
       "description": "Histórico de versões e mudanças do gerador.",
-      "sha256": "463d0b15016367f1bae9f36e96b58467b1505153a9024995deb007a55b14dc81"
+      "sha256": "5e91fffe737f05cf4531ff23812c7fdc63b02fc1c7b0543a194ce07f982dcee2"
     },
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes do compilador, drawer mobile, validador, temas, modos e avisos.",
-      "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122"
+      "sha256": "e84b8df59b5bfec622fd66859e2fe148d7d04d1b75156b5e13e06caac6c7fd61"
     },
     {
       "id": "tests-diagrams",
       "path": "tests/diagrams.test.mjs",
       "description": "Testes do motor 2D, Mermaid, gráficos e exemplos.",
-      "sha256": "69d0ecb6d57de9011c83767b7c1068ae6dd93b826810d402eed0f044aab8e831"
+      "sha256": "e7c785b18e0da753ffe9418f3853157be57109db89c1e3ce0a96e739c3bab9a6"
     },
     {
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
       "description": "Testes do inspetor, dossiê, impacto e drift do renderer.",
-      "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416"
+      "sha256": "0e0471bba24a01749100bb169e6ccee30e709b837d7de1f7bcaf3928447d0267"
     },
     {
       "id": "tests-landing",
       "path": "tests/landing.test.mjs",
       "description": "Testes de integridade, i18n PT/EN e capítulos da landing page.",
-      "sha256": "f6d5f825fa66e64b7b93261c0ce6b7a634c00f7c7e6be9e0434d927d8a5b27f0"
+      "sha256": "65fc955df9ac609848620f619ef72295b4bb5ccbf9d93b24b5a856d02312d727"
     },
     {
       "id": "example-minimal",
@@ -160,5 +160,6 @@
       "description": "Manifesto completo com as 11 categorias de leitura.",
       "sha256": "d45972dcfc86c81edbf3957905f6eaa480bb6883b0189dc3c72a0a4a0f371aed"
     }
-  ]
+  ],
+  "browserReviewedAt": "2026-11-15T15:56:23.375Z"
 }

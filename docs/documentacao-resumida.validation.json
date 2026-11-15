@@ -2,43 +2,43 @@
   "passed": true,
   "errors": [],
   "mode": "summary",
-  "wordCount": 1723,
+  "wordCount": 1789,
   "readingMinutes": 9,
   "sections": 6,
   "contentSections": 6,
   "referenceBlocks": 1,
   "diagrams": 1,
   "charts": 1,
-  "bytes": 108029,
-  "browserReviewed": false,
+  "bytes": 113123,
+  "browserReviewed": true,
   "warnings": [],
-  "version": "1.8.0",
-  "skillVersion": "1.8.0",
-  "rendererSha256": "95798c85fd13097396d18f204306e28a7348e9b4db9dcffe2cbcea1a4107e9a7",
-  "builtAt": "2026-11-15T14:51:17.673Z",
-  "manifestSha256": "4fe604e206d1234b71d1958c03bf76a3f5b8739eee4855140a556a74918d34dd",
+  "version": "1.9.0",
+  "skillVersion": "1.9.0",
+  "rendererSha256": "81782a0a2ca5ec8e66daca1137c5e48ec04bf7028096f38318fe75f190c9b935",
+  "builtAt": "2026-11-15T15:53:18.922Z",
+  "manifestSha256": "0214841a0c1c1c208760267ce0ecdef373569b9ecd2c7a14894eca96168c93d4",
   "document": "project-html-docs · Guia Rápido",
-  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
-  "inputSha256": "4c6115a490564accba975735514add7ddeb5be28927b16f5cea30d491a48f86a",
-  "htmlSha256": "02ab0be4d2d7f8886a3bb6b27453e44f24accc395f2fe2163807672057965fe8",
+  "revision": "5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e",
+  "inputSha256": "0c321475d94335c026a024255b07a12568911b464bbc8dee59aef00c5343ac64",
+  "htmlSha256": "e8830f5a0ff04782bd9ceea29dd3eb4d7716eb402ef87318a49895f72a748c50",
   "sources": [
     {
       "id": "skill",
       "path": "SKILL.md",
       "description": "Contrato operacional da skill.",
-      "sha256": "2318fdd53e017a8dba778496d4fa64ff0b605b010efa5a819ebf08f39fb170e1"
+      "sha256": "aaefb11e9ae172c787be4c6e56d3cac2abe591ea474662ef94d8e2c26526f092"
     },
     {
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos e comandos.",
-      "sha256": "a0c5d3c48a6877465fccc5d9c6755a230f14310925e635c69c6bff9222cf1806"
+      "sha256": "2d3ade2f59ff3514f8de613d9791fa4e951ddffdb904865274268cb1bfa8c4e2"
     },
     {
       "id": "package",
       "path": "package.json",
       "description": "Versão, engines e dependências fixadas.",
-      "sha256": "88a070df7ee2ef56beac8be236e2d7e119bd34fcef87ff0b240b70321149d0c1"
+      "sha256": "ae53cff603eeb562c652a3b37d11e9f73d0902256d61dbcd9260049016029244"
     },
     {
       "id": "schema",
@@ -50,43 +50,43 @@
       "id": "build",
       "path": "scripts/build.mjs",
       "description": "Compilador do manifesto e do Markdown.",
-      "sha256": "b9cca5d79111a92bed0ba6da911b63d2116a493e720a65c6f0a11bbe693a9ac2"
+      "sha256": "3ed75d42f0e8f7c65c53f808a82b10a59a1744ecd497f17a4e50d494c7e426e7"
     },
     {
       "id": "diagrams",
       "path": "scripts/diagrams.mjs",
       "description": "Motor de diagramas 2D e Mermaid.",
-      "sha256": "c5b733dac129bc629feea7664c40f6b0cd1282b343a8846945aa0dd43dc3b0c4"
+      "sha256": "10f6e85cc300dceac128857cfd60c03698a7d14ac5b00b23ee38335c8d81ea59"
     },
     {
       "id": "validate",
       "path": "scripts/validate.mjs",
       "description": "Validador estrutural do HTML e dos SVGs.",
-      "sha256": "65627b105fb1cd169fb8bc7db1ae820a524f01b2b07f2af5f1c83e207d6bb9b2"
+      "sha256": "9315a9dc63e5bb17a223b85d6faaa7271691b1b0c888eaba0799655436f4719f"
     },
     {
       "id": "verify",
       "path": "scripts/verify.mjs",
       "description": "Hashes de fontes/renderer, revisão Git e análise de impacto.",
-      "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065"
+      "sha256": "5234d1e42f8dc98afaee9c91e5f197adb1169a230772b7034612efbf64012dea"
     },
     {
       "id": "renderer-hash",
       "path": "scripts/renderer-hash.mjs",
       "description": "Hash SHA-256 dos assets e scripts de renderização da skill.",
-      "sha256": "3077c43340aca8eb008f62de54a653022d82b328af5ea76dfcf8594812b203a7"
+      "sha256": "8759b3dd8ef25f8d05073b05cfb42f15c2cfcd8a2cf54baf5e4cd9f1388dda84"
     },
     {
       "id": "inspect",
       "path": "scripts/inspect_repo.py",
       "description": "Dossiê estático e plano de leitura.",
-      "sha256": "9873e871455d1e83805a61c9be2cdfe96ebdf572ed29c3608c9f838c78e9815d"
+      "sha256": "848a5b533dc615ae9e2fe229f7108af218e45f92b7706b84e99f5ac91bbb2bbd"
     },
     {
       "id": "authoring",
       "path": "references/authoring.md",
       "description": "Contrato de autoria e revisão.",
-      "sha256": "5386618d1badb1ff1006f402429f284f5e6914bb18c4482b01c606d9533750d0"
+      "sha256": "ec777792648c0047d6cbd6db79dd77ad7beb79fa7f5515f224a6419ce97d91ca"
     },
     {
       "id": "tools",
@@ -98,31 +98,31 @@
       "id": "changelog",
       "path": "CHANGELOG.md",
       "description": "Histórico de versões.",
-      "sha256": "463d0b15016367f1bae9f36e96b58467b1505153a9024995deb007a55b14dc81"
+      "sha256": "5e91fffe737f05cf4531ff23812c7fdc63b02fc1c7b0543a194ce07f982dcee2"
     },
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes de build, drawer mobile, temas e validação.",
-      "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122"
+      "sha256": "e84b8df59b5bfec622fd66859e2fe148d7d04d1b75156b5e13e06caac6c7fd61"
     },
     {
       "id": "tests-diagrams",
       "path": "tests/diagrams.test.mjs",
       "description": "Testes de diagramas, gráficos e exemplos.",
-      "sha256": "69d0ecb6d57de9011c83767b7c1068ae6dd93b826810d402eed0f044aab8e831"
+      "sha256": "e7c785b18e0da753ffe9418f3853157be57109db89c1e3ce0a96e739c3bab9a6"
     },
     {
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
       "description": "Testes do dossiê, impacto e drift do renderer.",
-      "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416"
+      "sha256": "0e0471bba24a01749100bb169e6ccee30e709b837d7de1f7bcaf3928447d0267"
     },
     {
       "id": "tests-landing",
       "path": "tests/landing.test.mjs",
       "description": "Testes da landing page e dicionários PT/EN.",
-      "sha256": "f6d5f825fa66e64b7b93261c0ce6b7a634c00f7c7e6be9e0434d927d8a5b27f0"
+      "sha256": "65fc955df9ac609848620f619ef72295b4bb5ccbf9d93b24b5a856d02312d727"
     },
     {
       "id": "example-showcase",
@@ -130,5 +130,6 @@
       "description": "Exemplo completo com 11 categorias.",
       "sha256": "d45972dcfc86c81edbf3957905f6eaa480bb6883b0189dc3c72a0a4a0f371aed"
     }
-  ]
+  ],
+  "browserReviewedAt": "2026-11-15T15:56:23.519Z"
 }

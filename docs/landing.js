@@ -1,50 +1,6 @@
-import { TRANSLATIONS, VIDEO_CHAPTERS, resolveLang, getCopy } from './landing-i18n.mjs';
+import { TRANSLATIONS, VIDEO_CHAPTERS, RECIPES, resolveLang, getCopy } from './landing-i18n.mjs';
 
 const STORAGE_KEY = 'project-docs-landing-lang';
-
-const RECIPES = {
-  cli: `# 1. Install dependencies & run unit tests
-npm ci && npm test
-
-# 2. Static repository discovery (AST + regex + dependency graph)
-python3 scripts/inspect_repo.py . \\
-  --out docs/inventory.json \\
-  --plan docs/reading-plan.md
-
-# 3. Compile single-file offline HTML + SHA-256 receipt
-node scripts/build.mjs docs/document.json \\
-  --out docs/documentacao.html --force
-
-# 4. Verify hashes & detect stale sections after commits
-node scripts/verify.mjs docs/document.json \\
-  docs/documentacao.validation.json --impact docs/update-plan.md`,
-  manifest: `{
-  "title": "project-html-docs",
-  "mode": "full",
-  "theme": "vermelho",
-  "language": "pt-BR",
-  "contentFile": "docs/content.md",
-  "companionDoc": {
-    "href": "documentacao-resumida.html",
-    "label": "Guia rápido"
-  },
-  "sources": [
-    "SKILL.md",
-    "scripts/build.mjs",
-    "scripts/diagrams.mjs",
-    "scripts/verify.mjs",
-    "scripts/inspect_repo.py"
-  ]
-}`,
-  skill: `Use the project-html-docs skill (SKILL.md):
-1. Run scripts/inspect_repo.py on this repository to generate
-   docs/inventory.json and docs/reading-plan.md.
-2. Read the prioritized waves and author docs/document.json +
-   docs/content.md strictly from implemented behavior.
-3. Compile docs/documentacao.html (mode: "full") and
-   docs/documentacao-resumida.html (mode: "summary") with theme "vermelho".
-4. Verify SHA-256 receipts with scripts/verify.mjs.`,
-};
 
 function getInitialLang() {
   try {

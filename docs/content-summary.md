@@ -10,7 +10,7 @@ O mesmo documento atende dois públicos. Leitores de negócio encontram propósi
 <div class="card"><h3>Operação</h3><p>Pré-requisitos, comandos, verificação de integridade e recuperação de falhas previsíveis.</p></div>
 </div>
 
-A versão atual é a **1.8.0**, com **35 testes** passando em 15/11/2026. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile, além de detecção automática de atualizações no renderer (`rendererSha256`).
+A versão atual é a **1.9.0**, com **40 testes** passando em 15/11/2026. Os temas são **Vermelho** (primeiro e padrão) e **Azul**; a escolha fica no `localStorage` sem sobrescrita passiva na carga, e valores antigos são migrados (`santander` → vermelho, `default` → azul). A interface combina barra fixa no desktop com menu lateral recolhível no mobile (`inert` + *focus trap*), harmonização Mermaid no tema vermelho e verificação estendida de artefatos e `rendererSha256`.
 
 > Regra de negócio: documentar é descrever o comportamento atual e comprovável. Planos históricos e intenções não substituem a implementação; quando o código não sustenta uma afirmação, ela não deve ser publicada.
 
@@ -95,9 +95,10 @@ O manifesto exige `title`, `subtitle`, `version`, `updated`, `content` e `sectio
 | `python scripts/inspect_repo.py <repo> --out <json> --plan <md>` | Dossiê estático e plano de leitura |
 | `node scripts/build.mjs <manifest> --out <html>` | Manual completo e recibo |
 | `node scripts/build.mjs <manifest> --out <html> --mode summary` | Guia Rápido e recibo |
-| `node scripts/verify.mjs <manifest> <receipt>` | Conferência de fontes e revisão |
+| `node scripts/verify.mjs <manifest> <receipt>` | Conferência de fontes, artefatos e revisão (`sourceDrift`) |
+| `node scripts/verify.mjs <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` após revisão real |
 | `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Plano de atualização por impacto |
-| `npm test` | 35 testes da suíte |
+| `npm test` | 40 testes da suíte |
 
 O conteúdo começa com um `##` cujo texto coincide, na ordem, com `sections[].title`. Cada `###` vira subnavegação. Um `#` é reservado ao título do documento. Tabelas ganham cabeçalho fixo e filtro a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas.
 
@@ -144,17 +145,17 @@ Para gerar as duas versões, use manifestos separados: `document.json` em modo `
 
 ## Verificação e atualização
 
-O `verify.mjs` relê o manifesto e o recibo, confere hashes das fontes e do renderer da skill (`rendererSha256`), detecta fontes inesperadas e compara a revisão Git documentada com a atual. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos, marca apenas as seções `stale` e avisa quando basta rodar `build.mjs --force` por mudança exclusiva do template da skill.
+O `verify.mjs` relê o manifesto e o recibo, confere hashes das fontes, dos artefatos de autoria (`manifestSha256`, `inputSha256`, `htmlSha256`) e do renderer da skill (`rendererSha256`), detecta fontes inesperadas e diferencia commits exclusivos de documentação via `revision.sourceDrift`. Com `--impact`, ele percorre o grafo do dossiê, encontra dependentes transitivos, marca apenas as seções `stale` e avisa quando basta rodar `build.mjs --force` por mudança exclusiva do template da skill; com `--mark-reviewed`, grava `browserReviewed: true` e `browserReviewedAt` no recibo após validação visual real.
 
 ```bash
 python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-plan.md
 node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
-O plano mostra fontes alteradas, dependentes, arquivos core novos, resumo `git diff --stat` e as seções que precisam de revisão. Se uma fonte mudou e não está vinculada a nenhuma seção, o plano avisa; corrija `sections[].sources` antes de confiar no roteamento.
+O plano mostra fontes alteradas, dependentes, arquivos core novos (truncando listagens acima de 25 itens), resumo `git diff --stat` e as seções que precisam de revisão. Se uma fonte mudou e não está vinculada a nenhuma seção, o plano avisa; corrija `sections[].sources` antes de confiar no roteamento.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":17,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":4,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":3,"variant":"accent"}]}
+{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":18,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":12,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":6,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":4,"variant":"accent"}]}
 ```
 
 | Sintoma | Causa provável | Ação |
@@ -167,7 +168,7 @@ O plano mostra fontes alteradas, dependentes, arquivos core novos, resumo `git d
 | Página para de rolar sobre tabela | HTML antigo com contenção de roda | Recompilar com 1.7.0+ |
 | `Template da skill atualizado` | CSS/JS/builder da skill mudou sem mudar o código | Rodar apenas `build.mjs --force` |
 
-A revisão de entrega cobre overflow global, menu lateral recolhível no mobile, sidebar sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, cópia, temas, modal com Escape e impressão em desktop (~1440 px) e mobile (~390 px).
+A revisão de entrega cobre overflow global, menu lateral recolhível no mobile (`inert` + *focus trap*), sidebar sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento com destaque de todas as ocorrências, estado sem resultados, cópia, temas (inclusive Mermaid), modal (`<= 960 px`) com Escape e impressão em desktop (~1440 px) e mobile (~390 px).
 
 > Regra de negócio: `--force` é uma decisão editorial, não um atalho de automação.
 
@@ -201,4 +202,4 @@ A revisão de entrega cobre overflow global, menu lateral recolhível no mobile,
 | `stale` | Seção cujas fontes mudaram e precisa de revisão |
 | Guia Rápido | Modo `summary`, com 4 a 7 capítulos |
 
-Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da revisão `78dc658d3b1a895a64aa0956b306955eb240989d` em 15/11/2026.
+Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da revisão `5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e` em 15/11/2026.

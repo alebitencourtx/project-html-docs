@@ -16,7 +16,7 @@ O fluxo da skill é deliberadamente separado em duas camadas. A primeira é **de
 
 > Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.
 
-A versão atual é a **1.8.0**, com **35 testes automatizados** passando em 15/11/2026. Ela consolida o **Guia Rápido** (`mode: "summary"`) ao lado do manual completo, os temas **Vermelho** (padrão) e **Azul**, a visão mobile com menu lateral recolhível e o rastreamento de drift do próprio renderer (`rendererSha256`), mantendo o fluxo offline e o recibo de validação. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
+A versão atual é a **1.9.0**, com **40 testes automatizados** passando em 15/11/2026. Ela aprimora o **Guia Rápido** (`mode: "summary"`), os temas **Vermelho** (padrão, com harmonização Mermaid e diagrama 2D) e **Azul**, a visão mobile com gaveta recolhível (`inert` + *focus trap* no teclado), a auditoria de artefatos (`manifestSha256`, `inputSha256`, `htmlSha256`, `rendererSha256`, `sourceDrift` e `--mark-reviewed`) e a descoberta estática JS/TS/dotenv/negativa no `.docignore`. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
 
 ## Visão funcional e escopo
 
@@ -51,33 +51,33 @@ Quando o repositório documentado é uma esteira de dados, a skill incorpora o p
 
 ## Estado atual da solução
 
-A versão 1.8.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, validação, diagramas, gráficos, temas, modos, layout responsivo e análise de impacto.
+A versão 1.9.0 é um pacote Node.js privado, com dependências fixadas e um script Python de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, validação, diagramas, gráficos, temas, modos, acessibilidade mobile e análise de impacto.
 
 | Componente | Linhas | Papel |
 |---|---|---|
-| `scripts/inspect_repo.py` | 1.574 | Varredura estática, extração de fatos, grafo, ondas de leitura e plano |
-| `scripts/diagrams.mjs` | 1.367 | Diagramas 2D determinísticos e enriquecimento de Mermaid |
-| `assets/document.css` | 1.012 | Design system, layout responsivo (desktop + drawer mobile), temas e impressão |
-| `assets/document.js` | 516 | Drawer mobile, busca, filtros, temas, modal de diagramas e navegação |
-| `scripts/verify.mjs` | 373 | Hashes de fontes e do renderer, drift, impacto e plano de atualização |
-| `scripts/build.mjs` | 232 | Manifesto, Markdown, sanitização, shell responsivo e recibo |
-| `scripts/validate.mjs` | 77 | Auditoria estrutural do HTML e dos SVGs |
-| `scripts/renderer-hash.mjs` | 31 | Hash SHA-256 determinístico dos assets e scripts de renderização da skill |
+| `scripts/inspect_repo.py` | 1.656 | Varredura estática, extração JS/TS/PySpark/SQL, grafo, ondas de leitura e plano |
+| `scripts/diagrams.mjs` | 1.415 | Diagramas 2D determinísticos e enriquecimento de Mermaid |
+| `assets/document.css` | 1.053 | Design system, layout responsivo (desktop + drawer mobile), temas Vermelho/Azul e impressão |
+| `assets/document.js` | 570 | Drawer mobile (`inert` + focus trap), busca multi-ocorrência, filtros, temas, modal e navegação |
+| `scripts/verify.mjs` | 456 | Hashes de fontes/artefatos/renderer, `sourceDrift`, impacto e `--mark-reviewed` |
+| `scripts/build.mjs` | 242 | Manifesto, Markdown, substituição segura, sanitização, shell responsivo e recibo |
+| `scripts/validate.mjs` | 82 | Auditoria estrutural do HTML, H4/`.card h3`, LaTeX inline e SVGs |
+| `scripts/renderer-hash.mjs` | 33 | Hash SHA-256 determinístico dos assets, scripts e schema/manifesto do renderer |
 
-A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **small**: 32 arquivos totais, 18 arquivos core e 5.913 linhas de código ou schema.
+A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **medium**: 32 arquivos totais, 18 arquivos core e 6.438 linhas de código ou schema.
 
 ```chart
-{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":17,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":11,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":4,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":3,"variant":"accent"}]}
+{"type":"bar","title":"Testes automatizados por arquivo","unit":"testes","source":"npm test · execução local","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":18,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":12,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":6,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":4,"variant":"accent"}]}
 ```
 
-O histórico recente mostra a evolução do produto em camadas. A versão 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho; a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu diagramas, subnavegação H3 e extratores; a 1.6.0 trouxe o modo resumido; a 1.7.0 consolidou os temas **Vermelho** e **Azul** e a rolagem sobre tabelas curtas; e a 1.8.0 adicionou o menu lateral recolhível no mobile e a detecção de atualizações do renderer (`rendererSha256`).
+O histórico recente mostra a evolução do produto em camadas. A versão 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho; a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu diagramas, subnavegação H3 e extratores; a 1.6.0 trouxe o modo resumido; a 1.7.0 consolidou os temas **Vermelho** e **Azul** e a rolagem sobre tabelas curtas; a 1.8.0 adicionou o menu lateral recolhível no mobile e `rendererSha256`; e a 1.9.0 endureceu acessibilidade (`inert`/focus trap mobile), Mermaid no tema vermelho, faixas `bottom-inner`/`colSpan` em diagramas 2D, verificação de artefatos + `sourceDrift` + `--mark-reviewed` e extração JS/TS/`.docignore` completa.
 
-Na interface, o seletor oferece **Vermelho** (primeiro e padrão) e **Azul**; a escolha é persistida em `localStorage` e valores antigos são migrados (`santander` → vermelho, `default` → azul). O tema vermelho harmoniza shell, sidebar, hero e os diagramas 2D, sem apagar as cores semânticas de sucesso, atenção e erro.
+Na interface, o seletor oferece **Vermelho** (primeiro e padrão) e **Azul**; a escolha é persistida em `localStorage` sem sobrescrita passiva na carga, e valores antigos são migrados (`santander` → vermelho, `default` → azul). O tema vermelho harmoniza shell, sidebar, hero, diagramas 2D e SVGs Mermaid, sem apagar as cores semânticas de sucesso, atenção e erro.
 
 <div class="cards">
-<div class="card"><h3>Núcleo determinístico</h3><p>Inspeção sem execução, renderização em tempo de build, validação estrutural e receipt com hashes.</p></div>
-<div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive, filtro por audiência, temas, filtro local de tabelas, cópia e modal com zoom.</p></div>
-<div class="card"><h3>Qualidade verificável</h3><p>35 testes, exemplos mínimo e showcase, guardas de segurança e avisos de autoria no recibo.</p></div>
+<div class="card"><h3>Núcleo determinístico</h3><p>Inspeção sem execução, renderização em tempo de build, validação estrutural e receipt com hashes de fontes e artefatos.</p></div>
+<div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive multi-ocorrência, filtro por audiência, temas, filtro local de tabelas, cópia e modal com zoom.</p></div>
+<div class="card"><h3>Qualidade verificável</h3><p>40 testes, exemplos mínimo e showcase, guardas de segurança e registro explícito de revisão em navegador.</p></div>
 </div>
 
 > Atenção: a suíte prova o comportamento dos geradores e do HTML produzido; ela não prova que o conteúdo semântico de um manual específico está correto. Essa verificação continua sendo responsabilidade da autoria e da revisão.
@@ -114,10 +114,11 @@ O manifesto é o contrato do documento. Ele exige `title`, `subtitle`, `version`
 | `node scripts/build.mjs <manifest> --out <html>` | Compila, valida e grava o manual | HTML + recibo |
 | `node scripts/build.mjs <manifest> --out <html> --force` | Atualiza um HTML existente de forma deliberada | HTML + recibo |
 | `node scripts/build.mjs <manifest> --out <html> --mode summary` | Força o modo Guia Rápido | HTML + recibo |
-| `node scripts/verify.mjs <manifest> <receipt>` | Compara fontes e revisão com o recibo | Relatório JSON |
-| `node scripts/verify.mjs <manifest> <receipt> --strict` | Falha com código 1 quando há drift | Relatório JSON |
+| `node scripts/verify.mjs <manifest> <receipt>` | Compara fontes, artefatos (`manifest`/`content`/`html`) e revisão (`sourceDrift`) | Relatório JSON |
+| `node scripts/verify.mjs <manifest> <receipt> --strict` | Falha com código 1 quando há drift real de fonte ou artefato | Relatório JSON |
+| `node scripts/verify.mjs <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` e timestamp após inspeção real | Recibo atualizado |
 | `node scripts/verify.mjs <manifest> <receipt> --impact --dossier <json> --plan <md>` | Calcula seções afetadas e grava o plano | Relatório + `update-plan.md` |
-| `npm test` | Executa os 35 testes | Resultado da suíte |
+| `npm test` | Executa os 40 testes | Resultado da suíte |
 
 O conteúdo começa obrigatoriamente com um `##` cujo texto coincida, na ordem, com `sections[].title`. Cada `###` vira subnavegação lateral. Um `#` dentro do Markdown é reservado ao título do documento e provoca erro de build. Tabelas ganham cabeçalho fixo, rolagem local e filtro automático a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas. Diagramas são declarados em fences próprios.
 
@@ -273,9 +274,9 @@ Na renderização, cada fence tem um caminho próprio. `solution` e `flow` chama
 
 O shell embute CSS e JavaScript, monta hero, cartões, toolbar, busca, filtros e diálogo de diagramas, e produz um HTML com um único H1. O validador então audita IDs duplicados, âncoras quebradas, ativos externos, SVG sem nome acessível, `viewBox` inválido, geometria com `NaN`/`Infinity`, detalhes sem `summary`, tabelas sem cabeçalho, links vazios ou inseguros e LaTeX não renderizado. Se algo falhar, o build lança erro e não grava; se passar, grava primeiro em `.tmp` e renomeia para o destino, junto com o recibo.
 
-**Inspeção (`scripts/inspect_repo.py`).** A varredura percorre o repositório com exclusões padrão (`.git`, `node_modules`, ambientes virtuais, caches, `dist`, `build`, `data`), respeita `.docignore` e ignora artefatos gerados pela própria skill (`*.validation.json`, `reading-plan.md`, `update-plan.md`, `documentacao*.html`). Cada arquivo elegível recebe kind, linhas, bytes, hash e sinais de stack. Extratores especializados cobrem Python/AST, notebooks Databricks e `.ipynb`, SQL/DDL/dbt, JS/TS, Scala, Terraform/Bicep, workflows e configurações. O resultado inclui rotas, parâmetros de ambiente/CLI, contratos, linhagem SQL, recursos de IaC, símbolos, testes, grafo de dependências e ondas de leitura. Valores com nomes de segredo e connection strings são redigidos.
+**Inspeção (`scripts/inspect_repo.py`).** A varredura percorre o repositório excluindo diretórios técnicos padrão (`.git`, `node_modules`, ambientes virtuais, caches, `coverage` e `dist` — preservando diretórios de domínio como `src/data/` ou `src/env/`), respeita `.docignore` com comentários, negações (`!`) e âncoras na raiz (`/`), e ignora artefatos gerados pela própria skill (`*.validation.json`, `reading-plan.md`, `update-plan.md`, `documentacao*.html`). Cada arquivo elegível recebe kind, linhas, bytes, hash e sinais de stack. Extratores especializados cobrem Python/AST, notebooks Databricks e `.ipynb`, SQL/DDL/dbt, JS/TS (`arrow functions`, `interface`/`type`/`enum`, `process.env`/`import.meta.env`), Scala, Terraform/Bicep, workflows e configurações. O resultado inclui rotas, parâmetros de ambiente/CLI, contratos, linhagem SQL, recursos de IaC, símbolos, testes, grafo de dependências e ondas de leitura. Valores com nomes de segredo, tokens (`ghp_`, `github_pat_`, `sk-`, `Bearer`, `AIza`, `AKIA`) e connection strings são redigidos.
 
-**Verificação (`scripts/verify.mjs`).** O verificador relê o manifesto e o recibo, confere cada fonte declarada (hash, caminho, existência), detecta fontes no recibo que não estão mais no manifesto, compara a revisão Git documentada com a atual, informa se a árvore está suja e verifica se o hash do renderer da skill (`rendererSha256`) mudou desde a compilação. No modo impacto, percorre o grafo do dossiê em busca de dependentes transitivos, cruza os caminhos afetados com `sections[].sources` e marca apenas as seções `stale`, preservando as `fresh`; quando todas as fontes estão sincronizadas e apenas o template da skill mudou, orienta a regerar diretamente com `build.mjs --force`.
+**Verificação (`scripts/verify.mjs`).** O verificador relê o manifesto e o recibo, confere cada fonte declarada (hash, caminho, existência), valida os hashes dos artefatos de autoria (`manifestSha256`, `inputSha256`, `htmlSha256` do `.html` irmão), detecta fontes inesperadas, diferencia commits exclusivos de documentação de mudanças em código via `revision.sourceDrift`, informa se a árvore está suja e verifica se o hash do renderer da skill (`rendererSha256`, que inclui `schemas/document.schema.json` e `package.json`) mudou desde a compilação. Com `--mark-reviewed`, grava `browserReviewed: true` e `browserReviewedAt` quando todas as verificações passam; no modo impacto, percorre o grafo em busca de dependentes transitivos, trunca novos arquivos core acima de 25 itens no plano e marca apenas as seções `stale`, preservando as `fresh`.
 
 | Etapa | Entrada | Saída | Falha prevista |
 |---|---|---|---|
@@ -300,6 +301,7 @@ As regras do gerador são contractuais: algumas impedem o build, outras apenas a
 | Condição | Resultado | Leitura |
 |---|---|---|
 | H1 no Markdown ou `<h1>` em HTML | Erro e nenhuma gravação | O H1 é exclusivo do título do documento |
+| `<h4>` sem `<h3>` anterior na seção (`<h3>` dentro de `.card` não conta) | Erro de validação | Garante hierarquia correta fora de cartões |
 | Texto antes do primeiro H2 | Erro | O conteúdo precisa começar pela primeira seção declarada |
 | H2 fora de ordem ou com texto diferente de `sections[].title` | Erro | Títulos são comparados exatamente, inclusive acentos |
 | `id` de seção reservado, duplicado ou fora do padrão | Erro | IDs do shell não podem ser reutilizados; o padrão é `^[a-z][a-z0-9-]*$` |
@@ -307,11 +309,12 @@ As regras do gerador são contractuais: algumas impedem o build, outras apenas a
 | Fonte fora do `repoRoot` | Erro | O build recusa path traversal e caminhos absolutos |
 | Saída já existente sem `--force` | Erro | Atualização é deliberada, nunca acidental |
 | Saída igual ao manifesto ou ao Markdown | Erro | Inputs não podem ser sobrescritos |
+| `companionDoc.href` local ausente no build | Aviso não bloqueante | Alerta sem impedir compilação paralela |
 | `details` sem um único `summary` | Erro de validação | Acordeões precisam de rótulo acessível |
 | Tabela sem `thead`/`th` | Erro de validação | Toda tabela precisa de cabeçalho |
 | Figura sem `figcaption` | Erro de validação | Diagramas e gráficos precisam de legenda |
 | Script externo, iframe, `link` ou CSS remoto | Erro de validação | O produto é offline por contrato |
-| LaTeX não renderizado em prosa/tabela | Erro de validação | Use Unicode e HTML para fórmulas |
+| LaTeX não renderizado (`$x_i$`, `$n^2$`, `$$...$$`, mantendo moeda `$ 10`) | Erro de validação | Use Unicode e HTML para fórmulas |
 | Mais de 70% das seções com `audience: "all"` | Aviso | Distribua as audiências para o filtro ser útil |
 | Mais de 50% das seções sem `sources` | Aviso | Sem vínculo, o impacto não consegue rotear a revisão |
 
@@ -529,9 +532,10 @@ Cada seção exige `id` (padrão `^[a-z][a-z0-9-]*$`), `title` e `audience` (`al
 | `htmlSha256` | string | Hash do HTML final |
 | `revision` | string ou null | Revisão Git documentada |
 | `sources` | array | Fontes com path e SHA-256 |
-| `browserReviewed` | boolean | Revisão visual registrada separadamente |
+| `browserReviewed` | boolean | Revisão visual registrada via `--mark-reviewed` |
+| `browserReviewedAt` | ISO 8601 | Momento em que a revisão no navegador foi confirmada |
 
-O recibo é uma fotografia do build, não um monitor de produção. `builtAt` muda a cada compilação; `manifestSha256` e `htmlSha256` permitem comparar artefatos; `sources` é a lista que o `verify.mjs` confronta com o estado atual. `browserReviewed` permanece `false` porque o build não abre navegador.
+O recibo é uma fotografia do build, não um monitor de produção. `builtAt` muda a cada compilação; `manifestSha256`, `inputSha256` e `htmlSha256` permitem ao `verify.mjs` detectar adulteração ou dessincronização entre artefatos; `sources` é a lista confrontada com os arquivos atuais. `browserReviewed` inicia como `false` e passa a `true` somente via `verify.mjs --mark-reviewed`.
 
 </details>
 
@@ -603,7 +607,7 @@ python scripts/inspect_repo.py . --out docs/inventory.json --plan docs/reading-p
 node scripts/verify.mjs docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
-A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (`#nav-toggle`, `#nav-close`, backdrop, `Escape` e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas), fechamento do modal com Escape e impressão com todas as seções. O teste deve cobrir tanto desktop (~1440 px) quanto mobile (~390 px).
+A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, `main.inert` + *focus trap* por `Tab`, e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento com destaque de todas as ocorrências, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas 2D e Mermaid no tema Vermelho), fechamento do modal (`<= 960 px` responsivo) com Escape e impressão com todas as seções. O teste deve cobrir tanto desktop (~1440 px) quanto mobile (~390 px).
 
 > Regra de negócio: `--force` é uma decisão editorial, não um atalho de automação. Use quando a intenção for substituir deliberadamente o HTML existente e mantenha o recibo anterior se precisar comparar versões.
 
@@ -690,6 +694,6 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | `assets/document.js` | Busca, filtros, temas, cópia e modal de diagramas |
 | `examples/minimal/` | Exemplo mínimo executável |
 | `examples/showcase/` | Exemplo completo com as 11 categorias e diagramas avançados |
-| `tests/` | 35 testes de build, diagramas, dossiê, impacto e landing page |
+| `tests/` | 40 testes de build, diagramas, dossiê, impacto e landing page |
 
-Este manual foi gerado a partir da revisão `dd4f63ffc499560ddbb42eb23be463a2658bbf94`, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
+Este manual foi gerado a partir da revisão `5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e`, com dados de implementação observados em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).

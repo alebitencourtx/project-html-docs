@@ -2,7 +2,7 @@
   "title": "project-html-docs · Manual do Gerador",
   "subtitle": "Documentação funcional e técnica do skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.",
   "eyebrow": "project-html-docs · manual do próprio gerador",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "updated": "2026-11-15",
   "language": "pt-BR",
   "theme": "vermelho",
@@ -10,7 +10,7 @@
   "content": "content.md",
   "companionDoc": { "href": "documentacao-resumida.html", "label": "Guia rápido" },
   "repoRoot": "..",
-  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
+  "revision": "5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e",
   "dataAsOf": "2026-11-15 · snapshot local de implementação; sem telemetria de produção",
   "cards": [
     {
@@ -30,8 +30,8 @@
     },
     {
       "label": "Versão atual",
-      "value": "1.8.0 · 35 testes",
-      "description": "Manual completo e Guia Rápido responsivos; suíte passando em 15/11/2026."
+      "value": "1.9.0 · 40 testes",
+      "description": "Manual completo e Guia Rápido responsivos com auditoria de artefatos e foco mobile; suíte passando em 15/11/2026."
     }
   ],
   "sections": [

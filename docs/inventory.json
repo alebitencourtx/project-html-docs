@@ -1,9 +1,9 @@
 {
   "dossierVersion": "1.5.0",
-  "generatedAt": "2026-11-15T14:49:16.128350+00:00",
+  "generatedAt": "2026-11-15T15:51:21.446449+00:00",
   "repository": "/app/applet/project-html-docs",
-  "revision": "dd4f63ffc499560ddbb42eb23be463a2658bbf94",
-  "workingTreeChanges": "",
+  "revision": "5ae1368bafc7b39d6f04ccdf88eb6dd3770b4d7e",
+  "workingTreeChanges": "M docs/index.html\n M docs/inventory.json\n M docs/landing-i18n.mjs\n M docs/landing.js\n M docs/reading-plan.md",
   "includes": [],
   "excludes": [],
   "countsByKind": {
@@ -21,7 +21,7 @@
     "delta_lake": 4,
     "event_hubs": 6,
     "iceberg": 1,
-    "orchestration": 2,
+    "orchestration": 3,
     "scala": 3,
     "spark_pyspark": 10,
     "sql_warehouse": 6,
@@ -110,6 +110,7 @@
       "databricks",
       "delta_lake",
       "event_hubs",
+      "orchestration",
       "scala",
       "spark_pyspark",
       "sql_warehouse",
@@ -117,11 +118,11 @@
     ]
   },
   "scaleProfile": {
-    "tier": "small",
+    "tier": "medium",
     "totalFiles": 32,
     "coreFiles": 18,
-    "totalCodeLines": 5913,
-    "recommendedStrategy": "Leitura sequencial guiada por Ondas 1 -> 2 -> 3 (projeto compacto)."
+    "totalCodeLines": 6438,
+    "recommendedStrategy": "Leitura seletiva em Ondas 1 -> 2 -> 3; usar intervalos [Lstart-Lend] dos símbolos para arquivos > 200 linhas e consultar testsIndex em vez de ler testes integrais."
   },
   "entrypoints": {
     "workflows": [],
@@ -144,27 +145,27 @@
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "repository",
-      "line": 1548
+      "line": 1630
     },
     {
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--out",
-      "line": 1549,
+      "line": 1631,
       "help": "Output JSON inventory/dossier path"
     },
     {
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--plan",
-      "line": 1550,
+      "line": 1632,
       "help": "Optional output Markdown reading-plan path"
     },
     {
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--include",
-      "line": 1551,
+      "line": 1633,
       "default": "",
       "help": "Comma-separated path fragments to include"
     },
@@ -172,7 +173,7 @@
       "file": "scripts/inspect_repo.py",
       "kind": "cli_arg",
       "name": "--exclude",
-      "line": 1552,
+      "line": 1634,
       "default": "",
       "help": "Comma-separated path fragments to exclude"
     }
@@ -193,7 +194,7 @@
   "inlineConfigs": {
     "package.json": {
       "name": "project-html-docs",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "scripts": {
         "test": "node --test tests/*.test.mjs",
         "build:example": "node scripts/build.mjs examples/minimal/document.json --out examples/minimal/documentacao.html --force",
@@ -422,15 +423,15 @@
         {
           "name": "resolveLang",
           "kind": "function",
-          "startLine": 196,
-          "endLine": 196,
+          "startLine": 257,
+          "endLine": 257,
           "signature": "resolveLang(input)"
         },
         {
           "name": "getCopy",
           "kind": "function",
-          "startLine": 204,
-          "endLine": 204,
+          "startLine": 265,
+          "endLine": 265,
           "signature": "getCopy(lang)"
         }
       ],
@@ -442,36 +443,36 @@
         {
           "name": "getInitialLang",
           "kind": "function",
-          "startLine": 49,
-          "endLine": 49,
+          "startLine": 5,
+          "endLine": 5,
           "signature": "getInitialLang()"
         },
         {
           "name": "updateVideoToggleLabel",
           "kind": "function",
-          "startLine": 81,
-          "endLine": 81,
+          "startLine": 37,
+          "endLine": 37,
           "signature": "updateVideoToggleLabel()"
         },
         {
           "name": "applyLanguage",
           "kind": "function",
-          "startLine": 87,
-          "endLine": 87,
+          "startLine": 43,
+          "endLine": 43,
           "signature": "applyLanguage(lang, { persist = true } = {})"
         },
         {
           "name": "syncActiveChapter",
           "kind": "function",
-          "startLine": 135,
-          "endLine": 135,
+          "startLine": 91,
+          "endLine": 91,
           "signature": "syncActiveChapter(timeSeconds)"
         },
         {
           "name": "selectRecipe",
           "kind": "function",
-          "startLine": 148,
-          "endLine": 148,
+          "startLine": 104,
+          "endLine": 104,
           "signature": "selectRecipe(recipeId)"
         }
       ],
@@ -500,6 +501,41 @@
           "startLine": 112,
           "endLine": 112,
           "signature": "build(manifestFile,output,{force=false,mode:cliMode}={})"
+        },
+        {
+          "name": "esc",
+          "kind": "function",
+          "startLine": 16,
+          "endLine": 16,
+          "signature": "esc(v)"
+        },
+        {
+          "name": "hash",
+          "kind": "function",
+          "startLine": 17,
+          "endLine": 17,
+          "signature": "hash(v)"
+        },
+        {
+          "name": "clean",
+          "kind": "function",
+          "startLine": 19,
+          "endLine": 19,
+          "signature": "clean(v)"
+        },
+        {
+          "name": "slugify",
+          "kind": "function",
+          "startLine": 29,
+          "endLine": 29,
+          "signature": "slugify(v)"
+        },
+        {
+          "name": "normalizeTheme",
+          "kind": "function",
+          "startLine": 31,
+          "endLine": 31,
+          "signature": "normalizeTheme(v)"
         }
       ],
       "dataIO": []
@@ -603,49 +639,56 @@
           "kind": "function",
           "startLine": 277,
           "endLine": 277,
-          "signature": "resolvePillPositions(pills, boxObstacles)"
+          "signature": "resolvePillPositions(pills, boxObstacles, maxCanvasW = 1800)"
         },
         {
           "name": "renderPillLabel",
           "kind": "function",
-          "startLine": 305,
-          "endLine": 305,
+          "startLine": 331,
+          "endLine": 331,
           "signature": "renderPillLabel(x, y, text, { bg = '#ffffff', stroke = '#cbd5e1', fg = '#334155', fontSize = 10.)"
         },
         {
           "name": "renderNodeCard",
           "kind": "function",
-          "startLine": 316,
-          "endLine": 316,
+          "startLine": 342,
+          "endLine": 342,
           "signature": "renderNodeCard(node, x, y, w, h, layout)"
         },
         {
           "name": "layoutNodeBox",
           "kind": "function",
-          "startLine": 387,
-          "endLine": 387,
+          "startLine": 413,
+          "endLine": 413,
           "signature": "layoutNodeBox(node, colWidth)"
         },
         {
           "name": "renderSolutionDiagram",
           "kind": "function",
-          "startLine": 430,
-          "endLine": 430,
+          "startLine": 456,
+          "endLine": 456,
           "signature": "renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Ampliar', mode = 'solution' } = {})"
         },
         {
           "name": "renderSchemaDiagram",
           "kind": "function",
-          "startLine": 888,
-          "endLine": 888,
+          "startLine": 936,
+          "endLine": 936,
           "signature": "renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Ampliar' } = {})"
         },
         {
           "name": "enhanceMermaidSvg",
           "kind": "function",
-          "startLine": 1276,
-          "endLine": 1276,
+          "startLine": 1324,
+          "endLine": 1324,
           "signature": "enhanceMermaidSvg($, mermaidSource)"
+        },
+        {
+          "name": "esc",
+          "kind": "function",
+          "startLine": 1,
+          "endLine": 1,
+          "signature": "esc(v)"
         }
       ],
       "dataIO": []
@@ -655,17 +698,17 @@
         {
           "name": "SKIP",
           "line": 23,
-          "value": "{'node_modules', 'dist', '.pytest_cache', '.tox', 'env', 'data', '.runtime', 'ta"
+          "value": "{'venv', '.git', '.tox', '.venv', '.runtime', 'dist', 'node_modules', '.ruff_cac"
         },
         {
           "name": "EXTENSIONS",
           "line": 29,
-          "value": "{'.py', '.sql', '.txt', '.jinja', '.dml', '.java', '.ts', '.kt', '.mdx', '.hql',"
+          "value": "{'.hql', '.scala', '.tsx', '.md', '.java', '.json', '.py', '.avsc', '.dml', '.sq"
         },
         {
           "name": "SPECIAL_NAMES",
           "line": 37,
-          "value": "{'Makefile', 'Jenkinsfile', 'Procfile', 'Dockerfile'}"
+          "value": "{'Procfile', 'Makefile', 'Jenkinsfile', 'Dockerfile'}"
         },
         {
           "name": "KIND",
@@ -705,13 +748,18 @@
           "value": "<redacted>"
         },
         {
-          "name": "NOISE_DATA_EXTS",
+          "name": "SECRET_VALUE_RE",
           "line": 106,
-          "value": "{'.parquet', '.csv'}"
+          "value": "<redacted>"
+        },
+        {
+          "name": "NOISE_DATA_EXTS",
+          "line": 110,
+          "value": "{'.csv', '.parquet'}"
         },
         {
           "name": "GENERATED_ARTIFACT_PATTERNS",
-          "line": 107,
+          "line": 111,
           "value": "('*.validation.json', 'reading-plan.md', 'update-plan.md', 'documentacao*.html')"
         }
       ],
@@ -719,17 +767,26 @@
         {
           "name": "is_secret_name",
           "kind": "function",
-          "startLine": 110,
-          "endLine": 111,
+          "startLine": 114,
+          "endLine": 115,
           "decorators": [],
           "signature": "is_secret_name(name: str) -> bool",
           "doc": null
         },
         {
+          "name": "redact_inline_secrets",
+          "kind": "function",
+          "startLine": 118,
+          "endLine": 119,
+          "decorators": [],
+          "signature": "redact_inline_secrets(text: str) -> str",
+          "doc": null
+        },
+        {
           "name": "safe_preview_value",
           "kind": "function",
-          "startLine": 114,
-          "endLine": 129,
+          "startLine": 122,
+          "endLine": 138,
           "decorators": [],
           "signature": "safe_preview_value(name: str, raw_val: Any) -> Any",
           "doc": null
@@ -737,8 +794,8 @@
         {
           "name": "detect_stack_signals",
           "kind": "function",
-          "startLine": 132,
-          "endLine": 151,
+          "startLine": 141,
+          "endLine": 160,
           "decorators": [],
           "signature": "detect_stack_signals(posix_path: str, text: str) -> list[str]",
           "doc": null
@@ -746,8 +803,8 @@
         {
           "name": "_unparse",
           "kind": "function",
-          "startLine": 154,
-          "endLine": 160,
+          "startLine": 163,
+          "endLine": 169,
           "decorators": [],
           "signature": "_unparse(node: ast.AST | None) -> str | None",
           "doc": null
@@ -755,8 +812,8 @@
         {
           "name": "_const_value",
           "kind": "function",
-          "startLine": 163,
-          "endLine": 168,
+          "startLine": 172,
+          "endLine": 177,
           "decorators": [],
           "signature": "_const_value(node: ast.AST) -> Any",
           "doc": null
@@ -764,8 +821,8 @@
         {
           "name": "_call_chain",
           "kind": "function",
-          "startLine": 171,
-          "endLine": 181,
+          "startLine": 180,
+          "endLine": 190,
           "decorators": [],
           "signature": "_call_chain(node: ast.AST) -> list[str]",
           "doc": null
@@ -773,8 +830,8 @@
         {
           "name": "_spark_chain_details",
           "kind": "function",
-          "startLine": 184,
-          "endLine": 224,
+          "startLine": 193,
+          "endLine": 233,
           "decorators": [],
           "signature": "_spark_chain_details(call_node: ast.Call) -> dict[str, Any]",
           "doc": null
@@ -782,8 +839,8 @@
         {
           "name": "_strip_databricks_cells",
           "kind": "function",
-          "startLine": 227,
-          "endLine": 281,
+          "startLine": 236,
+          "endLine": 290,
           "decorators": [],
           "signature": "_strip_databricks_cells(text: str) -> tuple[bool, list[dict[str, Any]], str]",
           "doc": null
@@ -791,8 +848,8 @@
         {
           "name": "_extract_regex_python_symbols",
           "kind": "function",
-          "startLine": 284,
-          "endLine": 297,
+          "startLine": 293,
+          "endLine": 306,
           "decorators": [],
           "signature": "_extract_regex_python_symbols(text: str) -> list[dict[str, Any]]",
           "doc": null
@@ -800,8 +857,8 @@
         {
           "name": "extract_sql_facts",
           "kind": "function",
-          "startLine": 300,
-          "endLine": 395,
+          "startLine": 309,
+          "endLine": 404,
           "decorators": [],
           "signature": "extract_sql_facts(text: str, origin: str) -> dict[str, Any]",
           "doc": null
@@ -809,8 +866,8 @@
         {
           "name": "extract_python_facts",
           "kind": "function",
-          "startLine": 398,
-          "endLine": 763,
+          "startLine": 407,
+          "endLine": 772,
           "decorators": [],
           "signature": "extract_python_facts(posix_path: str, text: str) -> dict[str, Any]",
           "doc": null
@@ -818,8 +875,8 @@
         {
           "name": "extract_ipynb_facts",
           "kind": "function",
-          "startLine": 766,
-          "endLine": 799,
+          "startLine": 775,
+          "endLine": 808,
           "decorators": [],
           "signature": "extract_ipynb_facts(posix_path: str, text: str) -> dict[str, Any]",
           "doc": null
@@ -827,8 +884,8 @@
         {
           "name": "extract_js_ts_facts",
           "kind": "function",
-          "startLine": 802,
-          "endLine": 832,
+          "startLine": 811,
+          "endLine": 883,
           "decorators": [],
           "signature": "extract_js_ts_facts(posix_path: str, text: str) -> dict[str, Any]",
           "doc": null
@@ -836,8 +893,8 @@
         {
           "name": "extract_scala_facts",
           "kind": "function",
-          "startLine": 835,
-          "endLine": 860,
+          "startLine": 886,
+          "endLine": 911,
           "decorators": [],
           "signature": "extract_scala_facts(posix_path: str, text: str) -> dict[str, Any]",
           "doc": null
@@ -845,8 +902,8 @@
         {
           "name": "extract_workflow_or_config",
           "kind": "function",
-          "startLine": 863,
-          "endLine": 931,
+          "startLine": 914,
+          "endLine": 982,
           "decorators": [],
           "signature": "extract_workflow_or_config(posix_path: str, text: str) -> dict[str, Any]",
           "doc": null
@@ -854,8 +911,8 @@
         {
           "name": "extract_iac_resources",
           "kind": "function",
-          "startLine": 934,
-          "endLine": 942,
+          "startLine": 985,
+          "endLine": 993,
           "decorators": [],
           "signature": "extract_iac_resources(posix_path: str, text: str) -> list[dict[str, str]]",
           "doc": null
@@ -863,8 +920,8 @@
         {
           "name": "_resolve_python_import",
           "kind": "function",
-          "startLine": 945,
-          "endLine": 966,
+          "startLine": 996,
+          "endLine": 1017,
           "decorators": [],
           "signature": "_resolve_python_import(imp: dict[str, Any], from_file: str, module_index: dict[str, str]) -> list[str]",
           "doc": null
@@ -872,8 +929,8 @@
         {
           "name": "_resolve_js_import",
           "kind": "function",
-          "startLine": 969,
-          "endLine": 978,
+          "startLine": 1020,
+          "endLine": 1029,
           "decorators": [],
           "signature": "_resolve_js_import(specifier: str, from_file: str, all_paths: set[str]) -> str | None",
           "doc": null
@@ -881,8 +938,8 @@
         {
           "name": "_resolve_notebook_target",
           "kind": "function",
-          "startLine": 981,
-          "endLine": 998,
+          "startLine": 1032,
+          "endLine": 1049,
           "decorators": [],
           "signature": "_resolve_notebook_target(raw_ref: str, from_file: str, all_paths: set[str]) -> str | None",
           "doc": null
@@ -890,8 +947,8 @@
         {
           "name": "inspect",
           "kind": "function",
-          "startLine": 1001,
-          "endLine": 1394,
+          "startLine": 1052,
+          "endLine": 1476,
           "decorators": [],
           "signature": "inspect(root: Path, includes: list[str] | None, excludes: list[str] | None, ignore_paths: set[str] | None) -> dict[str, Any]",
           "doc": null
@@ -899,8 +956,8 @@
         {
           "name": "render_reading_plan",
           "kind": "function",
-          "startLine": 1397,
-          "endLine": 1543,
+          "startLine": 1479,
+          "endLine": 1625,
           "decorators": [],
           "signature": "render_reading_plan(dossier: dict[str, Any]) -> str",
           "doc": null
@@ -920,15 +977,15 @@
         {
           "name": "computeRendererHash",
           "kind": "function",
-          "startLine": 17,
-          "endLine": 17,
+          "startLine": 19,
+          "endLine": 19,
           "signature": "computeRendererHash(skillRoot = ROOT)"
         },
         {
           "name": "getSkillVersion",
           "kind": "function",
-          "startLine": 27,
-          "endLine": 27,
+          "startLine": 29,
+          "endLine": 29,
           "signature": "getSkillVersion(skillRoot = ROOT)"
         }
       ],
@@ -965,32 +1022,46 @@
           "signature": "readJson(file)"
         },
         {
-          "name": "verify",
+          "name": "checkOptionalFileHash",
           "kind": "function",
           "startLine": 22,
           "endLine": 22,
+          "signature": "checkOptionalFileHash(filePath, expectedSha256)"
+        },
+        {
+          "name": "verify",
+          "kind": "function",
+          "startLine": 32,
+          "endLine": 32,
           "signature": "verify(manifestFile, receiptFile)"
         },
         {
           "name": "analyzeImpact",
           "kind": "function",
-          "startLine": 103,
-          "endLine": 103,
+          "startLine": 147,
+          "endLine": 147,
           "signature": "analyzeImpact(manifestFile, receiptFile, {dossierFile = null} = {})"
         },
         {
           "name": "renderUpdatePlan",
           "kind": "function",
-          "startLine": 237,
-          "endLine": 237,
+          "startLine": 281,
+          "endLine": 281,
           "signature": "renderUpdatePlan(impact)"
         },
         {
           "name": "getFlagValue",
           "kind": "function",
-          "startLine": 335,
-          "endLine": 335,
+          "startLine": 402,
+          "endLine": 402,
           "signature": "getFlagValue(argv, flag)"
+        },
+        {
+          "name": "hash",
+          "kind": "function",
+          "startLine": 8,
+          "endLine": 8,
+          "signature": "hash(v)"
         }
       ],
       "dataIO": []
@@ -1114,15 +1185,19 @@
     "tests/landing.test.mjs": [
       {
         "name": "PT and EN translation dictionaries share identical non-empty keys",
-        "startLine": 12
+        "startLine": 14
       },
       {
         "name": "resolveLang and getCopy normalize language tags safely",
-        "startLine": 22
+        "startLine": 24
       },
       {
         "name": "docs/index.html references valid i18n keys, local assets, and chapter buttons",
-        "startLine": 31
+        "startLine": 33
+      },
+      {
+        "name": "landing RECIPES.manifest strictly validates against document.schema.json and RECIPES.cli uses valid verify flags",
+        "startLine": 73
       }
     ]
   },
@@ -1222,7 +1297,7 @@
       {
         "path": "scripts/inspect_repo.py",
         "kind": "code",
-        "lines": 1574,
+        "lines": 1656,
         "centrality": 7,
         "stacks": [
           "api_service",
@@ -1240,13 +1315,13 @@
           "sql_warehouse",
           "terraform_iac"
         ],
-        "symbolsCount": 21,
+        "symbolsCount": 22,
         "testsCount": 0
       },
       {
         "path": "README.md",
         "kind": "docs",
-        "lines": 312,
+        "lines": 313,
         "centrality": 5,
         "stacks": [
           "api_service",
@@ -1278,7 +1353,7 @@
       {
         "path": "docs/document-summary.json",
         "kind": "config",
-        "lines": 94,
+        "lines": 96,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1287,7 +1362,7 @@
       {
         "path": "docs/document.json",
         "kind": "config",
-        "lines": 129,
+        "lines": 131,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1334,16 +1409,16 @@
       {
         "path": "scripts/build.mjs",
         "kind": "code",
-        "lines": 232,
+        "lines": 242,
         "centrality": 9,
         "stacks": [],
-        "symbolsCount": 3,
+        "symbolsCount": 8,
         "testsCount": 0
       },
       {
         "path": "scripts/validate.mjs",
         "kind": "code",
-        "lines": 77,
+        "lines": 82,
         "centrality": 6,
         "stacks": [],
         "symbolsCount": 1,
@@ -1352,16 +1427,16 @@
       {
         "path": "scripts/verify.mjs",
         "kind": "code",
-        "lines": 373,
+        "lines": 456,
         "centrality": 5,
         "stacks": [],
-        "symbolsCount": 6,
+        "symbolsCount": 8,
         "testsCount": 0
       },
       {
         "path": "docs/landing-i18n.mjs",
         "kind": "code",
-        "lines": 207,
+        "lines": 268,
         "centrality": 4,
         "stacks": [
           "api_service",
@@ -1374,16 +1449,16 @@
       {
         "path": "scripts/diagrams.mjs",
         "kind": "code",
-        "lines": 1367,
+        "lines": 1415,
         "centrality": 4,
         "stacks": [],
-        "symbolsCount": 20,
+        "symbolsCount": 21,
         "testsCount": 0
       },
       {
         "path": "scripts/renderer-hash.mjs",
         "kind": "code",
-        "lines": 31,
+        "lines": 33,
         "centrality": 4,
         "stacks": [],
         "symbolsCount": 2,
@@ -1392,7 +1467,7 @@
       {
         "path": "docs/landing.js",
         "kind": "code",
-        "lines": 256,
+        "lines": 212,
         "centrality": 1,
         "stacks": [],
         "symbolsCount": 5,
@@ -1401,7 +1476,7 @@
       {
         "path": "assets/document.js",
         "kind": "code",
-        "lines": 516,
+        "lines": 570,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1413,7 +1488,7 @@
       {
         "path": "tests/dossier.test.mjs",
         "kind": "code",
-        "lines": 393,
+        "lines": 498,
         "centrality": 1,
         "stacks": [
           "api_service",
@@ -1422,6 +1497,7 @@
           "databricks",
           "delta_lake",
           "event_hubs",
+          "orchestration",
           "scala",
           "spark_pyspark",
           "sql_warehouse",
@@ -1433,7 +1509,7 @@
       {
         "path": "CHANGELOG.md",
         "kind": "docs",
-        "lines": 193,
+        "lines": 220,
         "centrality": 0,
         "stacks": [
           "api_service",
@@ -1468,7 +1544,7 @@
       {
         "path": "docs/content-summary.md",
         "kind": "docs",
-        "lines": 204,
+        "lines": 205,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1477,7 +1553,7 @@
       {
         "path": "docs/content.md",
         "kind": "docs",
-        "lines": 693,
+        "lines": 696,
         "centrality": 0,
         "stacks": [
           "databricks",
@@ -1559,7 +1635,7 @@
       {
         "path": "tests/build.test.mjs",
         "kind": "code",
-        "lines": 347,
+        "lines": 400,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
@@ -1568,7 +1644,7 @@
       {
         "path": "tests/diagrams.test.mjs",
         "kind": "code",
-        "lines": 470,
+        "lines": 522,
         "centrality": 0,
         "stacks": [
           "dbt",
@@ -1582,21 +1658,21 @@
       {
         "path": "tests/landing.test.mjs",
         "kind": "code",
-        "lines": 70,
+        "lines": 84,
         "centrality": 0,
         "stacks": [],
         "symbolsCount": 0,
-        "testsCount": 3
+        "testsCount": 4
       }
     ]
   },
   "files": [
     {
       "path": "CHANGELOG.md",
-      "bytes": 22713,
-      "lines": 193,
+      "bytes": 26346,
+      "lines": 220,
       "kind": "docs",
-      "sha256": "463d0b15016367f1bae9f36e96b58467b1505153a9024995deb007a55b14dc81",
+      "sha256": "5e91fffe737f05cf4531ff23812c7fdc63b02fc1c7b0543a194ce07f982dcee2",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1612,10 +1688,10 @@
     },
     {
       "path": "README.md",
-      "bytes": 17568,
-      "lines": 312,
+      "bytes": 18228,
+      "lines": 313,
       "kind": "docs",
-      "sha256": "a0c5d3c48a6877465fccc5d9c6755a230f14310925e635c69c6bff9222cf1806",
+      "sha256": "2d3ade2f59ff3514f8de613d9791fa4e951ddffdb904865274268cb1bfa8c4e2",
       "stacks": [
         "api_service",
         "databricks",
@@ -1627,10 +1703,10 @@
     },
     {
       "path": "SKILL.md",
-      "bytes": 14302,
+      "bytes": 14845,
       "lines": 53,
       "kind": "docs",
-      "sha256": "2318fdd53e017a8dba778496d4fa64ff0b605b010efa5a819ebf08f39fb170e1",
+      "sha256": "aaefb11e9ae172c787be4c6e56d3cac2abe591ea474662ef94d8e2c26526f092",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1648,7 +1724,7 @@
       "bytes": 22497,
       "lines": 622,
       "kind": "config",
-      "sha256": "4099302222158d3b3370b7d391a48c369bd7a23027d91b8860f52df149752213",
+      "sha256": "9a7666583b060868ac8b6bb0c57117ed5ad5cab81b016286057f34c2f90b5697",
       "wave": 1,
       "centrality": 0
     },
@@ -1657,7 +1733,7 @@
       "bytes": 564,
       "lines": 10,
       "kind": "config",
-      "sha256": "88a070df7ee2ef56beac8be236e2d7e119bd34fcef87ff0b240b70321149d0c1",
+      "sha256": "ae53cff603eeb562c652a3b37d11e9f73d0902256d61dbcd9260049016029244",
       "wave": 1,
       "centrality": 5
     },
@@ -1672,28 +1748,28 @@
     },
     {
       "path": "assets/document.js",
-      "bytes": 21536,
-      "lines": 516,
+      "bytes": 23495,
+      "lines": 570,
       "kind": "code",
-      "sha256": "b8e0c3722e0be17ea62940b29c899f68d1dd026567ce52d39d61f98d21df3fa7",
+      "sha256": "c4cfce702caa12cfead22b3d944b775fa443d8accebfe5474c77a5b76fc7ad79",
       "wave": 2,
       "centrality": 0
     },
     {
       "path": "docs/content-summary.md",
-      "bytes": 14447,
-      "lines": 204,
+      "bytes": 14569,
+      "lines": 205,
       "kind": "docs",
-      "sha256": "aa4c3debd7460a3972b3cf06ac820bb5bb22c783f4c18a48227c3704de7b6184",
+      "sha256": "4c6115a490564accba975735514add7ddeb5be28927b16f5cea30d491a48f86a",
       "wave": 4,
       "centrality": 0
     },
     {
       "path": "docs/content.md",
-      "bytes": 54326,
-      "lines": 693,
+      "bytes": 55319,
+      "lines": 696,
       "kind": "docs",
-      "sha256": "3dda25cd1b9ca8ea22610e2cda6170cff28cd709f04bec9d3c6fd3437e9f3aaa",
+      "sha256": "d6d2270c59d0ae4325fe838705cfe7cb52736d3d229f4eb008c6cd25542a03d3",
       "stacks": [
         "databricks",
         "spark_pyspark"
@@ -1703,28 +1779,28 @@
     },
     {
       "path": "docs/document-summary.json",
-      "bytes": 4039,
-      "lines": 94,
+      "bytes": 4412,
+      "lines": 96,
       "kind": "config",
-      "sha256": "8b9c2eecfc9acffac86ebcb9e237b61a1b1d2b35d6d102ef17a261a52b5c370c",
+      "sha256": "4fe604e206d1234b71d1958c03bf76a3f5b8739eee4855140a556a74918d34dd",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "docs/document.json",
-      "bytes": 6115,
-      "lines": 129,
+      "bytes": 6576,
+      "lines": 131,
       "kind": "config",
-      "sha256": "4a7318afd9c61725ac3214d659810dcaef7e8698d9eeaac26416aef303c6b191",
+      "sha256": "aac46c7b7c7d289141454500d2bf90b8a30d7737c7ebbd6ec55daf889c5ab8c1",
       "wave": 1,
       "centrality": 0
     },
     {
       "path": "docs/index.html",
-      "bytes": 20970,
+      "bytes": 20971,
       "lines": 355,
       "kind": "docs",
-      "sha256": "e42f5edcc35e001a04e2ceea6fd3d43ffa387719c7cd9e0b1810566267ec256e",
+      "sha256": "2e7a92231204dcbe7a3112e816f2e77e3aba151162b8cad771976ce795d30df5",
       "stacks": [
         "api_service",
         "databricks",
@@ -1735,10 +1811,10 @@
     },
     {
       "path": "docs/landing-i18n.mjs",
-      "bytes": 13740,
-      "lines": 207,
+      "bytes": 16094,
+      "lines": 268,
       "kind": "code",
-      "sha256": "b1b4c14b7192a8f5e5a48408abd107a6c11d45659c09b2c84d8c7274df756b2b",
+      "sha256": "27a28f9f54867fedbabd8f093fa3dde20674746737be4d5fe0136d1a78514d55",
       "stacks": [
         "api_service",
         "databricks",
@@ -1749,10 +1825,10 @@
     },
     {
       "path": "docs/landing.js",
-      "bytes": 7557,
-      "lines": 256,
+      "bytes": 6142,
+      "lines": 212,
       "kind": "code",
-      "sha256": "555aa8368847197b1cef84cf8e26c33885fc39622b21aa98104496f53d708605",
+      "sha256": "94a6af36d08f26834baab8dc0eca0ae7914118c481ea745ead6bf2f0a77c4bef",
       "wave": 2,
       "centrality": 1
     },
@@ -1794,10 +1870,10 @@
     },
     {
       "path": "references/authoring.md",
-      "bytes": 17999,
+      "bytes": 18629,
       "lines": 160,
       "kind": "docs",
-      "sha256": "5386618d1badb1ff1006f402429f284f5e6914bb18c4482b01c606d9533750d0",
+      "sha256": "ec777792648c0047d6cbd6db79dd77ad7beb79fa7f5515f224a6419ce97d91ca",
       "wave": 4,
       "centrality": 0
     },
@@ -1844,28 +1920,28 @@
     },
     {
       "path": "scripts/build.mjs",
-      "bytes": 27555,
-      "lines": 232,
+      "bytes": 28049,
+      "lines": 242,
       "kind": "code",
-      "sha256": "b9cca5d79111a92bed0ba6da911b63d2116a493e720a65c6f0a11bbe693a9ac2",
+      "sha256": "3ed75d42f0e8f7c65c53f808a82b10a59a1744ecd497f17a4e50d494c7e426e7",
       "wave": 2,
       "centrality": 9
     },
     {
       "path": "scripts/diagrams.mjs",
-      "bytes": 66288,
-      "lines": 1367,
+      "bytes": 67807,
+      "lines": 1415,
       "kind": "code",
-      "sha256": "c5b733dac129bc629feea7664c40f6b0cd1282b343a8846945aa0dd43dc3b0c4",
+      "sha256": "10f6e85cc300dceac128857cfd60c03698a7d14ac5b00b23ee38335c8d81ea59",
       "wave": 2,
       "centrality": 4
     },
     {
       "path": "scripts/inspect_repo.py",
-      "bytes": 75761,
-      "lines": 1574,
+      "bytes": 80284,
+      "lines": 1656,
       "kind": "code",
-      "sha256": "9873e871455d1e83805a61c9be2cdfe96ebdf572ed29c3608c9f838c78e9815d",
+      "sha256": "848a5b533dc615ae9e2fe229f7108af218e45f92b7706b84e99f5ac91bbb2bbd",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1887,46 +1963,46 @@
     },
     {
       "path": "scripts/renderer-hash.mjs",
-      "bytes": 887,
-      "lines": 31,
+      "bytes": 939,
+      "lines": 33,
       "kind": "code",
-      "sha256": "3077c43340aca8eb008f62de54a653022d82b328af5ea76dfcf8594812b203a7",
+      "sha256": "8759b3dd8ef25f8d05073b05cfb42f15c2cfcd8a2cf54baf5e4cd9f1388dda84",
       "wave": 2,
       "centrality": 4
     },
     {
       "path": "scripts/validate.mjs",
-      "bytes": 5509,
-      "lines": 77,
+      "bytes": 5771,
+      "lines": 82,
       "kind": "code",
-      "sha256": "65627b105fb1cd169fb8bc7db1ae820a524f01b2b07f2af5f1c83e207d6bb9b2",
+      "sha256": "9315a9dc63e5bb17a223b85d6faaa7271691b1b0c888eaba0799655436f4719f",
       "wave": 2,
       "centrality": 6
     },
     {
       "path": "scripts/verify.mjs",
-      "bytes": 14826,
-      "lines": 373,
+      "bytes": 18495,
+      "lines": 456,
       "kind": "code",
-      "sha256": "4b76bf5165214288b814965fefcd856dcda9273b8fc7fee47981609f5b139065",
+      "sha256": "5234d1e42f8dc98afaee9c91e5f197adb1169a230772b7034612efbf64012dea",
       "wave": 2,
       "centrality": 5
     },
     {
       "path": "tests/build.test.mjs",
-      "bytes": 21165,
-      "lines": 347,
+      "bytes": 24982,
+      "lines": 400,
       "kind": "code",
-      "sha256": "89836c1a99a00c97c3308709ebef83c0e7f5aacac88e2baa2eaaaaeb4c897122",
+      "sha256": "e84b8df59b5bfec622fd66859e2fe148d7d04d1b75156b5e13e06caac6c7fd61",
       "wave": 4,
       "centrality": 0
     },
     {
       "path": "tests/diagrams.test.mjs",
-      "bytes": 23905,
-      "lines": 470,
+      "bytes": 26417,
+      "lines": 522,
       "kind": "code",
-      "sha256": "69d0ecb6d57de9011c83767b7c1068ae6dd93b826810d402eed0f044aab8e831",
+      "sha256": "e7c785b18e0da753ffe9418f3853157be57109db89c1e3ce0a96e739c3bab9a6",
       "stacks": [
         "dbt",
         "delta_lake",
@@ -1938,10 +2014,10 @@
     },
     {
       "path": "tests/dossier.test.mjs",
-      "bytes": 18160,
-      "lines": 393,
+      "bytes": 24060,
+      "lines": 498,
       "kind": "code",
-      "sha256": "a40205d0535c3557e52ac7c7f73a7184930b432087221396a84273ebabe12416",
+      "sha256": "0e0471bba24a01749100bb169e6ccee30e709b837d7de1f7bcaf3928447d0267",
       "stacks": [
         "api_service",
         "azure_blob_adls",
@@ -1949,6 +2025,7 @@
         "databricks",
         "delta_lake",
         "event_hubs",
+        "orchestration",
         "scala",
         "spark_pyspark",
         "sql_warehouse",
@@ -1959,10 +2036,10 @@
     },
     {
       "path": "tests/landing.test.mjs",
-      "bytes": 2469,
-      "lines": 70,
+      "bytes": 3189,
+      "lines": 84,
       "kind": "code",
-      "sha256": "f6d5f825fa66e64b7b93261c0ce6b7a634c00f7c7e6be9e0434d927d8a5b27f0",
+      "sha256": "65fc955df9ac609848620f619ef72295b4bb5ccbf9d93b24b5a856d02312d727",
       "wave": 4,
       "centrality": 0
     }

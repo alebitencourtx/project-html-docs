@@ -8,6 +8,67 @@ export const VIDEO_CHAPTERS = [
   { id: 'summary', time: 24.8 },
 ];
 
+export const RECIPES = {
+  cli: `# 1. Install dependencies & run unit tests
+npm ci --ignore-scripts && npm test
+
+# 2. Static repository discovery (AST + regex + dependency graph)
+python3 scripts/inspect_repo.py . \\
+  --out docs/inventory.json \\
+  --plan docs/reading-plan.md
+
+# 3. Compile single-file offline HTML + SHA-256 receipt
+node scripts/build.mjs docs/document.json \\
+  --out docs/documentacao.html --force
+
+# 4. Verify hashes & detect stale sections after commits
+node scripts/verify.mjs docs/document.json \\
+  docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md`,
+  manifest: `{
+  "title": "project-html-docs",
+  "subtitle": "Gerador de documentação técnica e funcional em HTML único offline",
+  "version": "1.9.0",
+  "updated": "2026-11-15",
+  "mode": "full",
+  "theme": "vermelho",
+  "language": "pt-BR",
+  "content": "docs/content.md",
+  "companionDoc": {
+    "href": "documentacao-resumida.html",
+    "label": "Guia rápido"
+  },
+  "sections": [
+    {
+      "id": "executive-summary",
+      "title": "Visão Executiva",
+      "audience": "all",
+      "sources": ["skill", "builder"]
+    },
+    {
+      "id": "architecture",
+      "title": "Arquitetura da Solução",
+      "audience": "technical",
+      "sources": ["diagrams", "verifier", "inspector"]
+    }
+  ],
+  "sources": [
+    { "id": "skill", "path": "SKILL.md", "description": "Workflow principal da skill" },
+    { "id": "builder", "path": "scripts/build.mjs", "description": "Compilador HTML offline e auditoria" },
+    { "id": "diagrams", "path": "scripts/diagrams.mjs", "description": "Motor SVG 2D e enhancer Mermaid" },
+    { "id": "verifier", "path": "scripts/verify.mjs", "description": "Verificação de hashes e análise de impacto" },
+    { "id": "inspector", "path": "scripts/inspect_repo.py", "description": "Dossiê estático AST, regex e grafo" }
+  ]
+}`,
+  skill: `Use the project-html-docs skill (SKILL.md):
+1. Run scripts/inspect_repo.py on this repository to generate
+   docs/inventory.json and docs/reading-plan.md.
+2. Read the prioritized waves and author docs/document.json +
+   docs/content.md strictly from implemented behavior.
+3. Compile docs/documentacao.html (mode: "full") and
+   docs/documentacao-resumida.html (mode: "summary") with theme "vermelho".
+4. Verify SHA-256 receipts with scripts/verify.mjs.`,
+};
+
 export const TRANSLATIONS = {
   pt: {
     metaTitle: 'project-html-docs · Documentação de projeto em HTML único offline',
@@ -18,7 +79,7 @@ export const TRANSLATIONS = {
     navArtifacts: 'Exemplos',
     navQuickStart: 'Começar',
     navCta: 'Abrir manual',
-    heroMeta: 'v1.8.0 · Licença MIT · Node 22+ & Python 3.10+ · Saída 100% offline',
+    heroMeta: 'v1.9.0 · Licença MIT · Node 22+ & Python 3.10+ · Saída 100% offline',
     heroTitle: 'Documentação de projeto em um único HTML offline e verificável.',
     heroSubtitle: 'Uma skill e um compilador determinístico que transformam o estado implementado de qualquer repositório em um manual técnico e funcional — com diagramas 2D em SVG, busca instantânea, filtro por perfil e recibo SHA-256.',
     heroPrimaryCta: 'Explorar manual ao vivo',
@@ -38,7 +99,7 @@ export const TRANSLATIONS = {
     proof1Label: 'Sem servidor, CDN ou runtime externo na leitura',
     proof2Value: '0 tokens',
     proof2Label: 'Descoberta estática via AST, regex e grafo (inspect_repo.py)',
-    proof3Value: '35 / 35',
+    proof3Value: '40 / 40',
     proof3Label: 'Testes automatizados em build, SVG, dossiê e impacto',
     proof4Value: 'SHA-256',
     proof4Label: 'Recibo de integridade + detecção incremental de seções stale',
@@ -80,22 +141,22 @@ export const TRANSLATIONS = {
     artSectionEyebrow: '03 · Prova viva em /docs',
     artSectionTitle: 'O próprio projeto documentado pela skill.',
     artSectionLead: 'Os dois arquivos HTML abaixo estão hospedados nesta mesma pasta /docs do GitHub Pages e foram compilados diretamente do código deste repositório.',
-    artFullTag: 'mode: "full" · 11 seções · ~34 min de leitura',
+    artFullTag: 'mode: "full" · 11 seções · ~35 min de leitura',
     artFullTitle: 'Manual Completo do Gerador',
     artFullBody: 'Cobre arquitetura interna, regras de validação, dicionários completos de manifesto/recibo/dossiê, 3 diagramas 2D/fluxo, gráfico de testes e guia de recuperação operacional.',
-    artFullMeta: 'docs/documentacao.html · 190 KB autossuficiente',
+    artFullMeta: 'docs/documentacao.html · 197 KB autossuficiente',
     artFullCta: 'Abrir manual completo',
     artSummaryTag: 'mode: "summary" · 6 seções · ~9 min de leitura',
     artSummaryTitle: 'Guia Rápido / Visão Resumida',
     artSummaryBody: 'Panorama executivo e operacional em 6 capítulos de alto sinal, com diagramas principais, tabela de regras e link cruzado de retorno para o manual completo.',
-    artSummaryMeta: 'docs/documentacao-resumida.html · 105 KB autossuficiente',
+    artSummaryMeta: 'docs/documentacao-resumida.html · 110 KB autossuficiente',
     artSummaryCta: 'Abrir guia rápido',
     qsEyebrow: '04 · Pronto para GitHub Pages e uso local',
     qsTitle: 'Documente seu repositório com evidência verificável.',
     qsBody: 'Clone o repositório, execute os testes unitários ou aponte um agente para SKILL.md para gerar o primeiro manual HTML do seu projeto.',
     qsPrimaryCta: 'Abrir manual completo',
     qsRepoCta: 'Ver repositório no GitHub',
-    footerLicense: 'Licença MIT · v1.8.0',
+    footerLicense: 'Licença MIT · v1.9.0',
     footerRepo: 'GitHub',
     footerFull: 'Manual completo',
     footerSummary: 'Guia rápido',
@@ -109,7 +170,7 @@ export const TRANSLATIONS = {
     navArtifacts: 'Live Docs',
     navQuickStart: 'Quick Start',
     navCta: 'Open manual',
-    heroMeta: 'v1.8.0 · MIT License · Node 22+ & Python 3.10+ · 100% offline output',
+    heroMeta: 'v1.9.0 · MIT License · Node 22+ & Python 3.10+ · 100% offline output',
     heroTitle: 'Turn any codebase into a single-file, offline, verifiable HTML manual.',
     heroSubtitle: 'An operational skill and deterministic compiler that document a repository’s current implemented state—complete with 2D SVG diagrams, instant search, audience filtering, and SHA-256 receipts.',
     heroPrimaryCta: 'Explore live manual',
@@ -129,7 +190,7 @@ export const TRANSLATIONS = {
     proof1Label: 'Zero server, CDN, or external runtime required when reading',
     proof2Value: '0 tokens',
     proof2Label: 'Deterministic AST, regex & graph discovery (inspect_repo.py)',
-    proof3Value: '35 / 35',
+    proof3Value: '40 / 40',
     proof3Label: 'Automated tests covering build, SVG geometry, dossier & impact',
     proof4Value: 'SHA-256',
     proof4Label: 'Validation receipt + incremental stale-section impact routing',
@@ -171,22 +232,22 @@ export const TRANSLATIONS = {
     artSectionEyebrow: '03 · Live proof in /docs',
     artSectionTitle: 'The skill documented by itself.',
     artSectionLead: 'Both HTML manuals below are hosted right here in /docs for GitHub Pages and were compiled directly from this repository’s codebase.',
-    artFullTag: 'mode: "full" · 11 sections · ~34 min read',
+    artFullTag: 'mode: "full" · 11 sections · ~35 min read',
     artFullTitle: 'Full Generator Manual',
     artFullBody: 'Covers internal architecture, validation contracts, searchable dictionaries for manifest/receipt/dossier, 3 SVG diagrams, test coverage chart, and operational recovery.',
-    artFullMeta: 'docs/documentacao.html · 190 KB self-contained',
+    artFullMeta: 'docs/documentacao.html · 197 KB self-contained',
     artFullCta: 'Open full manual',
     artSummaryTag: 'mode: "summary" · 6 sections · ~9 min read',
     artSummaryTitle: 'Quick Guide / Summary View',
     artSummaryBody: 'High-signal executive and operational overview in 6 chapters, keeping key diagrams, rule tables, and a companion link back to the full manual.',
-    artSummaryMeta: 'docs/documentacao-resumida.html · 105 KB self-contained',
+    artSummaryMeta: 'docs/documentacao-resumida.html · 110 KB self-contained',
     artSummaryCta: 'Open quick guide',
     qsEyebrow: '04 · Ready for GitHub Pages & local use',
     qsTitle: 'Document your repository with verifiable evidence.',
     qsBody: 'Clone the repository, run the automated test suite, or point an agent to SKILL.md to generate your project’s first offline HTML manual.',
     qsPrimaryCta: 'Open full manual',
     qsRepoCta: 'View on GitHub',
-    footerLicense: 'MIT License · v1.8.0',
+    footerLicense: 'MIT License · v1.9.0',
     footerRepo: 'GitHub',
     footerFull: 'Full manual',
     footerSummary: 'Quick guide',
