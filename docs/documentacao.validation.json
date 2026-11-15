@@ -9,20 +9,20 @@
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 215499,
+  "bytes": 216002,
   "browserReviewed": true,
   "warnings": [],
   "version": "1.11.0",
   "skillVersion": "1.11.0",
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao.html",
-  "rendererSha256": "86afd2e6a96ec02fe80621080fa7c1ced18b5cca81e28af0c188355a8b380eda",
-  "builtAt": "2026-11-15T22:52:42.524Z",
-  "manifestSha256": "6c23a11d627fb6c7f28b558e183f7b37cb129a5cb026e3b53cdbe2b14a802070",
+  "rendererSha256": "c7ba3436a0a3b1a2bdf4e162da5ab1cc616553b04ad541aec6486e2b21016200",
+  "builtAt": "2026-11-15T23:01:40.661Z",
+  "manifestSha256": "1a16388c8cc1d18d71112d97f48a63a49c3d95c5a1be6e644c30b499d7041e6c",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "1ec16feb419dfc24ac92cd95b3585b6e56705b6f",
+  "revision": "794daacc43437c1f0b3f2202c6ff652b5f9b7038",
   "inputSha256": "0be495d5afa224e67003578870cb55b58518ecea84c5b3b797d8da02a2fd8262",
-  "htmlSha256": "9ced960e19a0da3f82ff39865c955dceb9dd8c1a8dca5877bb072490caddad38",
+  "htmlSha256": "8f229b5d67a51a54bbed2d71f526bc32135601c1c28eff04d1dbeb34fa60bc5c",
   "sources": [
     {
       "id": "skill",
@@ -166,7 +166,7 @@
       "id": "ui",
       "path": "assets/document.js",
       "description": "Comportamentos offline: drawer mobile inert sincronizado, zoom Fit monótono, busca e impressão.",
-      "sha256": "5d1e2509c51423868908e9cecd58bedd4fdf37dff0c757cca3d2649d172c75c7"
+      "sha256": "a1f68a3f0c0a5cdd8cd718767258316ef52f3f14f9280daf8b112187033a83fb"
     },
     {
       "id": "styles",
@@ -208,7 +208,7 @@
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes do compilador, segurança URL, colisões, canonicalização LF, CLI e temas.",
-      "sha256": "f7e0d23379d04dbd515fef1c1b91bc0b93105ca580cf3ae011fe933919031221"
+      "sha256": "f1a1e6a30c667acf898aed1b5fcc5cdd86964eed7f98cb757e55175bdeb3e2fb"
     },
     {
       "id": "tests-diagrams",
@@ -277,5 +277,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T22:52:47.034Z"
+  "browserReviewedAt": "2026-11-15T23:01:47.181Z"
 }

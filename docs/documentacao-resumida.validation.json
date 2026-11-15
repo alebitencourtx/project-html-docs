@@ -9,20 +9,20 @@
   "referenceBlocks": 1,
   "diagrams": 1,
   "charts": 1,
-  "bytes": 120679,
+  "bytes": 121182,
   "browserReviewed": true,
   "warnings": [],
   "version": "1.11.0",
   "skillVersion": "1.11.0",
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao-resumida.html",
-  "rendererSha256": "86afd2e6a96ec02fe80621080fa7c1ced18b5cca81e28af0c188355a8b380eda",
-  "builtAt": "2026-11-15T22:52:43.172Z",
-  "manifestSha256": "0a97561be8157842743b06b4a8db93355cb619b557b8c8044c473c9f872554fc",
+  "rendererSha256": "c7ba3436a0a3b1a2bdf4e162da5ab1cc616553b04ad541aec6486e2b21016200",
+  "builtAt": "2026-11-15T23:01:41.323Z",
+  "manifestSha256": "c2d3ffc1e1a4348a4efa3ce4873c3a2927a700f788c2bbc8ebc052e1267669f5",
   "document": "project-html-docs · Guia Rápido",
-  "revision": "1ec16feb419dfc24ac92cd95b3585b6e56705b6f",
+  "revision": "794daacc43437c1f0b3f2202c6ff652b5f9b7038",
   "inputSha256": "925a8089d0cbbbe9b4ee4ee4d12ca0dd63b5bc8598e69c35bbf23a0cf4b7be04",
-  "htmlSha256": "3165d30909926c6ce802860d1d5d22a784b70d8583e8f85c0ce6260152b90a15",
+  "htmlSha256": "95661601c3fb52d14177120017c502dadd843c47baf883ddd31d14b4ce0594b8",
   "sources": [
     {
       "id": "skill",
@@ -130,7 +130,7 @@
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes de build, segurança URL, colisões, canonicalização LF e CLI.",
-      "sha256": "f7e0d23379d04dbd515fef1c1b91bc0b93105ca580cf3ae011fe933919031221"
+      "sha256": "f1a1e6a30c667acf898aed1b5fcc5cdd86964eed7f98cb757e55175bdeb3e2fb"
     },
     {
       "id": "tests-diagrams",
@@ -193,5 +193,5 @@
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
     }
   ],
-  "browserReviewedAt": "2026-11-15T22:52:47.252Z"
+  "browserReviewedAt": "2026-11-15T23:01:47.405Z"
 }
