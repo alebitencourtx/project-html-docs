@@ -2,15 +2,15 @@
   "title": "project-html-docs · Guia Rápido",
   "subtitle": "Visão panorâmica da skill que transforma o estado implementado de um repositório em um manual HTML único, offline e verificável.",
   "eyebrow": "project-html-docs · guia rápido",
-  "version": "1.11.0",
-  "updated": "2026-11-15",
+  "version": "1.12.0",
+  "updated": "2026-11-16",
   "language": "pt-BR",
   "theme": "vermelho",
   "mode": "summary",
   "content": "content-summary.md",
   "repoRoot": "..",
-  "revision": "da8801d89acc4b59cffb11da9b73e212635992cd",
-  "dataAsOf": "2026-11-15 · snapshot local v1.11.0 de implementação",
+  "revision": "2d4277fce3d5af7bb63f6d4df01d75d1fe607c98",
+  "dataAsOf": "2026-11-16 · implementação local v1.12.0 sobre 2d4277fce3d5; alterações ainda não commitadas; sem telemetria de produção",
   "companionDoc": {
     "href": "documentacao.html",
     "label": "Manual completo"
@@ -33,8 +33,8 @@
     },
     {
       "label": "Versão & Testes",
-      "value": "1.11.0 · 55 testes",
-      "description": "Suites Node + Chromium headless; temas Vermelho (padrão) e Azul persistidos."
+      "value": "1.12.0 · 63 testes",
+      "description": "61 testes passaram; 2 testes opcionais via playwright-cli ignorados. Review via CDP validado em Chrome."
     }
   ],
   "sections": [
@@ -46,7 +46,16 @@
         "skill",
         "readme",
         "package",
-        "license"
+        "license",
+        "review",
+        "review-browser",
+        "review-checks",
+        "review-interactions",
+        "review-rubric",
+        "visual-review",
+        "lib-paths",
+        "tests-review-browser",
+        "tests-review-gate"
       ]
     },
     {
@@ -65,7 +74,16 @@
         "packager",
         "release",
         "tests-cli",
-        "diagram-guide"
+        "diagram-guide",
+        "review",
+        "review-browser",
+        "review-checks",
+        "review-interactions",
+        "review-rubric",
+        "visual-review",
+        "lib-paths",
+        "tests-review-browser",
+        "tests-review-gate"
       ]
     },
     {
@@ -80,7 +98,16 @@
         "packager",
         "release",
         "tests-cli",
-        "diagram-guide"
+        "diagram-guide",
+        "review",
+        "review-browser",
+        "review-checks",
+        "review-interactions",
+        "review-rubric",
+        "visual-review",
+        "lib-paths",
+        "tests-review-browser",
+        "tests-review-gate"
       ]
     },
     {
@@ -92,7 +119,16 @@
         "build",
         "validate",
         "schema",
-        "schema-diagram"
+        "schema-diagram",
+        "review",
+        "review-browser",
+        "review-checks",
+        "review-interactions",
+        "review-rubric",
+        "visual-review",
+        "lib-paths",
+        "tests-review-browser",
+        "tests-review-gate"
       ]
     },
     {
@@ -112,7 +148,16 @@
         "packager",
         "release",
         "tests-cli",
-        "diagram-guide"
+        "diagram-guide",
+        "review",
+        "review-browser",
+        "review-checks",
+        "review-interactions",
+        "review-rubric",
+        "visual-review",
+        "lib-paths",
+        "tests-review-browser",
+        "tests-review-gate"
       ]
     },
     {
@@ -123,7 +168,16 @@
         "skill",
         "tools",
         "example-showcase",
-        "license"
+        "license",
+        "review",
+        "review-browser",
+        "review-checks",
+        "review-interactions",
+        "review-rubric",
+        "visual-review",
+        "lib-paths",
+        "tests-review-browser",
+        "tests-review-gate"
       ]
     }
   ],
@@ -267,6 +321,51 @@
       "id": "diagram-guide",
       "path": "references/diagrams.md",
       "description": "Referência sob demanda de diagramas, gráficos e interface."
+    },
+    {
+      "id": "review",
+      "path": "scripts/review.mjs",
+      "description": "Revisão visual determinística: capturas, checks, rubrica e recibo."
+    },
+    {
+      "id": "review-browser",
+      "path": "scripts/review/browser.mjs",
+      "description": "Driver CDP sem dependências npm adicionais."
+    },
+    {
+      "id": "review-checks",
+      "path": "scripts/review/page-checks.mjs",
+      "description": "Detecção de overflow, clipping e sobreposição em navegador real."
+    },
+    {
+      "id": "review-interactions",
+      "path": "scripts/review/interactions.mjs",
+      "description": "Smoke checks de busca, filtros, modal e navegação."
+    },
+    {
+      "id": "review-rubric",
+      "path": "scripts/review/rubric.mjs",
+      "description": "Rubrica e gate de aprovação visual vinculados ao HTML."
+    },
+    {
+      "id": "visual-review",
+      "path": "references/visual-review.md",
+      "description": "Fluxo de revisão visual, limites e exceções auditáveis."
+    },
+    {
+      "id": "lib-paths",
+      "path": "scripts/lib/paths.mjs",
+      "description": "Resolução compartilhada de caminhos de HTML e recibos."
+    },
+    {
+      "id": "tests-review-browser",
+      "path": "tests/review-browser.test.mjs",
+      "description": "Testes reais via CDP e portabilidade do CLI."
+    },
+    {
+      "id": "tests-review-gate",
+      "path": "tests/review-gate.test.mjs",
+      "description": "Testes de integridade, rubrica, override e soft breaks."
     }
   ]
 }

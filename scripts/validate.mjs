@@ -60,6 +60,9 @@ export function validateHtml(html) {
   $('.diagram figcaption, .diagram-note, .figure-tag').each((_,e)=>{
     if($(e).text().includes('`'))errors.push(`Literal backtick in diagram caption/note: ${$(e).text().slice(0,80)}`);
   });
+  $('svg text').each((_,e)=>{
+    if($(e).text().includes('`'))errors.push(`Literal backtick in diagram text (use inline code only inside "lines"): ${$(e).text().slice(0,80)}`);
+  });
   $('.schema-svg text').each((_,e)=>{
     if($(e).text().includes('??'))errors.push(`Double nullable marker "??" in schema SVG: ${$(e).text()}`);
   });

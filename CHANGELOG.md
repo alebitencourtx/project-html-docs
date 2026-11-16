@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.12.0 — 2026-11-16
+
+- Novo `review` via CDP com Chrome/Edge/Chromium instalado, sem dependências adicionais: checks de layout e interações, PNGs, relatório e rubrica. Padrão econômico em desktop 1440 px; opções `--viewports` e `--tiles all`.
+- `verify --mark-reviewed` exige review e rubrica válidos vinculados ao hash do HTML; `--accept-issues` registra uma exceção visual justificada, sem ignorar divergências de integridade. Aprovação invalidada em novo build/review e escrita atômica.
+- Cards com grades por contagem, quebra de identificadores longos, CSS defensivo e avisos de autoria; margem de segurança nas métricas SVG e rejeição de crases literais em texto de diagramas.
+- Helpers de caminhos compartilhados, detecção de navegador no `doctor` e execução do CLI via symlink/junction.
+- Scripts de desenvolvimento preservados no repositório; dependências vendorizadas e ajustes específicos de rede não incorporados.
+
 ## 1.11.0 — 2026-11-15
 
 Foco em ergonomia de distribuição e execução da skill em diferentes IDEs e CLIs de agentes, mantendo a estrutura de pastas na raiz intacta.

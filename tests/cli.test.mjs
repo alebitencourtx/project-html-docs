@@ -148,7 +148,7 @@ test('cli.mjs end-to-end inspect, build, and verify work from any external worki
 
   // 3. Strict verify passes (exit 0)
   const verifyRes = await execCli([
-    'verify', path.join(workDir, 'document.json'), receiptPath, '--strict', '--mark-reviewed',
+    'verify', path.join(workDir, 'document.json'), receiptPath, '--strict', '--mark-reviewed', '--accept-issues', 'Test exercises source verification without browser review',
   ], { cwd: os.tmpdir() });
   assert.equal(verifyRes.code, 0, verifyRes.stderr);
   const verifyJson = JSON.parse(verifyRes.stdout);

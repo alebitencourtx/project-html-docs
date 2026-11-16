@@ -12,6 +12,7 @@ Document a repository's **current implemented state** as one self-contained, off
 - [Authoring contract](references/authoring.md) — manifest schema, Markdown/callout/table rules, validation, and incremental updates.
 - [Diagrams, charts & UI](references/diagrams.md) — deterministic 2D `solution`/`flow`/`schema` specs, `mermaid`, `chart`, and desktop/mobile ergonomics.
 - [Data engineering profile](references/data-engineering.md) — PySpark, Databricks, Delta Lake, Cosmos DB, Event Hubs, ADLS Gen2, and APIs.
+- [Visual review](references/visual-review.md) — deterministic browser checks, economical screenshots, rubric and gated sign-off.
 - [Tools and scope](references/tools.md) — pinned runtime dependencies and build-time scope.
 - Starter template: [examples/minimal/document.json](examples/minimal/document.json) and [examples/minimal/content.md](examples/minimal/content.md).
 
@@ -19,7 +20,7 @@ Resolve `<skill>` to the directory containing this SKILL.md; it is not the targe
 
 ## Prerequisites
 
-- **Authoring only**: Node.js `>= 22` and Python `>= 3.10` (for repository inspection). Readers only need a browser.
+- **Authoring only**: Node.js `>= 22` and Python `>= 3.10` (for repository inspection). Chrome, Edge or Chromium is needed for the `review` step. Readers only need a browser.
 - **First-time install**: `npm ci --ignore-scripts --prefix "<skill>"` (run `node "<skill>/scripts/cli.mjs" doctor` to check environment readiness).
 
 ## Workflow
@@ -53,11 +54,15 @@ Resolve `<skill>` to the directory containing this SKILL.md; it is not the targe
    ```bash
    node "<skill>/scripts/cli.mjs" verify <work>/document.json <work>/documentacao.validation.json --strict
    ```
-6. **Review in a real browser & sign off**
-   - Inspect both **desktop** (~1440 px) and **mobile** (~390 px): confirm zero horizontal page overflow, mobile drawer (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, `inert`/focus trap, `#mobile-search-btn`), search highlights, audience filters, table search/print, theme switch (`Vermelho`/`Azul`), and diagram modal Fit/Zoom.
-   - After passing browser inspection, stamp the receipt:
+6. **Review visual evidence & sign off**
+   - Run the default desktop review (1440 px; hero + figures + sections with errors):
      ```bash
-     node "<skill>/scripts/cli.mjs" verify <work>/document.json <work>/documentacao.validation.json --mark-reviewed
+     node "<skill>/scripts/cli.mjs" review <work>/documentacao.html --out <work>/review
+     ```
+   - Open every returned tile and mark its entry in `rubric.md` after inspection. Resolve errors, rebuild and rerun as needed. Read [Visual review](references/visual-review.md) for checks, limitations and explicit exceptions. Add `--viewports 1440,1024,390` when mobile/tablet is requested, or `--tiles all` for full section coverage and a blue-theme capture.
+   - Sign off with the completed rubric:
+     ```bash
+     node "<skill>/scripts/cli.mjs" verify <work>/document.json <work>/documentacao.validation.json --strict --mark-reviewed --rubric <returned-rubric-path>
      ```
 
 ## Core Rules & Boundaries
@@ -70,5 +75,5 @@ Resolve `<skill>` to the directory containing this SKILL.md; it is not the targe
 ## Deliverables & Completion Criteria
 
 - **Artifacts**: `<work>/inventory.json`, `<work>/reading-plan.md`, `<work>/document.json`, `<work>/content.md`, `<work>/documentacao.html`, `<work>/documentacao.validation.json` (plus summary counterparts when requested).
-- **Done when**: `build` reports `passed: true`, `verify` reports `ok: true` and `receiptStatus: "complete"`, desktop & mobile browser checks pass (`browserReviewed: true`), and any unverified behavior is disclosed explicitly.
+- **Done when**: `build` reports `passed: true`, `verify` reports `ok: true` and `receiptStatus: "complete"`, `review` exits 0, every tile is inspected and the rubric gate passes (`browserReviewed: true`), and any unverified behavior is disclosed explicitly.
 - **Skill maintenance**: if editing the skill itself (`scripts/diagrams.mjs`, `scripts/lib/*`, `assets/*`, `scripts/cli.mjs`), run `npm test --prefix "<skill>"` and regenerate examples.

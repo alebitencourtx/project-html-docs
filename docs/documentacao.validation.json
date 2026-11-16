@@ -2,45 +2,45 @@
   "passed": true,
   "errors": [],
   "mode": "full",
-  "wordCount": 7091,
-  "readingMinutes": 37,
+  "wordCount": 7416,
+  "readingMinutes": 39,
   "sections": 11,
   "contentSections": 11,
   "referenceBlocks": 1,
   "diagrams": 3,
   "charts": 1,
-  "bytes": 216002,
-  "browserReviewed": true,
+  "bytes": 227951,
+  "browserReviewed": false,
   "warnings": [],
-  "version": "1.11.0",
-  "skillVersion": "1.11.0",
+  "version": "1.12.0",
+  "skillVersion": "1.12.0",
   "hashAlgorithm": "sha256-lf-text-v1",
   "htmlPath": "documentacao.html",
-  "rendererSha256": "c7ba3436a0a3b1a2bdf4e162da5ab1cc616553b04ad541aec6486e2b21016200",
-  "builtAt": "2026-11-15T23:15:04.659Z",
-  "manifestSha256": "e9dd43e541461f251d928a09c6fe3488e6e1d8b5e2ee28a5223f367629f568c6",
+  "rendererSha256": "a4cc5b81c06307cddb3a36ce646d36fe7a79288b4231d0072a9f220d12e64ce3",
+  "builtAt": "2026-11-16T20:12:28.003Z",
+  "manifestSha256": "93fd772e82f545cdbb8ef394c6b4438f6c22b6703bcccfadfee48904577d85f2",
   "document": "project-html-docs · Manual do Gerador",
-  "revision": "da8801d89acc4b59cffb11da9b73e212635992cd",
-  "inputSha256": "0be495d5afa224e67003578870cb55b58518ecea84c5b3b797d8da02a2fd8262",
-  "htmlSha256": "87329d8c6711c72604382a24f35d6af207881152a07de72e6bf9e9e3afca4f07",
+  "revision": "2d4277fce3d5af7bb63f6d4df01d75d1fe607c98",
+  "inputSha256": "5a11181218fa50bd88f73ab6bde059fefaa950c5d6b5740625b30885542a83a0",
+  "htmlSha256": "c6c313a875a88bf933e83b3c2ec664a19fdb299b494e2461779ae770e8555a11",
   "sources": [
     {
       "id": "skill",
       "path": "SKILL.md",
       "description": "Contrato operacional do skill: fluxo, decisões e manutenção.",
-      "sha256": "0ae7be6c04d04972ec82fca811025d876f3aef3c3c1799527be8e4361939e1cb"
+      "sha256": "e95227d799bc42930636abda063c492be910a939dd67a0ce97fe2ba78bbd8e65"
     },
     {
       "id": "readme",
       "path": "README.md",
       "description": "Visão geral, requisitos, comandos e recursos do projeto.",
-      "sha256": "25a5ec29dbc8d18cb45258d13fc21b861058ad847aef28a6a492a80dd73fe7d8"
+      "sha256": "f6c2b87abc3087f7f3a987a83e0f5835ee1e5bcf1362d71c064554bb2b8f7aac"
     },
     {
       "id": "package",
       "path": "package.json",
       "description": "Versão, engines, scripts e dependências fixadas.",
-      "sha256": "43afe703301870ae96b4dcc065ea3885eeff2d9c5fa4d8c509af00cd6f35c61a"
+      "sha256": "bb9661813d4ed70bd5a5171677a5f0a377ea747090cbd489bc7d878c57eb049a"
     },
     {
       "id": "license",
@@ -76,31 +76,31 @@
       "id": "build",
       "path": "scripts/build.mjs",
       "description": "Compilador do manifesto e do Markdown no HTML final com proteção atômica.",
-      "sha256": "863705d3372aadfdb7028f41323df1269a0b4da8f3a5afe088f06b3f863bdde0"
+      "sha256": "bd9bcdeee8b09accfdd3feb345a72bdb962c2f5a2776311f51b60488a2883ffa"
     },
     {
       "id": "diagrams",
       "path": "scripts/diagrams.mjs",
       "description": "Motor de diagramas 2D solution/flow/schema e pós-processamento Mermaid.",
-      "sha256": "1f7b431176fe1348c1fd586b6e274d2b4cd8aa9d46a76ecfc1ff21c2d44457e0"
+      "sha256": "69b85f9bab4407c5b58c1523ab1324d376f648883837d721f38f35a15efe54e8"
     },
     {
       "id": "validate",
       "path": "scripts/validate.mjs",
       "description": "Validador estrutural do HTML, links seguros, dos SVGs e da navegação.",
-      "sha256": "834a2c8a687887e9fd228d41e3f70d623e57037b27413bc81caaf387269a9923"
+      "sha256": "7b595450601e73db48b11ad1971803afd21b80b7cb90769ac66f2185bc2f8b49"
     },
     {
       "id": "verify",
       "path": "scripts/verify.mjs",
       "description": "Conferência de hashes LF/binários, completeness do recibo, revisão Git e impacto.",
-      "sha256": "6109ec12de097c4f16cbf0c4dc1af5b5290b8631e99c22b5a3ed0ecfceb4cf22"
+      "sha256": "a5a289b5903750673abbb175652f445665aaf663b434fbedc316f089e8b4f5dc"
     },
     {
       "id": "renderer-hash",
       "path": "scripts/renderer-hash.mjs",
       "description": "Cálculo determinístico do SHA-256 dos assets, scripts e lockfile do renderer.",
-      "sha256": "a10f6c70106547fdbd242170036060b92faddea5040e76f79c575c41cede3e2e"
+      "sha256": "d6c1653dfc9c96decdaae3cec532dfe5922c31c028b337adc9b3588f8abd9f43"
     },
     {
       "id": "lib-urls",
@@ -124,7 +124,7 @@
       "id": "lib-shell",
       "path": "scripts/lib/html-shell.mjs",
       "description": "Template de montagem do shell HTML offline, hero, sidebar e modal.",
-      "sha256": "de56c44e1e5ee1cf286895e9a4812ecec5b36c2a0f0a6650e83a49e726f644bc"
+      "sha256": "0c042d861e560409fd670942fcf80cc2ad7915b0597200f5aa813fb64fe48ac1"
     },
     {
       "id": "inspect",
@@ -172,13 +172,13 @@
       "id": "styles",
       "path": "assets/document.css",
       "description": "Design system, layout responsivo, temas e regras @media print.",
-      "sha256": "8484b3c48229e6ae6a419a690a01b5a68b78101deeba50fda80671227f2fe5ed"
+      "sha256": "328e0dc1bc2aea733d6d699a746b650882a632deae44b0a44a29765794d1430d"
     },
     {
       "id": "authoring",
       "path": "references/authoring.md",
       "description": "Contrato de autoria, sintaxe de diagramas e critérios de revisão.",
-      "sha256": "d50f26b1a70ac95df9f4fbf619782b9a7c94723f12ebc9d846f72f70086cc1f6"
+      "sha256": "661588aac133803db1944234eac0afcb05db957f9ef7e2f182006190bae6d68e"
     },
     {
       "id": "data-engineering",
@@ -202,13 +202,13 @@
       "id": "changelog",
       "path": "CHANGELOG.md",
       "description": "Histórico de versões e mudanças do gerador.",
-      "sha256": "4ef62af12b254e54bea4c36f7bbfbaf4bc34d3e4c3cd1af6d7789a57b411a38a"
+      "sha256": "319dbc875e0313d83a4221c8937d8fbc051f92fd9c23d0b7cfa6e3373d3ee7cd"
     },
     {
       "id": "tests-build",
       "path": "tests/build.test.mjs",
       "description": "Testes do compilador, segurança URL, colisões, canonicalização LF, CLI e temas.",
-      "sha256": "f1a1e6a30c667acf898aed1b5fcc5cdd86964eed7f98cb757e55175bdeb3e2fb"
+      "sha256": "b9879982c0c6ec5bff0359726626e6a2fab91c426200863c96bfd68003759ab0"
     },
     {
       "id": "tests-diagrams",
@@ -220,7 +220,7 @@
       "id": "tests-dossier",
       "path": "tests/dossier.test.mjs",
       "description": "Testes do inspetor modular, redação pré-truncamento, DDL, Blob/Cosmos, grafo e impacto.",
-      "sha256": "8eb0095380484653abc4e0a547726811a304de4d2c4d33bd7f4592e722aab4df"
+      "sha256": "32f76bf75b8a3d8c29bb49197c131c159cb2e4b68e1ea3db929b64f4f6abee18"
     },
     {
       "id": "tests-landing",
@@ -250,7 +250,7 @@
       "id": "cli",
       "path": "scripts/cli.mjs",
       "description": "Entrada única portável e verificação de pré-requisitos.",
-      "sha256": "1f9082442fb0c044e427f35f1681f79fde2be00d9b4fb79c3158df02f1be4a01"
+      "sha256": "c42759df1144e8fed7dfe1fd707ba1de4c2331675615b1b5c74d1b7c142cc580"
     },
     {
       "id": "packager",
@@ -268,14 +268,67 @@
       "id": "tests-cli",
       "path": "tests/cli.test.mjs",
       "description": "CLI fora da raiz e execução do ZIP extraído.",
-      "sha256": "359548a01b4905a91219ece629dd731bd9ea195aeadb6e4af4a71c04619c2ec5"
+      "sha256": "baa2d35301d4ee37ff4141016a3e75d5257319ddc69b74cc9268f481729af135"
     },
     {
       "id": "diagram-guide",
       "path": "references/diagrams.md",
       "description": "Referência sob demanda de diagramas, gráficos e interface.",
       "sha256": "85d3f4aa39ca49399c088d0dbe1ce8f9e244b7bd6c927c2e9510349158d43e60"
+    },
+    {
+      "id": "review",
+      "path": "scripts/review.mjs",
+      "description": "Revisão visual determinística: capturas, checks, rubrica e recibo.",
+      "sha256": "a527c14eca18f508f02b08c299d06b49d810b28d4f72420b2b8cd03ac6b8aa93"
+    },
+    {
+      "id": "review-browser",
+      "path": "scripts/review/browser.mjs",
+      "description": "Driver CDP sem dependências npm adicionais.",
+      "sha256": "f078d66d32c5dc5198ea00d62e0341047c1c5f4f4d66059535c81405e21a9ddf"
+    },
+    {
+      "id": "review-checks",
+      "path": "scripts/review/page-checks.mjs",
+      "description": "Detecção de overflow, clipping e sobreposição em navegador real.",
+      "sha256": "228c98556d31ddaaa1d3669cf5615c5cebee3ff9643d2935ceb817e852475619"
+    },
+    {
+      "id": "review-interactions",
+      "path": "scripts/review/interactions.mjs",
+      "description": "Smoke checks de busca, filtros, modal e navegação.",
+      "sha256": "d529e922f83667097b9bbf75e8eaf9bd5fb50445127c63e106e7b9fc8dbcc226"
+    },
+    {
+      "id": "review-rubric",
+      "path": "scripts/review/rubric.mjs",
+      "description": "Rubrica e gate de aprovação visual vinculados ao HTML.",
+      "sha256": "b8dc6d9572d9df1418ed2dfdd880ac4a1eccc0c8b3a9a2cf3291650f1e684612"
+    },
+    {
+      "id": "visual-review",
+      "path": "references/visual-review.md",
+      "description": "Fluxo de revisão visual, limites e exceções auditáveis.",
+      "sha256": "cbe1c02c3c8500d09b39bffc3c3b5398efaacb8b16a50f882b857c606d488451"
+    },
+    {
+      "id": "lib-paths",
+      "path": "scripts/lib/paths.mjs",
+      "description": "Resolução compartilhada de caminhos de HTML e recibos.",
+      "sha256": "d08f5ca9118843f08d3e3ed5f7b1543c9e999266e09c0c4a8995fbfdfddf6beb"
+    },
+    {
+      "id": "tests-review-browser",
+      "path": "tests/review-browser.test.mjs",
+      "description": "Testes reais via CDP e portabilidade do CLI.",
+      "sha256": "197b890d6ca6a1acb5be41992674bb89b37d88915e89a79c73696c4e5c4298c9"
+    },
+    {
+      "id": "tests-review-gate",
+      "path": "tests/review-gate.test.mjs",
+      "description": "Testes de integridade, rubrica, override e soft breaks.",
+      "sha256": "d6326838cfd235ef7b7951113657a21a94d04ae416f1b8c3a7de7696d72bfd24"
     }
-  ],
-  "browserReviewedAt": "2026-11-15T23:15:05.687Z"
+  ]
 }

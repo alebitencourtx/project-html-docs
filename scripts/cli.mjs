@@ -5,6 +5,9 @@ import { execFile, spawnSync } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { receiptPathFor } from './lib/paths.mjs';
+import { findBrowser, ReviewEnvError } from './review/browser.mjs';
+
 const execFileAsync = promisify(execFile);
 
 export const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -95,8 +98,10 @@ export function formatUsage(skillRoot = SKILL_ROOT) {
     '      Run static repository inspection (zero code execution).',
     '  build <document.json> --out <output.html> [--mode full|summary] [--force]',
     '      Validate manifest/Markdown/diagrams and build offline HTML + validation receipt.',
-    '  verify <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>] [--html <output.html>] [--mark-reviewed]',
+    '  verify <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>] [--html <output.html>] [--mark-reviewed] [--rubric <file>] [--accept-issues "<reason>"]',
     '      Verify source/artifact/renderer SHA-256 hashes and compute incremental impact.',
+    '  review <output.html|receipt.validation.json> [--out <dir>] [--viewports 1440,1024,390] [--tiles smart|all] [--browser <exe>]',
+    '      Capture visual review tiles and check layout/interactions using an installed browser.',
     '  doctor',
     '      Verify Node.js (>=22), Python (>=3.10), and skill dependencies.',
     '',
@@ -234,7 +239,7 @@ async function runBuild(args, skillRoot, io) {
   }
 
   const htmlPath = path.resolve(parsed.outFile);
-  const receiptPath = htmlPath.replace(/\.html$/i, '') + '.validation.json';
+  const receiptPath = receiptPathFor(htmlPath);
   const receipt = await build(manifestPath, htmlPath, { force: parsed.force, mode: parsed.mode });
 
   io.log(JSON.stringify({
@@ -265,6 +270,7 @@ async function runVerify(args, skillRoot, io) {
     verify,
     analyzeImpact,
     renderUpdatePlan,
+    markReviewed,
   } = await import(pathToFileURL(path.join(skillRoot, 'scripts', 'verify.mjs')).href);
 
   let opts;
@@ -295,17 +301,9 @@ async function runVerify(args, skillRoot, io) {
 
   let markFailed = false;
   if (opts.markReviewed) {
-    if (!result.ok) {
-      io.error('Cannot mark browserReviewed=true because verification failed (resolve source or artifact drift first).');
-      markFailed = true;
-    } else {
-      const receipt = JSON.parse(await fs.readFile(receiptPath, 'utf8'));
-      receipt.browserReviewed = true;
-      receipt.browserReviewedAt = new Date().toISOString();
-      await fs.writeFile(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
-      result.browserReviewed = true;
-      result.browserReviewedAt = receipt.browserReviewedAt;
-    }
+    const gate = await markReviewed(receiptPath, result, opts);
+    markFailed = !gate.ok;
+    if (!gate.ok) io.error(gate.reasons.join('; '));
   }
 
   let planPath = null;
@@ -334,6 +332,15 @@ async function runVerify(args, skillRoot, io) {
   return 0;
 }
 
+async function runReview(args, skillRoot, io) {
+  const { review, parseReviewCliArgs } = await import(pathToFileURL(path.join(skillRoot, 'scripts', 'review.mjs')).href);
+  let opts;
+  try { opts = parseReviewCliArgs(args); } catch (e) { throw new CliUsageError(e.message); }
+  const result = await review(opts.inputFile, opts);
+  io.log(JSON.stringify(result, null, 2));
+  return result.ok ? 0 : 1;
+}
+
 async function runDoctor(skillRoot, io) {
   const pkg = await readSkillPackage(skillRoot);
   const nodeCheck = checkNodeVersion();
@@ -360,6 +367,7 @@ async function runDoctor(skillRoot, io) {
     node: nodeCheck,
     python: pyCheck,
     dependencies: depCheck,
+    browser: { ...findBrowser(), requiredFor: 'review (not build)' },
   }, null, 2));
   return ok ? 0 : 2;
 }
@@ -391,12 +399,17 @@ export async function runCli(argv, { skillRoot = SKILL_ROOT, io = console } = {}
     if (subcommand === 'build') {
       return await runBuild(rest, skillRoot, io);
     }
+    if (subcommand === 'review') return await runReview(rest, skillRoot, io);
     if (subcommand === 'verify') {
       return await runVerify(rest, skillRoot, io);
     }
 
     throw new CliUsageError(`Unknown command "${subcommand}". Run with --help to see supported commands.`);
   } catch (err) {
+    if (err instanceof ReviewEnvError) {
+      io.error(`Error [review/env]: ${err.message}. An unavailable review can be disclosed with verify --mark-reviewed --accept-issues "<reason>".`);
+      return 2;
+    }
     if (err instanceof CliUsageError) {
       io.error(`Error [usage/env]: ${err.message}`);
       return err.exitCode;
@@ -406,7 +419,10 @@ export async function runCli(argv, { skillRoot = SKILL_ROOT, io = console } = {}
   }
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+const isMain = (() => {
+  try { return Boolean(process.argv[1]) && fsSync.realpathSync(fileURLToPath(import.meta.url)) === fsSync.realpathSync(process.argv[1]); } catch { return false; }
+})();
+if (isMain) {
   const code = await runCli(process.argv.slice(2));
   process.exitCode = code;
 }

@@ -17,6 +17,7 @@ export const RENDERER_FILES = [
   'scripts/lib/hash.mjs',
   'scripts/lib/i18n.mjs',
   'scripts/lib/html-shell.mjs',
+  'scripts/lib/paths.mjs',
   'schemas/document.schema.json',
   'schemas/diagram.schema.json',
   'package.json',

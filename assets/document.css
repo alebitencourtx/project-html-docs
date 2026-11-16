@@ -155,11 +155,27 @@ html[data-mode="summary"] .hero { padding: 44px clamp(28px, 5vw, 80px) 36px; }
 html[data-mode="summary"] .content { padding: 24px clamp(24px, 4vw, 64px) 56px; }
 
 .content { max-width: 1350px; padding: 30px clamp(24px, 4vw, 64px) 70px; margin: auto; }
-.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; margin: 0 0 26px; }
-.metric { border: 1px solid var(--line); border-top: 3px solid var(--accent); background: var(--surface); padding: 20px; border-radius: 10px; }
+.hero-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 14px; margin: 0 0 26px; }
+.metric { min-width: 0; border: 1px solid var(--line); border-top: 3px solid var(--accent); background: var(--surface); padding: 20px; border-radius: 10px; }
 .metric .label { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .07em; }
 .metric strong { display: block; font-size: 25px; line-height: 1.25; margin: 8px 0; }
 .metric p { font-size: 13px; color: var(--muted); margin: 0; }
+.metric strong, .metric p, .metric .label { overflow-wrap: anywhere; }
+.hero-cards[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hero-cards[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.hero-cards[data-count="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.cards:has(> :nth-child(2):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cards:has(> :nth-child(3):last-child) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cards:has(> :nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1399px) {
+  .hero-cards[data-count="4"], .cards:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .hero-cards[data-count="3"], .cards:has(> :nth-child(3):last-child) { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .hero-cards[data-count], .cards:has(> :nth-child(n):last-child) { grid-template-columns: minmax(0, 1fr); }
+}
 .toolbar { display: flex; gap: 10px 14px; flex-wrap: wrap; align-items: center; justify-content: flex-end; margin-bottom: 22px; font-size: 12px; }
 .toolbar .hint { margin-right: auto; color: var(--muted); }
 .audience-filter,
@@ -196,7 +212,7 @@ details[open] > .section-heading:after {
   transform: rotate(-135deg);
 }
 .section-heading .number { font-size: 13px; color: var(--accent); font-weight: 700; }
-.section-heading h2 { font-size: 23px; line-height: 1.3; letter-spacing: -.02em; margin: 0; }
+.section-heading h2 { min-width: 0; overflow-wrap: anywhere; font-size: 23px; line-height: 1.3; letter-spacing: -.02em; margin: 0; }
 
 .audience { font-size: 10px; white-space: nowrap; text-transform: uppercase; letter-spacing: .04em; background: var(--aud-business-bg); color: var(--aud-business-fg); padding: 4px 8px; border-radius: 6px; }
 .audience.technical { background: var(--aud-tech-bg); color: var(--aud-tech-fg); }
@@ -226,8 +242,8 @@ blockquote.callout-example { background: #f0fdf4; border-left-color: #16a34a; }
 blockquote.callout-warning { background: #fffbeb; border-left-color: #d97706; }
 blockquote.callout-limit { background: #fef2f2; border-left-color: #dc2626; }
 
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
-.card { border: 1px solid var(--line); border-radius: 10px; padding: 18px; background: var(--card-bg); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 14px; margin: 20px 0; }
+.card { min-width: 0; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: 10px; padding: 18px; background: var(--card-bg); }
 .card h3 { margin: 0 0 10px; font-size: 16px; }
 .card p { font-size: 14px; margin: 8px 0; }
 
@@ -265,7 +281,7 @@ td code.col-badge-notnull { background: #f1f5f9; color: #334155; border-color: #
 .table-filter { display: flex; align-items: center; gap: 10px; margin: 14px 0 -10px; }
 .table-filter input { flex: 1; max-width: 320px; padding: 6px 10px; font-size: 12.5px; border: 1px solid var(--line); border-radius: 7px; background: var(--card-bg); color: var(--ink); }
 .table-filter-count { font-size: 12px; color: var(--muted); }
-code { font-family: Consolas, Cascadia Code, monospace; font-size: .88em; background: var(--code-inline-bg); padding: 2px 4px; border-radius: 4px; }
+code { overflow-wrap: anywhere; font-family: Consolas, Cascadia Code, monospace; font-size: .88em; background: var(--code-inline-bg); padding: 2px 4px; border-radius: 4px; }
 pre { position: relative; background: var(--code); color: #e3edf4; border-radius: 10px; padding: 40px 18px 18px; overflow: auto; line-height: 1.65; font-size: 13px; }
 pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
 .copy { position: absolute; right: 9px; top: 8px; font-size: 11px; padding: 3px 9px; background: var(--code-btn); color: white; border-color: var(--code-btn-border); }
@@ -274,7 +290,7 @@ pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
 .section-body details[open] > summary { margin-bottom: 10px; }
 .section-body details > .table-wrap:last-child { margin-bottom: 4px; }
 .section-sources { font-size: 11px; color: var(--muted); margin-top: 24px; border-top: 1px solid var(--line); padding-top: 12px; }
-.section-sources a { margin-right: 10px; }
+.section-sources a { overflow-wrap: anywhere; margin-right: 10px; }
 
 figure { margin: 22px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--figure-bg); padding: 16px; }
 .diagram-scroll {
@@ -1053,7 +1069,7 @@ dialog::backdrop { background: var(--dialog-backdrop); }
   .doc-section[hidden] { display: block !important; }
   .section-body .table-wrap tbody tr[hidden] { display: table-row !important; }
   details::details-content { display: block !important; content-visibility: visible !important; }
-  .section-heading h2 { font-size: 19px; }
+  .section-heading h2 { min-width: 0; overflow-wrap: anywhere; font-size: 19px; }
   .hero h1 { font-size: 30px; }
   th { position: static; box-shadow: none; }
 }

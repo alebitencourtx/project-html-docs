@@ -64,6 +64,9 @@ function charWidth(c, fontSize = 12, mono = false) {
   return 6.2 * scale;
 }
 
+// Conservative allowance for system-font widths in proportional SVG text.
+export const PROPORTIONAL_SAFETY = 1.12;
+
 export function measureText(str, fontSize = 12, mono = false) {
   let w = 0;
   for (const ch of String(str || '')) w += charWidth(ch, fontSize, mono);
@@ -144,9 +147,9 @@ export function wrapRichLines(lines, maxW, fontSize = 11.5) {
         const pieces = tok.text.split(/(\s+)/).filter(Boolean);
         for (const p of pieces) {
           if (/^\s+$/.test(p)) {
-            words.push({ text: ' ', code: false, isSpace: true, width: charWidth(' ', fontSize, false) });
+            words.push({ text: ' ', code: false, isSpace: true, width: charWidth(' ', fontSize, false) * PROPORTIONAL_SAFETY });
           } else {
-            words.push({ text: p, code: false, isSpace: false, width: measureText(p, fontSize, false) });
+            words.push({ text: p, code: false, isSpace: false, width: measureText(p, fontSize, false) * PROPORTIONAL_SAFETY });
           }
         }
       }
@@ -198,7 +201,7 @@ function renderWrappedLinesSvg(visualLines, startX, startY, lineH, fontSize = 11
         return rect + txt;
       }
       const txt = `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="${fontSize}" fill="${fill}">${esc(seg.text)}</text>`;
-      x += measureText(seg.text, fontSize, false);
+      x += seg.width;
       return txt;
     }).join('');
   }).join('');
@@ -290,7 +293,7 @@ function wrapEdgeLabelText(text, maxW, fontSize = 10.5) {
 function pillMetrics(text, fontSize = 10.5) {
   const lines = String(text || '').split('\n');
   const maxW = Math.max(...lines.map(l => measureText(l, fontSize, false)));
-  return { pw: Math.round(maxW + 18), ph: Math.round(lines.length * 14 + 8) };
+  return { pw: Math.round(maxW * PROPORTIONAL_SAFETY + 18), ph: Math.round(lines.length * 14 + 8) };
 }
 
 function resolvePillPositions(pills, boxObstacles, maxCanvasW = 1800) {
@@ -393,10 +396,10 @@ function renderNodeCard(node, x, y, w, h, layout) {
 
   if (metaText) {
     let metaFont = 9.8;
-    let rawW = measureText(metaText, metaFont, false) * 1.07 + 16;
+    let rawW = measureText(metaText, metaFont, false) * PROPORTIONAL_SAFETY + 16;
     if (rawW > innerW) {
       metaFont = 9.0;
-      rawW = measureText(metaText, metaFont, false) * 1.07 + 14;
+      rawW = measureText(metaText, metaFont, false) * PROPORTIONAL_SAFETY + 14;
     }
     const pillW = Math.min(innerW, Math.round(rawW));
     const pillBottomOffset = shape === 'cylinder' ? 32 : 26;
@@ -441,7 +444,7 @@ function layoutNodeBox(node, colWidth) {
   let curT = '';
   for (const w of titleWords) {
     const next = curT ? `${curT} ${w}` : w;
-    if (curT && measureText(next, 12.5, false) * 1.07 > titleMaxW) {
+    if (curT && measureText(next, 12.5, false) * PROPORTIONAL_SAFETY > titleMaxW) {
       titleLines.push(curT);
       curT = w;
     } else {
@@ -520,7 +523,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
     const tS = e.toSide || (tc.col >= fc.col ? 'left' : 'right');
     if (fS === 'right' && tS === 'left' && fc.row === tc.row && tc.col === fc.col + fc.colSpan) {
       const wrapped = wrapEdgeLabelText(e.label, 92, 10.5).split('\n');
-      const pw = Math.round(Math.max(...wrapped.map(l => measureText(l, 10.5, false))) + 18);
+      const pw = Math.round(Math.max(...wrapped.map(l => measureText(l, 10.5, false))) * PROPORTIONAL_SAFETY + 18);
       if (pw + 28 > minNeededColGap) minNeededColGap = pw + 28;
     }
   }
@@ -811,7 +814,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
         if (e.label) {
           const wrapped = wrapEdgeLabelText(e.label, 120, 10.5);
           const lines = wrapped.split('\n');
-          selfLoopLabelWidth = Math.round(Math.max(...lines.map(l => measureText(l, 10.5, false))) + 18);
+          selfLoopLabelWidth = Math.round(Math.max(...lines.map(l => measureText(l, 10.5, false))) * PROPORTIONAL_SAFETY + 18);
           labelPos = [loopX + selfLoopLabelWidth / 2 + 8, fromBox.cy];
           extraCanvasRight = Math.max(extraCanvasRight, (loopX + selfLoopLabelWidth + 24) - totalW);
         } else {
@@ -925,7 +928,7 @@ export function renderSolutionDiagram(spec, { locale = 'pt-BR', diagramLabel = '
       }
       const isHorizGap = !e.isSelfLoop && !e.channel && (fSide === 'right' && tSide === 'left');
       const maxLblW = e.isSelfLoop ? 120 : isHorizGap ? Math.max(40, colGap - 26) : e.channel ? 140 : 136;
-      const labelText = wrapEdgeLabelText(e.label, maxLblW, 10.5);
+      const labelText = wrapEdgeLabelText(e.label, isHorizGap ? (maxLblW - 18) / PROPORTIONAL_SAFETY : maxLblW, 10.5);
       const { pw, ph } = pillMetrics(labelText, 10.5);
       pendingPills.push({ from: e.from, to: e.to, x: labelPos[0], y: labelPos[1], pw, ph, labelText, pillStyle });
     }
@@ -980,14 +983,14 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
   const padX = 28;
   const padY = 24;
 
-  const badgeWidthOf = k => Math.max(22, Math.round(measureText(k, 8.8, false) + 10));
+  const badgeWidthOf = k => Math.max(22, Math.round(measureText(k, 8.8, false) * PROPORTIONAL_SAFETY + 10));
   const formatColType = c => String(c.type || '').replace(/\?+$/, '') + (c.nullable ? '?' : '');
 
   // Measure each entity width and height naturally (wrapping long grain lines)
   const entLayouts = new Map();
   for (const ent of spec.entities) {
     const cols = Array.isArray(ent.columns) ? ent.columns : [];
-    const headerW = measureText(ent.name, 13, false) * 1.07 + 110;
+    const headerW = measureText(ent.name, 13, false) * PROPORTIONAL_SAFETY + 110;
     const rowWidths = cols.map(c => {
       const keyList = c.key ? String(c.key).split(',').map(k => k.trim().toUpperCase()).filter(Boolean) : [];
       const badgeW = keyList.length ? keyList.reduce((acc, k) => acc + badgeWidthOf(k) + 4, 0) + 4 : 12;
@@ -998,8 +1001,8 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     });
     const baseW = Math.max(256, Math.ceil(Math.max(headerW, ...rowWidths, 240)));
     const grainMaxW = Math.max(baseW - 24, 300);
-    const grainLines = ent.grain ? wrapEdgeLabelText(ent.grain, grainMaxW, 10.2).split('\n') : [];
-    const actualGrainW = grainLines.length ? Math.max(...grainLines.map(gl => measureText(gl, 10.2, false))) + 28 : 0;
+    const grainLines = ent.grain ? wrapEdgeLabelText(ent.grain, grainMaxW / PROPORTIONAL_SAFETY, 10.2).split('\n') : [];
+    const actualGrainW = grainLines.length ? Math.max(...grainLines.map(gl => measureText(gl, 10.2, false))) * PROPORTIONAL_SAFETY + 28 : 0;
     const w = Math.max(baseW, Math.ceil(actualGrainW));
     const headerH = 34;
     const grainH = grainLines.length ? grainLines.length * 14 + 10 : 0;
@@ -1248,7 +1251,7 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
 
     if (rel.label) {
       const isHorizGap = !rel.channel && (fSide === 'right' && tSide === 'left');
-      const maxRelLblW = isHorizGap ? Math.max(84, colGap - 18) : 150;
+      const maxRelLblW = isHorizGap ? Math.max(30, (colGap - 46) / PROPORTIONAL_SAFETY) : 150;
       const labelText = wrapEdgeLabelText(rel.label, maxRelLblW, 10);
       const { pw, ph } = pillMetrics(labelText, 10);
       const pillStyle = isLineage
@@ -1282,7 +1285,7 @@ export function renderSchemaDiagram(spec, { locale = 'pt-BR', diagramLabel = 'Am
     inner += `<path class="schema-header schema-header-${esc(entKind)}" d="M${x},${y + 8} Q${x},${y} ${x + 8},${y} L${x + w - 8},${y} Q${x + w},${y} ${x + w},${y + 8} L${x + w},${y + l.headerH} L${x},${y + l.headerH} Z" fill="${pal.headerBg}"/>`;
     inner += `<text x="${x + 12}" y="${y + 21.5}" font-size="12.5" font-weight="700" fill="${pal.headerFg}">${esc(ent.name)}</text>`;
 
-    const tagW = Math.round(measureText(pal.tag, 9, false) + 12);
+    const tagW = Math.round(measureText(pal.tag, 9, false) * PROPORTIONAL_SAFETY + 12);
     inner += `<rect class="schema-tag-bg schema-tag-bg-${esc(entKind)}" x="${x + w - tagW - 10}" y="${y + 8}" width="${tagW}" height="17" rx="4" fill="${pal.tagBg}"/><text x="${x + w - tagW / 2 - 10}" y="${y + 19.5}" text-anchor="middle" font-size="8.8" font-weight="700" letter-spacing="0.04em" fill="${pal.tagFg}">${esc(pal.tag)}</text>`;
 
     let rowTop = y + l.headerH;

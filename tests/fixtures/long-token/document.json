@@ -1,0 +1,15 @@
+{
+  "title": "Long identifier regression",
+  "subtitle": "Synthetic data for layout regression checks.",
+  "version": "Test 1.0",
+  "updated": "2026-11-16",
+  "language": "en",
+  "content": "content.md",
+  "cards": [
+    { "label": "Dataset", "value": "b_stbr_obk.very_long_identifier_for_a_dataset", "description": "Identifiers must wrap inside the card." },
+    { "label": "Frequency", "value": "Daily", "description": "Illustrative only." },
+    { "label": "Owner", "value": "Analytics", "description": "Illustrative only." },
+    { "label": "Output", "value": "Curated", "description": "Illustrative only." }
+  ],
+  "sections": [{ "id": "overview", "title": "Overview", "audience": "all" }]
+}

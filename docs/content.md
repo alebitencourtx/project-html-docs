@@ -16,7 +16,9 @@ O fluxo da skill é deliberadamente separado em duas camadas. A primeira é **de
 
 > Limitação: o código prova a implementação, não uma execução bem-sucedida em produção. O manual deve declarar essa fronteira sempre que não houver telemetria, artefato de execução ou contexto de produto disponível.
 
-A versão atual é a **1.11.0**, com **55 testes definidos**; 53 passaram nesta execução e 2 testes opcionais de navegador foram ignorados por ausência de playwright-cli. Ela consolida **segurança de URLs** (`scripts/lib/urls.mjs`), **sanitização pré-truncamento de segredos** (`scripts/inspector/redaction.py`), **gravação atômica** contra colisão de recibos/temporários, **hashes canônicos LF** (`sha256-lf-text-v1`), **contratos formais via AJV** (`schemas/diagram.schema.json` e `if/then` de `repoRoot`), **modularização** em `scripts/lib/*` e `scripts/inspector/*`, e **ergonomia mobile/impressão/WAI-ARIA** verificada em navegador real. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
+A versão atual é a **1.12.0**, com **63 testes definidos**; 61 passaram nesta execução e 2 testes opcionais de navegador foram ignorados por ausência de playwright-cli. Ela consolida **segurança de URLs** (`scripts/lib/urls.mjs`), **sanitização pré-truncamento de segredos** (`scripts/inspector/redaction.py`), **gravação atômica** contra colisão de recibos/temporários, **hashes canônicos LF** (`sha256-lf-text-v1`), **contratos formais via AJV** (`schemas/diagram.schema.json` e `if/then` de `repoRoot`), **modularização** em `scripts/lib/*` e `scripts/inspector/*`, e **ergonomia mobile/impressão/WAI-ARIA** verificada em navegador real. As seções seguintes detalham escopo, uso, arquitetura, regras, contratos, operação e limites.
+
+A v1.12.0 acrescenta `review` via Chrome/Edge/Chromium instalado, sem novas dependências npm. O padrão captura hero, figuras e seções com erro em 1440 px. O gate de `verify --mark-reviewed --rubric <arquivo>` exige hash atual, checks aprovados e todos os tiles inspecionados; `--accept-issues` registra uma exceção visual justificada. Cards recebem quebra defensiva de identificadores e grades por contagem.
 
 ## Visão funcional e escopo
 
@@ -51,24 +53,24 @@ Quando o repositório documentado é uma esteira de dados, a skill incorpora o p
 
 ## Estado atual da solução
 
-A versão **1.11.0** é um pacote Node.js privado sob licença MIT (`LICENSE`), com dependências fixadas (`package-lock.json`), workflow de CI Ubuntu/Windows (`.github/workflows/ci.yml`), política LF (`.gitattributes`) e um pacote Python modular de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, segurança, contratos AJV, diagramas, gráficos, temas, modos, análise de impacto e **testes reais em Chromium headless**.
+A versão **1.12.0** é um pacote Node.js privado sob licença MIT (`LICENSE`), com dependências fixadas (`package-lock.json`), workflow de CI Ubuntu/Windows (`.github/workflows/ci.yml`), política LF (`.gitattributes`) e um pacote Python modular de inspeção. O requisito de autoria é **Node 22 ou superior** e **Python 3.10 ou superior**; o leitor final precisa apenas de um navegador moderno. A suíte executa com `npm test` e cobre compilação, segurança, contratos AJV, diagramas, gráficos, temas, modos, análise de impacto e **testes reais em Chromium headless**.
 
 | Componente | Linhas | Papel |
 |---|---|---|
 | `scripts/inspector/` (`extractors.py`, `graph.py`, `sql_parser.py`, `redaction.py`, `__init__.py`) + `inspect_repo.py` | 2.095 | Varredura estática modular, extração AST/JS/TS/PySpark/DDL, redação pré-truncamento e grafo |
 | `scripts/diagrams.mjs` | 1.440 | Diagramas 2D determinísticos (validados por `diagram.schema.json`) e enriquecimento de Mermaid |
 | `assets/document.css` | 1.055 | Design system, layout responsivo (desktop + drawer mobile), temas e regras `@media print` |
-| `assets/document.js` | 612 | Drawer mobile (`inert` sincronizado por breakpoint + focus trap), zoom `Fit` monótono, busca, `aria-pressed` e impressão |
-| `scripts/verify.mjs` | 551 | Hashes canônicos LF (`sha256-lf-text-v1`), `receiptStatus`, `--html`, `sourceDrift`, impacto e `--mark-reviewed` |
+| `assets/document.js` | 637 | Drawer mobile (`inert` sincronizado por breakpoint + focus trap), zoom `Fit` monótono, busca, `aria-pressed` e impressão |
+| `scripts/verify.mjs` | 570 | Hashes canônicos LF (`sha256-lf-text-v1`), `receiptStatus`, `--html`, `sourceDrift`, impacto e `--mark-reviewed` |
 | `scripts/build.mjs` + `scripts/lib/` (`urls.mjs`, `hash.mjs`, `i18n.mjs`, `html-shell.mjs`) | 672 | Manifesto, Markdown, validação CLI, escrita atômica sem colisões e shell HTML responsivo |
 | `schemas/` (`document.schema.json` + `diagram.schema.json`) | 298 | Esquemas AJV draft-07 de manifesto (`repoRoot` condicional), diagramas 2D e gráficos |
-| `scripts/validate.mjs` | 83 | Auditoria estrutural do HTML, links seguros (`isSafeHref`), H4/`.card h3`, LaTeX inline e SVGs |
+| `scripts/validate.mjs` | 85 | Auditoria estrutural do HTML, links seguros (`isSafeHref`), H4/`.card h3`, LaTeX inline e SVGs |
 | `scripts/renderer-hash.mjs` | 41 | Hash SHA-256 determinístico dos assets, `scripts/lib/*`, schemas e `package-lock.json` |
 
-A contagem acima vem do `inventory.json` gerado em 15/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **medium**: **44 arquivos totais**, **29 arquivos core** e **8.285 linhas** de código ou schema.
+A contagem acima vem do `inventory.json` gerado em 16/11/2026, exceto `document.css`, medido diretamente porque a lista de extensões do inspetor não inclui `.css`. O dossiê classificou o repositório como **medium**: **44 arquivos totais**, **29 arquivos core** e **8.285 linhas** de código ou schema.
 
 ```chart
-{"type":"bar","title":"Testes definidos por arquivo (1.11.0)","unit":"testes","source":"Definições em tests/*.test.mjs; browser opcionais","asOf":"2026-11-15","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"neutral"},{"label":"tests/cli.test.mjs","value":4,"variant":"success"}]}
+{"type":"bar","title":"Testes definidos por arquivo (1.12.0)","unit":"testes","source":"Definições em tests/*.test.mjs; browser opcionais","asOf":"2026-11-16","data":[{"label":"tests/build.test.mjs","value":24,"variant":"success"},{"label":"tests/diagrams.test.mjs","value":13,"variant":"accent"},{"label":"tests/dossier.test.mjs","value":7,"variant":"neutral"},{"label":"tests/landing.test.mjs","value":5,"variant":"accent"},{"label":"tests/browser.test.mjs","value":2,"variant":"neutral"},{"label":"tests/cli.test.mjs","value":4,"variant":"success"},{"label":"tests/review-browser.test.mjs","value":4,"variant":"success"},{"label":"tests/review-gate.test.mjs","value":4,"variant":"success"}]}
 ```
 
 O histórico recente mostra a evolução do produto em camadas. A versão 1.3.0 introduziu o motor SVG 2D, o filtro de audiência, a busca com destaque e o tema vermelho; a 1.4.0 adicionou o dossiê estático e a análise incremental; a 1.5.0 endureceu diagramas, subnavegação H3 e extratores; a 1.6.0 trouxe o modo resumido; a 1.7.0 consolidou os temas **Vermelho** e **Azul** e a rolagem sobre tabelas curtas; a 1.8.0 adicionou o menu lateral recolhível no mobile e `rendererSha256`; a 1.9.0 endureceu acessibilidade (`inert`/focus trap mobile), Mermaid no tema vermelho, verificação de artefatos + `sourceDrift` + `--mark-reviewed` e extração JS/TS/`.docignore`; e a **1.10.0** consolidou contratos AJV (`diagram.schema.json`), modularização (`scripts/lib/*` e `scripts/inspector/*`), hashes canônicos LF (`sha256-lf-text-v1`), segurança de URLs/segredos/atômico, zoom `Fit` monótono, impressão de tabelas filtradas, WAI-ARIA e testes em Chromium headless.
@@ -78,7 +80,7 @@ Na interface, o seletor oferece **Vermelho** (primeiro e padrão) e **Azul**; a 
 <div class="cards">
 <div class="card"><h3>Núcleo determinístico</h3><p>Inspeção modular sem execução, renderização validada por schema AJV, escrita atômica e recibos canônicos LF.</p></div>
 <div class="card"><h3>Interface offline</h3><p>Busca accent-insensitive multi-ocorrência, filtros com aria-pressed, temas, tabelas e modal com zoom Fit monótono.</p></div>
-<div class="card"><h3>Qualidade verificável</h3><p>55 testes (incluindo Chromium headless), exemplos mínimo e showcase, CI Ubuntu/Windows e revisão registrada.</p></div>
+<div class="card"><h3>Qualidade verificável</h3><p>63 testes (incluindo Chromium headless), exemplos mínimo e showcase, CI Ubuntu/Windows e revisão registrada.</p></div>
 </div>
 
 > Atenção: a suíte prova o comportamento dos geradores e do HTML produzido; ela não prova que o conteúdo semântico de um manual específico está correto. Essa verificação continua sendo responsabilidade da autoria e da revisão.
@@ -121,9 +123,10 @@ O manifesto é o contrato do documento. Ele exige `title`, `subtitle`, `version`
 | `node scripts/cli.mjs build <manifest> --out <html> --mode summary` | Força o modo Guia Rápido | HTML + recibo |
 | `node scripts/cli.mjs verify <manifest> <receipt> [--html <html>]` | Compara fontes LF, artefatos (`manifest`/`content`/`html`) e revisão (`sourceDrift`) | Relatório JSON (`receiptStatus`) |
 | `node scripts/cli.mjs verify <manifest> <receipt> --strict` | Falha com código 1 se recibo incompleto ou drift real de fonte/artefato | Relatório JSON |
-| `node scripts/cli.mjs verify <manifest> <receipt> --strict --mark-reviewed` | Marca `browserReviewed: true` e timestamp após inspeção real | Recibo atualizado |
+| `node scripts/cli.mjs verify <manifest> <receipt> --strict --mark-reviewed --rubric <rubric.md>` | Marca `browserReviewed: true` e timestamp após review e rubrica aprovados | Recibo atualizado |
 | `node scripts/cli.mjs verify <manifest> <receipt> --impact --dossier <json> --plan <md>` | Calcula seções afetadas e grava o plano | Relatório + `update-plan.md` |
-| `npm test` | Executa os 55 testes (incluindo Chromium headless) | Resultado da suíte |
+| `node scripts/cli.mjs review <html> --out <dir>` | Checks via CDP, PNGs, review.json e rubric.md | Evidência visual |
+| `npm test` | Executa os 63 testes (incluindo Chromium headless) | Resultado da suíte |
 
 O conteúdo começa obrigatoriamente com um `##` cujo texto coincida, na ordem, com `sections[].title`. Cada `###` vira subnavegação lateral. Um `#` dentro do Markdown é reservado ao título do documento e provoca erro de build. Tabelas ganham cabeçalho fixo, rolagem local e filtro automático a partir de 8 linhas; a roda da página continua funcionando sobre tabelas curtas. Diagramas são declarados em fences próprios.
 
@@ -132,7 +135,7 @@ O conteúdo começa obrigatoriamente com um `##` cujo texto coincida, na ordem, 
   "title": "Meu projeto",
   "subtitle": "O que ele faz e para quem.",
   "version": "1.0",
-  "updated": "2026-11-15",
+  "updated": "2026-11-16",
   "content": "content.md",
   "repoRoot": "..",
   "sections": [
@@ -167,7 +170,7 @@ Para um Guia Rápido, use um manifesto separado com `"mode": "summary"` e, opcio
 
 > Atenção: o leitor final não precisa de Node, Python ou servidor. Essas ferramentas são necessárias apenas para gerar e verificar o documento. O HTML pode ser copiado para um compartilhamento, anexado a um processo ou aberto localmente.
 
-> Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, revise o documento em desktop (~1440 px) e mobile (~390 px), exercite menu recolhível, busca, filtros, modal e impressão, e declare o que não foi verificado.
+> Limitação: o build não prova qualidade semântica nem visual. Depois de compilar, execute `review`, inspecione as capturas e preencha a rubrica. O padrão é desktop 1440 px; mobile/tablet são opcionais via `--viewports`. Declare o que não foi verificado, incluindo impressão e comportamento de cópia quando não exercitados.
 
 ## Desenho da solução
 
@@ -281,7 +284,7 @@ O shell (`scripts/lib/html-shell.mjs` + `scripts/lib/i18n.mjs`) embute CSS e Jav
 
 **Inspeção (`scripts/inspect_repo.py` + `scripts/inspector/`).** A fachada CLI orquestra um pacote modular dividido em `redaction.py`, `sql_parser.py`, `extractors.py` e `graph.py`. A varredura percorre o repositório excluindo diretórios técnicos padrão e artefatos gerados pela própria skill, respeitando `.docignore` (comentários, `!` negações, âncoras `/`), e registrando omissões e avisos por arquivo em `omittedCounts`, `omittedFiles` e `parseWarnings`. Extratores especializados cobrem Python/AST (com guarda para lambdas/subscritos em `_call_chain`), notebooks Databricks e `.ipynb`, DDL SQL balanceada (`DECIMAL(10, 2)`, genéricos `<...>`), JS/TS (`.mts`/`.cts`, reexports `export ... from`, imports dinâmicos, `interface`/`type`/`enum`, *arrow functions*, `process.env`/`import.meta.env`), desambiguação Blob vs Cosmos em `get_container_client`, streaming PySpark (`toTable`/`table`/`orc`/`text`/`.outputMode`) e Scala/Terraform/workflows. A sanitização em `redaction.py` roda antes de qualquer truncamento para tokens, chaves CLI e segredos inline.
 
-**Verificação (`scripts/verify.mjs`).** O verificador valida flags (`parseVerifyCliArgs`), classifica o recibo (`receiptStatus`: `complete` | `legacy-partial` | `invalid`, recusando `{}` até fora de `--strict`), confere hashes canônicos `sha256-lf-text-v1` de fontes e artefatos (`manifestSha256`, `inputSha256`), resolve o HTML via `--html` -> `receipt.htmlPath` -> irmão `.validation.json` (comparando hash bruto), diferencia commits só de docs (`revision.sourceDrift`) e compara `rendererSha256` (que inclui `package-lock.json`, `diagram.schema.json` e `scripts/lib/*`). No `--strict`, exige `receiptStatus === "complete"` com HTML íntegro; com `--mark-reviewed`, grava `browserReviewed: true`; e com `--impact`, percorre o grafo de dependências e marca apenas as seções `stale`.
+**Verificação (`scripts/verify.mjs`).** O verificador valida flags (`parseVerifyCliArgs`), classifica o recibo (`receiptStatus`: `complete` | `legacy-partial` | `invalid`, recusando `{}` até fora de `--strict`), confere hashes canônicos `sha256-lf-text-v1` de fontes e artefatos (`manifestSha256`, `inputSha256`), resolve o HTML via `--html` -> `receipt.htmlPath` -> irmão `.validation.json` (comparando hash bruto), diferencia commits só de docs (`revision.sourceDrift`) e compara `rendererSha256` (que inclui `package-lock.json`, `diagram.schema.json` e `scripts/lib/*`). No `--strict`, exige `receiptStatus === "complete"` com HTML íntegro; com `--mark-reviewed --rubric <arquivo>`, valida o gate visual e grava `browserReviewed: true`; e com `--impact`, percorre o grafo de dependências e marca apenas as seções `stale`.
 
 | Etapa | Entrada | Saída | Falha prevista |
 |---|---|---|---|
@@ -359,7 +362,7 @@ Diagramas 2D são validados pelo renderizador: `solution` e `flow` exigem títul
 
 > Exemplo prático: um gráfico com três valores `15`, `11` e `3` e unidade `testes` é válido; o maior valor ocupa a barra mais longa, o zero teria badge explícito e a tabela embutida repetiria os três pares. Um valor negativo ou um rótulo repetido interrompe o build com mensagem de erro.
 
-> Limitação: validação estrutural não substitui revisão visual. Sobreposição de rótulos, corte de texto, uma seta ambígua ou uma tabela apertada podem passar pelo HTML válido e ainda assim prejudicar a leitura; a inspeção em desktop (~1440 px) e mobile (~390 px) é obrigatória.
+> Limitação: validação estrutural não substitui revisão visual. Sobreposição de rótulos, corte de texto, uma seta ambígua ou uma tabela apertada podem passar pelo HTML válido e ainda assim prejudicar a leitura; o comando `review` acrescenta checks de geometria e interação; a rubrica exige inspeção dos tiles, com desktop como padrão e mobile/tablet sob demanda.
 
 ## Modelo e relacionamento dos artefatos
 
@@ -539,10 +542,12 @@ Cada seção exige `id` (padrão `^[a-z][a-z0-9-]*$`), `title` e `audience` (`al
 | `htmlSha256` | string | Hash bruto do HTML final |
 | `revision` | string ou null | Revisão Git documentada |
 | `sources` | array | Fontes com path e SHA-256 |
+| `visualReview` | objeto | Hash, navegador, viewports, tiles, erros e rubrica da última revisão |
+| `reviewOverride` | objeto opcional | Motivo e timestamp de exceção visual explícita |
 | `browserReviewed` | boolean | Revisão visual registrada via `--mark-reviewed` |
 | `browserReviewedAt` | ISO 8601 | Momento em que a revisão no navegador foi confirmada |
 
-O recibo é uma fotografia do build, não um monitor de produção. `builtAt` muda a cada compilação; `manifestSha256`, `inputSha256`, `htmlSha256` e `hashAlgorithm` permitem ao `verify.mjs` validar `receiptStatus` (`complete`, `legacy-partial`, `invalid`) e detectar dessincronização entre artefatos; `sources` é a lista confrontada com os arquivos atuais. `browserReviewed` inicia como `false` e passa a `true` somente via `verify.mjs --mark-reviewed`.
+O recibo é uma fotografia do build, não um monitor de produção. `builtAt` muda a cada compilação; `manifestSha256`, `inputSha256`, `htmlSha256` e `hashAlgorithm` permitem ao `verify.mjs` validar `receiptStatus` (`complete`, `legacy-partial`, `invalid`) e detectar dessincronização entre artefatos; `sources` é a lista confrontada com os arquivos atuais. `browserReviewed` inicia como `false` e passa a `true` via `verify.mjs --mark-reviewed --rubric <arquivo>` após o gate visual. Uma exceção explícita `--accept-issues` registra `reviewOverride` e não certifica inspeção visual.
 
 </details>
 
@@ -617,7 +622,7 @@ node scripts/cli.mjs inspect . --out docs/inventory.json --plan docs/reading-pla
 node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
 
-A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, `main.inert` + *focus trap* por `Tab`, e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento com destaque de todas as ocorrências, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas 2D e Mermaid no tema Vermelho), fechamento do modal (`<= 960 px` responsivo) com Escape e impressão com todas as seções. O teste deve cobrir tanto desktop (~1440 px) quanto mobile (~390 px).
+A revisão de entrega deve cobrir: overflow global, menu lateral recolhível no mobile (`#nav-toggle`, `#nav-close`, backdrop, `Escape`, `main.inert` + *focus trap* por `Tab`, e fechamento ao navegar), sidebar com rolagem independente sem sobrepor o rodapé no desktop, subnavegação H3, botão de topo, rolagem local de tabelas e diagramas, busca sem acento com destaque de todas as ocorrências, estado sem resultados, links para seções recolhidas, expandir/recolher, cópia com fallback, troca de tema (incluindo diagramas 2D e Mermaid no tema Vermelho), fechamento do modal (`<= 960 px` responsivo) com Escape e impressão com todas as seções. O review usa desktop 1440 px por padrão; acrescente mobile 390 px e tablet 1024 px quando solicitados. Impressão, clipboard e focus trap completos continuam exigindo inspeção específica.
 
 > Regra de negócio: `--force` é uma decisão editorial, não um atalho de automação. Use quando a intenção for substituir deliberadamente o HTML existente e mantenha o recibo anterior se precisar comparar versões.
 
@@ -710,6 +715,6 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | `assets/document.js` | Busca, filtros (`aria-pressed`), temas, zoom `Fit` monótono e `inert` sincronizado |
 | `examples/minimal/` | Exemplo mínimo executável |
 | `examples/showcase/` | Exemplo completo com as 11 categorias e diagramas avançados |
-| `tests/` | **55 testes** em 6 arquivos (incluindo `tests/browser.test.mjs` em Chromium headless) |
+| `tests/` | **63 testes** em 8 arquivos (incluindo `tests/browser.test.mjs` em Chromium headless) |
 
-Este manual foi gerado a partir da revisão `cd943234b153f91a9183b69916806faa7e5e6772` da v1.11.0 em 15/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
+Este manual foi gerado a partir do estado local v1.12.0 sobre a revisão `2d4277fce3d5af7bb63f6d4df01d75d1fe607c98` em 16/11/2026 (alterações ainda não commitadas). As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).

@@ -2,6 +2,9 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { resolveCandidateHtmlPath } from './lib/paths.mjs';
+import { evaluateReviewGate } from './review/rubric.mjs';
+import { randomUUID } from 'node:crypto';
 import { computeRendererHash, getSkillVersion } from './renderer-hash.mjs';
 import { HASH_ALGORITHM, hashRaw, hashCanonicalText } from './lib/hash.mjs';
 
@@ -29,17 +32,6 @@ async function checkFileHash(filePath, expectedSha256, { useCanonicalText = fals
   } catch {
     return false;
   }
-}
-
-function resolveCandidateHtmlPath(receiptPath, receipt, explicitHtmlFile) {
-  if (explicitHtmlFile) return path.resolve(explicitHtmlFile);
-  if (typeof receipt?.htmlPath === 'string' && receipt.htmlPath.trim()) {
-    return path.resolve(path.dirname(receiptPath), receipt.htmlPath);
-  }
-  if (/\.validation\.json$/i.test(receiptPath)) {
-    return receiptPath.replace(/\.validation\.json$/i, '.html');
-  }
-  return null;
 }
 
 export async function verify(manifestFile, receiptFile, { strict = false, htmlFile = null } = {}) {
@@ -465,10 +457,38 @@ export function renderUpdatePlan(impact) {
   return lines.join('\n');
 }
 
+export async function markReviewed(receiptPath, result, { rubricFile = null, acceptIssues = null } = {}) {
+  if (!result.ok || result.receiptStatus !== 'complete' || Object.values(result.artifacts || {}).some(v => v === false)) {
+    return { ok: false, reasons: ['Verification failed or receipt incomplete; resolve source/artifact drift before sign-off'] };
+  }
+  const receipt = await readJson(receiptPath);
+  const htmlPath = result.artifacts?.htmlPath
+    ? path.resolve(path.dirname(receiptPath), result.artifacts.htmlPath)
+    : resolveCandidateHtmlPath(receiptPath, receipt);
+  if (!htmlPath || !await checkFileHash(htmlPath, receipt.htmlSha256)) return { ok: false, reasons: ['HTML changed before sign-off; rebuild and review again'] };
+  const rubricText = rubricFile ? await fs.readFile(path.resolve(rubricFile), 'utf8') : null;
+  const gate = evaluateReviewGate(receipt, { rubricText, acceptIssues });
+  result.reviewGate = gate;
+  if (!gate.ok) return gate;
+  const now = new Date().toISOString();
+  receipt.browserReviewed = true;
+  receipt.browserReviewedAt = now;
+  if (gate.accepted) receipt.reviewOverride = { reason: String(acceptIssues).trim(), at: now, hadVisualReview: Boolean(receipt.visualReview), reasons: gate.reasons };
+  else delete receipt.reviewOverride;
+  const tmp = `${receiptPath}.${randomUUID()}.tmp`;
+  try { await fs.writeFile(tmp, JSON.stringify(receipt, null, 2) + '\n'); await fs.rename(tmp, receiptPath); }
+  finally { await fs.rm(tmp, { force: true }); }
+  result.browserReviewed = true;
+  result.browserReviewedAt = now;
+  return gate;
+}
+
 export function parseVerifyCliArgs(argv) {
   let strict = false;
   let impactMode = false;
   let markReviewed = false;
+  let rubricFile = null;
+  let acceptIssues = null;
   let dossierFile = null;
   let planOut = null;
   let htmlFile = null;
@@ -482,11 +502,13 @@ export function parseVerifyCliArgs(argv) {
       impactMode = true;
     } else if (arg === '--mark-reviewed') {
       markReviewed = true;
-    } else if (arg === '--dossier' || arg === '--plan' || arg === '--html') {
+    } else if (arg === '--dossier' || arg === '--plan' || arg === '--html' || arg === '--rubric' || arg === '--accept-issues') {
       const val = argv[i + 1];
       if (!val || val.startsWith('--')) throw Error(`Flag ${arg} requires a value`);
       if (arg === '--dossier') dossierFile = val;
       else if (arg === '--plan') planOut = val;
+      else if (arg === '--rubric') rubricFile = val;
+      else if (arg === '--accept-issues') acceptIssues = val;
       else htmlFile = val;
       i++;
     } else if (arg.startsWith('--')) {
@@ -496,6 +518,7 @@ export function parseVerifyCliArgs(argv) {
     }
   }
 
+  if ((rubricFile || acceptIssues !== null) && !markReviewed) throw Error('--rubric/--accept-issues only apply together with --mark-reviewed');
   if (positional.length < 2 || positional.length > 2) {
     throw Error('Usage: node scripts/verify.mjs <document.json> <receipt.json> [--strict] [--impact] [--dossier <inventory.json>] [--plan <update-plan.md>] [--html <output.html>] [--mark-reviewed]');
   }
@@ -505,6 +528,8 @@ export function parseVerifyCliArgs(argv) {
     strict,
     impactMode,
     markReviewed,
+    rubricFile,
+    acceptIssues,
     dossierFile,
     planOut,
     htmlFile,
@@ -526,18 +551,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
         });
 
     if (opts.markReviewed) {
-      if (!result.ok) {
-        console.error('Cannot mark browserReviewed=true because verification failed (resolve source or artifact drift first).');
-        process.exitCode = 1;
-      } else {
-        const receiptPath = path.resolve(opts.receiptFile);
-        const receipt = await readJson(receiptPath);
-        receipt.browserReviewed = true;
-        receipt.browserReviewedAt = new Date().toISOString();
-        await fs.writeFile(receiptPath, JSON.stringify(receipt, null, 2) + '\n', 'utf8');
-        result.browserReviewed = true;
-        result.browserReviewedAt = receipt.browserReviewedAt;
-      }
+      const gate = await markReviewed(path.resolve(opts.receiptFile), result, opts);
+      if (!gate.ok) { console.error(gate.reasons.join('; ')); process.exitCode = 1; }
     }
 
     if (opts.planOut) {

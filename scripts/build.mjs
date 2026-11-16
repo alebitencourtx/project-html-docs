@@ -11,7 +11,8 @@ import { computeRendererHash } from './renderer-hash.mjs';
 import { assertSafeHref } from './lib/urls.mjs';
 import { HASH_ALGORITHM, hashRaw, hashCanonicalText } from './lib/hash.mjs';
 import { RESERVED_IDS, normalizeTheme, getUiWords } from './lib/i18n.mjs';
-import { esc, cleanMarkdownHtml, enhanceSectionHtml, renderHtmlDocument } from './lib/html-shell.mjs';
+import { receiptPathFor } from './lib/paths.mjs';
+import { esc, softBreak, cleanMarkdownHtml, enhanceSectionHtml, renderHtmlDocument } from './lib/html-shell.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PKG = JSON.parse(await fs.readFile(path.join(ROOT, 'package.json'), 'utf8'));
@@ -88,6 +89,19 @@ export function barChart(spec, locale = 'pt-BR') {
   return `<figure class="chart"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(spec.title)}" style="font-family:Segoe UI,Arial,sans-serif;font-size:15px;min-width:${w}px"><g class="chart-gridlines" aria-hidden="true">${gridlines}</g>${rows}${axis}<text x="${left}" y="${h - 6}" fill="#526778" font-size="12">0 · ${esc(spec.unit)} · ${locale === 'pt-BR' ? 'escala linear' : 'linear scale'}</text></svg><figcaption><strong>${esc(spec.title)}</strong> · ${esc(spec.source)}${spec.asOf ? ' · ' + esc(spec.asOf) : ''}</figcaption><details><summary>${locale === 'pt-BR' ? 'Dados do gráfico' : 'Chart data'}</summary><div class="table-wrap">${table}</div></details></figure>`;
 }
 
+export const CARD_TOKEN_MAX = 18;
+export const HEADING_TOKEN_MAX = 40;
+export function longTokenWarnings(spec, subHeadingTitles = []) {
+  const warnings = [];
+  for (const card of spec.cards || []) {
+    if (String(card.value).split(/\s+/).some(t => t.length > CARD_TOKEN_MAX)) warnings.push(`Card "${card.label}" has a value token longer than ${CARD_TOKEN_MAX} characters; prefer a short value and move identifiers to the description.`);
+  }
+  for (const title of [spec.title, ...(spec.sections || []).map(s => s.title), ...subHeadingTitles]) {
+    if (String(title || '').split(/\s+/).some(t => t.length > HEADING_TOKEN_MAX)) warnings.push(`Heading has a token longer than ${HEADING_TOKEN_MAX} characters: ${title}`);
+  }
+  return warnings;
+}
+
 async function ensureWritableTarget(targetPath, protectedPaths, { force, label }) {
   for (const [protPath, protName] of protectedPaths) {
     if (targetPath === protPath) {
@@ -134,7 +148,7 @@ export async function build(manifestFile, output, { force = false, mode: cliMode
   }
 
   output = path.resolve(output);
-  const receiptPath = output.replace(/\.html$/i, '') + '.validation.json';
+  const receiptPath = receiptPathFor(output);
   const input = path.resolve(base, spec.content);
 
   const protectedInputs = [
@@ -314,7 +328,7 @@ export async function build(manifestFile, output, { force = false, mode: cliMode
     : '';
 
   const cards = (spec.cards || []).map(c =>
-    `<article class="metric"><span class="label">${esc(c.label)}</span><strong>${esc(c.value)}</strong><p>${esc(c.description)}</p></article>`,
+    `<article class="metric"><span class="label">${esc(c.label)}</span><strong>${softBreak(c.value)}</strong><p>${softBreak(c.description)}</p></article>`,
   ).join('');
 
   const initialTheme = normalizeTheme(spec.theme);
@@ -346,7 +360,7 @@ export async function build(manifestFile, output, { force = false, mode: cliMode
   });
 
   const validated = validateHtml(html);
-  const warnings = [];
+  const warnings = longTokenWarnings(spec, [...subNavBySection.values()].flat().map(s => s.title));
   if (spec.sections.length >= 4) {
     const allCount = spec.sections.filter(s => s.audience === 'all').length;
     if (allCount / spec.sections.length > 0.7) {

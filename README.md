@@ -9,7 +9,7 @@
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-%3E%3D3.10-blue.svg" alt="Python Version"></a>
   <a href="https://github.com/alebitencourtx/project-html-docs/actions/workflows/ci.yml"><img src="https://github.com/alebitencourtx/project-html-docs/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
   <a href="https://alebitencourtx.github.io/project-html-docs/"><img src="https://img.shields.io/badge/docs-online-brightgreen.svg" alt="Documentation Online"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.11.0-orange.svg" alt="Version"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.12.0-orange.svg" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
 </p>
 
@@ -47,7 +47,7 @@ A maioria das documentações técnicas sofre de dois problemas crônicos: depen
 ```bash
 # Baixe a release enxuta oficial (ou clone o repositório)
 mkdir -p .claude/skills/project-html-docs
-unzip project-html-docs-v1.11.0.zip -d .claude/skills/project-html-docs
+unzip project-html-docs-v1.12.0.zip -d .claude/skills/project-html-docs
 npm ci --ignore-scripts --prefix .claude/skills/project-html-docs
 
 # Verifique o ambiente (Node >= 22 e Python >= 3.10)
@@ -104,9 +104,17 @@ node scripts/cli.mjs build docs/document-summary.json --out docs/documentacao-re
 # Verifica se os arquivos de código divergem do que foi documentado
 node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --strict
 
+# Review visual via Chrome/Edge/Chromium instalado (desktop 1440 px por padrão)
+node scripts/cli.mjs review docs/documentacao.html --out tests/.output/review
+
+# Após abrir cada PNG e preencher a rubrica retornada pelo review
+node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --strict --mark-reviewed --rubric <caminho-da-rubrica>
+
 # Analisa o impacto de um novo commit e gera plano cirúrgico de atualização
 node scripts/cli.mjs verify docs/document.json docs/documentacao.validation.json --impact --dossier docs/inventory.json --plan docs/update-plan.md
 ```
+
+O review não baixa navegador nem adiciona dependências npm. Use `--viewports 1440,1024,390` para incluir tablet/mobile e `--tiles all` para capturar todas as seções e o tema Azul. Consulte o [fluxo de revisão visual](references/visual-review.md) para os checks, a rubrica e exceções explícitas via `--accept-issues`. Os scripts npm de desenvolvimento (`test`, `build:showcase`, `package:skill`) destinam-se ao clone completo; no ZIP enxuto, use a CLI.
 
 ---
 

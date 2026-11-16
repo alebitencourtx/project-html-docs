@@ -376,7 +376,7 @@ test('v1.9.0 build & validate: $-safe diagram notes, companionDoc missing warnin
   assert.match(html,/--figure-bg-fade:/);
   assert.match(html,/body\.nav-open\s*\{\s*overflow:\s*visible !important;\s*\}/);
   const idx960=html.indexOf('@media (max-width: 960px)');
-  const idx760=html.indexOf('@media (max-width: 760px)');
+  const idx760=html.indexOf('@media (max-width: 760px)',idx960);
   const dialogRuleIdx=html.indexOf('max-height: 92dvh;',idx960);
   assert.ok(dialogRuleIdx>idx960&&dialogRuleIdx<idx760,'Expected responsive dialog rule inside 960px breakpoint');
 

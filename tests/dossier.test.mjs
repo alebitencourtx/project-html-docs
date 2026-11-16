@@ -464,7 +464,7 @@ test('verify.mjs v1.9.0 detects artifact drift, accepts doc-only git advances, t
       path.join(docs, 'document.json'),
       receiptPath,
       '--strict',
-      '--mark-reviewed',
+      '--mark-reviewed', '--accept-issues', 'Test exercises source verification without browser review',
     ], { encoding: 'utf8' });
     const parsedDocOnly = JSON.parse(docOnlyOut);
     assert.equal(parsedDocOnly.ok, true);
