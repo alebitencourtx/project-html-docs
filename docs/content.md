@@ -717,4 +717,4 @@ O projeto faz escolhas explícitas para manter o produto portátil, auditável e
 | `examples/showcase/` | Exemplo completo com as 11 categorias e diagramas avançados |
 | `tests/` | **63 testes** em 8 arquivos (incluindo `tests/browser.test.mjs` em Chromium headless) |
 
-Este manual foi gerado a partir do estado local v1.12.0 sobre a revisão `2d4277fce3d5af7bb63f6d4df01d75d1fe607c98` em 16/11/2026 (alterações ainda não commitadas). As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).
+Este manual foi gerado a partir da implementação v1.12.0 na revisão `9dfca6007a0f78601d2704227074d32f9b671a98` em 16/11/2026. As referências completas de cada capítulo aparecem no bloco **Referências do documento**, gerado automaticamente a partir de `sources[]`. Para aprofundar, comece por [Como usar](#uso), [Desenho da solução](#solucao) e [Operação e recuperação](#operacao).

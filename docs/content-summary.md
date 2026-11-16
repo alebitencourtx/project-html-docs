@@ -209,4 +209,4 @@ A revisão de entrega cobre overflow global, menu lateral recolhível no mobile 
 | `stale` | Seção cujas fontes mudaram e precisa de revisão |
 | Guia Rápido | Modo `summary`, com 4 a 7 capítulos |
 
-Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir do estado local v1.12.0 sobre a revisão `2d4277fce3d5af7bb63f6d4df01d75d1fe607c98` em 16/11/2026 (alterações ainda não commitadas).
+Para o detalhamento completo, consulte o [Manual completo](documentacao.html), gerado a partir da implementação v1.12.0 na revisão `9dfca6007a0f78601d2704227074d32f9b671a98` em 16/11/2026.

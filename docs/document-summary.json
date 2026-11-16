@@ -9,8 +9,8 @@
   "mode": "summary",
   "content": "content-summary.md",
   "repoRoot": "..",
-  "revision": "2d4277fce3d5af7bb63f6d4df01d75d1fe607c98",
-  "dataAsOf": "2026-11-16 · implementação local v1.12.0 sobre 2d4277fce3d5; alterações ainda não commitadas; sem telemetria de produção",
+  "revision": "9dfca6007a0f78601d2704227074d32f9b671a98",
+  "dataAsOf": "2026-11-16 · implementação v1.12.0 na revisão 9dfca6007a0f; sem telemetria de produção",
   "companionDoc": {
     "href": "documentacao.html",
     "label": "Manual completo"
